@@ -41,6 +41,9 @@ export default function FeedComponent() {
   const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
   const [activeGallery, setActiveGallery] = useState<{ post: Post, urls: string[], initialIndex: number } | null>(null);
   const [activeSharePost, setActiveSharePost] = useState<Post | null>(null);
+  
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   useEffect(() => {
     const storedLikes = localStorage.getItem('liked_posts');
@@ -559,78 +562,53 @@ export default function FeedComponent() {
 
       {/* FULLSCREEN IMAGE GALLERY MODAL */}
       {activeGallery && (
-        <div className="fixed inset-0 z-[70] bg-white flex flex-col font-battambang animate-in slide-in-from-bottom-full duration-200">
-          <div className="flex items-center p-4 border-b border-gray-200/60 bg-white sticky top-0 z-20 shadow-sm">
+        <div className="fixed inset-0 z-[70] bg-black flex flex-col font-battambang animate-in zoom-in-95 duration-200">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/50 to-transparent absolute top-0 left-0 right-0 z-20">
             <button 
               onClick={() => setActiveGallery(null)} 
-              className="p-2 -ml-2 mr-2 hover:bg-gray-100 rounded-full transition-colors text-zinc-700"
+              className="p-2 text-white hover:bg-white/20 rounded-full transition-colors backdrop-blur-md bg-black/20"
             >
-              <ChevronLeft className="w-6 h-6"/>
+              <X className="w-6 h-6"/>
             </button>
-            <h3 className="font-bold text-[17px] text-zinc-900">
-              {activeGallery.post.author_name || 'វត្តស្នាយដួច'}'s post
-            </h3>
+            <div className="text-white text-sm font-medium bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md">
+              {activeGallery.initialIndex + 1} / {activeGallery.urls.length}
+            </div>
+            <div className="w-10"></div> {/* Placeholder for balance */}
           </div>
           
-          <div className="flex-1 w-full overflow-y-auto bg-gray-200 pb-safe">
-            <div className="flex flex-col">
-              {activeGallery.urls.map((url, idx) => {
-                const likeCount = (activeGallery.post.likes_count || 0) + (likes[activeGallery.post.id] ? 1 : 0);
-                const postComments = parseComments(activeGallery.post.comments);
-                return (
-                  <div key={idx} id={`gallery-img-${idx}`} className="bg-white mb-2 pb-2">
-                    <img loading="lazy" src={url} className="w-full h-auto object-contain max-h-[70vh]" alt={`Image ${idx}`} />
-                    
-                    {/* Action Buttons Bar */}
-                    <div className="px-4 py-3 mt-1 flex items-center justify-between text-zinc-500 border-t border-gray-100">
-                      <div className="flex space-x-6">
-                        <button 
-                          onClick={() => handleLike(activeGallery.post.id, likeCount)}
-                          className={`flex items-center space-x-1.5 transition-colors focus:outline-none group ${likes[activeGallery.post.id] ? 'text-blue-600' : 'hover:text-blue-600'}`}
-                        >
-                          {likes[activeGallery.post.id] ? (
-                            <FaHeart className="h-5 w-5 scale-110 transition-transform text-blue-600" />
-                          ) : (
-                            <FaRegHeart className="h-5 w-5 transition-colors group-hover:scale-105" />
-                          )}
-                          <span className="text-[13px] font-medium">
-                            {likeCount > 0 ? likeCount : ''}
-                          </span>
-                        </button>
-                        
-                        <button 
-                          onClick={() => {
-                            setActiveGallery(null);
-                            setActiveCommentPostId(activeGallery.post.id);
-                          }}
-                          className="flex items-center space-x-1.5 hover:text-zinc-700 transition-colors focus:outline-none group"
-                        >
-                          <FaRegComment className="h-5 w-5 transition-colors group-hover:scale-105" />
-                          <span className="text-[13px] font-medium">
-                            {postComments.length > 0 ? postComments.length : ''}
-                          </span>
-                        </button>
-                        
-                        <button 
-                          onClick={() => handleShare(activeGallery.post)}
-                          className="flex items-center hover:text-zinc-700 transition-colors focus:outline-none group"
-                        >
-                          <IoIosShareAlt className="h-6 w-6 transition-colors group-hover:scale-105" />
-                        </button>
-                      </div>
-                      
-                      {likeCount > 0 && (
-                        <div className="flex items-center">
-                          <div className="bg-blue-600 p-1 rounded-full text-white">
-                            <FaHeart className="w-2.5 h-2.5" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="flex-1 w-full h-full flex items-center justify-center overflow-hidden relative"
+               onTouchStart={(e) => {
+                 setTouchEnd(null);
+                 setTouchStart(e.targetTouches[0].clientX);
+               }}
+               onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
+               onTouchEnd={() => {
+                 if (!touchStart || !touchEnd) return;
+                 const distance = touchStart - touchEnd;
+                 const isLeftSwipe = distance > 50;
+                 const isRightSwipe = distance < -50;
+                 if (isLeftSwipe && activeGallery.initialIndex < activeGallery.urls.length - 1) {
+                   setActiveGallery({ ...activeGallery, initialIndex: activeGallery.initialIndex + 1 });
+                 }
+                 if (isRightSwipe && activeGallery.initialIndex > 0) {
+                   setActiveGallery({ ...activeGallery, initialIndex: activeGallery.initialIndex - 1 });
+                 }
+               }}
+          >
+            <img 
+              key={activeGallery.initialIndex}
+              loading="lazy" 
+              src={activeGallery.urls[activeGallery.initialIndex]} 
+              className="w-full h-full object-contain animate-in fade-in duration-200" 
+              alt="Full view" 
+            />
+            {/* Arrows for Desktop */}
+            {activeGallery.initialIndex > 0 && (
+               <button onClick={(e) => { e.stopPropagation(); setActiveGallery({...activeGallery, initialIndex: activeGallery.initialIndex - 1}); }} className="absolute left-4 p-3 bg-black/40 text-white hover:bg-black/60 transition-colors rounded-full hidden sm:block"><ChevronLeft className="w-6 h-6"/></button>
+            )}
+            {activeGallery.initialIndex < activeGallery.urls.length - 1 && (
+               <button onClick={(e) => { e.stopPropagation(); setActiveGallery({...activeGallery, initialIndex: activeGallery.initialIndex + 1}); }} className="absolute right-4 p-3 bg-black/40 text-white hover:bg-black/60 transition-colors rounded-full hidden sm:block"><ChevronRight className="w-6 h-6"/></button>
+            )}
           </div>
         </div>
       )}
