@@ -1,0 +1,6 @@
+{
+  "name": "វត្តស្នាយដួច",
+  "description": "Temple donation records, expenses, and activities management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
