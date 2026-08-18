@@ -15,6 +15,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
+  const [originalFullName, setOriginalFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -54,6 +55,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
       
       if (data) {
         setFullName(data.full_name || '');
+        setOriginalFullName(data.full_name || '');
         setPhone(data.phone_number || '');
         setPassword(data.password || '');
         setAvatarUrl(data.avatar_url || '');
@@ -150,15 +152,42 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
       }
 
       if (data) {
-        // If name changed, update posts author_name to sync
-        if (fullName !== userKey) {
+        // If name changed, update posts author_name and comment authors to sync
+        if (fullName !== originalFullName && originalFullName) {
           try {
-            await supabase.from('posts').update({ author_name: fullName }).eq('author_name', userKey);
-            // Note: If you want to sync JSON comments author it would require fetching all posts, 
-            // parsing comments, updating author, and saving back. 
-            // For now, updating the post author_name handles the main Feed view.
+            await supabase.from('posts').update({ author_name: fullName }).eq('author_name', originalFullName);
+            
+            // Sync comments
+            const { data: allPosts } = await supabase.from('posts').select('id, comments');
+            if (allPosts) {
+              for (const post of allPosts) {
+                if (post.comments) {
+                  let parsedComments = [];
+                  try {
+                    if (typeof post.comments === 'string') {
+                      parsedComments = JSON.parse(post.comments);
+                    } else if (Array.isArray(post.comments)) {
+                      parsedComments = post.comments;
+                    }
+                  } catch (e) {}
+                  
+                  let hasChanges = false;
+                  const updatedComments = parsedComments.map((c: any) => {
+                    if (c.author === originalFullName) {
+                      hasChanges = true;
+                      return { ...c, author: fullName };
+                    }
+                    return c;
+                  });
+                  
+                  if (hasChanges) {
+                    await supabase.from('posts').update({ comments: updatedComments }).eq('id', post.id);
+                  }
+                }
+              }
+            }
           } catch (e) {
-            console.error('Failed to sync post author names', e);
+            console.error('Failed to sync post/comment author names', e);
           }
         }
 
@@ -167,6 +196,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
         if (!userId && data.full_name) {
            setUserKey(data.full_name);
         }
+        setOriginalFullName(data.full_name || '');
         setMessage({ type: 'success', text: 'ព័ត៌មានត្រូវបានរក្សាទុកដោយជោគជ័យ!' });
       }
     } catch (err: any) {
@@ -179,7 +209,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
 
   if (isLoading) {
     return (
-      <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-24 font-battambang bg-[#FAFAFA] min-h-full">
+      <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] min-h-full">
         <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">គណនី</h2>
         <div className="flex justify-center items-center h-48 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
@@ -191,7 +221,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
   // --- EDIT PROFILE VIEW ---
   if (isEditingView) {
     return (
-      <div className="flex flex-col h-full bg-[#FAFAFA] font-battambang pb-24 relative">
+      <div className="flex flex-col h-full bg-[#FAFAFA] font-battambang pb-6 relative">
         <div className="flex items-center space-x-3 p-4 sm:p-6 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-10 max-w-3xl mx-auto w-full">
           <button 
             onClick={() => {
@@ -299,7 +329,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
 
   // --- MAIN ACCOUNT VIEW ---
   return (
-    <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-24 font-battambang bg-[#FAFAFA] min-h-full">
+    <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] min-h-full">
       <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">គណនី</h2>
       
       {/* Profile Summary Header */}

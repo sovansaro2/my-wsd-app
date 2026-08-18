@@ -167,7 +167,7 @@ export default function NameLists() {
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] pb-24 font-battambang relative">
+    <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang relative">
       <div className="bg-white p-4 sm:p-6 shadow-sm border-b border-gray-100 z-10 sticky top-0">
         <div className="flex justify-between items-center mb-4 max-w-3xl mx-auto w-full">
           <h2 className="text-xl font-bold text-zinc-900 tracking-tight">បញ្ជីផ្សេងៗ</h2>

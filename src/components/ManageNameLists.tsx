@@ -111,7 +111,7 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] pb-24 font-battambang relative">
+    <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang relative">
       <div className="bg-white text-zinc-900 p-4 sm:p-6 shadow-sm border-b border-gray-100 z-10 sticky top-0 flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={onBack} className="mr-3 p-2 hover:bg-zinc-100 rounded-full transition-colors">

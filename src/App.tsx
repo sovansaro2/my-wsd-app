@@ -137,7 +137,7 @@ export default function App() {
         <button
           onClick={() => setActiveTab('home')}
           className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'home' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-900'
+            activeTab === 'home' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
           }`}
         >
           <MdHome className="h-6 w-6" />
@@ -146,7 +146,7 @@ export default function App() {
         <button
           onClick={() => setActiveTab('records')}
           className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'records' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-900'
+            activeTab === 'records' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
           }`}
         >
           <TbDatabaseDollar className="h-6 w-6" />
@@ -155,7 +155,7 @@ export default function App() {
         <button
           onClick={() => setActiveTab('categories')}
           className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'categories' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-900'
+            activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
           }`}
         >
           <CiViewList className="h-6 w-6" />
@@ -164,7 +164,7 @@ export default function App() {
         <button
           onClick={() => setActiveTab('account')}
           className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'account' ? 'text-blue-600' : 'text-gray-400 hover:text-gray-900'
+            activeTab === 'account' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
           }`}
         >
           <MdPerson className="h-6 w-6" />

@@ -94,7 +94,7 @@ export default function ManagePosts({ onBack }: ManagePostsProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] font-battambang pb-20 relative">
+    <div className="flex flex-col h-full bg-[#FAFAFA] font-battambang pb-6 relative">
       <div className="flex items-center space-x-3 p-4 sm:p-6 bg-white border-b border-gray-100/60 shadow-sm sticky top-0 z-10">
         <button 
           onClick={onBack}

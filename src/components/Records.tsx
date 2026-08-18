@@ -114,7 +114,7 @@ export default function Records() {
   const currentBalance = previousBalance + totalIncome - totalExpense;
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] pb-24 font-battambang">
+    <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang">
       {/* Header & Selector */}
       <div className="bg-white p-4 sm:p-6 border-b border-gray-100 relative z-10 shadow-sm">
         <div className="relative max-w-3xl mx-auto">
