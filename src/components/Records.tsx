@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet } from 'lucide-react';
+import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SeilPeriod {
   id: string;
@@ -22,12 +23,27 @@ interface FinancialRecord {
   note: string | null;
 }
 
-export default function Records() {
+interface RecordsProps {
+  userRole?: 'admin' | 'user' | null;
+  onAddRecord?: () => void;
+}
+
+export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
+  const { t } = useLanguage();
   const [periods, setPeriods] = useState<SeilPeriod[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<SeilPeriod | null>(null);
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('income');
+
+  // Add Record Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newRecordType, setNewRecordType] = useState<'income' | 'expense'>('expense');
+  const [newDescription, setNewDescription] = useState('');
+  const [newAmount, setNewAmount] = useState('');
+  const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newNote, setNewNote] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     fetchPeriods();
@@ -64,6 +80,37 @@ export default function Records() {
       setRecords(data || []);
     } catch (e) {
       console.error('Error fetching records:', e);
+    }
+  };
+
+  const handleSaveRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPeriod || !newDescription || !newAmount) return;
+
+    setIsSaving(true);
+    try {
+      const recordData = {
+        seil_id: selectedPeriod.id,
+        type: newRecordType,
+        description: newDescription,
+        amount: parseFloat(newAmount.replace(/,/g, '')),
+        record_date: newDate || null,
+        note: newNote || null
+      };
+
+      await api.createFinancialRecord(recordData);
+      
+      fetchRecords(selectedPeriod.id);
+      setIsAddModalOpen(false);
+      
+      setNewDescription('');
+      setNewAmount('');
+      setNewNote('');
+    } catch (error) {
+      console.error('Error saving record:', error);
+      alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -108,36 +155,47 @@ export default function Records() {
       {/* Header & Selector */}
       <div className="bg-white px-4 py-5 border-b border-gray-100 relative z-10 shadow-sm">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">ចំណូល-ចំណាយ</h2>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all truncate pr-10"
-              value={selectedPeriod?.id || ''}
-              onChange={(e) => {
-                const p = periods.find(x => x.id === e.target.value);
-                if (p) setSelectedPeriod(p);
-              }}
-            >
-              {periods.map(p => (
-                <option key={p.id} value={p.id} className="text-gray-900 bg-white">
-                  {p.name} ({p.date_range_text})
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-gray-400" />
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('records_title')}</h2>
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <select 
+                className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all truncate pr-10"
+                value={selectedPeriod?.id || ''}
+                onChange={(e) => {
+                  const p = periods.find(x => x.id === e.target.value);
+                  if (p) setSelectedPeriod(p);
+                }}
+              >
+                {periods.map(p => (
+                  <option key={p.id} value={p.id} className="text-gray-900 bg-white">
+                    {p.name} ({p.date_range_text})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-gray-400" />
+            </div>
+            {userRole === 'admin' && (
+              <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                title={t('records_add_new')}
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+            )}
           </div>
 
         {/* Summary Dashboard */}
         <div className="grid grid-cols-2 gap-3 mt-2 max-w-3xl mx-auto">
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-gray-500 text-[11px] uppercase tracking-wider mb-1 font-semibold">បច្ច័យនៅសល់ពីមុន</p>
+            <p className="text-gray-500 text-[11px] uppercase tracking-wider mb-1 font-semibold">{t('records_prev_balance')}</p>
             <p className="text-xl font-bold text-gray-900">{formatCurrency(previousBalance)}</p>
           </div>
           <div className="bg-orange-500 rounded-2xl p-4 shadow-md shadow-orange-500/20 relative overflow-hidden">
             <div className="absolute -top-2 -right-2 p-3 opacity-10">
               <Wallet className="w-16 h-16 text-white" />
             </div>
-            <p className="text-orange-100 text-[11px] uppercase tracking-wider mb-1 font-semibold relative z-10">នៅសល់ជាក់ស្តែង</p>
+            <p className="text-orange-100 text-[11px] uppercase tracking-wider mb-1 font-semibold relative z-10">{t('records_current_balance')}</p>
             <p className="text-xl font-bold text-white relative z-10">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
@@ -156,7 +214,7 @@ export default function Records() {
           }`}
         >
           <ArrowDownCircle className={`w-4 h-4 ${activeTab === 'income' ? 'text-green-600' : ''}`} />
-          ចំណូលសរុប ({formatCurrency(totalIncome)})
+          {t('records_total_income')} ({formatCurrency(totalIncome)})
         </button>
         <button 
           onClick={() => setActiveTab('expense')}
@@ -167,7 +225,7 @@ export default function Records() {
           }`}
         >
           <ArrowUpCircle className={`w-4 h-4 ${activeTab === 'expense' ? 'text-rose-600' : ''}`} />
-          ចំណាយសរុប ({formatCurrency(totalExpense)})
+          {t('records_total_expense')} ({formatCurrency(totalExpense)})
         </button>
       </div>
 
@@ -184,7 +242,7 @@ export default function Records() {
               className="space-y-2"
             >
               {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
-                <div key={record.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] flex flex-col relative">
+                <div key={record.id} className="bg-white rounded-xl p-3 border border-gray-100 shadow-sm flex flex-col relative">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2.5">
                       <span className="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-100 text-[11px] font-semibold text-zinc-500">
@@ -210,13 +268,138 @@ export default function Records() {
               
               {(activeTab === 'income' ? incomeRecords : expenseRecords).length === 0 && (
                 <div className="text-center py-12 text-zinc-400 text-sm">
-                  មិនមានទិន្នន័យ
+                  {activeTab === 'income' ? t('records_empty_income') : t('records_empty_expense')}
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Add Record Modal */}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsAddModalOpen(false)}
+              className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2rem] shadow-2xl overflow-hidden max-w-lg mx-auto pb-safe flex flex-col max-h-[90vh]"
+            >
+              <div className="flex items-center justify-between p-5 border-b border-gray-100">
+                <h3 className="text-[17px] font-bold text-gray-900">{t('records_add_new_title')}</h3>
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-5 pb-24 overflow-y-auto">
+                <form onSubmit={handleSaveRecord} className="space-y-4">
+                  
+                  {/* Type Toggle */}
+                  <div className="flex bg-gray-100/80 p-1 rounded-2xl">
+                    <button
+                      type="button"
+                      onClick={() => setNewRecordType('income')}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
+                        newRecordType === 'income'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {t('records_type_income')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewRecordType('expense')}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
+                        newRecordType === 'expense'
+                          ? 'bg-white text-rose-500 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {t('records_type_expense')}
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('records_description')}</label>
+                    <input
+                      type="text"
+                      required
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      placeholder={t('records_description_ph')}
+                      className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('records_amount')}</label>
+                    <input
+                      type="text"
+                      required
+                      value={newAmount}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setNewAmount(val ? parseInt(val, 10).toLocaleString('en-US') : '');
+                      }}
+                      placeholder={t('records_amount_ph')}
+                      className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('records_date')}</label>
+                      <input
+                        type="date"
+                        required
+                        value={newDate}
+                        onChange={(e) => setNewDate(e.target.value)}
+                        className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all appearance-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('records_note')}</label>
+                      <input
+                        type="text"
+                        value={newNote}
+                        onChange={(e) => setNewNote(e.target.value)}
+                        placeholder={t('records_note_ph')}
+                        className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-[15px] text-gray-900 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 text-white font-bold text-[15px] shadow-sm hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
+                  >
+                    {isSaving ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      t('records_save')
+                    )}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

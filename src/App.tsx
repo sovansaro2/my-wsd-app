@@ -14,11 +14,13 @@ import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
 import NameLists from './components/NameLists';
 import { api } from './lib/apiClient';
+import { useLanguage } from './contexts/LanguageContext';
 
 type Tab = 'home' | 'records' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [userRole, setUserRole] = useState<Role>(null);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -83,7 +85,12 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 'home' && <Dashboard />}
-            {activeTab === 'records' && <RecordsComponent />}
+            {activeTab === 'records' && (
+              <RecordsComponent 
+                userRole={userRole} 
+                onAddRecord={() => setActiveTab('manage_financials')} 
+              />
+            )}
             {activeTab === 'categories' && <NameLists />}
             {activeTab === 'account' && (
               <AccountProfile
@@ -117,7 +124,7 @@ export default function App() {
             className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'home' ? 'text-orange-500' : 'text-gray-400'}`}
           >
             <Home className="h-6 w-6" />
-            <span className="text-[10px] font-medium font-battambang">ទំព័រដើម</span>
+            <span className="text-[10px] font-medium font-battambang">{t('nav_home')}</span>
           </button>
           
           <button
@@ -125,15 +132,15 @@ export default function App() {
             className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'records' ? 'text-orange-500' : 'text-gray-400'}`}
           >
             <CircleDollarSign className="h-6 w-6" />
-            <span className="text-[10px] font-medium font-battambang">ចំណូល-ចំណាយ</span>
+            <span className="text-[10px] font-medium font-battambang">{t('nav_finance')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('categories')}
             className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400'}`}
           >
-            <List className="h-6 w-6 stroke-[1]" />
-            <span className="text-[10px] font-medium font-battambang">បញ្ជីឈ្មោះ</span>
+            <List className="h-6 w-6" />
+            <span className="text-[10px] font-medium font-battambang">{t('nav_list')}</span>
           </button>
           
           <button
@@ -141,7 +148,7 @@ export default function App() {
             className={`flex flex-col items-center gap-1 p-2 transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500' : 'text-gray-400'}`}
           >
             <User className="h-6 w-6" />
-            <span className="text-[10px] font-medium font-battambang">គណនី</span>
+            <span className="text-[10px] font-medium font-battambang">{t('nav_account')}</span>
           </button>
         </div>
       </nav>

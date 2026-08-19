@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Wallet } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface FinancialRecord {
   id: string;
@@ -24,6 +25,7 @@ interface SeilPeriod {
 }
 
 export default function Dashboard() {
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [financials, setFinancials] = useState<FinancialRecord[]>([]);
@@ -97,14 +99,14 @@ export default function Dashboard() {
     });
     return {
       name: seil.name,
-      ចំណូល: inc,
-      ចំណាយ: exp
+      [t('dashboard_income')]: inc,
+      [t('dashboard_expense')]: exp
     };
   }).reverse(); // chronological
 
   const pieData = [
-    { name: 'ចំណូលសរុប', value: totalIncome },
-    { name: 'ចំណាយសរុប', value: totalExpense },
+    { name: t('dashboard_total_income'), value: totalIncome },
+    { name: t('dashboard_total_expense'), value: totalExpense },
   ];
   const COLORS = ['#22c55e', '#ef4444'];
   const seilCount = seils.length > 0 ? seils.length : 0;
@@ -114,8 +116,7 @@ export default function Dashboard() {
       
       <div className="px-4 pt-6 pb-2">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">វិភាគទិន្នន័យ</h2>
-          <p className="text-sm text-slate-500">របាយការណ៍ហិរញ្ញវត្ថុរួម</p>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{t('dashboard_title')}</h2>
         </div>
       </div>
       
@@ -130,7 +131,7 @@ export default function Dashboard() {
       {/* KPI Cards */}
       <section>
         <div className="flex justify-between items-end mb-3">
-           <h3 className="text-[15px] font-bold text-slate-800">របាយការណ៍សរុប (រយៈពេល {seilCount > 0 ? `${seilCount} សីល` : '...'})</h3>
+           <h3 className="text-[15px] font-bold text-slate-800">{t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
@@ -138,7 +139,7 @@ export default function Dashboard() {
               <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-emerald-600" />
               </div>
-              <p className="text-[11px] text-slate-500 font-semibold">ចំណូលសរុប</p>
+              <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_income')}</p>
             </div>
             <p className="text-[17px] font-bold text-slate-900">៛ {totalIncome.toLocaleString()}</p>
           </div>
@@ -148,7 +149,7 @@ export default function Dashboard() {
               <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center">
                 <TrendingDown className="w-4 h-4 text-rose-600" />
               </div>
-              <p className="text-[11px] text-slate-500 font-semibold">ចំណាយសរុប</p>
+              <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
             </div>
             <p className="text-[17px] font-bold text-slate-900">៛ {totalExpense.toLocaleString()}</p>
           </div>
@@ -157,7 +158,7 @@ export default function Dashboard() {
             <div className="absolute -right-2 -bottom-6 opacity-10">
               <Wallet className="w-28 h-28 text-white" />
             </div>
-            <p className="text-slate-400 text-[12px] font-medium mb-1 relative z-10">សាច់ប្រាក់នៅសល់ជាក់ស្តែង</p>
+            <p className="text-slate-400 text-[12px] font-medium mb-1 relative z-10">{t('dashboard_actual_balance')}</p>
             <p className="text-3xl font-bold text-white relative z-10">៛ {balance.toLocaleString()}</p>
           </div>
         </div>
@@ -165,7 +166,7 @@ export default function Dashboard() {
 
       {/* Bar Chart */}
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] border border-gray-100">
-        <h3 className="text-md font-bold text-gray-800 mb-4">ចំណូល និងចំណាយតាមវេនសីល</h3>
+        <h3 className="text-md font-bold text-gray-800 mb-4">{t('dashboard_chart_title')}</h3>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
@@ -177,8 +178,8 @@ export default function Dashboard() {
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-              <Bar dataKey="ចំណូល" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="ចំណាយ" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey={t('dashboard_income')} fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey={t('dashboard_expense')} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -186,7 +187,7 @@ export default function Dashboard() {
 
       {/* Pie Chart */}
       <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] border border-gray-100">
-        <h3 className="text-md font-bold text-gray-800 mb-2">សមាមាត្រហិរញ្ញវត្ថុ</h3>
+        <h3 className="text-md font-bold text-gray-800 mb-2">{t('dashboard_pie_title')}</h3>
         <div className="h-64 w-full flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -205,7 +206,7 @@ export default function Dashboard() {
               </Pie>
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                formatter={(value: number) => [`៛ ${value.toLocaleString()}`, 'ចំនួន']}
+                formatter={(value: number) => [`៛ ${value.toLocaleString()}`, t('dashboard_amount')]}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
             </PieChart>

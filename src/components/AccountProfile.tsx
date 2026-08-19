@@ -1,9 +1,10 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Settings, Camera, UserCircle2, Loader2, Save, ChevronRight, ArrowLeft, FileText } from 'lucide-react';
-import { Wallet } from 'lucide-react';
+import { LogOut, Settings, Camera, UserCircle2, Loader2, Save, ChevronRight, ArrowLeft, FileText, Wallet, Globe, Palette, Info, Crown, Copy, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/apiClient';
+import { useLanguage } from '../contexts/LanguageContext';
 
 
 interface AccountProfileProps {
@@ -15,6 +16,7 @@ interface AccountProfileProps {
 }
 
 export default function AccountProfile({ userRole, onLogout, onManageFinancials, onManageNameLists }: AccountProfileProps) {
+  const { language, setLanguage, t } = useLanguage();
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
@@ -27,12 +29,25 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isEditingView, setIsEditingView] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setIsSettingsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const fetchProfile = async () => {
@@ -109,7 +124,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] min-h-full">
-        <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">គណនី</h2>
+        <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">{t('nav_account')}</h2>
         <div className="flex justify-center items-center h-48 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
         </div>
@@ -131,7 +146,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h2 className="text-xl font-bold text-gray-900 tracking-tight">កែប្រែប្រវត្តិរូប</h2>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">{t('profile_edit_title')}</h2>
         </div>
 
         <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto w-full">
@@ -163,7 +178,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                   className="hidden" 
                 />
               </div>
-              <p className="text-sm font-medium text-gray-500">ចុចលើកាមេរ៉ាដើម្បីប្តូររូបភាព</p>
+              <p className="text-sm font-medium text-gray-500">{t('profile_edit_photo')}</p>
             </div>
 
             <div className="p-6">
@@ -175,7 +190,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
 
               <form onSubmit={handleSaveProfile} className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">ឈ្មោះពេញ</label>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">{t('profile_full_name')}</label>
                   <input
                     type="text"
                     required
@@ -186,7 +201,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                 </div>
                 
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">លេខទូរស័ព្ទ</label>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">{t('profile_phone')}</label>
                   <input
                     type="tel"
                     value={phone}
@@ -196,11 +211,11 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">ពាក្យសម្ងាត់</label>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">{t('profile_password')}</label>
                   <input
                     type="password"
                     value={password}
-                    placeholder="ទុកទទេបើមិនចង់ដូរពាក្យសម្ងាត់ថ្មី"
+                    placeholder={t('profile_password_ph')}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
@@ -216,7 +231,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                   ) : (
                     <Save className="w-5 h-5" />
                   )}
-                  <span>{isSaving ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកការកែប្រែ'}</span>
+                  <span>{isSaving ? t('profile_saving') : t('profile_save_changes')}</span>
                 </button>
               </form>
             </div>
@@ -228,88 +243,248 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
 
   // --- MAIN ACCOUNT VIEW ---
   return (
-    <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] min-h-full">
-      <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">គណនី</h2>
+    <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-24 font-battambang bg-[#F8F9FD] min-h-full">
       
-      {/* Profile Summary Header */}
-      <div className="flex items-center space-x-4 mb-8 bg-white p-5 rounded-3xl border border-gray-100/80 shadow-sm">
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-100 flex items-center justify-center border border-gray-200/50 flex-shrink-0">
-           {avatarUrl ? (
-             <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-           ) : (
-             <UserCircle2 className="w-10 h-10 text-zinc-400" />
-           )}
+      {/* Profile Summary Card */}
+      <div className="relative mb-8 mt-2 bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+        {/* Soft decorative background shapes */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-100 rounded-tl-full opacity-60"></div>
+        <div className="absolute top-6 right-8 grid grid-cols-4 gap-2 opacity-10">
+          {[...Array(16)].map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-900"></div>
+          ))}
         </div>
-        <div className="flex-1 min-w-0">
-           <h3 className="text-lg font-bold text-zinc-900 truncate">{fullName || 'អ្នកប្រើប្រាស់'}</h3>
-           <p className="text-sm text-zinc-500 truncate">{phone || 'មិនមានលេខទូរស័ព្ទ'}</p>
-           <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest mt-1 bg-amber-50 inline-block px-2 py-0.5 rounded-full">
-             {userRole === 'admin' ? 'អ្នកគ្រប់គ្រង (Admin)' : 'អ្នកប្រើប្រាស់ (User)'}
-           </p>
+
+        <div className="relative p-6 flex items-center space-x-5 z-10">
+          <div className="relative">
+            <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-zinc-100 flex items-center justify-center border-4 border-white shadow-sm flex-shrink-0 relative z-10">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <UserCircle2 className="w-12 h-12 text-zinc-300" />
+              )}
+            </div>
+            {/* Outline ring effect around avatar */}
+            <div className="absolute inset-[-4px] rounded-full border border-indigo-100/80 z-0"></div>
+            
+            <button 
+              onClick={() => setIsEditingView(true)}
+              className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-gray-100 z-20 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 focus:outline-none transition-colors"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl font-bold text-gray-900 truncate mb-1.5">{fullName || 'អ្នកប្រើប្រាស់'}</h3>
+            <div className="flex items-center text-[15px] text-gray-500 mb-2.5">
+              <span>{phone || t('profile_no_phone')}</span>
+              {phone && (
+                <button 
+                  onClick={() => navigator.clipboard.writeText(phone)}
+                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  title="ចម្លងលេខទូរស័ព្ទ"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="inline-flex items-center space-x-1.5 bg-orange-50 text-orange-500 px-3 py-1 rounded-full text-[13px] font-semibold border border-orange-100/50">
+              <Crown className="w-4 h-4" />
+              <span>{userRole === 'admin' ? t('profile_role_admin') : t('profile_role_user')}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Profile Section */}
-      <div className="mb-6">
-         <h4 className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-3 ml-2">ប្រវត្តិរូប</h4>
-         <div className="bg-white rounded-3xl border border-gray-100/80 shadow-sm overflow-hidden">
-            <button 
-              onClick={() => setIsEditingView(true)} 
-              className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-zinc-50 transition-colors focus:outline-none group"
-            >
-               <div className="flex items-center space-x-3.5">
-                  <div className="bg-zinc-50 p-2.5 rounded-xl text-zinc-600 border border-gray-100">
-                    <UserCircle2 className="w-5 h-5"/>
-                  </div>
-                  <span className="text-[15px] font-semibold text-zinc-800">មើលប្រវត្តិរូប និងកែប្រែ</span>
-               </div>
-               <ChevronRight className="w-5 h-5 text-zinc-300 group-hover:text-zinc-500 transition-colors" />
-            </button>
-         </div>
+      <div className="mb-4">
+        <h4 className="text-[15px] font-bold text-gray-900 mb-2 pl-1">{t('profile_title')}</h4>
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <button 
+            onClick={() => setIsEditingView(true)} 
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none group"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-indigo-50/70 p-2.5 rounded-xl text-indigo-600">
+                <UserCircle2 className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_view_edit')}</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+        </div>
       </div>
 
-      {/* Settings Section (Admin Only) */}
+      {/* Settings Section */}
       {userRole === 'admin' && (
-      <div className="mb-8">
-         <h4 className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-3 ml-2">ការកំណត់</h4>
-         <div className="bg-white rounded-3xl border border-gray-100/80 shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
-            
-            <button 
-              onClick={onManageFinancials} 
-              className="w-full flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors focus:outline-none"
-            >
-               <div className="flex items-center space-x-3">
-                  <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
-                    <Wallet className="w-5 h-5"/>
-                  </div>
-                  <span className="text-[15px] font-bold text-gray-700">គ្រប់គ្រងបញ្ជីចំណូល-ចំណាយ</span>
-               </div>
-               <ChevronRight className="w-5 h-5 text-gray-400" />
-            </button>
-            <button 
-              onClick={onManageNameLists} 
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors focus:outline-none"
-            >
-               <div className="flex items-center space-x-3">
-                  <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
-                    <FileText className="w-5 h-5"/>
-                  </div>
-                  <span className="text-[15px] font-bold text-gray-700">គ្រប់គ្រងបញ្ជីផ្សេងៗ</span>
-               </div>
-               <ChevronRight className="w-5 h-5 text-gray-400" />
-            </button>
-         </div>
+      <div className="mb-4">
+        <h4 className="text-[15px] font-bold text-gray-900 mb-2 pl-1">{t('profile_settings')}</h4>
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
+          <button 
+            onClick={onManageFinancials} 
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-blue-50/80 p-2.5 rounded-xl text-blue-600">
+                <Wallet className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_finance_mgmt')}</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+          
+          <button 
+            onClick={onManageNameLists} 
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-emerald-50/80 p-2.5 rounded-xl text-emerald-600">
+                <FileText className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_list_mgmt')}</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+        </div>
       </div>
       )}
 
-      {/* Logout */}
+      {/* Security Banner */}
+      <div className="bg-white rounded-2xl shadow-sm p-3 mb-6 flex items-center justify-between hover:bg-gray-50/30 transition-colors cursor-pointer group">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            {/* Decorative background shapes for the shield */}
+            <div className="absolute -inset-2 bg-indigo-100 rounded-full opacity-50 filter blur-sm"></div>
+            <div className="absolute -left-1 -bottom-1 w-3 h-3 bg-indigo-200 rounded-full"></div>
+            <div className="absolute -right-2 top-0 w-2 h-2 bg-indigo-200 rounded-full"></div>
+            <div className="relative bg-gradient-to-br from-indigo-400 to-indigo-600 p-3 rounded-xl text-white shadow-sm z-10 transform group-hover:scale-105 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+          </div>
+          <div>
+            <h4 className="text-[15px] font-bold text-gray-900 leading-tight mb-0.5">{t('profile_security_title')}</h4>
+            <p className="text-[13px] text-gray-500">{t('profile_security_desc')}</p>
+          </div>
+        </div>
+        <div className="bg-indigo-50 p-1.5 rounded-lg text-indigo-600">
+          <ChevronRight className="w-4 h-4" />
+        </div>
+      </div>
+
+      {/* Others Section */}
+      <div className="mb-4">
+        <h4 className="text-[15px] font-bold text-gray-900 mb-2 pl-1">{t('profile_others')}</h4>
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
+          <button 
+            onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-indigo-50/80 p-2.5 rounded-xl text-indigo-600">
+                <Globe className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_change_lang')}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-gray-500">{language === 'km' ? t('lang_khmer') : t('lang_english')}</span>
+              <ChevronRight className="w-4 h-4 text-indigo-600" />
+            </div>
+          </button>
+          
+          <button className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none">
+            <div className="flex items-center space-x-3">
+              <div className="bg-purple-50/80 p-2.5 rounded-xl text-purple-600">
+                <Palette className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_change_theme')}</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+
+          <button 
+            onClick={() => setIsAboutModalOpen(true)}
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-sky-50/80 p-2.5 rounded-xl text-sky-600">
+                <Info className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800">{t('profile_about')}</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+        </div>
+      </div>
+
       <button 
-        onClick={onLogout} 
-        className="w-full flex items-center justify-center space-x-2 bg-red-50 text-red-600 py-3.5 rounded-xl border border-red-200 font-bold hover:bg-red-100 transition-colors focus:outline-none"
+        onClick={onLogout}
+        className="mt-6 w-full flex items-center justify-center space-x-2 p-4 rounded-2xl border border-red-100 bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors focus:outline-none"
       >
-         <LogOut className="w-5 h-5" />
-         <span className="text-[15px]">ចាកចេញពីគណនី</span>
+        <LogOut className="w-5 h-5" />
+        <span>{t('profile_logout')}</span>
       </button>
+
+      {/* About App Modal */}
+      <AnimatePresence>
+      {isAboutModalOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+            className="bg-white rounded-3xl w-full max-w-sm max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+          >
+            <div className="p-6 sm:p-8 flex flex-col items-center text-center overflow-y-auto">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4 flex-shrink-0">
+                <Info className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
+              </div>
+              <h3 className="font-bold text-xl text-gray-900 mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>វត្តស្នាយដួច</h3>
+              <p className="text-gray-500 text-sm mb-6 flex-shrink-0">{t('about_version')} 1.0.0</p>
+              
+              <div className="bg-gray-50 rounded-2xl p-4 w-full text-left space-y-3 mb-6 flex-shrink-0">
+                <div>
+                  <p className="text-[12px] text-gray-500 font-medium mb-1">{t('about_purpose')}</p>
+                  <p className="text-[14px] text-gray-800">{t('about_purpose_desc')}</p>
+                </div>
+                <div className="h-px bg-gray-200 w-full"></div>
+                <div>
+                  <p className="text-[12px] text-gray-500 font-medium mb-1">{t('about_dev')}</p>
+                  <p className="text-[14px] font-bold text-indigo-600">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                </div>
+                <div className="h-px bg-gray-200 w-full"></div>
+                <div>
+                  <p className="text-[12px] text-gray-500 font-medium mb-1">{t('about_tech')}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    <span className="text-[11px] font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">React</span>
+                    <span className="text-[11px] font-medium bg-teal-100 text-teal-700 px-2 py-0.5 rounded-md">Tailwind CSS</span>
+                    <span className="text-[11px] font-medium bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md">TypeScript</span>
+                    <span className="text-[11px] font-medium bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">Vite</span>
+                    <span className="text-[11px] font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-md">Supabase</span>
+                    <span className="text-[11px] font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md">Python/FastAPI</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsAboutModalOpen(false)}
+                className="w-full py-3.5 px-4 bg-gray-100 text-gray-800 rounded-2xl font-bold text-[15px] hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0"
+              >
+                {t('about_close')}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+      </AnimatePresence>
+
     </div>
   );
 }
