@@ -183,7 +183,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       transition={{ duration: 0.15 }}
                       className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
                     >
-                      {periods.map(p => (
+                      {periods.map((p, index) => {
+                        const isClosed = index !== 0; // Assume first period (latest) is active, rest are closed
+                        return (
                         <button
                           key={p.id}
                           onClick={() => {
@@ -192,14 +194,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           }}
                           className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedPeriod?.id === p.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700'}`}
                         >
-                          <span className="font-medium text-[15px] leading-relaxed pr-4 whitespace-pre-wrap">
-                            {p.name} ({p.date_range_text})
+                          <span className="font-medium text-[15px] leading-relaxed pr-2 whitespace-pre-wrap flex-1">
+                            {p.name} {p.date_range_text ? `(${p.date_range_text})` : ''}
                           </span>
-                          {selectedPeriod?.id === p.id && (
-                            <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                          )}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {isClosed ? (
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 whitespace-nowrap">
+                                បញ្ជីបានបិទ
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 whitespace-nowrap">
+                                កំពុងប្រតិបត្តិការ
+                              </span>
+                            )}
+                            {selectedPeriod?.id === p.id && (
+                              <Check className="w-5 h-5 text-orange-500" />
+                            )}
+                          </div>
                         </button>
-                      ))}
+                      )})}
                     </motion.div>
                   </>
                 )}

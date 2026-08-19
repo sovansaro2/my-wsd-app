@@ -266,11 +266,13 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                       if (p) setSelectedPeriod(p);
                     }}
                   >
-                    {periods.map(p => (
+                    {periods.map((p, index) => {
+                      const isClosed = index !== 0;
+                      return (
                       <option key={p.id} value={p.id}>
-                        {p.name} {p.date_range_text ? `(${p.date_range_text})` : ''}
+                        {p.name} {p.date_range_text ? `(${p.date_range_text})` : ''} - {isClosed ? 'បញ្ជីបានបិទ' : 'កំពុងប្រតិបត្តិការ'}
                       </option>
-                    ))}
+                    )})}
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-zinc-400" />
                 </div>

@@ -31,7 +31,8 @@ router.post('/avatar', requireAuth, upload.single('file'), async (req, res) => {
     // Update profile automatically
     await supabaseAdmin
       .from('profiles')
-      .upsert({ id: req.user!.id, email: req.user!.email, avatar_url: publicUrl });
+      .update({ avatar_url: publicUrl })
+      .eq('id', req.user!.id);
     
     res.json({ publicUrl });
   } catch (err: any) {
