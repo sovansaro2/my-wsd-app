@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
+
 import { ChevronDown, ArrowLeft, Plus, Edit2, Trash2, Loader2, X, FileText } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
 
@@ -66,13 +67,9 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
 
   const fetchPeriods = async () => {
     try {
-      const { data, error } = await supabase
-        .from('seil_periods')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false });
+      const data = await api.getSeilPeriods();
         
-      if (error) throw error;
+      
       
       if (data && data.length > 0) {
         setPeriods(data);
@@ -87,14 +84,9 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
 
   const fetchRecords = async (seilId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('financial_records')
-        .select('*')
-        .eq('seil_id', seilId)
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true });
+      const data = await api.getFinancialRecords(seilId);
         
-      if (error) throw error;
+      
       setRecords(data || []);
     } catch (e) {
       console.error('Error fetching records:', e);
@@ -137,16 +129,11 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
       };
 
       if (editingRecord) {
-        const { error } = await supabase
-          .from('financial_records')
-          .update(recordData)
-          .eq('id', editingRecord.id);
-        if (error) throw error;
+        await api.updateFinancialRecord(editingRecord.id, recordData);
+        
       } else {
-        const { error } = await supabase
-          .from('financial_records')
-          .insert([recordData]);
-        if (error) throw error;
+        await api.createFinancialRecord(recordData);
+        
       }
 
       setIsRecordModalOpen(false);
@@ -168,11 +155,8 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
     
     setIsDeleting(true);
     try {
-      const { error } = await supabase
-        .from('financial_records')
-        .delete()
-        .eq('id', recordToDelete);
-      if (error) throw error;
+      await api.deleteFinancialRecord(recordToDelete);
+      
       
       if (selectedPeriod) fetchRecords(selectedPeriod.id);
       setRecordToDelete(null);
@@ -206,17 +190,9 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
 
     setIsSavingSeil(true);
     try {
-      const { data, error } = await supabase
-        .from('seil_periods')
-        .insert([{
-          name: seilName,
-          date_range_text: seilDateRange || null,
-          previous_balance: parseFloat(seilPreviousBalance || '0')
-        }])
-        .select()
-        .single();
+      const data = await api.createSeilPeriod({ name: seilName, date_range_text: seilDateRange || null, previous_balance: parseFloat(seilPreviousBalance || '0') });
         
-      if (error) throw error;
+      
       
       setIsSeilModalOpen(false);
       await fetchPeriods();
@@ -543,3 +519,4 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
     </div>
   );
 }
+

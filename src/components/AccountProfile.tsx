@@ -1,17 +1,20 @@
+import React from 'react';
+
 import { useState, useEffect, useRef } from 'react';
 import { LogOut, Settings, Camera, UserCircle2, Loader2, Save, ChevronRight, ArrowLeft, FileText } from 'lucide-react';
 import { Wallet } from 'lucide-react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
+
 
 interface AccountProfileProps {
   userRole: 'admin' | 'user' | null;
   onLogout: () => void;
-  onManagePosts: () => void;
+  
   onManageFinancials?: () => void;
   onManageNameLists?: () => void;
 }
 
-export default function AccountProfile({ userRole, onLogout, onManagePosts, onManageFinancials, onManageNameLists }: AccountProfileProps) {
+export default function AccountProfile({ userRole, onLogout, onManageFinancials, onManageNameLists }: AccountProfileProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
@@ -35,36 +38,18 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
   const fetchProfile = async () => {
     setIsLoading(true);
     try {
-      const authUserStr = localStorage.getItem('authUser');
-      if (!authUserStr) return;
+      const profile = await api.getMe();
+      if (!profile) return;
       
-      const authUser = JSON.parse(authUserStr);
-      setUserId(authUser.id);
-      // Use full_name as fallback key if id is missing in schema
-      const lookupKey = authUser.id ? 'id' : 'full_name';
-      const lookupValue = authUser.id || authUser.full_name;
-      setUserKey(lookupValue);
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq(lookupKey, lookupValue)
-        .single();
-
-      if (error) throw error;
+      setUserId(profile.id);
+      setUserKey(profile.id);
       
-      if (data) {
-        setFullName(data.full_name || '');
-        setOriginalFullName(data.full_name || '');
-        setPhone(data.phone_number || '');
-        setPassword(data.password || '');
-        setAvatarUrl(data.avatar_url || '');
-        
-        // Update local storage to stay in sync
-        localStorage.setItem('authUser', JSON.stringify(data));
-      }
+      setFullName(profile.full_name || '');
+      setOriginalFullName(profile.full_name || '');
+      setPhone(profile.phone_number || '');
+      setAvatarUrl(profile.avatar_url || '');
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.log('Could not fetch profile');
     } finally {
       setIsLoading(false);
     }
@@ -72,51 +57,15 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !userKey) return;
+    if (!file || !userId) return;
 
     setIsUploading(true);
     setMessage(null);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userKey}_${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true });
-
-      if (uploadError) {
-        throw new Error('សូមប្រាកដថាអ្នកបានបង្កើត Storage Bucket ឈ្មោះ "avatars" នៅក្នុង Supabase។');
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      const newAvatarUrl = publicUrlData.publicUrl;
-      
-      const lookupKey = userId ? 'id' : 'full_name';
-
-      // Save to profile directly upon upload
-      const { data: updatedData, error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: newAvatarUrl })
-        .eq(lookupKey, userKey)
-        .select()
-        .single();
-        
-      if (updateError) {
-        console.error('Update Error:', updateError);
-        throw new Error('បរាជ័យក្នុងការរក្សាទុកទៅកាន់ Database។ សូមប្រាកដថា RLS Policy ត្រូវបានបើក។');
-      }
-      
-      setAvatarUrl(newAvatarUrl);
-      if (updatedData) {
-         localStorage.setItem('authUser', JSON.stringify(updatedData));
-      }
-      
+      const { publicUrl } = await api.uploadAvatar(file);
+      setAvatarUrl(publicUrl);
       setMessage({ type: 'success', text: 'បានប្តូររូប Profile ជោគជ័យ!' });
-      
     } catch (err: any) {
       console.error('Upload error:', err);
       setMessage({ type: 'error', text: err.message || 'មានបញ្ហាក្នុងការបញ្ចូលរូបភាព។' });
@@ -127,81 +76,31 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userKey) return;
+    if (!userId) return;
     
     setIsSaving(true);
     setMessage(null);
 
     try {
-      const lookupKey = userId ? 'id' : 'full_name';
+      const updates: any = {
+        full_name: fullName,
+        phone_number: phone,
+      };
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: fullName,
-          phone_number: phone,
-          password: password
-        })
-        .eq(lookupKey, userKey)
-        .select()
-        .single();
-
-      if (error) {
-         console.error('Save error details:', error);
-         throw error;
+      if (password && password.trim() !== '') {
+         updates.password = password;
       }
+      
+      await api.updateProfile(updates);
 
-      if (data) {
-        // If name changed, update posts author_name and comment authors to sync
-        if (fullName !== originalFullName && originalFullName) {
-          try {
-            await supabase.from('posts').update({ author_name: fullName }).eq('author_name', originalFullName);
-            
-            // Sync comments
-            const { data: allPosts } = await supabase.from('posts').select('id, comments');
-            if (allPosts) {
-              for (const post of allPosts) {
-                if (post.comments) {
-                  let parsedComments = [];
-                  try {
-                    if (typeof post.comments === 'string') {
-                      parsedComments = JSON.parse(post.comments);
-                    } else if (Array.isArray(post.comments)) {
-                      parsedComments = post.comments;
-                    }
-                  } catch (e) {}
-                  
-                  let hasChanges = false;
-                  const updatedComments = parsedComments.map((c: any) => {
-                    if (c.author === originalFullName) {
-                      hasChanges = true;
-                      return { ...c, author: fullName };
-                    }
-                    return c;
-                  });
-                  
-                  if (hasChanges) {
-                    await supabase.from('posts').update({ comments: updatedComments }).eq('id', post.id);
-                  }
-                }
-              }
-            }
-          } catch (e) {
-            console.error('Failed to sync post/comment author names', e);
-          }
-        }
+      setOriginalFullName(fullName);
+      setMessage({ type: 'success', text: 'រក្សាទុកទិន្នន័យជោគជ័យ!' });
+      setIsEditingView(false);
+      setPassword('');
 
-        localStorage.setItem('authUser', JSON.stringify(data));
-        // Update userKey if full_name was changed and we use it as key
-        if (!userId && data.full_name) {
-           setUserKey(data.full_name);
-        }
-        setOriginalFullName(data.full_name || '');
-        setMessage({ type: 'success', text: 'ព័ត៌មានត្រូវបានរក្សាទុកដោយជោគជ័យ!' });
-      }
     } catch (err: any) {
-      console.error('Update error:', err);
-      setMessage({ type: 'error', text: 'បរាជ័យក្នុងការរក្សាទុកព័ត៌មាន។ សូមប្រាកដថា RLS Policy ត្រូវបានបើក។' });
+      console.error('Save error:', err);
+      setMessage({ type: 'error', text: err.message || 'មានបញ្ហាក្នុងការរក្សាទុក។' });
     } finally {
       setIsSaving(false);
     }
@@ -300,8 +199,8 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
                   <label className="mb-1.5 block text-sm font-medium text-gray-700">ពាក្យសម្ងាត់</label>
                   <input
                     type="password"
-                    required
                     value={password}
+                    placeholder="ទុកទទេបើមិនចង់ដូរពាក្យសម្ងាត់ថ្មី"
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
@@ -374,18 +273,7 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
       <div className="mb-8">
          <h4 className="text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-3 ml-2">ការកំណត់</h4>
          <div className="bg-white rounded-3xl border border-gray-100/80 shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
-            <button 
-              onClick={onManagePosts} 
-              className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-zinc-50 transition-colors focus:outline-none group"
-            >
-               <div className="flex items-center space-x-3">
-                  <div className="bg-purple-50 p-2 rounded-lg text-purple-600">
-                    <Settings className="w-5 h-5"/>
-                  </div>
-                  <span className="text-[15px] font-bold text-gray-700">គ្រប់គ្រងការបង្ហោះ</span>
-               </div>
-               <ChevronRight className="w-5 h-5 text-gray-400" />
-            </button>
+            
             <button 
               onClick={onManageFinancials} 
               className="w-full flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors focus:outline-none"
@@ -425,3 +313,4 @@ export default function AccountProfile({ userRole, onLogout, onManagePosts, onMa
     </div>
   );
 }
+

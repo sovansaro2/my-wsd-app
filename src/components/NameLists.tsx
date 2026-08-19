@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
+
 import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -49,13 +50,9 @@ export default function NameLists() {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('name_list_categories')
-        .select('*')
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true });
+      const data = await api.getNameListCategories();
         
-      if (error) throw error;
+      
       
       if (data && data.length > 0) {
         setCategories(data);
@@ -70,14 +67,9 @@ export default function NameLists() {
 
   const fetchRecords = async (categoryId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('name_list_records')
-        .select('*')
-        .eq('category_id', categoryId)
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true });
+      const data = await api.getNameListRecords(categoryId);
         
-      if (error) throw error;
+      
       setRecords(data || []);
     } catch (e) {
       console.error('Error fetching records:', e);
@@ -120,16 +112,11 @@ export default function NameLists() {
       };
 
       if (editingRecord) {
-        const { error } = await supabase
-          .from('name_list_records')
-          .update(recordData)
-          .eq('id', editingRecord.id);
-        if (error) throw error;
+        await api.updateNameListRecord(editingRecord.id, recordData);
+        
       } else {
-        const { error } = await supabase
-          .from('name_list_records')
-          .insert([recordData]);
-        if (error) throw error;
+        await api.createNameListRecord(recordData);
+        
       }
 
       await fetchRecords(selectedCategory.id);
@@ -146,11 +133,8 @@ export default function NameLists() {
     if (!window.confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) return;
     
     try {
-      const { error } = await supabase
-        .from('name_list_records')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
+      await api.deleteNameListRecord(id);
+      
       if (selectedCategory) fetchRecords(selectedCategory.id);
     } catch (error) {
       console.error('Error deleting record:', error);
@@ -168,51 +152,42 @@ export default function NameLists() {
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang relative">
-      <div className="bg-white p-4 sm:p-6 shadow-sm border-b border-gray-100 z-10 sticky top-0">
-        <div className="flex justify-between items-center mb-4 max-w-3xl mx-auto w-full">
-          <h2 className="text-xl font-bold text-zinc-900 tracking-tight">បញ្ជីផ្សេងៗ</h2>
-          {selectedCategory && (
-            <button 
-              onClick={openAddModal}
-              className="flex items-center gap-1 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>បន្ថែម</span>
-            </button>
+      <div className="bg-white px-4 py-5 shadow-sm border-b border-gray-100 z-10 sticky top-0">
+        <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">បញ្ជីឈ្មោះ</h2>
+          
+          {/* Category Selector */}
+          {categories.length > 0 && (
+            <div className="relative">
+              <select 
+                className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all truncate pr-10"
+                value={selectedCategory?.id || ''}
+                onChange={(e) => {
+                  const cat = categories.find(c => c.id === e.target.value);
+                  if (cat) setSelectedCategory(cat);
+                }}
+              >
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id} className="text-gray-900 bg-white">
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-gray-400" />
+            </div>
           )}
-        </div>
-        
-        {/* Category Selector */}
-        {categories.length > 0 && (
-          <div className="relative mb-3 max-w-3xl mx-auto">
-            <select 
-              className="w-full appearance-none bg-zinc-50 border border-gray-200/60 text-zinc-900 py-3.5 px-4 rounded-xl font-semibold text-[15px] outline-none focus:ring-2 focus:ring-zinc-900/10 hover:bg-zinc-100 transition-colors truncate pr-10"
-              value={selectedCategory?.id || ''}
-              onChange={(e) => {
-                const cat = categories.find(c => c.id === e.target.value);
-                if (cat) setSelectedCategory(cat);
-              }}
-            >
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id} className="text-zinc-900 bg-white">
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-zinc-400" />
-          </div>
-        )}
 
-        {/* Search */}
-        <div className="relative max-w-3xl mx-auto">
-          <input
-            type="text"
-            placeholder="ស្វែងរកឈ្មោះ ឬទីកន្លែង..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-50 border border-gray-200/60 text-zinc-900 placeholder-zinc-400 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 transition-colors text-[15px]"
-          />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          {/* Search */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="ស្វែងរកឈ្មោះ ឬទីកន្លែង..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
+            />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          </div>
         </div>
       </div>
 
@@ -258,7 +233,7 @@ export default function NameLists() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                   key={record.id} 
-                  className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/80 relative flex items-center justify-between"
+                  className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] border border-gray-100 relative flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >                  
                   <div className="flex-1 min-w-0 pr-3">
                     <div className="flex items-start gap-3">
@@ -351,17 +326,27 @@ export default function NameLists() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* FAB (Floating Action Button) */}
+      {selectedCategory && (
+        <button
+          onClick={openAddModal}
+          className="fixed bottom-24 right-4 sm:right-auto sm:left-[50%] sm:ml-[160px] bg-orange-500 text-white p-4 rounded-full shadow-lg shadow-orange-500/30 hover:bg-orange-600 active:scale-95 transition-all z-40 flex items-center justify-center focus:outline-none"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Add/Edit Modal (Bottom Sheet on Mobile) */}
       {isRecordModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-blue-800 p-4 flex justify-between items-center text-white">
-              <h3 className="font-bold text-lg">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300">
+            <div className="bg-white p-5 flex justify-between items-center border-b border-gray-100">
+              <h3 className="font-bold text-xl text-gray-900">
                 {editingRecord ? 'កែប្រែទិន្នន័យ' : 'បន្ថែមទិន្នន័យថ្មី'}
               </h3>
               <button 
                 onClick={() => setIsRecordModalOpen(false)}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full transition-colors focus:outline-none"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -421,17 +406,17 @@ export default function NameLists() {
               </div>
             </div>
             
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex gap-3">
+            <div className="p-5 border-t border-gray-100 bg-gray-50 flex gap-3 pb-10 sm:pb-5">
               <button
                 onClick={() => setIsRecordModalOpen(false)}
-                className="flex-1 py-3 px-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-colors"
+                className="flex-1 py-3.5 px-4 bg-white border border-gray-200 text-gray-700 rounded-2xl font-bold text-[15px] hover:bg-gray-50 transition-colors focus:outline-none"
               >
                 បោះបង់
               </button>
               <button
                 onClick={handleSaveRecord}
                 disabled={isSaving || !name.trim() || !amount.trim()}
-                className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 px-4 bg-orange-500 text-white rounded-2xl font-bold text-[15px] hover:bg-orange-600 shadow-md shadow-orange-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none"
               >
                 {isSaving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -446,3 +431,4 @@ export default function NameLists() {
     </div>
   );
 }
+

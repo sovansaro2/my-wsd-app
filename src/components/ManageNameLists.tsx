@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
 import { ArrowLeft, Plus, Edit2, Trash2, Loader2, X, Check } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
 
@@ -30,13 +30,9 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('name_list_categories')
-        .select('*')
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true });
+      const data = await api.getNameListCategories();
 
-      if (error) throw error;
+      
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -59,6 +55,7 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
     setIsModalOpen(true);
   };
 
+
   const handleSaveCategory = async () => {
     if (!name.trim()) return;
     setIsSaving(true);
@@ -69,48 +66,29 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
         description: description.trim() || null
       };
 
-      if (editingCategory) {
-        const { error } = await supabase
-          .from('name_list_categories')
-          .update(catData)
-          .eq('id', editingCategory.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('name_list_categories')
-          .insert([catData]);
-        if (error) throw error;
+      if (!editingCategory) {
+        await api.createNameListCategory(catData);
       }
-
+      
       await fetchCategories();
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving category:', error);
-      alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ');
     } finally {
       setIsSaving(false);
     }
   };
-
+  
   const handleDeleteCategory = async (id: string) => {
-    if (!window.confirm('តើអ្នកពិតជាចង់លុបបញ្ជីនេះមែនទេ? រាល់ឈ្មោះក្នុងបញ្ជីនេះនឹងត្រូវលុបចោលទាំងអស់។')) return;
-    
+    if (!window.confirm('តើអ្នកពិតជាចង់លុបបញ្ជីនេះមែនទេ? ទិន្នន័យទាំងអស់ក្នុងបញ្ជីនេះនឹងត្រូវលុបចោល!')) return;
     try {
-      // It deletes records first due to cascade or needs manual deletion? Let's assume cascade is set or we can just try delete.
-      const { error } = await supabase
-        .from('name_list_categories')
-        .delete()
-        .eq('id', id);
-        
-      if (error) throw error;
+      await api.deleteNameListCategory(id);
       await fetchCategories();
-    } catch (error) {
-      console.error('Error deleting category:', error);
-      alert('មានបញ្ហាក្នុងការលុបទិន្នន័យ។ សូមប្រាកដថាអ្នកបានលុបឈ្មោះទាំងអស់ក្នុងបញ្ជីនេះសិនមុននឹងលុបបញ្ជីនេះ។');
+    } catch (err) {
+      alert('Error deleting');
     }
   };
-
-  return (
+return (
     <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang relative">
       <div className="bg-white text-zinc-900 p-4 sm:p-6 shadow-sm border-b border-gray-100 z-10 sticky top-0 flex items-center justify-between">
         <div className="flex items-center">
@@ -242,3 +220,4 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
     </div>
   );
 }
+

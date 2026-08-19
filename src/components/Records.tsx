@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
+
 import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -40,14 +41,9 @@ export default function Records() {
 
   const fetchPeriods = async () => {
     try {
-      const { data, error } = await supabase
-        .from('seil_periods')
-        .select('*')
-        .order('name', { ascending: true })
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false });
+      const data = await api.getSeilPeriods();
         
-      if (error) throw error;
+      
       
       if (data && data.length > 0) {
         setPeriods(data);
@@ -62,15 +58,9 @@ export default function Records() {
 
   const fetchRecords = async (seilId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('financial_records')
-        .select('*')
-        .eq('seil_id', seilId)
-        .order('record_date', { ascending: true })
-        .order('created_at', { ascending: true })
-        .order('id', { ascending: true });
+      const data = await api.getFinancialRecords(seilId);
         
-      if (error) throw error;
+      
       setRecords(data || []);
     } catch (e) {
       console.error('Error fetching records:', e);
@@ -116,40 +106,44 @@ export default function Records() {
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang">
       {/* Header & Selector */}
-      <div className="bg-white p-4 sm:p-6 border-b border-gray-100 relative z-10 shadow-sm">
-        <div className="relative max-w-3xl mx-auto">
-          <select 
-            className="w-full appearance-none bg-zinc-50 border border-gray-200/60 text-zinc-900 py-3.5 px-4 rounded-xl font-semibold text-[15px] outline-none focus:ring-2 focus:ring-zinc-900/10 hover:bg-zinc-100 transition-colors"
-            value={selectedPeriod?.id || ''}
-            onChange={(e) => {
-              const p = periods.find(x => x.id === e.target.value);
-              if (p) setSelectedPeriod(p);
-            }}
-          >
-            {periods.map(p => (
-              <option key={p.id} value={p.id} className="text-zinc-900 bg-white">
-                {p.name} ({p.date_range_text})
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-zinc-400" />
-        </div>
+      <div className="bg-white px-4 py-5 border-b border-gray-100 relative z-10 shadow-sm">
+        <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">ចំណូល-ចំណាយ</h2>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all truncate pr-10"
+              value={selectedPeriod?.id || ''}
+              onChange={(e) => {
+                const p = periods.find(x => x.id === e.target.value);
+                if (p) setSelectedPeriod(p);
+              }}
+            >
+              {periods.map(p => (
+                <option key={p.id} value={p.id} className="text-gray-900 bg-white">
+                  {p.name} ({p.date_range_text})
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-gray-400" />
+          </div>
 
         {/* Summary Dashboard */}
-        <div className="grid grid-cols-2 gap-3 mt-4 max-w-3xl mx-auto">
-          <div className="bg-zinc-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-zinc-500 text-[11px] uppercase tracking-wider mb-1 font-semibold">បច្ច័យនៅសល់ពីមុន</p>
-            <p className="text-xl font-bold text-zinc-900">{formatCurrency(previousBalance)}</p>
+        <div className="grid grid-cols-2 gap-3 mt-2 max-w-3xl mx-auto">
+          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+            <p className="text-gray-500 text-[11px] uppercase tracking-wider mb-1 font-semibold">បច្ច័យនៅសល់ពីមុន</p>
+            <p className="text-xl font-bold text-gray-900">{formatCurrency(previousBalance)}</p>
           </div>
-          <div className="bg-amber-500 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-3 opacity-10">
-              <Wallet className="w-12 h-12 text-white" />
+          <div className="bg-orange-500 rounded-2xl p-4 shadow-md shadow-orange-500/20 relative overflow-hidden">
+            <div className="absolute -top-2 -right-2 p-3 opacity-10">
+              <Wallet className="w-16 h-16 text-white" />
             </div>
-            <p className="text-amber-950/80 text-[11px] uppercase tracking-wider mb-1 font-semibold relative z-10">នៅសល់ជាក់ស្តែង</p>
+            <p className="text-orange-100 text-[11px] uppercase tracking-wider mb-1 font-semibold relative z-10">នៅសល់ជាក់ស្តែង</p>
             <p className="text-xl font-bold text-white relative z-10">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
+        </div>
       </div>
+
 
       {/* Tabs */}
       <div className="flex p-4 gap-2 max-w-3xl mx-auto w-full">
@@ -190,7 +184,7 @@ export default function Records() {
               className="space-y-2"
             >
               {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
-                <div key={record.id} className="bg-white rounded-2xl p-4 border border-gray-100/80 shadow-sm flex flex-col relative">
+                <div key={record.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] flex flex-col relative">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2.5">
                       <span className="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-100 text-[11px] font-semibold text-zinc-500">
@@ -226,3 +220,4 @@ export default function Records() {
     </div>
   );
 }
+

@@ -1,11 +1,14 @@
+import React from 'react';
 import { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { api } from '../lib/apiClient';
 
 export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | 'user') => void }) {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -18,35 +21,22 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     
     try {
       if (isLogin) {
-        // Login Flow - Direct Supabase API
-        const { data, error: queryError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('full_name', fullName)
-          .eq('password', password)
-          .single();
-
-        if (queryError || !data) {
-          setError('ឈ្មោះគណនី ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ');
-          setIsLoading(false);
-          return;
-        }
-
-        // Save the full user object (including role) to localStorage
-        localStorage.setItem('authUser', JSON.stringify(data));
-        onLogin(data.role as 'admin' | 'user');
+        // Login Flow - Custom Backend
+        const data = await api.login(email, password);
+        localStorage.setItem('access_token', data.access_token);
+        onLogin((data.user?.role) || 'user');
       } else {
-        // Sign Up Flow - Temporarily mocked as backend signup endpoint is pending
-        setTimeout(() => {
-          setSuccess('បង្កើតគណនីបានជោគជ័យ! សូមចូលគណនី។');
-          setIsLogin(true);
-          setPhone('');
-          setPassword('');
-          setIsLoading(false);
-        }, 800);
+        // Sign Up Flow - Custom Backend
+        await api.signup(email, password, fullName, phone);
+        setSuccess('បង្កើតគណនីបានជោគជ័យ! លោកអ្នកអាចចូលគណនីបានហើយ។');
+        setIsLogin(true);
+        setPhone('');
+        setFullName('');
+        setPassword('');
+        setIsLoading(false);
       }
     } catch (err) {
-      setError('មានបញ្ហាបច្ចេកទេស សូមព្យាយាមម្តងទៀត។');
+      setError(err instanceof Error ? err.message : 'មានបញ្ហាបច្ចេកទេស សូមព្យាយាមម្តងទៀត។');
       setIsLoading(false);
     }
   };
@@ -84,30 +74,43 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">
-              {isLogin ? 'ឈ្មោះគណនី' : 'ឈ្មោះពេញ'}
+              អ៉ីមែល (Email)
             </label>
             <input
-              type="text"
+              type="email"
               required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-              placeholder={isLogin ? 'បញ្ចូលឈ្មោះគណនី' : 'បញ្ចូលឈ្មោះពេញ'}
+              placeholder="បញ្ចូលអ៉ីមែល"
             />
           </div>
           
           {!isLogin && (
-            <div>
-              <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">លេខទូរស័ព្ទ</label>
-              <input
-                type="tel"
-                required={!isLogin}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-                placeholder="បញ្ចូលលេខទូរស័ព្ទ"
-              />
-            </div>
+            <>
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">ឈ្មោះពេញ</label>
+                <input
+                  type="text"
+                  required={!isLogin}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
+                  placeholder="បញ្ចូលឈ្មោះពេញ"
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">លេខទូរស័ព្ទ</label>
+                <input
+                  type="tel"
+                  required={!isLogin}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
+                  placeholder="បញ្ចូលលេខទូរស័ព្ទ"
+                />
+              </div>
+            </>
           )}
           
           <div>

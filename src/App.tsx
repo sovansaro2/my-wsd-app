@@ -1,53 +1,55 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Plus, Settings } from 'lucide-react';
-import { MdHome, MdDashboard, MdPerson } from 'react-icons/md';
-import { TbDatabaseDollar } from 'react-icons/tb';
-import { CiViewList } from 'react-icons/ci';
+import { LogOut, Plus, Settings, Home, List, CircleDollarSign, User } from 'lucide-react';
+
+
+
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import AuthComponent from './components/Auth';
-import FeedComponent from './components/Feed';
-import CreatePostModal from './components/CreatePostModal';
-import ManagePosts from './components/ManagePosts';
+import Dashboard from './components/Dashboard';
+
 import AccountProfile from './components/AccountProfile';
 import ManageNameLists from './components/ManageNameLists';
 import ManageFinancialRecords from './components/ManageFinancialRecords';
-
 import RecordsComponent from './components/Records';
-
 import NameLists from './components/NameLists';
+import { api } from './lib/apiClient';
 
-type Tab = 'home' | 'records' | 'categories' | 'account' | 'manage_posts' | 'manage_financials' | 'manage_name_lists';
+type Tab = 'home' | 'records' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [userRole, setUserRole] = useState<Role>(null);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('authUser');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        if (userData && userData.role) {
-          setUserRole(userData.role);
-        }
-      } catch (e) {
-        console.error("Failed to parse auth user", e);
-      }
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      fetchUserRole();
+    } else {
+      setIsInitializing(false);
     }
-    setIsInitializing(false);
   }, []);
 
-  const handleLogin = (role: Role) => {
-    setUserRole(role);
+  const fetchUserRole = async () => {
+    try {
+      const data = await api.getMe();
+      setUserRole(data?.role as Role || 'user');
+    } catch (err) {
+      console.log('Session expired or unauthorized');
+      localStorage.removeItem('access_token'); // Token might be expired
+      setUserRole(null);
+    } finally {
+      setIsInitializing(false);
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    localStorage.removeItem('access_token');
     setUserRole(null);
-    localStorage.removeItem('authUser');
+    setActiveTab('home');
   };
 
   if (isInitializing) {
@@ -55,69 +57,22 @@ export default function App() {
   }
 
   if (!userRole) {
-    return <AuthComponent onLogin={handleLogin} />;
+    return <AuthComponent onLogin={(role) => setUserRole(role)} />;
   }
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return <FeedComponent />;
-      case 'records':
-        return <RecordsComponent />;
-      case 'categories':
-        return <NameLists />;
-      case 'manage_posts':
-        return <ManagePosts onBack={() => setActiveTab('account')} />;
-      case 'manage_financials':
-        return <ManageFinancialRecords onBack={() => setActiveTab('account')} />;
-      case 'manage_name_lists':
-        return <ManageNameLists onBack={() => setActiveTab('account')} />;
-      case 'account':
-        return (
-          <AccountProfile 
-            userRole={userRole} 
-            onLogout={handleLogout} 
-            onManagePosts={() => setActiveTab('manage_posts')} 
-            onManageFinancials={() => setActiveTab('manage_financials')}
-            onManageNameLists={() => setActiveTab('manage_name_lists')}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
-    <div 
-      className="flex h-screen w-full flex-col bg-gray-50 text-gray-900 font-sans"
-      style={{ fontFamily: 'Battambang, sans-serif' }}
-    >
-      <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Koulen&display=swap');`}
-      </style>
+    <div className="flex flex-col min-h-screen bg-gray-50 pb-20 pt-16">
       {/* Top Navbar */}
-      <header className="flex h-16 shrink-0 items-center justify-between bg-blue-800 px-4 sm:px-6 text-white shadow-md z-10">
-        <h1 
-          className="text-3xl tracking-wider pt-1"
-          style={{ fontFamily: 'Koulen, cursive' }}
-        >
-          វត្តស្នាយដួច
-        </h1>
-        <div className="flex items-center">
-          {userRole === 'admin' && (
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center space-x-1 rounded-full bg-blue-700/50 px-3 py-1.5 text-xs font-medium border border-blue-600/50 shadow-inner hover:bg-blue-600 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              <span>បង្ហោះ</span>
-            </button>
-          )}
-        </div>
+      <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500/95 backdrop-blur-md shadow-sm border-b border-orange-600/20 z-50 px-4 flex items-center justify-between">
+        <h1 className="text-white tracking-wide text-2xl pt-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>វត្តស្នាយដួច</h1>
+        <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-orange-500"></span>
+        </button>
       </header>
 
-      {/* Content Area */}
-      <main className="flex-1 overflow-y-auto relative">
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-lg mx-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -127,56 +82,69 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
-            {renderContent()}
+            {activeTab === 'home' && <Dashboard />}
+            {activeTab === 'records' && <RecordsComponent />}
+            {activeTab === 'categories' && <NameLists />}
+            {activeTab === 'account' && (
+              <AccountProfile
+    userRole={userRole}
+    onLogout={handleLogout}
+    
+    onManageFinancials={() => setActiveTab('manage_financials')}
+    onManageNameLists={() => setActiveTab('manage_name_lists')}
+  />
+            )}
+            
+            {/* Admin Management Views */}
+            {activeTab === 'manage_financials' && userRole === 'admin' && (
+              <ManageFinancialRecords onBack={() => setActiveTab('account')} />
+            )}
+            {activeTab === 'manage_name_lists' && userRole === 'admin' && (
+              <ManageNameLists onBack={() => setActiveTab('account')} />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
 
-      {/* Bottom Navigation Bar */}
-      <nav className="flex h-16 shrink-0 items-center justify-around border-t border-gray-200 bg-white pb-safe z-10 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
-        <button
-          onClick={() => setActiveTab('home')}
-          className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'home' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
-          }`}
-        >
-          <MdHome className="h-6 w-6" />
-          <span className="text-[10px] font-bold whitespace-nowrap">ទំព័រដើម</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('records')}
-          className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'records' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
-          }`}
-        >
-          <TbDatabaseDollar className="h-6 w-6" />
-          <span className="text-[10px] font-bold whitespace-nowrap">ចំណូលចំណាយ</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('categories')}
-          className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
-          }`}
-        >
-          <CiViewList className="h-6 w-6" />
-          <span className="text-[10px] font-bold whitespace-nowrap">បញ្ជីផ្សេងៗ</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('account')}
-          className={`flex h-full w-full flex-col items-center justify-center space-y-1 transition-colors ${
-            activeTab === 'account' ? 'text-orange-500' : 'text-gray-400 hover:text-gray-900'
-          }`}
-        >
-          <MdPerson className="h-6 w-6" />
-          <span className="text-[10px] font-bold whitespace-nowrap">គណនី</span>
-        </button>
-      </nav>
+      {/* Create Post Modal */}
+      
 
-      {/* Modals */}
-      <CreatePostModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-      />
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 pb-safe z-50">
+        <div className="flex justify-between items-center max-w-lg mx-auto">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'home' ? 'text-orange-500' : 'text-gray-400'}`}
+          >
+            <Home className="h-6 w-6" />
+            <span className="text-[10px] font-medium font-battambang">ទំព័រដើម</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('records')}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'records' ? 'text-orange-500' : 'text-gray-400'}`}
+          >
+            <CircleDollarSign className="h-6 w-6" />
+            <span className="text-[10px] font-medium font-battambang">ចំណូល-ចំណាយ</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400'}`}
+          >
+            <List className="h-6 w-6 stroke-[1]" />
+            <span className="text-[10px] font-medium font-battambang">បញ្ជីឈ្មោះ</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('account')}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500' : 'text-gray-400'}`}
+          >
+            <User className="h-6 w-6" />
+            <span className="text-[10px] font-medium font-battambang">គណនី</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
