@@ -6,8 +6,20 @@ const router = Router();
 
 // GET /api/profiles/me
 router.get('/me', requireAuth, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('profiles').select('id, email, full_name, phone_number, role, avatar_url, created_at').eq('id', req.user!.id).single();
+  const { data, error } = await supabaseAdmin.from('profiles').select('id, email, full_name, phone_number, role, avatar_url, created_at').eq('id', req.user!.id).maybeSingle();
   if (error) return res.status(400).json({ detail: error.message });
+  
+  if (!data) {
+    return res.json({
+      id: req.user!.id,
+      email: req.user!.email,
+      full_name: req.user!.user_metadata?.full_name || '',
+      phone_number: req.user!.user_metadata?.phone_number || '',
+      role: req.user!.role || 'user',
+      avatar_url: null
+    });
+  }
+  
   res.json(data);
 });
 
@@ -24,11 +36,10 @@ router.put('/me', requireAuth, async (req, res) => {
     delete updates.password;
   }
 
-  // Update profile
+  // Update or insert profile
   const { data, error } = await supabaseAdmin
     .from('profiles')
-    .update(updates)
-    .eq('id', req.user!.id)
+    .upsert({ id: req.user!.id, email: req.user!.email, ...updates })
     .select('id, email, full_name, phone_number, role, avatar_url, created_at')
     .single();
 

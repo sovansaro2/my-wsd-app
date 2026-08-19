@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -28,6 +28,7 @@ export default function NameLists() {
   const [records, setRecords] = useState<NameRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Modals state
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
@@ -162,21 +163,47 @@ export default function NameLists() {
             {/* Category Selector */}
             {categories.length > 0 && (
               <div className="relative flex-1">
-                <select 
-                  className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all truncate pr-10"
-                  value={selectedCategory?.id || ''}
-                  onChange={(e) => {
-                    const cat = categories.find(c => c.id === e.target.value);
-                    if (cat) setSelectedCategory(cat);
-                  }}
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full text-left bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
                 >
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id} className="text-gray-900 bg-white">
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none w-5 h-5 text-gray-400" />
+                  <span className="truncate pr-2">{selectedCategory?.name || 'ជ្រើសរើសបញ្ជី...'}</span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setIsDropdownOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
+                      >
+                        {categories.map(cat => (
+                          <button
+                            key={cat.id}
+                            onClick={() => {
+                              setSelectedCategory(cat);
+                              setIsDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedCategory?.id === cat.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700'}`}
+                          >
+                            <span className="font-medium text-[15px] leading-relaxed pr-4 whitespace-pre-wrap">{cat.name}</span>
+                            {selectedCategory?.id === cat.id && (
+                              <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                            )}
+                          </button>
+                        ))}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
             )}
             
