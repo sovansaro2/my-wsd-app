@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // ប្រើប្រាស់ VITE_API_BASE_URL នៅពេល Deploy ទៅ Netlify ដាច់ដោយឡែកពី Backend
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''; 
 
@@ -7,6 +9,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },

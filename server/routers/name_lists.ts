@@ -18,6 +18,7 @@ router.post('/categories', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.put('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
+  console.log('Update category called:', req.params.id, req.body);
   const { data, error } = await supabaseAdmin.from('name_list_categories').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   res.json(data ? data[0] : null);

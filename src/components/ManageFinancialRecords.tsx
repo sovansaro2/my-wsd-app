@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
-
 import { ChevronDown, ArrowLeft, Plus, Edit2, Trash2, Loader2, X, FileText } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SeilPeriod {
   id: string;
@@ -333,9 +333,21 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
       )}
 
       {/* Record Form Modal */}
+      <AnimatePresence>
       {isRecordModalOpen && (
-        <div className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in slide-in-from-bottom-full sm:zoom-in-95 duration-200">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
+        >
+          <motion.div 
+            initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+            className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+          >
             <div className="flex justify-between items-center p-5 border-b border-gray-100/60">
               <h3 className="font-bold text-lg text-zinc-900">{editingRecord ? 'កែប្រែទិន្នន័យ' : 'បន្ថែមទិន្នន័យថ្មី'}</h3>
               <button onClick={() => setIsRecordModalOpen(false)} className="p-2 rounded-full hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 transition-colors">
@@ -407,25 +419,37 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                   />
                 </div>
               </div>
-
-              <div className="pt-2 pb-8 sm:pb-2">
+              <div className="pt-2">
                 <button 
                   type="submit" 
                   disabled={isSavingRecord}
-                  className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3.5 rounded-2xl transition-all flex items-center justify-center disabled:opacity-70 active:scale-[0.98] shadow-sm text-[15px]"
+                  className="w-full py-4 bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm text-[15px]"
                 >
-                  {isSavingRecord ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកទិន្នន័យ'}
+                  {isSavingRecord ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុក'}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Seil Form Modal */}
+      <AnimatePresence>
       {isSeilModalOpen && (
-        <div className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in slide-in-from-bottom-full sm:zoom-in-95 duration-200">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
+        >
+          <motion.div 
+            initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+            className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+          >
             <div className="flex justify-between items-center p-5 border-b border-gray-100/60">
               <h3 className="font-bold text-lg text-zinc-900">បង្កើតបញ្ជីសីលថ្មី</h3>
               <button onClick={() => setIsSeilModalOpen(false)} className="p-2 rounded-full hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 transition-colors">
@@ -445,7 +469,6 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                   className="w-full bg-zinc-50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
                 />
               </div>
-
               <div>
                 <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">រយៈពេលសីល</label>
                 <input 
@@ -456,7 +479,6 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                   className="w-full bg-zinc-50 border border-gray-200/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
                 />
               </div>
-
               <div>
                 <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">ប្រាក់នៅសល់ពីមុន (រៀល)</label>
                 <input 
@@ -468,7 +490,6 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 />
                 <p className="text-[11px] text-zinc-400 mt-2 font-medium">*ប្រាក់ដើមនឹងទាញយកស្វ័យប្រវត្តិពីសីលមុន បើសិនជាមាន</p>
               </div>
-
               <div className="pt-2 pb-8 sm:pb-2">
                 <button 
                   type="submit" 
@@ -479,24 +500,44 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Error Message Toast */}
+      <AnimatePresence>
       {errorMessage && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-rose-600 text-white px-5 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center gap-3 text-[14px] font-semibold animate-in slide-in-from-top-4">
+        <motion.div 
+          initial={{ y: -50, opacity: 0, x: "-50%" }}
+          animate={{ y: 0, opacity: 1, x: "-50%" }}
+          exit={{ y: -50, opacity: 0, x: "-50%" }}
+          className="fixed top-4 left-1/2 z-[200] bg-rose-600 text-white px-5 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center gap-3 text-[14px] font-semibold"
+        >
           <span>{errorMessage}</span>
           <button onClick={() => setErrorMessage('')} className="p-1.5 hover:bg-rose-700 rounded-full transition-colors">
             <X className="w-4 h-4" />
           </button>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
+      <AnimatePresence>
       {recordToDelete && (
-        <div className="fixed inset-0 z-[150] bg-zinc-900/40 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[150] bg-zinc-900/40 backdrop-blur-md flex items-center justify-center p-4"
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", bounce: 0.25, duration: 0.3 }}
+            className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl"
+          >
             <h3 className="text-[18px] font-bold text-zinc-900 mb-2.5">បញ្ជាក់ការលុប</h3>
             <p className="text-[15px] text-zinc-500 mb-8 leading-relaxed">តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ? ទិន្នន័យដែលលុបហើយមិនអាចយកមកវិញបានទេ។</p>
             <div className="flex gap-3">
@@ -515,10 +556,10 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'លុប'}
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }
-

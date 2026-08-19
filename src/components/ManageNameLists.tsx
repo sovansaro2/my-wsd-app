@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 import { ArrowLeft, Plus, Edit2, Trash2, Loader2, X, Check } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ListCategory {
   id: string;
@@ -74,8 +75,9 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
       
       await fetchCategories();
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving category:', error);
+      alert(`Error: ${error.message || error}`);
     } finally {
       setIsSaving(false);
     }
@@ -154,71 +156,84 @@ return (
       )}
 
       {/* Add/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-zinc-900/40 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in slide-in-from-bottom-full sm:zoom-in-95 duration-200">
-            <div className="p-5 flex justify-between items-center border-b border-gray-100/60">
-              <h3 className="font-bold text-lg text-zinc-900">
-                {editingCategory ? 'កែប្រែបញ្ជី' : 'បន្ថែមបញ្ជីថ្មី'}
-              </h3>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-5 space-y-4">
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">
-                  ឈ្មោះបញ្ជី
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-200/60 bg-zinc-50 rounded-2xl px-4 py-3 text-zinc-900 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 focus:border-zinc-400 focus:bg-white transition-all text-[15px]"
-                  placeholder="ឧ. បញ្ជីឈ្មោះបុណ្យផ្កា..."
-                />
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-zinc-900/40 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+              className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+            >
+              <div className="p-5 flex justify-between items-center border-b border-gray-100/60">
+                <h3 className="font-bold text-lg text-zinc-900">
+                  {editingCategory ? 'កែប្រែបញ្ជី' : 'បន្ថែមបញ្ជីថ្មី'}
+                </h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
               
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">
-                  ចំណាំ (កាលបរិច្ឆេទ)
-                </label>
-                <input
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-200/60 bg-zinc-50 rounded-2xl px-4 py-3 text-zinc-900 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 focus:border-zinc-400 focus:bg-white transition-all text-[15px]"
-                  placeholder="ឧ. ០១ មករា ២០២៤"
-                />
+              <div className="p-5 space-y-4">
+                <div>
+                  <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">
+                    ឈ្មោះបញ្ជី
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full border border-gray-200/60 bg-zinc-50 rounded-2xl px-4 py-3 text-zinc-900 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 focus:border-zinc-400 focus:bg-white transition-all text-[15px]"
+                    placeholder="ឧ. បញ្ជីឈ្មោះបុណ្យផ្កា..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide mb-1.5">
+                    ចំណាំ (កាលបរិច្ឆេទ)
+                  </label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full border border-gray-200/60 bg-zinc-50 rounded-2xl px-4 py-3 text-zinc-900 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 focus:border-zinc-400 focus:bg-white transition-all text-[15px]"
+                    placeholder="ឧ. ០១ មករា ២០២៤"
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className="p-5 flex gap-3 pb-8 sm:pb-5">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-3.5 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 rounded-xl font-semibold text-[15px] transition-colors"
-              >
-                បោះបង់
-              </button>
-              <button
-                onClick={handleSaveCategory}
-                disabled={isSaving || !name.trim()}
-                className="flex-1 py-3.5 px-4 bg-zinc-900 text-white rounded-xl font-semibold text-[15px] hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
-              >
-                {isSaving ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <span>រក្សាទុក</span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              
+              <div className="p-5 flex gap-3 pb-8 sm:pb-5">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 py-3.5 px-4 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 rounded-xl font-semibold text-[15px] transition-colors"
+                >
+                  បោះបង់
+                </button>
+                <button
+                  onClick={handleSaveCategory}
+                  disabled={isSaving || !name.trim()}
+                  className="flex-1 py-3.5 px-4 bg-zinc-900 text-white rounded-xl font-semibold text-[15px] hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
+                >
+                  {isSaving ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <span>រក្សាទុក</span>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

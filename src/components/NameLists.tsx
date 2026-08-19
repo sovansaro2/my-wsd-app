@@ -370,9 +370,21 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       )}
 
       {/* Add/Edit Modal (Bottom Sheet on Mobile) */}
+      <AnimatePresence>
       {isRecordModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+            className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+          >
             <div className="bg-white p-5 flex justify-between items-center border-b border-gray-100">
               <h3 className="font-bold text-xl text-gray-900">
                 {editingRecord ? t('list_edit_title') : t('list_add_title')}
@@ -458,9 +470,10 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 )}
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }
