@@ -21,7 +21,7 @@ interface NameRecord {
   referrer: string | null;
 }
 
-export default function NameLists() {
+export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | null }) {
   const { t } = useLanguage();
   const [categories, setCategories] = useState<ListCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ListCategory | null>(null);
@@ -207,13 +207,15 @@ export default function NameLists() {
               </div>
             )}
             
-            <button 
-              onClick={openAddModal}
-              className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
-              title={t('list_add_new')}
-            >
-              <Plus className="w-6 h-6" />
-            </button>
+            {userRole === 'admin' && (
+              <button 
+                onClick={openAddModal}
+                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                title={t('list_add_new')}
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+            )}
           </div>
 
           {/* Search */}
@@ -303,20 +305,22 @@ export default function NameLists() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-0.5 shrink-0 mt-1">
-                    <button 
-                      onClick={() => openEditModal(record)}
-                      className="p-1.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteRecord(record.id)}
-                      className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors focus:outline-none"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {userRole === 'admin' && (
+                    <div className="flex items-center gap-0.5 shrink-0 mt-1">
+                      <button 
+                        onClick={() => openEditModal(record)}
+                        className="p-1.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteRecord(record.id)}
+                        className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors focus:outline-none"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               ))
             )}

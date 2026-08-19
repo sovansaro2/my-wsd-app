@@ -92,7 +92,7 @@ export default function App() {
                 onAddRecord={() => setActiveTab('manage_financials')} 
               />
             )}
-            {activeTab === 'categories' && <NameLists />}
+            {activeTab === 'categories' && <NameLists userRole={userRole} />}
             {activeTab === 'account' && (
               <AccountProfile
     userRole={userRole}
