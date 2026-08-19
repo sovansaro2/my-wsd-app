@@ -37,7 +37,7 @@ router.put('/me', requireAuth, async (req, res) => {
   }
 
   // Update or insert profile
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getAuthClient(req)
     .from('profiles')
     .upsert({ id: req.user!.id, email: req.user!.email, ...updates })
     .select('id, email, full_name, phone_number, role, avatar_url, created_at')
