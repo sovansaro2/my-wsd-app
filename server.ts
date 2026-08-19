@@ -16,7 +16,11 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(cors());
+  app.use(cors({
+    origin: '*', // នៅលើ Production អ្នកគួរដូរទៅជា URL របស់ Netlify ជំនួស '*'
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
   app.use(express.json());
 
   // API Routes 

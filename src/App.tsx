@@ -13,6 +13,7 @@ import ManageNameLists from './components/ManageNameLists';
 import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
 import NameLists from './components/NameLists';
+import InstallPrompt from './components/InstallPrompt';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 
@@ -152,6 +153,9 @@ export default function App() {
           </button>
         </div>
       </nav>
+      
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 }

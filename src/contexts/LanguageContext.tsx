@@ -103,7 +103,11 @@ const translations = {
     profile_saving: 'កំពុងរក្សាទុក...',
     profile_role_admin: 'អ្នកគ្រប់គ្រង (ADMIN)',
     profile_role_user: 'អ្នកប្រើប្រាស់ (USER)',
-    profile_no_phone: 'មិនមានលេខទូរស័ព្ទ'
+    profile_no_phone: 'មិនមានលេខទូរស័ព្ទ',
+
+    install_title: 'ទាញយកកម្មវិធី',
+    install_desc: 'ទាញយកកម្មវិធីនេះដាក់លើអេក្រង់ទូរស័ព្ទរបស់អ្នក ដើម្បីងាយស្រួលប្រើប្រាស់។',
+    install_btn: 'ទាញយក'
   },
   en: {
     nav_home: 'Home',
@@ -199,7 +203,11 @@ const translations = {
     profile_saving: 'Saving...',
     profile_role_admin: 'Administrator (ADMIN)',
     profile_role_user: 'User (USER)',
-    profile_no_phone: 'No phone number'
+    profile_no_phone: 'No phone number',
+
+    install_title: 'Install App',
+    install_desc: 'Install this app on your home screen for quick and easy access.',
+    install_btn: 'Install'
   }
 };
 
