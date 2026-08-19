@@ -29,7 +29,9 @@ router.post('/avatar', requireAuth, upload.single('file'), async (req, res) => {
     const publicUrl = await uploadToStorage('avatars', fileName, req.file.buffer, req.file.mimetype);
     
     // Update profile automatically
-    await getAuthClient(req).from('profiles').update({ avatar_url: publicUrl }).eq('id', req.user!.id);
+    await supabaseAdmin
+      .from('profiles')
+      .upsert({ id: req.user!.id, email: req.user!.email, avatar_url: publicUrl });
     
     res.json({ publicUrl });
   } catch (err: any) {
