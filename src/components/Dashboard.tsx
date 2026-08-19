@@ -134,6 +134,14 @@ export default function Dashboard() {
            <h3 className="text-[15px] font-bold text-slate-800">{t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-900 p-5 rounded-2xl shadow-lg flex flex-col justify-center col-span-2 relative overflow-hidden mb-1">
+            <div className="absolute -right-2 -bottom-6 opacity-10">
+              <Wallet className="w-28 h-28 text-white" />
+            </div>
+            <p className="text-slate-400 text-[12px] font-medium mb-1 relative z-10">{t('dashboard_actual_balance')}</p>
+            <p className="text-3xl font-bold text-white relative z-10">៛ {balance.toLocaleString()}</p>
+          </div>
+
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
@@ -152,14 +160,6 @@ export default function Dashboard() {
               <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
             </div>
             <p className="text-[17px] font-bold text-slate-900">៛ {totalExpense.toLocaleString()}</p>
-          </div>
-
-          <div className="bg-slate-900 p-5 rounded-2xl shadow-lg flex flex-col justify-center col-span-2 relative overflow-hidden mt-1">
-            <div className="absolute -right-2 -bottom-6 opacity-10">
-              <Wallet className="w-28 h-28 text-white" />
-            </div>
-            <p className="text-slate-400 text-[12px] font-medium mb-1 relative z-10">{t('dashboard_actual_balance')}</p>
-            <p className="text-3xl font-bold text-white relative z-10">៛ {balance.toLocaleString()}</p>
           </div>
         </div>
       </section>

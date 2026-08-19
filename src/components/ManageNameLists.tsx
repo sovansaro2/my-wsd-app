@@ -66,7 +66,9 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
         description: description.trim() || null
       };
 
-      if (!editingCategory) {
+      if (editingCategory) {
+        await api.updateNameListCategory(editingCategory.id, catData);
+      } else {
         await api.createNameListCategory(catData);
       }
       
