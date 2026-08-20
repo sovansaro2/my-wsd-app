@@ -51,7 +51,7 @@ export default function InstallPrompt() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className="fixed bottom-20 left-4 right-4 z-50 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 overflow-hidden"
+          className="fixed bottom-20 left-4 right-4 z-50 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 dark:border-slate-800 overflow-hidden"
         >
           <div className="p-4 flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
@@ -59,10 +59,10 @@ export default function InstallPrompt() {
             </div>
             
             <div className="flex-1">
-              <h4 className="font-bold text-gray-900 text-sm mb-0.5">
+              <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">
                 {t('install_title') || 'ទាញយកកម្មវិធី'}
               </h4>
-              <p className="text-[12px] text-gray-500 leading-tight">
+              <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight">
                 {t('install_desc') || 'ទាញយកកម្មវិធីនេះដាក់លើអេក្រង់ទូរស័ព្ទរបស់អ្នក ដើម្បីងាយស្រួលប្រើប្រាស់។'}
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function InstallPrompt() {
             
             <button 
               onClick={handleClose}
-              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 rounded-full"
+              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 dark:text-slate-300 rounded-full"
             >
               <X className="w-4 h-4" />
             </button>

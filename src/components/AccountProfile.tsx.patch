@@ -1,0 +1,65 @@
+--- src/components/AccountProfile.tsx
++++ src/components/AccountProfile.tsx
+@@ -29,6 +29,8 @@
+   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+   const [isSaving, setIsSaving] = useState(false);
+   const [saveError, setSaveError] = useState('');
++  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
++  const [currentTheme, setCurrentTheme] = useState('light');
+ 
+   // Load user data on mount
+   useEffect(() => {
+@@ -395,7 +397,10 @@
+             </div>
+           </button>
+           
+-          <button className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none">
++          <button 
++            onClick={() => setIsThemeModalOpen(true)}
++            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50/50 transition-colors focus:outline-none"
++          >
+             <div className="flex items-center space-x-3">
+               <div className="bg-purple-50/80 p-2.5 rounded-xl text-purple-600">
+                 <Palette className="w-5 h-5"/>
+@@ -482,6 +487,41 @@
+           </div>
+         </div>
+       )}
++
++      {/* Theme Modal */}
++      {isThemeModalOpen && (
++        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
++          <div className="bg-white rounded-[24px] max-w-sm w-full p-6 shadow-2xl relative overflow-hidden">
++            <button 
++              onClick={() => setIsThemeModalOpen(false)}
++              className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
++            >
++              <X className="w-5 h-5" />
++            </button>
++
++            <h3 className="text-xl font-bold text-gray-900 mb-6 font-battambang">{t('profile_change_theme')}</h3>
++
++            <div className="space-y-4">
++              <button 
++                onClick={() => { setCurrentTheme('light'); setIsThemeModalOpen(false); }}
++                className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition-all ${currentTheme === 'light' ? 'border-orange-500 bg-orange-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
++              >
++                <span className="font-bold text-gray-800 font-battambang">Light Mode (ភ្លឺ)</span>
++                {currentTheme === 'light' && <div className="w-3 h-3 rounded-full bg-orange-500"></div>}
++              </button>
++              
++              <button 
++                onClick={() => { setCurrentTheme('dark'); setIsThemeModalOpen(false); alert('មុខងារ Dark Mode នឹងមានឆាប់ៗនេះ!'); }}
++                className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition-all ${currentTheme === 'dark' ? 'border-orange-500 bg-orange-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
++              >
++                <span className="font-bold text-gray-800 font-battambang">Dark Mode (ងងឹត)</span>
++                {currentTheme === 'dark' && <div className="w-3 h-3 rounded-full bg-orange-500"></div>}
++              </button>
++            </div>
++          </div>
++        </div>
++      )}
++
+     </div>
+   );
+ }

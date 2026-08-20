@@ -64,13 +64,13 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-20 pt-16">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-20 pt-16">
       {/* Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500/95 backdrop-blur-md shadow-sm border-b border-orange-600/20 z-50 px-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className="text-white tracking-wide text-2xl pt-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>វត្តស្នាយដួច</h1>
         <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-          <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-orange-500"></span>
+          <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-orange-500 dark:border-black"></span>
         </button>
       </header>
 
@@ -118,11 +118,11 @@ export default function App() {
       
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 pb-safe z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 px-6 py-2 pb-safe z-50 transition-colors duration-200">
         <div className="flex justify-between items-center max-w-lg mx-auto">
           <button
             onClick={() => setActiveTab('home')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'home' ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'home' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
           >
             <Home className="h-6 w-6" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_home')}</span>
@@ -130,7 +130,7 @@ export default function App() {
           
           <button
             onClick={() => setActiveTab('records')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'records' ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'records' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
           >
             <CircleDollarSign className="h-6 w-6" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_finance')}</span>
@@ -138,7 +138,7 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('categories')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
           >
             <List className="h-6 w-6" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_list')}</span>
@@ -146,7 +146,7 @@ export default function App() {
           
           <button
             onClick={() => setActiveTab('account')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
           >
             <User className="h-6 w-6" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_account')}</span>

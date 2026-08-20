@@ -1,17 +1,29 @@
 import { Router } from 'express';
-import { supabaseAdmin, getAuthClient } from '../database';
+import { supabaseAdmin } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
+import { config } from '../config';
+import { MockDB } from '../mockDb';
 
 const router = Router();
 
+const useMock = !config.SUPABASE_SERVICE_ROLE_KEY || config.SUPABASE_SERVICE_ROLE_KEY.length < 20;
+
 // --- Name List Categories ---
 router.get('/categories', async (req, res) => {
+  if (useMock) {
+    const data = MockDB.get('name_list_categories').sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return res.json(data);
+  }
   const { data, error } = await supabaseAdmin.from('name_list_categories').select('*').order('created_at', { ascending: false });
   if (error) return res.status(400).json({ detail: error.message });
   res.json(data);
 });
 
 router.post('/categories', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    const data = MockDB.insert('name_list_categories', req.body);
+    return res.json(data[0]);
+  }
   const { data, error } = await supabaseAdmin.from('name_list_categories').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
@@ -19,6 +31,10 @@ router.post('/categories', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.put('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    const data = MockDB.update('name_list_categories', req.params.id, req.body);
+    return res.json(data[0]);
+  }
   const { data, error } = await supabaseAdmin.from('name_list_categories').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
@@ -26,6 +42,10 @@ router.put('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    MockDB.delete('name_list_categories', req.params.id);
+    return res.json({ success: true });
+  }
   const { data, error } = await supabaseAdmin.from('name_list_categories').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
@@ -35,15 +55,23 @@ router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => 
 // --- Name List Records ---
 router.get('/records', async (req, res) => {
   const category_id = req.query.category_id as string;
+  if (useMock) {
+    let data = MockDB.get('name_list_records').sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    if (category_id) data = data.filter(r => r.category_id === category_id);
+    return res.json(data);
+  }
   let query = supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false });
   if (category_id) query = query.eq('category_id', category_id);
-  
   const { data, error } = await query;
   if (error) return res.status(400).json({ detail: error.message });
   res.json(data);
 });
 
 router.post('/records', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    const data = MockDB.insert('name_list_records', req.body);
+    return res.json(data[0]);
+  }
   const { data, error } = await supabaseAdmin.from('name_list_records').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
@@ -51,6 +79,10 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    const data = MockDB.update('name_list_records', req.params.id, req.body);
+    return res.json(data[0]);
+  }
   const { data, error } = await supabaseAdmin.from('name_list_records').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
@@ -58,6 +90,10 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.delete('/records/:id', requireAuth, requireAdmin, async (req, res) => {
+  if (useMock) {
+    MockDB.delete('name_list_records', req.params.id);
+    return res.json({ success: true });
+  }
   const { data, error } = await supabaseAdmin.from('name_list_records').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });

@@ -112,11 +112,11 @@ export default function Dashboard() {
   const seilCount = seils.length > 0 ? seils.length : 0;
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 pb-24 overflow-y-auto font-battambang">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-24 overflow-y-auto font-battambang transition-colors duration-200">
       
       <div className="px-4 pt-6 pb-2">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{t('dashboard_title')}</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{t('dashboard_title')}</h2>
         </div>
       </div>
       
@@ -131,7 +131,7 @@ export default function Dashboard() {
       {/* KPI Cards */}
       <section>
         <div className="flex justify-between items-end mb-3">
-           <h3 className="text-[15px] font-bold text-slate-800">{t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}</h3>
+           <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">{t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-slate-900 p-5 rounded-2xl shadow-lg flex flex-col justify-center col-span-2 relative overflow-hidden mb-1">
@@ -142,31 +142,31 @@ export default function Dashboard() {
             <p className="text-3xl font-bold text-white relative z-10">៛ {balance.toLocaleString()}</p>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-emerald-600" />
               </div>
               <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_income')}</p>
             </div>
-            <p className="text-[17px] font-bold text-slate-900">៛ {totalIncome.toLocaleString()}</p>
+            <p className="text-[17px] font-bold text-slate-900 dark:text-white">៛ {totalIncome.toLocaleString()}</p>
           </div>
           
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/20 flex items-center justify-center">
                 <TrendingDown className="w-4 h-4 text-rose-600" />
               </div>
               <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
             </div>
-            <p className="text-[17px] font-bold text-slate-900">៛ {totalExpense.toLocaleString()}</p>
+            <p className="text-[17px] font-bold text-slate-900 dark:text-white">៛ {totalExpense.toLocaleString()}</p>
           </div>
         </div>
       </section>
 
       {/* Bar Chart */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] border border-gray-100">
-        <h3 className="text-md font-bold text-gray-800 mb-4">{t('dashboard_chart_title')}</h3>
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors">
+        <h3 className="text-md font-bold text-gray-800 dark:text-slate-200 mb-4">{t('dashboard_chart_title')}</h3>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
@@ -186,8 +186,8 @@ export default function Dashboard() {
       </div>
 
       {/* Pie Chart */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] border border-gray-100">
-        <h3 className="text-md font-bold text-gray-800 mb-2">{t('dashboard_pie_title')}</h3>
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors">
+        <h3 className="text-md font-bold text-gray-800 dark:text-slate-200 mb-2">{t('dashboard_pie_title')}</h3>
         <div className="h-64 w-full flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

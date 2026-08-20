@@ -1,12 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Koulen&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Battambang', system-ui, sans-serif;
+  --font-title: 'Koulen', cursive;
+}
+
 @layer base {
   body {
-    font-family: 'Battambang', system-ui, sans-serif;
-  }
-  .font-title {
-    font-family: 'Koulen', cursive;
+    @apply text-slate-900 bg-white dark:bg-slate-900 dark:text-slate-50 transition-colors duration-200;
   }
   
   /* Hide scrollbar globally */

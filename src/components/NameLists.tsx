@@ -154,10 +154,10 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] pb-6 font-battambang relative">
-      <div className="bg-white px-4 py-5 shadow-sm border-b border-gray-100 z-10 sticky top-0">
+    <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
+      <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('list_title')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('list_title')}</h2>
           
           <div className="flex items-center gap-3">
             {/* Category Selector */}
@@ -165,7 +165,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               <div className="relative flex-1">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full text-left bg-gray-50 border border-gray-200 text-gray-900 py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
+                  className="w-full text-left bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
                 >
                   <span className="truncate pr-2">{selectedCategory?.name || 'ជ្រើសរើសបញ្ជី...'}</span>
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -183,7 +183,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
+                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
                       >
                         {categories.map(cat => (
                           <button
@@ -192,7 +192,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                               setSelectedCategory(cat);
                               setIsDropdownOpen(false);
                             }}
-                            className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedCategory?.id === cat.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700'}`}
+                            className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedCategory?.id === cat.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700 dark:text-slate-300'}`}
                           >
                             <span className="font-medium text-[15px] leading-relaxed pr-4 whitespace-pre-wrap">{cat.name}</span>
                             {selectedCategory?.id === cat.id && (
@@ -210,7 +210,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             {userRole === 'admin' && (
               <button 
                 onClick={openAddModal}
-                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
                 title={t('list_add_new')}
               >
                 <Plus className="w-6 h-6" />
@@ -225,7 +225,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               placeholder={t('list_search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
+              className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
             />
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           </div>
@@ -239,17 +239,17 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       ) : (
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-3xl mx-auto w-full space-y-4">
           {/* Header Row: Date & Total */}
-          <div className="flex items-center justify-between mb-4 px-1 border-b border-gray-200/60 pb-3">
-            <div className="text-[13px] font-semibold text-zinc-500 uppercase tracking-widest">
+          <div className="flex items-center justify-between mb-4 px-1 border-b border-gray-200 dark:border-slate-700/60 pb-3">
+            <div className="text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-widest">
               {selectedCategory?.description ? (
-                <>{t('list_date')}៖ <span className="text-zinc-900">{selectedCategory.description}</span></>
+                <>{t('list_date')}៖ <span className="text-zinc-900 dark:text-white">{selectedCategory.description}</span></>
               ) : (
                 <span>{t('list_total_records')}៖ {filteredRecords.length}</span>
               )}
             </div>
             {(selectedCategory?.name === 'លុយចងដៃខ្ចី' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២') && (
-              <div className="text-[13px] font-semibold text-zinc-500 uppercase tracking-widest">
-                {t('list_total_amount')}៖ <span className="text-zinc-900">{formatCurrency(totalAmount)}</span>
+              <div className="text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-widest">
+                {t('list_total_amount')}៖ <span className="text-zinc-900 dark:text-white">{formatCurrency(totalAmount)}</span>
               </div>
             )}
           </div>
@@ -261,7 +261,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-12 text-zinc-400 text-sm"
+                className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm"
               >
                 {t('list_empty')}
               </motion.div>
@@ -274,27 +274,27 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                   key={record.id} 
-                  className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 relative flex flex-row items-start justify-between gap-2"
+                  className="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-sm dark:shadow-none border border-gray-100 dark:border-slate-800 relative flex flex-row items-start justify-between gap-2"
                 >                  
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-3">
-                      <span className="text-[11px] font-semibold bg-zinc-100 text-zinc-500 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[11px] font-semibold bg-zinc-100 text-zinc-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                         {index + 1}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-zinc-900 text-[15px] leading-tight">{record.name}</h3>
-                        <div className="font-bold text-zinc-900 text-[15px] mt-1">{formatCurrency(record.amount)}</div>
+                        <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight">{record.name}</h3>
+                        <div className="font-bold text-zinc-900 dark:text-white text-[15px] mt-1">{formatCurrency(record.amount)}</div>
                         
                         {(record.note || record.referrer) && (
                           <div className="flex flex-col gap-1 mt-2">
                             {record.note && (
-                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 bg-zinc-50 px-2 py-1 rounded-md">
+                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
                                 <span className="w-1 h-1 rounded-full bg-zinc-300 shrink-0"></span>
                                 <span className="truncate">{record.note}</span>
                               </div>
                             )}
                             {record.referrer && (
-                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 bg-zinc-50 px-2 py-1 rounded-md">
+                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
                                 <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0"></span>
                                 <span className="truncate">{t('list_referrer')}៖ {record.referrer}</span>
                               </div>
@@ -309,13 +309,13 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                     <div className="flex items-center gap-0.5 shrink-0 mt-1">
                       <button 
                         onClick={() => openEditModal(record)}
-                        className="p-1.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors focus:outline-none"
+                        className="p-1.5 text-zinc-400 dark:text-slate-500 hover:text-zinc-900 dark:hover:text-white dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-slate-700 rounded-md transition-colors focus:outline-none"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteRecord(record.id)}
-                        className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors focus:outline-none"
+                        className="p-1.5 text-zinc-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-md transition-colors focus:outline-none"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -327,31 +327,31 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           </AnimatePresence>
 
           {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' && filteredRecords.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6 mb-8">
-              <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200">
-                <span className="text-sm font-medium text-gray-700">បច្ច័យសរុប</span>
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+              <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className="font-bold text-blue-800">{formatCurrency(totalAmount)}</span>
               </div>
-              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200">
-                <span className="text-sm font-medium text-gray-700">ចំណាយជាវកណ្ដឹង ៤ (មួយស្មើ 55$) សរុប</span>
+              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">ចំណាយជាវកណ្ដឹង ៤ (មួយស្មើ 55$) សរុប</span>
                 <span className="font-bold text-orange-800">890,000៛</span>
               </div>
               <div className="bg-green-100/50 p-3 flex justify-between items-center">
-                <span className="text-sm font-bold text-gray-800">បច្ច័យនៅសល់</span>
+                <span className="text-sm font-bold text-gray-800 dark:text-slate-200">បច្ច័យនៅសល់</span>
                 <span className="font-bold text-green-700">{formatCurrency(totalAmount - 890000)}</span>
               </div>
             </div>
           )}
 
           {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' && filteredRecords.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6 mb-8">
-              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200">
-                <span className="text-sm font-medium text-gray-700">សរុប</span>
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
                 <span className="font-bold text-orange-800">{formatCurrency(totalAmount)}</span>
               </div>
               <div className="bg-blue-100/50 p-3 flex flex-col gap-1">
                 <div className="flex justify-between items-center">
-                   <span className="text-sm font-medium text-gray-700">ចំណាយទិញព្រំ (១ដុំ 2m x 25m = ៤២ម៉ឺន) ២ដុំ អស់</span>
+                   <span className="text-sm font-medium text-gray-700 dark:text-slate-300">ចំណាយទិញព្រំ (១ដុំ 2m x 25m = ៤២ម៉ឺន) ២ដុំ អស់</span>
                    <span className="font-bold text-blue-800">840,000៛</span>
                 </div>
               </div>
@@ -359,9 +359,9 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           )}
 
           {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២' && filteredRecords.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6 mb-8">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-orange-100/50 p-3 flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">សរុប</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
                 <span className="font-bold text-orange-800">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
@@ -385,15 +385,15 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             exit={{ y: "100%", opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
           >
-            <div className="bg-white p-5 flex justify-between items-center border-b border-gray-100">
-              <h3 className="font-bold text-xl text-gray-900">
+            <div className="bg-white dark:bg-slate-900 p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+              <h3 className="font-bold text-xl text-gray-900 dark:text-white">
                 {editingRecord ? t('list_edit_title') : t('list_add_title')}
               </h3>
               <button 
                 onClick={() => setIsRecordModalOpen(false)}
-                className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full transition-colors focus:outline-none"
+                className="p-2 bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 dark:text-slate-500 rounded-full transition-colors focus:outline-none"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -401,7 +401,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                   {t('list_name')}
                 </label>
                 <input
@@ -414,7 +414,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                   {t('list_amount')}
                 </label>
                 <input
@@ -427,7 +427,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                   {t('list_note')}
                 </label>
                 <input
@@ -440,7 +440,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                   {t('list_ref')}
                 </label>
                 <input
@@ -453,10 +453,10 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               </div>
             </div>
             
-            <div className="p-5 border-t border-gray-100 bg-gray-50 flex gap-3 pb-24 sm:pb-5">
+            <div className="p-5 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3 pb-24 sm:pb-5">
               <button
                 onClick={() => setIsRecordModalOpen(false)}
-                className="flex-1 py-3.5 px-4 bg-white border border-gray-200 text-gray-700 rounded-2xl font-bold text-[15px] hover:bg-gray-50 transition-colors focus:outline-none"
+                className="flex-1 py-3.5 px-4 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-2xl font-bold text-[15px] hover:bg-gray-50 dark:bg-slate-800/50 transition-colors focus:outline-none"
               >
                 {t('list_cancel')}
               </button>
