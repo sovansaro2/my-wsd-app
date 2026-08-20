@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2 } from 'lucide-react';
+import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -188,14 +188,17 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('records_title')}</h2>
           <div className="flex items-center gap-3">
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-0">
               <button 
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full text-left bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
+                className="w-full text-left bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-[16px] font-semibold text-[13.5px] sm:text-[14px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
               >
-                <span className="truncate pr-2">
-                  {selectedPeriod ? `${selectedPeriod.name} (${selectedPeriod.date_range_text})` : 'ជ្រើសរើស...'}
-                </span>
+                <div className="flex items-center gap-2 truncate pr-2">
+                  <Calendar className="w-5 h-5 text-gray-500 shrink-0" />
+                  <span className="truncate">
+                    {selectedPeriod ? `${selectedPeriod.name} (${selectedPeriod.date_range_text})` : 'ជ្រើសរើស...'}
+                  </span>
+                </div>
                 <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
@@ -224,7 +227,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           }}
                           className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedPeriod?.id === p.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700 dark:text-slate-300'}`}
                         >
-                          <span className="font-medium text-[15px] leading-relaxed pr-2 whitespace-pre-wrap flex-1">
+                          <span className="font-medium text-[13.5px] sm:text-[14px] leading-relaxed pr-2 whitespace-nowrap overflow-hidden text-ellipsis flex-1">
                             {p.name} {p.date_range_text ? `(${p.date_range_text})` : ''}
                           </span>
                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -270,17 +273,27 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
 
         {/* Summary Dashboard */}
-        <div className="grid grid-cols-2 gap-3 mt-2 max-w-3xl mx-auto">
-          <div className="bg-gray-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-gray-100 dark:border-slate-800">
-            <p className="text-gray-500 dark:text-slate-400 text-[11px] uppercase tracking-wider mb-1 font-semibold">{t('records_prev_balance')}</p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(previousBalance)}</p>
-          </div>
-          <div className="bg-orange-500 rounded-2xl p-4 shadow-md shadow-orange-500/20 relative overflow-hidden">
-            <div className="absolute -top-2 -right-2 p-3 opacity-10">
-              <Wallet className="w-16 h-16 text-white" />
+        <div className="grid grid-cols-2 gap-3 mt-4 max-w-3xl mx-auto">
+          {/* Previous Balance */}
+          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="rounded-full border border-green-600 p-0.5">
+                <ArrowDownCircle className="w-4 h-4 text-green-600" strokeWidth={2.5} />
+              </div>
+              <p className="text-gray-600 dark:text-slate-400 text-[13px] font-semibold">{t('records_prev_balance')}</p>
             </div>
-            <p className="text-orange-100 text-[11px] uppercase tracking-wider mb-1 font-semibold relative z-10">{t('records_current_balance')}</p>
-            <p className="text-xl font-bold text-white relative z-10">{formatCurrency(currentBalance)}</p>
+            <p className="text-[22px] font-bold text-green-600">{formatCurrency(previousBalance)}</p>
+          </div>
+          
+          {/* Current Balance */}
+          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="rounded-full border border-[#ea580c] p-0.5">
+                <ArrowUpCircle className="w-4 h-4 text-[#ea580c]" strokeWidth={2.5} />
+              </div>
+              <p className="text-gray-600 dark:text-slate-400 text-[13px] font-semibold">{t('records_current_balance')}</p>
+            </div>
+            <p className="text-[22px] font-bold text-[#ea580c]">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
         </div>
