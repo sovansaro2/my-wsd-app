@@ -339,6 +339,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => setIsRecordModalOpen(false)}
           className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <motion.div 
@@ -346,6 +347,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: "100%", opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
           >
             <div className="flex justify-between items-center p-5 border-b border-gray-100/60">
@@ -441,6 +443,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => setIsSeilModalOpen(false)}
           className="fixed inset-0 z-[100] bg-zinc-900/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <motion.div 
@@ -448,6 +451,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: "100%", opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
           >
             <div className="flex justify-between items-center p-5 border-b border-gray-100/60">
@@ -529,6 +533,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => setRecordToDelete(null)}
           className="fixed inset-0 z-[150] bg-zinc-900/40 backdrop-blur-md flex items-center justify-center p-4"
         >
           <motion.div 
@@ -536,6 +541,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", bounce: 0.25, duration: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl"
           >
             <h3 className="text-[18px] font-bold text-zinc-900 mb-2.5">បញ្ជាក់ការលុប</h3>

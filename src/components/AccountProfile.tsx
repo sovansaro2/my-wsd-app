@@ -433,6 +433,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={() => setIsAboutModalOpen(false)}
           className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
         >
           <motion.div 
@@ -440,6 +441,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl w-full max-w-sm max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center overflow-y-auto">
