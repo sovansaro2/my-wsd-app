@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   server: {
-    allowedHosts: true,
+    allowedHosts: ['wsd-app.anajak.cloud', 'sg1.anajak.cloud', 'localhost'],
   },
   plugins: [
     tailwindcss(),
