@@ -31,6 +31,7 @@
     "recharts": "^3.10.1",
     "sharp": "^0.35.3",
     "tailwind-merge": "^3.6.0",
+    "ws": "^8.21.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/express": "^5.0.6",
     "@types/multer": "^2.2.0",
     "@types/node": "^22.14.0",
+    "@types/ws": "^8.18.1",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.28.2",
     "glob": "^13.0.6",

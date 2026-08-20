@@ -1,7 +1,13 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
+import WebSocket from "ws";
 import { createServer as createViteServer } from "vite";
+
+// Polyfill WebSocket for Supabase in older Node.js environments
+if (typeof global.WebSocket === 'undefined') {
+  (global as any).WebSocket = WebSocket;
+}
 
 import authRoutes from "./server/auth/routes";
 import financialRoutes from "./server/routers/financial";
