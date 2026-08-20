@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
+import { saveReport } from '../lib/reportUtils';
 
 interface SeilPeriod {
   id: string;
@@ -103,10 +104,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           width: '800px'
         }
       });
-      const link = document.createElement('a');
-      link.download = `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`;
-      link.href = dataUrl;
-      link.click();
+      
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`, { type: 'image/png' });
+        
+        await saveReport({
+          title: `របាយការណ៍បច្ច័យ_${selectedPeriod.name}`,
+          type: 'image/png',
+          blob: blob
+        });
+        alert('បានរក្សាទុករបាយការណ៍ដោយជោគជ័យ! សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល');
+
+      } catch (e) {
+        // Fallback to classic download if anything fails
+        const link = document.createElement('a');
+        link.download = `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
     } catch (err) {
       console.error('Error downloading image:', err);
     } finally {

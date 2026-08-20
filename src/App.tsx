@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Plus, Settings, Home, List, CircleDollarSign, User } from 'lucide-react';
+import { LogOut, Plus, Settings, Home, List, CircleDollarSign, User, FileText } from 'lucide-react';
 
 
 
@@ -12,12 +12,13 @@ import AccountProfile from './components/AccountProfile';
 import ManageNameLists from './components/ManageNameLists';
 import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
+import Reports from './components/Reports';
 import NameLists from './components/NameLists';
 import InstallPrompt from './components/InstallPrompt';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 
-type Tab = 'home' | 'records' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -92,6 +93,7 @@ export default function App() {
                 onAddRecord={() => setActiveTab('manage_financials')} 
               />
             )}
+            {activeTab === 'reports' && <Reports />}
             {activeTab === 'categories' && <NameLists userRole={userRole} />}
             {activeTab === 'account' && (
               <AccountProfile
