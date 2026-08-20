@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabaseAdmin, getAuthClient } from '../database';
+import { supabaseAdmin } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
@@ -12,18 +12,16 @@ router.get('/seil-periods', async (req, res) => {
 });
 
 router.post('/seil-periods', requireAuth, requireAdmin, async (req, res) => {
-  const client = getAuthClient(req);
-  const { data, error } = await client.from('seil_periods').insert([req.body]).select();
+  const { data, error } = await supabaseAdmin.from('seil_periods').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS) សូមពិនិត្យមើលសិទ្ធិ ឬ Service Role Key' });
+  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.put('/seil-periods/:id', requireAuth, requireAdmin, async (req, res) => {
-  const client = getAuthClient(req);
-  const { data, error } = await client.from('seil_periods').update(req.body).eq('id', req.params.id).select();
+  const { data, error } = await supabaseAdmin.from('seil_periods').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS) សូមពិនិត្យមើលសិទ្ធិ ឬ Service Role Key' });
+  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
@@ -38,26 +36,23 @@ router.get('/financial-records', async (req, res) => {
 });
 
 router.post('/financial-records', requireAuth, requireAdmin, async (req, res) => {
-  const client = getAuthClient(req);
-  const { data, error } = await client.from('financial_records').insert([req.body]).select();
+  const { data, error } = await supabaseAdmin.from('financial_records').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS) សូមពិនិត្យមើលសិទ្ធិ ឬ Service Role Key' });
+  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const client = getAuthClient(req);
-  const { data, error } = await client.from('financial_records').update(req.body).eq('id', req.params.id).select();
+  const { data, error } = await supabaseAdmin.from('financial_records').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS) សូមពិនិត្យមើលសិទ្ធិ ឬ Service Role Key' });
+  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const client = getAuthClient(req);
-  const { data, error } = await client.from('financial_records').delete().eq('id', req.params.id).select();
+  const { data, error } = await supabaseAdmin.from('financial_records').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS) សូមពិនិត្យមើលសិទ្ធិ ឬ Service Role Key' });
+  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json({ success: true });
 });
 

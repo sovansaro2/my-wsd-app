@@ -8,8 +8,10 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   }
 
   const token = authHeader.split(' ')[1];
+
   try {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+    
     if (error || !user) {
       return res.status(401).json({ detail: 'Token expired or invalid' });
     }
@@ -24,6 +26,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       ...user,
       role: profile?.role || user.user_metadata?.role || 'user'
     };
+
     next();
   } catch (err) {
     return res.status(401).json({ detail: 'Token expired or invalid' });
@@ -32,7 +35,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ detail: 'Admin privileges required' });
+    return res.status(403).json({ detail: 'អ្នកមិនមានសិទ្ធិអនុវត្តសកម្មភាពនេះទេ' });
   }
   next();
 };
