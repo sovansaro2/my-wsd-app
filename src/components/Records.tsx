@@ -109,7 +109,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       setNewNote('');
     } catch (error) {
       console.error('Error saving record:', error);
-      alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ');
+      alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ: ' + (error.message || ''));
     } finally {
       setIsSaving(false);
     }

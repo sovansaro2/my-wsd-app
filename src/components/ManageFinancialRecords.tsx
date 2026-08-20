@@ -140,7 +140,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
       fetchRecords(selectedPeriod.id);
     } catch (error) {
       console.error('Error saving record:', error);
-      setErrorMessage('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ');
+      setErrorMessage('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ: ' + (error.message || ''));
     } finally {
       setIsSavingRecord(false);
     }
