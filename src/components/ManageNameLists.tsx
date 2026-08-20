@@ -92,7 +92,30 @@ export default function ManageNameLists({ onBack }: ManageNameListsProps) {
       alert('Error deleting');
     }
   };
-return (
+
+  const getCategoryStatus = (name: string | undefined) => {
+    if (!name) return null;
+    let statusText = '';
+    let statusClass = '';
+    if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២' || name === 'លុយជាងដក' || name === 'បញ្ជីឈ្មោះកសាងព្រះវិហារ' || name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ') {
+      statusText = 'កំពុងប្រតិបត្តិការ';
+      statusClass = 'bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50';
+    } else if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' || name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' || name === 'បញ្ជីឈ្មោះបុណ្យផ្កា') {
+      statusText = 'បានបញ្ចប់';
+      statusClass = 'bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-slate-400 border-zinc-200 dark:border-slate-700';
+    }
+    
+    if (statusText) {
+      return (
+        <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border shrink-0 w-fit ${statusClass}`}>
+          {statusText}
+        </span>
+      );
+    }
+    return null;
+  };
+
+  return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
       <div className="bg-white dark:bg-slate-900 text-zinc-900 dark:text-white p-4 sm:p-6 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0 flex items-center justify-between">
         <div className="flex items-center">
@@ -126,7 +149,10 @@ return (
                   <div className="flex items-start gap-3">
                     <span className="text-[11px] font-semibold bg-zinc-100 dark:bg-slate-800 text-zinc-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">{index + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight">{cat.name}</h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight">{cat.name}</h3>
+                        {getCategoryStatus(cat.name)}
+                      </div>
                       {cat.description && (
                         <p className="text-[12px] text-zinc-500 dark:text-slate-400 mt-1.5 bg-zinc-50 dark:bg-slate-800/50 inline-block px-2 py-0.5 rounded-md border border-zinc-100 dark:border-slate-800">
                           {cat.description}

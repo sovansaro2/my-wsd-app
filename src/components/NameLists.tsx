@@ -153,6 +153,29 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
 
+  const getCategoryStatus = (name: string | undefined) => {
+    if (!name) return null;
+    let statusText = '';
+    let statusClass = '';
+    if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២' || name === 'លុយជាងដក' || name === 'បញ្ជីឈ្មោះកសាងព្រះវិហារ' || name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ') {
+      statusText = 'កំពុងប្រតិបត្តិការ';
+      statusClass = 'bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50';
+    } else if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' || name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' || name === 'បញ្ជីឈ្មោះបុណ្យផ្កា') {
+      statusText = 'បានបញ្ចប់';
+      statusClass = 'bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-slate-400 border-zinc-200 dark:border-slate-700';
+    }
+    
+    if (statusText) {
+      return (
+        <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border shrink-0 w-fit ${statusClass}`}>
+          {statusText}
+        </span>
+      );
+    }
+    return null;
+  };
+
+
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
@@ -167,7 +190,10 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="w-full text-left bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
                 >
-                  <span className="truncate pr-2">{selectedCategory?.name || 'ជ្រើសរើសបញ្ជី...'}</span>
+                  <div className="flex items-center gap-2 truncate pr-2">
+                    <span className="truncate">{selectedCategory?.name || 'ជ្រើសរើសបញ្ជី...'}</span>
+                    {getCategoryStatus(selectedCategory?.name)}
+                  </div>
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
@@ -194,10 +220,15 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                             }}
                             className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedCategory?.id === cat.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700 dark:text-slate-300'}`}
                           >
-                            <span className="font-medium text-[15px] leading-relaxed pr-4 whitespace-pre-wrap">{cat.name}</span>
-                            {selectedCategory?.id === cat.id && (
-                              <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                            )}
+                            <div className="flex items-center justify-between w-full pr-4">
+                              <span className="font-medium text-[15px] leading-relaxed whitespace-pre-wrap">{cat.name}</span>
+                              <div className="flex items-center gap-3">
+                                {getCategoryStatus(cat.name)}
+                                {selectedCategory?.id === cat.id && (
+                                  <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                                )}
+                              </div>
+                            </div>
                           </button>
                         ))}
                       </motion.div>
