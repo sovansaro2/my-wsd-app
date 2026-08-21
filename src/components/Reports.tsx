@@ -28,8 +28,7 @@ export default function Reports() {
     const ext = report.type === 'application/pdf' ? 'pdf' : 
                 report.type === 'image/png' ? 'png' : 
                 report.type === 'image/jpeg' ? 'jpg' : 'xlsx';
-    const file = new File([report.blob], `${report.title}.${ext}`, { type: report.type });
-    await shareOrDownloadFile(file);
+    await shareOrDownloadFile(report.blob, `${report.title}.${ext}`);
   };
 
   const handleDelete = async (id: string) => {

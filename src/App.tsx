@@ -145,6 +145,14 @@ export default function App() {
             <List className="h-6 w-6" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_list')}</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'reports' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+          >
+            <FileText className="h-6 w-6" />
+            <span className="text-[10px] font-medium font-battambang">របាយការណ៍</span>
+          </button>
           
           <button
             onClick={() => setActiveTab('account')}

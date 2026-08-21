@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { supabaseAdmin, getAuthClient } from '../database';
+import { supabaseAdmin} from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SignupSchema, LoginSchema } from './schemas';
-import { supabaseAdmin, getAuthClient } from '../database';
+import { supabaseAdmin} from '../database';
 
 const router = Router();
 

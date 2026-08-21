@@ -107,7 +107,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       try {
         const blob = await (await fetch(dataUrl)).blob();
-        const file = new File([blob], `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`, { type: 'image/png' });
         
         await saveReport({
           title: `របាយការណ៍បច្ច័យ_${selectedPeriod.name}`,

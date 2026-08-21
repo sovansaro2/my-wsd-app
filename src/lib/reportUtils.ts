@@ -46,17 +46,27 @@ export const downloadBlob = (blob: Blob, filename: string) => {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
-export const shareOrDownloadFile = async (file: File) => {
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+export const shareOrDownloadFile = async (blob: Blob, filename: string) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  if (isMobile) {
     try {
-      await navigator.share({
-        files: [file],
-        title: file.name,
-      });
-      return;
-    } catch (e) {
-      console.log('Share failed, falling back to download', e);
+      const file = new File([blob], filename, { type: blob.type });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: filename,
+          });
+          return;
+        } catch (e) {
+          console.log('Share failed, falling back to download', e);
+        }
+      }
+    } catch (err) {
+      console.log('File constructor or share API not supported, falling back to download', err);
     }
   }
-  downloadBlob(file, file.name);
+  
+  downloadBlob(blob, filename);
 };
