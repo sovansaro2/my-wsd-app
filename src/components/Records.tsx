@@ -9,6 +9,20 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { saveReport } from '../lib/reportUtils';
 
+const toKhmerNum = (num: number | string) => {
+  const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+  return num.toString().split('').map(digit => khmerNumbers[parseInt(digit)] || digit).join('');
+};
+
+const getKhmerDate = () => {
+  const d = new Date();
+  const day = toKhmerNum(d.getDate().toString().padStart(2, '0'));
+  const months = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+  const month = months[d.getMonth()];
+  const year = toKhmerNum(d.getFullYear());
+  return `ថ្ងៃទី ${day} ខែ ${month} ឆ្នាំ ${year}`;
+};
+
 interface SeilPeriod {
   id: string;
   name: string;
@@ -50,9 +64,22 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [isSaving, setIsSaving] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [signBase64, setSignBase64] = useState<string>('');
 
   useEffect(() => {
     fetchPeriods();
+    
+    // Pre-fetch signature image as base64 to ensure html2canvas captures it
+    fetch('/Sign.png')
+      .then(res => res.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setSignBase64(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -449,9 +476,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           {/* Footer Signature Area */}
           <div className="mt-16 flex justify-end px-12 text-center text-gray-900">
             <div className="flex flex-col items-center">
-              <p className="mb-2 font-bold text-lg">អ្នកធ្វើតារាង</p>
-              <div className="h-16 w-32 relative mb-2 flex items-center justify-center">
-                <img src="/Sign.png" alt="Signature" className="max-h-full max-w-full object-contain mix-blend-multiply" crossOrigin="anonymous" />
+              <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
+              <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
+              <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
+                <img src={signBase64 || "/Sign.png"} alt="Signature" className="max-h-full max-w-full object-contain" />
               </div>
               <p className="font-moul text-lg">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
             </div>

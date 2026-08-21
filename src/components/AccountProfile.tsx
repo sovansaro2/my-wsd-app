@@ -354,28 +354,6 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
       </div>
       )}
 
-      {/* Security Banner */}
-      <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-sm p-3 mb-6 flex items-center justify-between hover:bg-gray-50 dark:bg-slate-800/30 transition-colors cursor-pointer group">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            {/* Decorative background shapes for the shield */}
-            <div className="absolute -inset-2 bg-indigo-100 rounded-full opacity-50 filter blur-sm"></div>
-            <div className="absolute -left-1 -bottom-1 w-3 h-3 bg-indigo-200 rounded-full"></div>
-            <div className="absolute -right-2 top-0 w-2 h-2 bg-indigo-200 rounded-full"></div>
-            <div className="relative bg-gradient-to-br from-indigo-400 to-indigo-600 p-3 rounded-xl text-white shadow-sm z-10 transform group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-          </div>
-          <div>
-            <h4 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight mb-0.5">{t('profile_security_title')}</h4>
-            <p className="text-[13px] text-gray-500 dark:text-slate-400">{t('profile_security_desc')}</p>
-          </div>
-        </div>
-        <div className="bg-indigo-50 p-1.5 rounded-lg text-indigo-600">
-          <ChevronRight className="w-4 h-4" />
-        </div>
-      </div>
-
       {/* Others Section */}
       <div className="mb-4">
         <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">{t('profile_others')}</h4>
