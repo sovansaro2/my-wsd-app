@@ -470,8 +470,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             <div className="flex flex-col items-center">
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
               <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
-              <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
-                <img src={signBase64} alt="Signature" className="max-h-full max-w-full object-contain" />
+              <div className="h-24 w-40 relative mb-2 flex items-center justify-center" style={{ backgroundImage: `url(${signBase64})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
               </div>
               <p className="font-moul text-lg">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
             </div>
