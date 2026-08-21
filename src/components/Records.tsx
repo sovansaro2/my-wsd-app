@@ -92,9 +92,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
+        width: 794,
+        height: 559,
         pixelRatio: 2,
         cacheBust: true,
-        style: { margin: '0' }
+        style: {
+          transform: "scale(1)",
+          transformOrigin: "top left", margin: '0' }
       });
       
       try {
@@ -140,9 +144,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
+        width: 794,
+        height: 559,
         pixelRatio: 2,
         cacheBust: true,
-        style: { margin: '0' }
+        style: {
+          transform: "scale(1)",
+          transformOrigin: "top left", margin: '0' }
       });
       
       const blob = await (await fetch(dataUrl)).blob();
@@ -222,9 +230,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
+        width: 794,
+        height: 559,
         pixelRatio: 2,
         cacheBust: true,
         style: {
+          transform: "scale(1)",
+          transformOrigin: "top left",
           margin: '0',
           width: '800px'
         }
@@ -776,15 +788,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#f0f2f5]">
                 {/* Responsive scaling wrapper */}
                 <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
-                  {/* Certificate Container (Fixed A5 Landscape Size: 794x559 px) */}
-                  <div 
-                    ref={certificateRef}
-                    className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-[794px] h-[559px] origin-top scale-[0.42] sm:scale-100 bg-white shadow-xl flex flex-col p-6 sm:p-8 border-[12px] border-orange-50/50"
-                    style={{
-                      backgroundColor: '#ffffff'
-                    }}
-                  >
-                  {/* Decorative Borders */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-xl">
+                    {/* Certificate Container (Fixed A5 Landscape Size: 794x559 px) */}
+                    <div 
+                      ref={certificateRef}
+                      className="w-[794px] h-[559px] bg-white flex flex-col p-6 sm:p-8 border-[12px] border-orange-50/50 relative"
+                      style={{
+                        backgroundColor: '#ffffff'
+                      }}
+                    >
+                    {/* Decorative Borders */}
                   <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-orange-500/80"></div>
                   <div className="absolute top-[12px] left-[12px] right-[12px] bottom-[12px] border border-orange-300/60"></div>
                   
@@ -863,6 +876,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     </div>
                   </div>
                 </div>
+                  </div>
                 </div>
               </div>
 
