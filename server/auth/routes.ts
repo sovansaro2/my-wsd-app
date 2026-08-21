@@ -29,6 +29,38 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// POST /api/auth/verify-otp
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const { data: authData, error } = await supabaseAdmin.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'signup'
+    });
+    
+    if (error || !authData.session) {
+      console.error('verifyOtp error:', error);
+      return res.status(401).json({ detail: 'លេខកូដមិនត្រឹមត្រូវ ឬផុតកំណត់។' });
+    }
+    
+    // Fetch profile to get role
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single();
+      
+    res.json({ 
+       access_token: authData.session.access_token, 
+       token_type: 'bearer',
+       user: profile || authData.user 
+    });
+  } catch (e: any) {
+    res.status(400).json({ detail: e.message || 'Error verifying OTP' });
+  }
+});
+
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {

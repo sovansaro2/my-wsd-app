@@ -64,7 +64,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
             {error}
           </div>
         )}
-
         {success && (
           <div className="mb-6 rounded-2xl bg-emerald-50 p-4 text-[13px] text-emerald-600 border border-emerald-100/50">
             {success}

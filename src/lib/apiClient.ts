@@ -27,6 +27,7 @@ export const api = {
   // Auth
   login: (email: string, password: string) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   signup: (email: string, password: string, full_name: string, phone_number?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, phone_number }) }),
+  verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
   getMe: () => apiFetch('/api/auth/me'),
 
   // Financial

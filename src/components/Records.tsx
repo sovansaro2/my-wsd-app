@@ -112,7 +112,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
       const dataUrl = await toPng(reportRef.current, { 
-        useCORS: true,
         backgroundColor: '#ffffff',
         pixelRatio: 2,
         style: {
