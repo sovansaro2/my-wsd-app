@@ -7,8 +7,7 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toPng } from 'html-to-image';
 import { saveCertificate } from '../lib/certificateUtils';
-import { signBase64 } from '../lib/signBase64';
-import { logoBase64 } from '../lib/logoBase64';
+import { getImageDataUrl } from '../lib/utils';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -64,8 +63,14 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   const [notifyPublic, setNotifyPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Dynamic Image States
+  const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
+  const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
+
   useEffect(() => {
     fetchCategories();
+    getImageDataUrl('/logo.png').then(setLogoDataUrl);
+    getImageDataUrl('/Sign.png').then(setSignDataUrl);
   }, []);
 
   useEffect(() => {
@@ -175,7 +180,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     if (!certificateRef.current || !certificateRecord) return;
     setIsDownloading(true);
     try {
-      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
           if (img.complete) return Promise.resolve();
@@ -188,12 +193,14 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 2,
-        cacheBust: true,
+        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -232,7 +239,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     if (!certificateRef.current || !certificateRecord) return;
     setIsDownloading(true);
     try {
-      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
           if (img.complete) return Promise.resolve();
@@ -245,12 +252,14 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 2,
-        cacheBust: true,
+        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -723,7 +732,15 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                     <div className="relative mb-2 mt-2 w-full flex justify-center">
                       {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
-                         <img src={logoBase64} alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm"  />
+                         <div 
+                           className="w-[65px] h-[65px] mb-1 drop-shadow-sm"
+                           style={{
+                             backgroundImage: `url(${logoDataUrl})`,
+                             backgroundSize: 'contain',
+                             backgroundPosition: 'center',
+                             backgroundRepeat: 'no-repeat'
+                           }}
+                         />
                          <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
                          <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
                       </div>
@@ -779,7 +796,15 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                       <div className="text-center flex flex-col items-center">
                         <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
                         <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
-                          <img src={signBase64} alt="Signature"  className="max-h-full max-w-full object-contain" />
+                          <div 
+                            className="w-full h-full"
+                            style={{
+                              backgroundImage: `url(${signDataUrl})`,
+                              backgroundSize: 'contain',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat'
+                            }}
+                          />
                         </div>
                       </div>
                     </div>

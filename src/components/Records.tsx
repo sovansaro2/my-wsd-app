@@ -9,8 +9,7 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { saveCertificate } from '../lib/certificateUtils';
 import { saveReport } from '../lib/reportUtils';
-import { signBase64 } from '../lib/signBase64';
-import { logoBase64 } from '../lib/logoBase64';
+import { getImageDataUrl } from '../lib/utils';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -57,6 +56,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('income');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Dynamic Image States
+  const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
+  const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
+
   // Add Record Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newRecordType, setNewRecordType] = useState<'income' | 'expense'>('expense');
@@ -78,7 +81,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     if (!certificateRef.current || !certificateRecord) return;
     setIsDownloading(true);
     try {
-      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
           if (img.complete) return Promise.resolve();
@@ -96,7 +99,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        cacheBust: true,
+        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -130,7 +133,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     if (!certificateRef.current || !certificateRecord) return;
     setIsDownloading(true);
     try {
-      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
           if (img.complete) return Promise.resolve();
@@ -148,7 +151,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        cacheBust: true,
+        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -174,6 +177,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
   useEffect(() => {
     fetchPeriods();
+    getImageDataUrl('/logo.png').then(setLogoDataUrl);
+    getImageDataUrl('/Sign.png').then(setSignDataUrl);
   }, []);
 
   useEffect(() => {
@@ -216,7 +221,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     setIsDownloading(true);
     try {
       // Ensure all images are completely loaded and decoded before capture
-      const images = Array.from(reportRef.current.querySelectorAll('img'));
+      const images = Array.from(reportRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
           if (img.complete) return Promise.resolve();
@@ -229,12 +234,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
       
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 2,
-        cacheBust: true,
+        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -606,11 +613,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
               <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
               <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
-                <img 
-                  src={signBase64} 
-                  alt="Signature" 
-                  
-                  className="max-h-full max-w-full object-contain" 
+                <div 
+                  className="w-full h-full"
+                  style={{
+                    backgroundImage: `url(${signDataUrl})`,
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
                 />
               </div>
               <p className="font-moul text-lg">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
@@ -813,7 +823,15 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <div className="relative mb-2 mt-2 w-full flex justify-center">
                       {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
-                         <img src={logoBase64} alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm"  />
+                         <div 
+                           className="w-[65px] h-[65px] mb-1 drop-shadow-sm"
+                           style={{
+                             backgroundImage: `url(${logoDataUrl})`,
+                             backgroundSize: 'contain',
+                             backgroundPosition: 'center',
+                             backgroundRepeat: 'no-repeat'
+                           }}
+                         />
                          <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
                          <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
                       </div>
@@ -871,7 +889,15 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       <div className="text-center flex flex-col items-center">
                         <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
                         <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
-                          <img src={signBase64} alt="Signature"  className="max-h-full max-w-full object-contain" />
+                          <div 
+                            className="w-full h-full"
+                            style={{
+                              backgroundImage: `url(${signDataUrl})`,
+                              backgroundSize: 'contain',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat'
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
