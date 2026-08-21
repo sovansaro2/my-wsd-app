@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { saveReport } from '../lib/reportUtils';
+import { signBase64 } from '../lib/signBase64';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -64,22 +65,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [isSaving, setIsSaving] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [signBase64, setSignBase64] = useState<string>('');
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     fetchPeriods();
-    
-    // Pre-fetch signature image as base64 to ensure html2canvas captures it
-    fetch('/Sign.png')
-      .then(res => res.blob())
-      .then(blob => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setSignBase64(reader.result as string);
-        };
-        reader.readAsDataURL(blob);
-      })
-      .catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -121,9 +110,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     if (!reportRef.current || !selectedPeriod) return;
     setIsDownloading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
       const dataUrl = await toPng(reportRef.current, { 
-        cacheBust: true,
+        useCORS: true,
         backgroundColor: '#ffffff',
         pixelRatio: 2,
         style: {
@@ -140,7 +129,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           type: 'image/png',
           blob: blob
         });
-        alert('បានរក្សាទុករបាយការណ៍ដោយជោគជ័យ! សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល');
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
 
       } catch (e) {
         // Fallback to classic download if anything fails
@@ -433,9 +423,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
           <div className="grid grid-cols-2 gap-8 mb-8">
             {/* Income Section */}
-            <div>
+            <div className="flex flex-col">
               <h3 className="font-bold text-lg text-emerald-700 border-b-2 border-emerald-200 pb-2 mb-4">ប្រភពចំណូលបញ្ចី (+)</h3>
-              <div className="space-y-3 mb-4 min-h-[200px]">
+              <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {incomeRecords.length > 0 ? incomeRecords.map(r => (
                   <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-100 pb-2">
                     <span className="pr-4">{r.description}</span>
@@ -443,16 +433,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
                 )) : <div className="text-gray-400 italic">មិនមានទិន្នន័យចំណូល</div>}
               </div>
-              <div className="flex justify-between items-center pt-3 border-t-2 border-emerald-200 bg-emerald-50 p-3 rounded-lg">
+              <div className="flex justify-between items-center pt-3 border-t-2 border-emerald-200 bg-emerald-50 p-3 rounded-lg mt-auto">
                 <span className="font-bold text-emerald-900">សរុបចំណូល៖</span>
                 <span className="font-bold text-emerald-700 text-lg">{formatCurrency(totalIncome)}</span>
               </div>
             </div>
 
             {/* Expense Section */}
-            <div>
+            <div className="flex flex-col">
               <h3 className="font-bold text-lg text-rose-700 border-b-2 border-rose-200 pb-2 mb-4">ប្រភពចំណាយបញ្ចី (-)</h3>
-              <div className="space-y-3 mb-4 min-h-[200px]">
+              <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {expenseRecords.length > 0 ? expenseRecords.map(r => (
                   <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-100 pb-2">
                     <span className="pr-4">{r.description}</span>
@@ -460,7 +450,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
                 )) : <div className="text-gray-400 italic">មិនមានទិន្នន័យចំណាយ</div>}
               </div>
-              <div className="flex justify-between items-center pt-3 border-t-2 border-rose-200 bg-rose-50 p-3 rounded-lg">
+              <div className="flex justify-between items-center pt-3 border-t-2 border-rose-200 bg-rose-50 p-3 rounded-lg mt-auto">
                 <span className="font-bold text-rose-900">សរុបចំណាយ៖</span>
                 <span className="font-bold text-rose-700 text-lg">{formatCurrency(totalExpense)}</span>
               </div>
@@ -479,7 +469,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
               <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
               <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
-                <img src={signBase64 || "/Sign.png"} alt="Signature" className="max-h-full max-w-full object-contain" />
+                <img src={signBase64} alt="Signature" className="max-h-full max-w-full object-contain" />
               </div>
               <p className="font-moul text-lg">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
             </div>
@@ -611,6 +601,26 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Success Popup */}
+      <AnimatePresence>
+        {showSuccessPopup && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 20, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-white dark:bg-slate-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-emerald-100 dark:border-emerald-900/30 p-4 flex items-center gap-3 min-w-[320px] pointer-events-none"
+          >
+            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-emerald-800 dark:text-emerald-300 font-bold text-[15px]">ជោគជ័យ!</p>
+              <p className="text-emerald-600/80 dark:text-emerald-400/80 text-[13px] font-medium leading-snug">បានរក្សាទុករបាយការណ៍។ សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល។</p>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
