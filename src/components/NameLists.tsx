@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -39,6 +39,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [referrer, setReferrer] = useState('');
+  const [notifyPublic, setNotifyPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     setAmount('');
     setNote('');
     setReferrer('');
+    setNotifyPublic(false);
     setIsRecordModalOpen(true);
   };
 
@@ -98,6 +100,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     setAmount(record.amount.toString());
     setNote(record.note || '');
     setReferrer(record.referrer || '');
+    setNotifyPublic(false); // Notifications usually only on create, or optional on edit
     setIsRecordModalOpen(true);
   };
 
@@ -112,6 +115,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
         amount: parseFloat(amount),
         note: note.trim() || null,
         referrer: referrer.trim() || null,
+        ...(notifyPublic && !editingRecord ? { notify_public: true, category_name: selectedCategory.name } : {})
       };
 
       if (editingRecord) {
@@ -478,10 +482,31 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                   type="text"
                   value={referrer}
                   onChange={(e) => setReferrer(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder={t('list_ref_ph')}
                 />
               </div>
+
+              {!editingRecord && (
+                <div className="flex items-center gap-3 p-4 mt-2 bg-blue-50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
+                  <div className="flex-shrink-0">
+                    <Bell className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                    <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer"
+                      checked={notifyPublic}
+                      onChange={(e) => setNotifyPublic(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
+                  </label>
+                </div>
+              )}
             </div>
             
             <div className="p-5 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3 pb-24 sm:pb-5">

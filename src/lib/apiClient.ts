@@ -30,6 +30,8 @@ export const api = {
   verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
   getMe: () => apiFetch('/api/auth/me'),
 
+  getNotifications: () => apiFetch('/api/notifications'),
+
   // Financial
   getSeilPeriods: () => apiFetch('/api/seil-periods'),
   createSeilPeriod: (data: any) => apiFetch('/api/seil-periods', { method: 'POST', body: JSON.stringify(data) }),

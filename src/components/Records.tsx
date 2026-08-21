@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar } from 'lucide-react';
+import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -62,6 +62,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [newAmount, setNewAmount] = useState('');
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [newNote, setNewNote] = useState('');
+  const [newNotifyPublic, setNewNotifyPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -157,7 +158,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         description: newDescription,
         amount: parseFloat(newAmount.replace(/,/g, '')),
         record_date: newDate || null,
-        note: newNote || null
+        note: newNote || null,
+        ...(newNotifyPublic ? { notify_public: true, seil_name: selectedPeriod.name } : {})
       };
 
       await api.createFinancialRecord(recordData);
@@ -168,6 +170,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       setNewDescription('');
       setNewAmount('');
       setNewNote('');
+      setNewNotifyPublic(false);
     } catch (error) {
       console.error('Error saving record:', error);
       alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ: ' + (error.message || ''));
@@ -583,6 +586,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
                       />
                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                    <div className="flex-shrink-0">
+                      <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                      <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer"
+                        checked={newNotifyPublic}
+                        onChange={(e) => setNewNotifyPublic(e.target.checked)}
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500"></div>
+                    </label>
                   </div>
 
                   <button

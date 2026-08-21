@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
-import { ChevronDown, ArrowLeft, Plus, Edit2, Trash2, Loader2, X, FileText } from 'lucide-react';
+import { ChevronDown, ArrowLeft, Plus, Edit2, Trash2, Loader2, X, FileText, Bell } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -41,6 +41,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
   const [amount, setAmount] = useState('');
   const [recordDate, setRecordDate] = useState('');
   const [note, setNote] = useState('');
+  const [notifyPublic, setNotifyPublic] = useState(false);
   const [isSavingRecord, setIsSavingRecord] = useState(false);
 
   // Delete Modal State
@@ -102,6 +103,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
     setAmount('');
     setRecordDate(new Date().toISOString().split('T')[0]);
     setNote('');
+    setNotifyPublic(false);
     setIsRecordModalOpen(true);
   };
 
@@ -112,6 +114,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
     setAmount(record.amount.toString());
     setRecordDate(record.record_date || '');
     setNote(record.note || '');
+    setNotifyPublic(false); // Notifications usually only on create, or optional on edit
     setIsRecordModalOpen(true);
   };
 
@@ -127,7 +130,8 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
         description,
         amount: parseFloat(amount.replace(/,/g, '')),
         record_date: recordDate || null,
-        note: note || null
+        note: note || null,
+        ...(notifyPublic && !editingRecord ? { notify_public: true, seil_name: selectedPeriod.name } : {})
       };
 
       if (editingRecord) {
@@ -458,6 +462,28 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                   />
                 </div>
               </div>
+              
+              {!editingRecord && (
+                <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                  <div className="flex-shrink-0">
+                    <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                    <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer"
+                      checked={notifyPublic}
+                      onChange={(e) => setNotifyPublic(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500"></div>
+                  </label>
+                </div>
+              )}
+
               <div className="pt-2">
                 <button 
                   type="submit" 

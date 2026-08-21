@@ -43,9 +43,25 @@ router.get('/records', async (req, res) => {
 });
 
 router.post('/records', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('name_list_records').insert([req.body]).select();
+  const { notify_public, category_name, ...recordBody } = req.body;
+  const { data, error } = await supabaseAdmin.from('name_list_records').insert([recordBody]).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
+  
+  if (notify_public) {
+    try {
+      const n = data[0];
+      await supabaseAdmin.from('app_notifications').insert([{
+        title: 'ឈ្មោះថ្មីត្រូវបានបន្ថែមក្នុងបញ្ជី',
+        message: `${n.name} (${n.amount.toLocaleString()}៛) ក្នុង ${category_name || 'បញ្ជីឈ្មោះ'}`,
+        type: 'name_list',
+        target_tab: 'manage_name_lists'
+      }]);
+    } catch (err) {
+      console.error('Failed to insert notification:', err);
+    }
+  }
+  
   res.json(data[0]);
 });
 
