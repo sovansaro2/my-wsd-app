@@ -111,10 +111,24 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     if (!reportRef.current || !selectedPeriod) return;
     setIsDownloading(true);
     try {
+      // Ensure all images are completely loaded and decoded before capture
+      const images = Array.from(reportRef.current.querySelectorAll('img'));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      );
+      
       await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
+      
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
         pixelRatio: 2,
+        cacheBust: true,
         style: {
           margin: '0',
           width: '800px'
@@ -470,7 +484,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             <div className="flex flex-col items-center">
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
               <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
-              <div className="h-24 w-40 relative mb-2 flex items-center justify-center" style={{ backgroundImage: `url(${signBase64})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+              <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
+                <img 
+                  src={signBase64} 
+                  alt="Signature" 
+                  crossOrigin="anonymous"
+                  className="max-h-full max-w-full object-contain" 
+                />
               </div>
               <p className="font-moul text-lg">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
             </div>
