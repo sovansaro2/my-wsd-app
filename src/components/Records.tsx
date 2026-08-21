@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell } from 'lucide-react';
+import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -67,6 +67,100 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const reportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  // Certificate State
+  const [certificateRecord, setCertificateRecord] = useState<FinancialRecord | null>(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadCertificate = async () => {
+    if (!certificateRef.current || !certificateRecord) return;
+    setIsDownloading(true);
+    try {
+      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      );
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const dataUrl = await toPng(certificateRef.current, { 
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+        cacheBust: true,
+        style: { margin: '0' }
+      });
+      
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        await saveReport({
+          title: `អនុមោទនាប័ត្រ_${certificateRecord.description}`,
+          type: 'image/png',
+          blob: blob
+        });
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      } catch (e) {
+        const link = document.createElement('a');
+        link.download = `អនុមោទនាប័ត្រ_${certificateRecord.description}.png`;
+        link.href = dataUrl;
+        link.click();
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      }
+    } catch (err) {
+      console.error('Error downloading certificate', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleShareCertificate = async () => {
+    if (!certificateRef.current || !certificateRecord) return;
+    setIsDownloading(true);
+    try {
+      const images = Array.from(certificateRef.current.querySelectorAll('img'));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      );
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const dataUrl = await toPng(certificateRef.current, { 
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+        cacheBust: true,
+        style: { margin: '0' }
+      });
+      
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], `អនុមោទនាប័ត្រ_${certificateRecord.description}.png`, { type: 'image/png' });
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: 'អនុមោទនាប័ត្រ',
+          files: [file]
+        });
+      } else {
+        alert('មុខងារចែករំលែកមិនដំណើរការលើកម្មវិធីរុករកនេះទេ។');
+      }
+    } catch (err) {
+      console.error('Error sharing certificate', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     fetchPeriods();
@@ -402,12 +496,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
                   
                   <div className="flex justify-between items-end text-[12px] text-zinc-400 dark:text-slate-500 mt-1 pl-8.5">
-                    <span>{formatDate(record.record_date)}</span>
-                    {record.note && (
-                      <span className="bg-zinc-50 dark:bg-slate-800/50 border border-zinc-100 dark:border-slate-800 px-2 py-0.5 rounded-md text-[11px] truncate max-w-[140px] text-zinc-500 dark:text-slate-400">
-                        {record.note}
-                      </span>
-                    )}
+                    <div className="flex flex-col gap-1 items-start">
+                      <span>{formatDate(record.record_date)}</span>
+                      {record.note && (
+                        <span className="bg-zinc-50 dark:bg-slate-800/50 border border-zinc-100 dark:border-slate-800 px-2 py-0.5 rounded-md text-[11px] truncate max-w-[140px] text-zinc-500 dark:text-slate-400">
+                          {record.note}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {activeTab === 'income' && (
+                        <button 
+                          onClick={() => setCertificateRecord(record)}
+                          className="p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-md transition-colors focus:outline-none"
+                          title="ប័ណ្ណអនុមោទនា"
+                        >
+                          <Award className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -644,6 +751,143 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         )}
       </AnimatePresence>
 
+      {/* Certificate Modal */}
+      <AnimatePresence>
+        {certificateRecord && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-gray-100 rounded-2xl sm:rounded-3xl w-full max-w-4xl flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sm:rounded-t-3xl rounded-t-2xl shrink-0 z-10 relative">
+                <h2 className="text-[16px] font-bold text-gray-900 font-battambang">លិខិតថ្លែងអំណរគុណ</h2>
+                <button
+                  onClick={() => setCertificateRecord(null)}
+                  className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#f0f2f5]">
+                {/* Responsive scaling wrapper */}
+                <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
+                  {/* Certificate Container (Fixed A5 Landscape Size: 794x559 px) */}
+                  <div 
+                    ref={certificateRef}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-[794px] h-[559px] origin-top scale-[0.42] sm:scale-100 bg-white shadow-xl flex flex-col p-6 sm:p-8 border-[12px] border-orange-50/50"
+                    style={{
+                      backgroundColor: '#ffffff'
+                    }}
+                  >
+                  {/* Decorative Borders */}
+                  <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-orange-500/80"></div>
+                  <div className="absolute top-[12px] left-[12px] right-[12px] bottom-[12px] border border-orange-300/60"></div>
+                  
+                  {/* Corner Ornaments */}
+                  <div className="absolute top-1 left-1 w-10 h-10 border-t-4 border-l-4 border-orange-600"></div>
+                  <div className="absolute top-1 right-1 w-10 h-10 border-t-4 border-r-4 border-orange-600"></div>
+                  <div className="absolute bottom-1 left-1 w-10 h-10 border-b-4 border-l-4 border-orange-600"></div>
+                  <div className="absolute bottom-1 right-1 w-10 h-10 border-b-4 border-r-4 border-orange-600"></div>
+
+                  <div className="relative z-10 flex flex-col h-full text-center px-4 py-0 justify-between">
+                    {/* Header */}
+                    <div className="relative mb-2 mt-2 w-full flex justify-center">
+                      {/* Logo & Temple Name - Top Left */}
+                      <div className="absolute left-2 -top-1 flex flex-col items-center">
+                         <img src="/logo.png" alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm" crossOrigin="anonymous" />
+                         <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
+                         <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
+                      </div>
+
+                      {/* Title - Center */}
+                      <div className="flex flex-col items-center pt-3">
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-sm leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <div className="flex items-center justify-center space-x-3">
+                          <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
+                          <span className="text-orange-500 text-xl font-bold">៙ ❖ ៚</span>
+                          <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
+                      <p className="text-[17px] font-battambang leading-snug mb-2 mt-4 text-orange-900">
+                        អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
+                      </p>
+                      
+                      <div className="px-6 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px] max-w-[700px] flex justify-center">
+                        <h3 
+                          className="text-indigo-900 leading-tight pb-1 whitespace-nowrap" 
+                          style={{ 
+                            fontFamily: '"Khmer OS Kulen", Koulen, cursive',
+                            fontSize: certificateRecord.description.length > 40 ? '22px' : certificateRecord.description.length > 30 ? '26px' : certificateRecord.description.length > 20 ? '32px' : '40px'
+                          }}
+                        >
+                          {certificateRecord.description}
+                        </h3>
+                      </div>
+                      
+                      <p className="text-[16px] font-battambang leading-snug max-w-[650px] mx-auto text-gray-700">
+                        ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className="font-bold text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
+                        {certificateRecord.note ? (
+                          <span> ផ្នែក <span className="font-bold text-indigo-800">"{certificateRecord.note}"</span></span>
+                        ) : (
+                          <span> ផ្នែក <span className="font-bold text-indigo-800">"ចំណូល"</span></span>
+                        )}
+                        <br/>ដើម្បីចូលរួមកសាងទីអារាម និងទ្រទ្រង់វិស័យព្រះពុទ្ធសាសនា។
+                      </p>
+
+                      {/* Blessing */}
+                      <p className="text-[14px] font-battambang italic leading-snug max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
+                        សូមបួងសួងដល់គុណព្រះរតនត្រ័យ និងវត្ថុស័ក្តិសិទ្ធិក្នុងលោក សូមជួយប្រោះព្រំសព្ទសាធុការពរជ័យ បវរសួស្ដី សិរីមង្គល វិបុលសុខ មហាប្រសើរ ជូនដល់ម្ចាស់ទាន ព្រមទាំងក្រុមគ្រួសារ សូមប្រកបដោយពុទ្ធពរទាំង ៤ ប្រការគឺ អាយុ វណ្ណៈ សុខៈ និងពលៈ កុំបីឃ្លៀងឃ្លាតឡើយ។
+                      </p>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="w-full flex justify-between items-end px-8 mb-2">
+                      <div className="text-left pb-2">
+                        <p className="text-[15px] font-medium text-gray-800 font-battambang">{getKhmerDate()}</p>
+                      </div>
+                      <div className="text-center flex flex-col items-center">
+                        <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
+                        <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
+                          <img src={signBase64} alt="Signature" crossOrigin="anonymous" className="max-h-full max-w-full object-contain" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="p-4 sm:p-6 border-t border-gray-200 bg-white sm:rounded-b-3xl rounded-b-2xl flex flex-col sm:flex-row gap-3 justify-end relative z-10 shrink-0">
+                <button
+                  onClick={handleShareCertificate}
+                  disabled={isDownloading}
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-battambang disabled:opacity-70"
+                >
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Share2 className="w-5 h-5" />}
+                  ចែករំលែក
+                </button>
+                <button
+                  onClick={handleDownloadCertificate}
+                  disabled={isDownloading}
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-battambang disabled:opacity-70"
+                >
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                  ទាញយក
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       {/* Success Popup */}
       <AnimatePresence>
         {showSuccessPopup && (

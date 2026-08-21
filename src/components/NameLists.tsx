@@ -710,30 +710,47 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
                   <div className="relative z-10 flex flex-col h-full text-center px-4 py-0 justify-between">
                     {/* Header */}
-                    <div className="mb-2 mt-2">
-                      <h1 className="text-[32px] font-moul text-orange-700 mb-2 drop-shadow-sm leading-tight tracking-wide">លិខិតថ្លែងអំណរគុណ</h1>
-                      <div className="flex items-center justify-center space-x-4">
-                        <div className="h-[1px] bg-orange-300 w-16"></div>
-                        <h2 className="text-[17px] font-bold text-orange-900 font-battambang">វត្តស្នាយដួច</h2>
-                        <div className="h-[1px] bg-orange-300 w-16"></div>
+                    <div className="relative mb-2 mt-2 w-full flex justify-center">
+                      {/* Logo & Temple Name - Top Left */}
+                      <div className="absolute left-2 -top-1 flex flex-col items-center">
+                         <img src="/logo.png" alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm" crossOrigin="anonymous" />
+                         <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
+                         <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
+                      </div>
+
+                      {/* Title - Center */}
+                      <div className="flex flex-col items-center pt-3">
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-sm leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <div className="flex items-center justify-center space-x-3">
+                          <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
+                          <span className="text-orange-500 text-xl font-bold">៙ ❖ ៚</span>
+                          <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Content */}
                     <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
-                      <p className="text-[16px] font-battambang leading-snug mb-2">
-                        គណៈកម្មការ និងពុទ្ធបរិស័ទចំណុះជើងវត្តស្នាយដួច<br/>
-                        សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រៅបំផុតចំពោះ៖
+                      <p className="text-[17px] font-battambang leading-snug mb-2 mt-4 text-orange-900">
+                        អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
                       </p>
                       
-                      <div className="px-10 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px]">
-                        <h3 className="text-[34px] font-moul text-indigo-900 leading-normal">{certificateRecord.name}</h3>
+                      <div className="px-6 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px] max-w-[700px] flex justify-center">
+                        <h3 
+                          className="text-indigo-900 leading-tight pb-1 whitespace-nowrap" 
+                          style={{ 
+                            fontFamily: '"Khmer OS Kulen", Koulen, cursive',
+                            fontSize: certificateRecord.name.length > 40 ? '22px' : certificateRecord.name.length > 30 ? '26px' : certificateRecord.name.length > 20 ? '32px' : '40px'
+                          }}
+                        >
+                          {certificateRecord.name}
+                        </h3>
                       </div>
                       
                       <p className="text-[16px] font-battambang leading-snug max-w-[650px] mx-auto text-gray-700">
                         ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className="font-bold text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
                         {selectedCategory?.name && (
-                          <span> ក្នុងកម្មវិធី <span className="font-bold text-indigo-800">"{selectedCategory.name}"</span></span>
+                          <span> ផ្នែក <span className="font-bold text-indigo-800">"{selectedCategory.name}"</span></span>
                         )}
                         <br/>ដើម្បីចូលរួមកសាងទីអារាម និងទ្រទ្រង់វិស័យព្រះពុទ្ធសាសនា។
                       </p>
@@ -750,7 +767,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                         <p className="text-[15px] font-medium text-gray-800 font-battambang">{getKhmerDate()}</p>
                       </div>
                       <div className="text-center flex flex-col items-center">
-                        <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">គណៈកម្មការវត្ត</p>
+                        <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
                         <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
                           <img src={signBase64} alt="Signature" crossOrigin="anonymous" className="max-h-full max-w-full object-contain" />
                         </div>
