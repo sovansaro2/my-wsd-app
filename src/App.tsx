@@ -241,47 +241,87 @@ export default function App() {
       
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-white/5 px-6 py-2 pb-safe z-50 transition-colors duration-200">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-t border-gray-200 dark:border-white/5 px-4 py-2 pb-safe z-50 transition-colors duration-200">
         <div className="flex justify-between items-center max-w-lg mx-auto">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('home')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'home' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'home' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            <Home className="h-6 w-6" />
+            {activeTab === 'home' && (
+              <motion.div
+                layoutId="bottom-nav-indicator"
+                className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
+            <Home className="h-[22px] w-[22px]" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_home')}</span>
-          </button>
+          </motion.button>
           
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('records')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'records' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'records' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            <CircleDollarSign className="h-6 w-6" />
+            {activeTab === 'records' && (
+              <motion.div
+                layoutId="bottom-nav-indicator"
+                className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
+            <CircleDollarSign className="h-[22px] w-[22px]" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_finance')}</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('categories')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'categories' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'categories' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            <List className="h-6 w-6" />
+            {activeTab === 'categories' && (
+              <motion.div
+                layoutId="bottom-nav-indicator"
+                className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
+            <List className="h-[22px] w-[22px]" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_list')}</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('reports')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${activeTab === 'reports' ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'reports' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            <FileText className="h-6 w-6" />
+            {activeTab === 'reports' && (
+              <motion.div
+                layoutId="bottom-nav-indicator"
+                className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
+            <FileText className="h-[22px] w-[22px]" />
             <span className="text-[10px] font-medium font-battambang">របាយការណ៍</span>
-          </button>
+          </motion.button>
           
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('account')}
-            className={`flex flex-col items-center gap-1 p-2 transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500' : 'text-gray-400 dark:text-slate-500'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            <User className="h-6 w-6" />
+            {['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) && (
+              <motion.div
+                layoutId="bottom-nav-indicator"
+                className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
+            <User className="h-[22px] w-[22px]" />
             <span className="text-[10px] font-medium font-battambang">{t('nav_account')}</span>
-          </button>
+          </motion.button>
         </div>
       </nav>
       

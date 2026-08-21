@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Settings, Camera, UserCircle2, Loader2, Save, ChevronRight, ArrowLeft, FileText, Wallet, Globe, Palette, Info, X, Crown, Copy, ShieldCheck } from 'lucide-react';
+import { LogOut, Settings, Camera, UserCircle2, Loader2, Save, ChevronRight, ArrowLeft, FileText, Wallet, Globe, Palette, Info, X, Crown, Copy, ShieldCheck, Check } from 'lucide-react';
 import { api } from '../lib/apiClient';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -33,6 +33,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const { theme: currentTheme, setTheme: setCurrentTheme } = useTheme();
   
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -249,7 +250,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
     <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-24 font-battambang bg-[#F8F9FD] dark:bg-slate-950 transition-colors duration-200 min-h-full">
       
       {/* Profile Summary Card */}
-      <div className="relative mb-8 mt-2 bg-white dark:bg-slate-900 transition-colors duration-200 rounded-[2rem] border border-gray-100 dark:border-slate-800 overflow-hidden shadow-sm">
+      <div className="relative mb-8 mt-2 bg-white dark:bg-slate-900 transition-colors duration-200 rounded-[2rem] border border-gray-100/80 dark:border-slate-800/80 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.02)] dark:shadow-none">
         {/* Soft decorative background shapes */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 dark:bg-indigo-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-70 translate-x-1/3 -translate-y-1/3"></div>
         <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-100 dark:bg-purple-900/30 rounded-tl-full opacity-60 dark:opacity-40"></div>
@@ -285,16 +286,23 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
               <span>{phone || t('profile_no_phone')}</span>
               {phone && (
                 <button 
-                  onClick={() => navigator.clipboard.writeText(phone)}
-                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(phone);
+                      setIsCopied(true);
+                      setTimeout(() => setIsCopied(false), 2000);
+                    } catch (err) {
+                      console.error('Failed to copy', err);
+                    }
+                  }}
+                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
                   title="ចម្លងលេខទូរស័ព្ទ"
                 >
-                  <Copy className="w-3.5 h-3.5" />
+                  {isCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
               )}
             </div>
             <div className="inline-flex items-center space-x-1.5 bg-orange-50 text-orange-500 px-3 py-1 rounded-full text-[13px] font-semibold border border-orange-100/50">
-              <Crown className="w-4 h-4" />
               <span>{userRole === 'admin' ? t('profile_role_admin') : t('profile_role_user')}</span>
             </div>
           </div>
@@ -304,7 +312,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
       {/* Profile Section */}
       <div className="mb-4">
         <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">{t('profile_title')}</h4>
-        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-gray-100/50 dark:border-slate-800/50 dark:shadow-none overflow-hidden">
           <button 
             onClick={() => setIsEditingView(true)} 
             className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none group"
@@ -324,7 +332,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
       {userRole === 'admin' && (
       <div className="mb-4">
         <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">{t('profile_settings')}</h4>
-        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
+        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-gray-100/50 dark:border-slate-800/50 dark:shadow-none overflow-hidden flex flex-col divide-y divide-gray-50 dark:divide-slate-800/50">
           <button 
             onClick={onManageFinancials} 
             className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none"
@@ -357,7 +365,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
       {/* Others Section */}
       <div className="mb-4">
         <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">{t('profile_others')}</h4>
-        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-sm overflow-hidden flex flex-col divide-y divide-gray-50">
+        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-gray-100/50 dark:border-slate-800/50 dark:shadow-none overflow-hidden flex flex-col divide-y divide-gray-50 dark:divide-slate-800/50">
           <button 
             onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
             className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none"
@@ -491,7 +499,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                 <Info className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
               </div>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>វត្តស្នាយដួច</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6 flex-shrink-0">{t('about_version')} 1.0.0</p>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6 flex-shrink-0">{t('about_version')} 1.1.0</p>
               
               <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-4 w-full text-left space-y-3 mb-6 flex-shrink-0">
                 <div>
@@ -512,7 +520,7 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
                     <span className="text-[11px] font-medium bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md">TypeScript</span>
                     <span className="text-[11px] font-medium bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">Vite</span>
                     <span className="text-[11px] font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-md">Supabase</span>
-                    <span className="text-[11px] font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md">Python/FastAPI</span>
+                    <span className="text-[11px] font-medium bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">NodeJS</span>
                   </div>
                 </div>
               </div>

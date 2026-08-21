@@ -101,8 +101,8 @@ const translations = {
     profile_password_ph: 'ទុកទទេបើមិនចង់ដូរពាក្យសម្ងាត់ថ្មី',
     profile_save_changes: 'រក្សាទុកការកែប្រែ',
     profile_saving: 'កំពុងរក្សាទុក...',
-    profile_role_admin: 'អ្នកគ្រប់គ្រង (ADMIN)',
-    profile_role_user: 'អ្នកប្រើប្រាស់ (USER)',
+    profile_role_admin: 'អ្នកគ្រប់គ្រង',
+    profile_role_user: 'អ្នកប្រើប្រាស់',
     profile_no_phone: 'មិនមានលេខទូរស័ព្ទ',
 
     install_title: 'ទាញយកកម្មវិធី',
@@ -201,8 +201,8 @@ const translations = {
     profile_password_ph: 'Leave blank to keep current password',
     profile_save_changes: 'Save Changes',
     profile_saving: 'Saving...',
-    profile_role_admin: 'Administrator (ADMIN)',
-    profile_role_user: 'User (USER)',
+    profile_role_admin: 'Administrator',
+    profile_role_user: 'User',
     profile_no_phone: 'No phone number',
 
     install_title: 'Install App',
