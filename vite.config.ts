@@ -13,7 +13,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon.svg'],
-      manifest: {
+      workbox: { maximumFileSizeToCacheInBytes: 5000000 }, manifest: {
         name: 'វត្តស្នាយដួច (Wat Snay Duoc)',
         short_name: 'វត្តស្នាយដួច',
         description: 'កម្មវិធីគ្រប់គ្រងទិន្នន័យវត្តស្នាយដួច',

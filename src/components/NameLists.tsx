@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { toPng } from 'html-to-image';
 import { saveCertificate } from '../lib/certificateUtils';
 import { signBase64 } from '../lib/signBase64';
+import { logoBase64 } from '../lib/logoBase64';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -722,7 +723,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                     <div className="relative mb-2 mt-2 w-full flex justify-center">
                       {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
-                         <img src="/logo.png" alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm" crossOrigin="anonymous" />
+                         <img src={logoBase64} alt="Logo" className="w-[65px] h-[65px] object-contain mb-1 drop-shadow-sm"  />
                          <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
                          <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
                       </div>
@@ -778,7 +779,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                       <div className="text-center flex flex-col items-center">
                         <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
                         <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
-                          <img src={signBase64} alt="Signature" crossOrigin="anonymous" className="max-h-full max-w-full object-contain" />
+                          <img src={signBase64} alt="Signature"  className="max-h-full max-w-full object-contain" />
                         </div>
                       </div>
                     </div>
