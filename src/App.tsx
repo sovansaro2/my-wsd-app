@@ -9,6 +9,7 @@ import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
 
 import AccountProfile from './components/AccountProfile';
+import Certificates from './components/Certificates';
 import ManageNameLists from './components/ManageNameLists';
 import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
@@ -18,7 +19,7 @@ import InstallPrompt from './components/InstallPrompt';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -223,9 +224,14 @@ export default function App() {
     
     onManageFinancials={() => setActiveTab('manage_financials')}
     onManageNameLists={() => setActiveTab('manage_name_lists')}
+    onCertificates={() => setActiveTab('certificates')}
   />
             )}
             
+            {activeTab === 'certificates' && (
+              <Certificates onBack={() => setActiveTab('account')} />
+            )}
+
             {/* Admin Management Views */}
             {activeTab === 'manage_financials' && userRole === 'admin' && (
               <ManageFinancialRecords onBack={() => setActiveTab('account')} />

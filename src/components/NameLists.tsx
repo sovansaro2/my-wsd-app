@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toPng } from 'html-to-image';
-import { saveReport } from '../lib/reportUtils';
+import { saveCertificate } from '../lib/certificateUtils';
 import { signBase64 } from '../lib/signBase64';
 
 const toKhmerNum = (num: number | string) => {
@@ -200,8 +200,8 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       try {
         const blob = await (await fetch(dataUrl)).blob();
         
-        await saveReport({
-          title: `អនុមោទនាប័ត្រ_${certificateRecord.name}`,
+        await saveCertificate({
+          title: certificateRecord.name,
           type: 'image/png',
           blob: blob
         });
@@ -210,7 +210,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       } catch (e) {
         // Fallback for download
         const link = document.createElement('a');
-        link.download = `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`;
+        link.download = `${certificateRecord.name}.png`;
         link.href = dataUrl;
         link.click();
         setShowSuccessPopup(true);

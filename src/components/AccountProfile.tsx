@@ -14,9 +14,10 @@ interface AccountProfileProps {
   
   onManageFinancials?: () => void;
   onManageNameLists?: () => void;
+  onCertificates?: () => void;
 }
 
-export default function AccountProfile({ userRole, onLogout, onManageFinancials, onManageNameLists }: AccountProfileProps) {
+export default function AccountProfile({ userRole, onLogout, onManageFinancials, onManageNameLists, onCertificates }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
@@ -333,6 +334,18 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
       <div className="mb-4">
         <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">{t('profile_settings')}</h4>
         <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-gray-100/50 dark:border-slate-800/50 dark:shadow-none overflow-hidden flex flex-col divide-y divide-gray-50 dark:divide-slate-800/50">
+          <button 
+            onClick={onCertificates} 
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-orange-50/80 p-2.5 rounded-xl text-orange-600">
+                <FileText className="w-5 h-5"/>
+              </div>
+              <span className="text-[15px] font-bold text-gray-800 dark:text-slate-200">លិខិតថ្លែងអំណរគុណ</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
           <button 
             onClick={onManageFinancials} 
             className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none"

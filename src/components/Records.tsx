@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
+import { saveCertificate } from '../lib/certificateUtils';
 import { saveReport } from '../lib/reportUtils';
 import { signBase64 } from '../lib/signBase64';
 
@@ -98,8 +99,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       try {
         const blob = await (await fetch(dataUrl)).blob();
-        await saveReport({
-          title: `អនុមោទនាប័ត្រ_${certificateRecord.description}`,
+        await saveCertificate({
+          title: certificateRecord.description,
           type: 'image/png',
           blob: blob
         });
@@ -107,7 +108,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (e) {
         const link = document.createElement('a');
-        link.download = `អនុមោទនាប័ត្រ_${certificateRecord.description}.png`;
+        link.download = `${certificateRecord.description}.png`;
         link.href = dataUrl;
         link.click();
         setShowSuccessPopup(true);
