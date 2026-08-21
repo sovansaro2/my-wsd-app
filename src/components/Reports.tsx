@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File } from 'lucide-react';
+import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File, X, AlertTriangle } from 'lucide-react';
 import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../lib/reportUtils';
 import { useLanguage } from '../contexts/LanguageContext';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Reports() {
   const { t } = useLanguage();
   const [reports, setReports] = useState<SavedReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reportToDelete, setReportToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadReports();
@@ -31,9 +33,10 @@ export default function Reports() {
     await shareOrDownloadFile(report.blob, `${report.title}.${ext}`);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('តើអ្នកពិតជាចង់លុបរបាយការណ៍នេះមែនទេ?')) {
-      await deleteReport(id);
+  const confirmDelete = async () => {
+    if (reportToDelete) {
+      await deleteReport(reportToDelete);
+      setReportToDelete(null);
       loadReports();
     }
   };
@@ -67,7 +70,7 @@ export default function Reports() {
                 <button onClick={() => handleDownload(report)} className="p-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100">
                   <Download className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleDelete(report.id)} className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100">
+                <button onClick={() => setReportToDelete(report.id)} className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
@@ -75,6 +78,51 @@ export default function Reports() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {reportToDelete && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setReportToDelete(null)}
+              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">បញ្ជាក់ការលុប</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                  តើអ្នកពិតជាចង់លុបរបាយការណ៍នេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
+                </p>
+                <div className="flex w-full space-x-3">
+                  <button
+                    onClick={() => setReportToDelete(null)}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    បោះបង់
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
+                  >
+                    លុប
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
