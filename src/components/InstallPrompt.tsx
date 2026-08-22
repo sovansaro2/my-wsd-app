@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, X, Share, MoreHorizontal, PlusSquare, ChevronDown } from 'lucide-react';
+import { Download, X, Share, MoreHorizontal, PlusSquare, ChevronDown, Copy, Check, ExternalLink, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
+    const userAgent = window.navigator.userAgent || window.navigator.vendor || (window as any).opera;
+    
+    // Detect In-App Browser (Facebook, Messenger, Telegram, Line, etc.)
+    const inAppRegex = /FBAN|FBAV|Instagram|LinkedInApp|Snapchat|Viber|Line|MicroMessenger|Telegram|Twitter|Threads/i;
+    if (inAppRegex.test(userAgent)) {
+      setIsInAppBrowser(true);
+      setShowPrompt(true);
+      return; // Stop here for in-app browsers
+    }
+
     // Check if it's already installed (standalone mode)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                          (window.navigator as any).standalone || 
@@ -30,8 +42,7 @@ export default function InstallPrompt() {
     }
 
     // Detect iOS
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent.toLowerCase());
     
     if (isIosDevice) {
       setIsIOS(true);
@@ -78,10 +89,91 @@ export default function InstallPrompt() {
     setShowPrompt(false);
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <AnimatePresence>
       {showPrompt && (
-        isIOS ? (
+        isInAppBrowser ? (
+          // In-App Browser Modal (Facebook, Telegram, etc.)
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleClose}
+              className="fixed inset-0 bg-black/70 z-[100] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="bg-indigo-600 p-6 flex flex-col items-center justify-center relative">
+                <button 
+                  onClick={handleClose}
+                  className="absolute top-3 right-3 text-white/80 hover:text-white bg-black/10 hover:bg-black/20 rounded-full p-1.5 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-3 overflow-hidden text-indigo-600">
+                  <Globe className="w-8 h-8" />
+                </div>
+                <h3 className="text-white font-bold text-lg text-center font-battambang leading-tight">
+                  សូមបើកជាមួយ Browser ក្រៅ
+                </h3>
+                <p className="text-indigo-100 text-[13px] text-center mt-2 font-battambang">
+                  ដើម្បីអាចដំឡើង App មកលើអេក្រង់ដើមបាន (Safari ឬ Chrome)
+                </p>
+              </div>
+              
+              <div className="p-6">
+                <ul className="space-y-4 font-battambang">
+                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">1</div>
+                    <p>ចុចសញ្ញាចុចបី <MoreHorizontal className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded" /> ឬ <strong>Share</strong> <Share className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded p-0.5" /> នៅជ្រុងអេក្រង់</p>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">2</div>
+                    <p>ជ្រើសរើសយក <strong>Open in Safari</strong> <ExternalLink className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded p-0.5" /> (iOS) ឬ <strong>Open in Chrome</strong> (Android)</p>
+                  </li>
+                </ul>
+
+                <div className="mt-6 flex flex-col gap-3">
+                  <button 
+                    onClick={handleCopyLink}
+                    className={`w-full py-3 px-4 flex items-center justify-center gap-2 font-bold rounded-xl transition-colors font-battambang ${
+                      copied 
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                        : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400'
+                    }`}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-5 h-5" /> បានចម្លងលីងរួចរាល់
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5" /> ចម្លងលីង (Copy Link)
+                      </>
+                    )}
+                  </button>
+                  <button 
+                    onClick={handleClose}
+                    className="w-full py-3 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-white font-bold rounded-xl transition-colors font-battambang"
+                  >
+                    យល់ព្រម
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        ) : isIOS ? (
           // iOS Modal View
           <>
             <motion.div
