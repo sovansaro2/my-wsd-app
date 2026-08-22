@@ -114,7 +114,12 @@ export default function App() {
   }
 
   if (!userRole) {
-    return <AuthComponent onLogin={(role) => setUserRole(role)} />;
+    return (
+      <>
+        <AuthComponent onLogin={(role) => setUserRole(role)} />
+        <InstallPrompt />
+      </>
+    );
   }
 
   return (
