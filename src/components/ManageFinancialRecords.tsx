@@ -321,40 +321,68 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
 
               {/* Records List */}
               <div className="px-4 sm:px-6 pb-28 space-y-3">
-                {records.map((record) => (
-                  <div key={record.id} className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm dark:shadow-none border border-gray-100 dark:border-slate-800/80 flex items-center justify-between">
-                    <div className="flex-1 min-w-0 pr-3">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className={`w-2 h-2 rounded-full ${record.type === 'income' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                        <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight truncate">{record.description}</h3>
-                      </div>
-                      <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 pl-4">
-                        <span className={`font-bold ${record.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                          {record.type === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
-                        </span>
-                        {record.record_date && <span>• {formatDate(record.record_date)}</span>}
-                      </div>
+                {records.length === 0 ? (
+                  <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm">មិនមានទិន្នន័យ</div>
+                ) : (
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">បរិយាយ</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap">សកម្មភាព</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                          {records.map((record) => (
+                            <tr
+                              key={record.id}
+                              className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                            >
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                                <div className="flex flex-col justify-center">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`w-2 h-2 rounded-full shrink-0 ${record.type === 'income' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                                    <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
+                                      {record.description}
+                                    </span>
+                                  </div>
+                                  <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1 pl-4">{formatDate(record.record_date)}</span>
+                                  {record.note && (
+                                    <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 pl-4 line-clamp-1">
+                                      <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
+                                      {record.note}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                                <span className={`font-bold text-[14px] sm:text-[15px] whitespace-nowrap ${record.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                                  {record.type === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
+                                </span>
+                              </td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                                <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                  <button 
+                                    onClick={() => openEditRecordModal(record)}
+                                    className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
+                                  >
+                                    <Edit2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeleteRecord(record.id)}
+                                    className="p-1 sm:p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-900/30 rounded-lg transition-colors focus:outline-none"
+                                  >
+                                    <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button 
-                        onClick={() => openEditRecordModal(record)}
-                        className="p-2 text-zinc-400 dark:text-slate-500 bg-zinc-50 dark:bg-slate-800/50 hover:bg-zinc-100 dark:bg-slate-800 hover:text-zinc-900 dark:text-white rounded-full transition-colors focus:outline-none"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => confirmDelete(record.id)}
-                        className="p-2 text-zinc-400 dark:text-slate-500 bg-rose-50 hover:bg-rose-100 hover:text-rose-600 rounded-full transition-colors focus:outline-none"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {records.length === 0 && (
-                  <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-[15px]">
-                    មិនមានទិន្នន័យក្នុងសីលនេះទេ
                   </div>
                 )}
               </div>
@@ -364,337 +392,201 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
       )}
 
       {/* Floating Add Button */}
-      {periods.length > 0 && !isLoading && (
-        <button 
-          onClick={openAddRecordModal}
-          className="absolute bottom-6 right-6 sm:right-[calc(50%-23rem)] w-14 h-14 bg-zinc-900 dark:bg-orange-600 text-white rounded-full shadow-[0_4px_14px_0_rgba(24,24,27,0.39)] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-30"
-        >
-          <Plus className="w-6 h-6" />
-        </button>
+      {!loading && !error && selectedPeriod && (
+        <div className="fixed bottom-24 right-4 sm:right-6 sm:bottom-6 z-40">
+          <button 
+            onClick={openAddRecordModal}
+            className="w-14 h-14 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-orange-600/30 transition-all active:scale-95 focus:outline-none"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        </div>
       )}
 
-      {/* Record Form Modal */}
+      {/* Modals */}
       <AnimatePresence>
-      {isRecordModalOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setIsRecordModalOpen(false)}
-          className="fixed inset-0 z-[100] bg-zinc-900 dark:bg-orange-600/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
-        >
-          <motion.div 
-            initial={{ y: "100%", opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: "100%", opacity: 0, scale: 0.95 }}
-            transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+        {isSeilModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSeilModalOpen(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
           >
-            <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-slate-800/60">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-white">{editingRecord ? 'កែប្រែទិន្នន័យ' : 'បន្ថែមទិន្នន័យថ្មី'}</h3>
-              <button onClick={() => setIsRecordModalOpen(false)} className="p-2 rounded-full hover:bg-zinc-100 dark:bg-slate-800 text-zinc-400 dark:text-slate-500 hover:text-zinc-600 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={saveRecord} className="p-5 space-y-4">
-              {/* Type Switcher */}
-              <div className="flex bg-zinc-100 dark:bg-slate-800 p-1 rounded-2xl">
-                <button
-                  type="button"
-                  onClick={() => setRecordType('income')}
-                  className={`flex-1 py-2.5 text-[15px] font-semibold rounded-xl transition-all ${recordType === 'income' ? 'bg-white dark:bg-slate-900 text-emerald-600 shadow-sm dark:shadow-none' : 'text-zinc-500 dark:text-slate-400'}`}
+            <motion.div
+              initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            >
+              <div className="p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white">
+                  កែប្រែឈ្មោះសីល
+                </h3>
+                <button 
+                  onClick={() => setIsSeilModalOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
                 >
-                  ចំណូល
+                  <X className="w-5 h-5" />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setRecordType('expense')}
-                  className={`flex-1 py-2.5 text-[15px] font-semibold rounded-xl transition-all ${recordType === 'expense' ? 'bg-white dark:bg-slate-900 text-rose-600 shadow-sm dark:shadow-none' : 'text-zinc-500 dark:text-slate-400'}`}
-                >
-                  ចំណាយ
-                </button>
-              </div>
-
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">បរិយាយ (ឈ្មោះ/មុខទំនិញ)</label>
-                <input 
-                  type="text" 
-                  required
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="ឧ. លោកយាយ ក, ទិញទឹកសុទ្ធ..."
-                  className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">ចំនួនទឹកប្រាក់ (រៀល)</label>
-                <input 
-                  type="number" 
-                  required
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="ឧ. 100000"
-                  className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">កាលបរិច្ឆេទ</label>
-                  <input 
-                    type="date" 
-                    value={recordDate}
-                    onChange={(e) => setRecordDate(e.target.value)}
-                    className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">ចំណាំផ្សេងៗ</label>
-                  <input 
-                    type="text" 
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="មិនចាំបាច់ក៏បាន"
-                    className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                  />
-                </div>
               </div>
               
-              {!editingRecord && (
-                <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
-                  <div className="flex-shrink-0">
-                    <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
-                    <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer"
-                      checked={notifyPublic}
-                      onChange={(e) => setNotifyPublic(e.target.checked)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500"></div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    ឈ្មោះសីល (ឧ. សីល ៨រោច)
                   </label>
+                  <input
+                    type="text"
+                    value={seilName}
+                    onChange={(e) => setSeilName(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    placeholder="បញ្ចូលឈ្មោះសីល..."
+                  />
                 </div>
-              )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    កាលបរិច្ឆេទ (ឧ. ១៤ កុម្ភៈ ២០២៥)
+                  </label>
+                  <input
+                    type="text"
+                    value={seilDateRange}
+                    onChange={(e) => setSeilDateRange(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    placeholder="បញ្ចូលកាលបរិច្ឆេទ..."
+                  />
+                </div>
+              </div>
 
-              <div className="pt-2">
-                <button 
-                  type="submit" 
-                  disabled={isSavingRecord}
-                  className="w-full py-4 bg-zinc-900 dark:bg-orange-600 hover:bg-zinc-800 text-white rounded-2xl font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm dark:shadow-none text-[15px]"
+              <div className="p-5 pt-2 bg-gray-50 dark:bg-slate-800/30 flex gap-3">
+                <button
+                  onClick={() => setIsSeilModalOpen(false)}
+                  className="flex-1 px-4 py-3 text-gray-700 dark:text-slate-300 font-bold bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus:outline-none"
                 >
-                  {isSavingRecord ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុក'}
+                  បោះបង់
+                </button>
+                <button
+                  onClick={handleSaveSeil}
+                  disabled={!seilName.trim()}
+                  className="flex-1 px-4 py-3 text-white font-bold bg-orange-600 hover:bg-orange-700 rounded-xl transition-all shadow-md shadow-orange-600/20 disabled:opacity-50 focus:outline-none flex justify-center items-center gap-2"
+                >
+                  <Save className="w-5 h-5" />
+                  រក្សាទុក
                 </button>
               </div>
-            </form>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
+        )}
 
-      {/* Seil Form Modal */}
-      <AnimatePresence>
-      {isSeilModalOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setIsSeilModalOpen(false)}
-          className="fixed inset-0 z-[100] bg-zinc-900 dark:bg-orange-600/40 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
-        >
-          <motion.div 
-            initial={{ y: "100%", opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: "100%", opacity: 0, scale: 0.95 }}
-            transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+        {isRecordModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsRecordModalOpen(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
           >
-            <div className="flex justify-between items-center p-5 border-b border-gray-100 dark:border-slate-800/60">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-white">បង្កើតបញ្ជីសីលថ្មី</h3>
-              <button onClick={() => setIsSeilModalOpen(false)} className="p-2 rounded-full hover:bg-zinc-100 dark:bg-slate-800 text-zinc-400 dark:text-slate-500 hover:text-zinc-600 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={saveSeil} className="p-5 space-y-4">
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">ឈ្មោះសីល</label>
-                <input 
-                  type="text" 
-                  required
-                  value={seilName}
-                  onChange={(e) => setSeilName(e.target.value)}
-                  placeholder="ឧ. សីលទី១០"
-                  className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">រយៈពេលសីល</label>
-                <input 
-                  type="text" 
-                  value={seilDateRange}
-                  onChange={(e) => setSeilDateRange(e.target.value)}
-                  placeholder="ឧ. ១៣.សីហា-២៥.សីហា"
-                  className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">ប្រាក់នៅសល់ពីមុន (រៀល)</label>
-                <input 
-                  type="number" 
-                  value={seilPreviousBalance}
-                  onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                  placeholder="ឧ. 3129500"
-                  className="w-full bg-zinc-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/60 rounded-2xl px-4 py-3.5 text-[15px] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 transition-all font-mono"
-                />
-                <p className="text-[11px] text-zinc-400 dark:text-slate-500 mt-2 font-medium">*ប្រាក់ដើមនឹងទាញយកស្វ័យប្រវត្តិពីសីលមុន បើសិនជាមាន</p>
-              </div>
-              <div className="pt-2 pb-8 sm:pb-2">
+            <motion.div
+              initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            >
+              <div className="p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white">
+                  {editingRecord ? 'កែប្រែទិន្នន័យ' : 'បញ្ចូលទិន្នន័យថ្មី'}
+                </h3>
                 <button 
-                  type="submit" 
-                  disabled={isSavingSeil}
-                  className="w-full bg-zinc-900 dark:bg-orange-600 hover:bg-zinc-800 text-white font-semibold py-3.5 rounded-2xl transition-all flex items-center justify-center disabled:opacity-70 active:scale-[0.98] shadow-sm dark:shadow-none text-[15px]"
+                  onClick={() => setIsRecordModalOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 dark:bg-slate-800/50 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
                 >
-                  {isSavingSeil ? <Loader2 className="w-5 h-5 animate-spin" /> : 'បង្កើតសីល'}
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
+              
+              <div className="p-5 space-y-4">
+                <div className="flex gap-2 p-1 bg-gray-100 dark:bg-slate-800 rounded-xl mb-2">
+                  <button
+                    onClick={() => setRecordType('income')}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'income' ? 'bg-white dark:bg-slate-900 text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                  >
+                    ចំណូលបញ្ចី (+)
+                  </button>
+                  <button
+                    onClick={() => setRecordType('expense')}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'expense' ? 'bg-white dark:bg-slate-900 text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                  >
+                    ចំណាយបញ្ចី (-)
+                  </button>
+                </div>
 
-      {/* Error Message Toast */}
-      <AnimatePresence>
-      {errorMessage && (
-        <motion.div 
-          initial={{ y: -50, opacity: 0, x: "-50%" }}
-          animate={{ y: 0, opacity: 1, x: "-50%" }}
-          exit={{ y: -50, opacity: 0, x: "-50%" }}
-          className="fixed top-4 left-1/2 z-[200] bg-rose-600 text-white px-5 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center gap-3 text-[14px] font-semibold"
-        >
-          <span>{errorMessage}</span>
-          <button onClick={() => setErrorMessage('')} className="p-1.5 hover:bg-rose-700 rounded-full transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </motion.div>
-      )}
-      </AnimatePresence>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    បរិយាយ
+                  </label>
+                  <input
+                    type="text"
+                    value={recordDesc}
+                    onChange={(e) => setRecordDesc(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    placeholder="បញ្ចូលបរិយាយ..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    ចំនួនថវិកា (រៀល)
+                  </label>
+                  <input
+                    type="number"
+                    value={recordAmount}
+                    onChange={(e) => setRecordAmount(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-bold"
+                    placeholder="បញ្ចូលចំនួនថវិកា..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    ចំណាំ (មិនចាំបាច់ក៏បាន)
+                  </label>
+                  <input
+                    type="text"
+                    value={recordNote}
+                    onChange={(e) => setRecordNote(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    placeholder="កំណត់សម្គាល់ផ្សេងៗ..."
+                  />
+                </div>
+              </div>
 
-      
-      {/* Edit Seil Modal */}
-      <AnimatePresence>
-      {isEditSeilModalOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl"
-          >
-            <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-slate-800">
-              <h3 className="text-[17px] font-bold text-zinc-900 dark:text-white">កែប្រែចំណងជើងសីល</h3>
-              <button onClick={() => setIsEditSeilModalOpen(false)} className="p-2 rounded-full hover:bg-zinc-100 dark:bg-slate-800 text-zinc-400 dark:text-slate-500 hover:text-zinc-600 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleUpdateSeil} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-zinc-700 dark:text-slate-300 mb-1.5">ចំណងជើងសីល <span className="text-rose-500">*</span></label>
-                <input
-                  type="text"
-                  required
-                  value={seilName}
-                  onChange={(e) => setSeilName(e.target.value)}
-                  placeholder="ឧ. សីល ៨រោច ខែស្រាពណ៍"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-all text-gray-900 dark:text-white"
-                />
+              <div className="p-5 pt-2 bg-gray-50 dark:bg-slate-800/30 flex gap-3">
+                <button
+                  onClick={() => setIsRecordModalOpen(false)}
+                  className="flex-1 px-4 py-3 text-gray-700 dark:text-slate-300 font-bold bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus:outline-none"
+                >
+                  បោះបង់
+                </button>
+                <button
+                  onClick={handleSaveRecord}
+                  disabled={!recordDesc.trim() || !recordAmount}
+                  className={`flex-1 px-4 py-3 text-white font-bold rounded-xl transition-all shadow-md flex justify-center items-center gap-2 disabled:opacity-50 focus:outline-none ${
+                    recordType === 'income' 
+                      ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20' 
+                      : 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
+                  }`}
+                >
+                  <Save className="w-5 h-5" />
+                  រក្សាទុក
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-zinc-700 dark:text-slate-300 mb-1.5">កាលបរិច្ឆេទ</label>
-                <input
-                  type="text"
-                  value={seilDateRange}
-                  onChange={(e) => setSeilDateRange(e.target.value)}
-                  placeholder="ឧ. ២៥ សីហា ២០២៤"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-all text-gray-900 dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-zinc-700 dark:text-slate-300 mb-1.5">បច្ច័យសល់ពីសីលមុន (រៀល)</label>
-                <input
-                  type="number"
-                  value={seilPreviousBalance}
-                  onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-all text-gray-900 dark:text-white"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={isSavingSeil}
-                className="w-full mt-2 bg-orange-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isSavingSeil ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកការកែប្រែ'}
-              </button>
-            </form>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-      {recordToDelete && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setRecordToDelete(null)}
-          className="fixed inset-0 z-[150] bg-zinc-900 dark:bg-orange-600/40 backdrop-blur-md flex items-center justify-center p-4"
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ type: "spring", bounce: 0.25, duration: 0.3 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl"
-          >
-            <h3 className="text-[18px] font-bold text-zinc-900 dark:text-white mb-2.5">បញ្ជាក់ការលុប</h3>
-            <p className="text-[15px] text-zinc-500 dark:text-slate-400 mb-8 leading-relaxed">តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ? ទិន្នន័យដែលលុបហើយមិនអាចយកមកវិញបានទេ។</p>
-            <div className="flex gap-3">
-              <button 
-                onClick={() => setRecordToDelete(null)}
-                disabled={isDeleting}
-                className="flex-1 py-3.5 bg-zinc-50 dark:bg-slate-800/50 hover:bg-zinc-100 dark:bg-slate-800 text-zinc-700 rounded-2xl font-semibold transition-colors disabled:opacity-50 text-[15px]"
-              >
-                បោះបង់
-              </button>
-              <button 
-                onClick={executeDelete}
-                disabled={isDeleting}
-                className="flex-1 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-semibold transition-colors flex items-center justify-center disabled:opacity-50 text-[15px] shadow-sm dark:shadow-none"
-              >
-                {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'លុប'}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+        )}
       </AnimatePresence>
     </div>
   );

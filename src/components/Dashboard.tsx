@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [financials, setFinancials] = useState<FinancialRecord[]>([]);
   const [seils, setSeils] = useState<SeilPeriod[]>([]);
   const [hundredKDonors, setHundredKDonors] = useState<HundredKDonor[]>([]);
+  const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
   const [isAmountVisible, setIsAmountVisible] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
@@ -74,7 +75,8 @@ export default function Dashboard() {
       const [seilData, finData, hundredKData] = await Promise.all([
         api.getSeilPeriods(),
         api.getFinancialRecords(''),
-        api.get100kDonors()
+        api.get100kDonors(),
+        api.getNameListCategories()
       ]);
       setSeils(seilData);
       setFinancials(finData);

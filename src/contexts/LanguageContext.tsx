@@ -12,7 +12,7 @@ const translations = {
   km: {
     nav_home: 'ទំព័រដើម',
     nav_finance: 'ចំណូល-ចំណាយ',
-    nav_list: 'បញ្ជីឈ្មោះ',
+    nav_list: 'បញ្ជីផ្សេងៗ',
     nav_account: 'គណនី',
     
     profile_change_lang: 'ផ្លាស់ប្ដូរភាសា',
@@ -112,7 +112,7 @@ const translations = {
   en: {
     nav_home: 'Home',
     nav_finance: 'Finances',
-    nav_list: 'Name List',
+    nav_list: 'Other Lists',
     nav_account: 'Account',
     
     profile_change_lang: 'Change Language',

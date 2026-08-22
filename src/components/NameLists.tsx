@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2 } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -89,7 +89,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       
       if (data && data.length > 0) {
         setCategories(data);
-        if (!selectedCategory) setSelectedCategory(data[0]);
+        // Do not auto-select category anymore, user starts in Grid view.
       }
     } catch (e) {
       console.error('Error fetching categories:', e);
@@ -296,6 +296,18 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   );
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
+  const closedLists = ['បញ្ជីឈ្មោះបុណ្យផ្កា', 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ', 'ទិញកម្រាលព្រំ (វគ្គ១)'];
+  const isListClosed = closedLists.includes(selectedCategory?.name || '');
+
+
+  const getCategoryIcon = (name: string) => {
+    if (name.includes('បុណ្យផ្កា')) return <Flower className="w-6 h-6 text-pink-500" />;
+    if (name.includes('កណ្ដឹង')) return <Bell className="w-6 h-6 text-amber-500" />;
+    if (name.includes('កម្រាលព្រំ')) return <Map className="w-6 h-6 text-purple-500" />;
+    if (name.includes('លុយជាង')) return <Hammer className="w-6 h-6 text-orange-500" />;
+    if (name.includes('ចងដៃ')) return <Coins className="w-6 h-6 text-emerald-500" />;
+    return <FileText className="w-6 h-6 text-blue-500" />;
+  };
 
   const getCategoryStatus = (name: string | undefined) => {
     if (!name) return null;
@@ -320,79 +332,102 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   };
 
 
+
+  if (!selectedCategory) {
+    const roofCat = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+    const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+
+    return (
+      <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
+        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">បញ្ជីផ្សេងៗ</h2>
+        </div>
+        <div className="px-4 py-6 max-w-3xl mx-auto w-full">
+          {roofCat && (
+            <div className="mb-8">
+              <h3 className="text-[14px] font-bold text-gray-500 dark:text-slate-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                គម្រោងពិសេស
+              </h3>
+              <button 
+                onClick={() => setSelectedCategory(roofCat)}
+                className="w-full text-left bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg shadow-orange-500/20 relative overflow-hidden transition-transform active:scale-95"
+              >
+                <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                <div className="absolute left-0 bottom-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-10 -mb-10"></div>
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 border border-white/20">
+                    <span className="text-2xl">🏗️</span>
+                  </div>
+                  <div>
+                    <h4 className="text-lg sm:text-xl font-bold text-white mb-1 line-clamp-1">{roofCat.name}</h4>
+                    <p className="text-orange-50 text-sm opacity-90 line-clamp-1">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          <div>
+             <h3 className="text-[14px] font-bold text-gray-500 dark:text-slate-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+               បញ្ជីទូទៅ
+             </h3>
+             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+               {generalCats.map(cat => (
+                 <button 
+                   key={cat.id}
+                   onClick={() => setSelectedCategory(cat)}
+                   className="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
+                 >
+                   <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
+                     {getCategoryIcon(cat.name)}
+                   </div>
+                   <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-[13px] sm:text-[14px] leading-snug line-clamp-2">
+                     {cat.name}
+                   </h4>
+                 </button>
+               ))}
+               {generalCats.length === 0 && (
+                 <div className="col-span-full py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
+                   មិនទាន់មានបញ្ជីនៅឡើយទេ
+                 </div>
+               )}
+             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('list_title')}</h2>
-          
+          {/* Detail View Header */}
           <div className="flex items-center gap-3">
-            {/* Category Selector */}
-            {categories.length > 0 && (
-              <div className="relative flex-1">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full text-left bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-2xl font-semibold text-[15px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2 truncate pr-2">
-                    <span className="truncate">{selectedCategory?.name || 'ជ្រើសរើសបញ្ជី...'}</span>
-                    {getCategoryStatus(selectedCategory?.name)}
-                  </div>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <AnimatePresence>
-                  {isDropdownOpen && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-40" 
-                        onClick={() => setIsDropdownOpen(false)}
-                      />
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
-                      >
-                        {categories.map(cat => (
-                          <button
-                            key={cat.id}
-                            onClick={() => {
-                              setSelectedCategory(cat);
-                              setIsDropdownOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedCategory?.id === cat.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700 dark:text-slate-300'}`}
-                          >
-                            <div className="flex items-center justify-between w-full pr-4">
-                              <span className="font-medium text-[15px] leading-relaxed whitespace-pre-wrap">{cat.name}</span>
-                              <div className="flex items-center gap-3">
-                                {getCategoryStatus(cat.name)}
-                                {selectedCategory?.id === cat.id && (
-                                  <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
+            <button 
+              onClick={() => setSelectedCategory(null)} 
+              className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate flex-1 leading-tight">
+              {selectedCategory?.name}
+            </h2>
             
-            {userRole === 'admin' && (
+            {userRole === 'admin' && !isListClosed && (
               <button 
                 onClick={openAddModal}
-                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-sm dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
                 title={t('list_add_new')}
               >
-                <Plus className="w-6 h-6" />
+                <Plus className="w-5 h-5" />
               </button>
             )}
           </div>
-
           {/* Search */}
           <div className="relative">
             <input
@@ -422,7 +457,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 <span>{t('list_total_records')}៖ {filteredRecords.length}</span>
               )}
             </div>
-            {(selectedCategory?.name === 'លុយចងដៃខ្ចី' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' || selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២') && (
+            {(selectedCategory?.name === 'លុយចងដៃខ្ចី' || selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' || selectedCategory?.name === 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)') && (
               <div className="text-[13px] font-semibold text-zinc-500 dark:text-slate-400 uppercase tracking-widest">
                 {t('list_total_amount')}៖ <span className="text-zinc-900 dark:text-white">{formatCurrency(totalAmount)}</span>
               </div>
@@ -441,68 +476,105 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 {t('list_empty')}
               </motion.div>
             ) : (
-              filteredRecords.map((record, index) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  key={record.id} 
-                  className="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-sm dark:shadow-none border border-gray-100 dark:border-slate-800 relative flex flex-row items-start justify-between gap-2"
-                >                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-3">
-                      <span className="text-[11px] font-semibold bg-zinc-100 text-zinc-500 dark:text-slate-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                        {index + 1}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight">{record.name}</h3>
-                        <div className="font-bold text-zinc-900 dark:text-white text-[15px] mt-1">{formatCurrency(record.amount)}</div>
-                        
-                        {record.note && (
-                          <div className="flex flex-col gap-1 mt-2">
-                            <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
-                              <span className="w-1 h-1 rounded-full bg-zinc-300 shrink-0"></span>
-                              <span className="truncate">{record.note}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-0.5 shrink-0 mt-1">
-                    <button 
-                      onClick={() => setCertificateRecord(record)}
-                      className="p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-md transition-colors focus:outline-none"
-                      title="ប័ណ្ណអនុមោទនា"
-                    >
-                      <Award className="w-4 h-4" />
-                    </button>
-                    {userRole === 'admin' && (
-                      <>
-                        <button 
-                          onClick={() => openEditModal(record)}
-                          className="p-1.5 text-zinc-400 dark:text-slate-500 hover:text-zinc-900 dark:hover:text-white dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-slate-700 rounded-md transition-colors focus:outline-none"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteRecord(record.id)}
-                          className="p-1.5 text-zinc-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-md transition-colors focus:outline-none"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              ))
+              <motion.div
+                key="table"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2"
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap">ល.រ</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">ឈ្មោះសប្បុរសជន</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-20 sm:w-28 text-right whitespace-nowrap">សកម្មភាព</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                      <AnimatePresence>
+                        {filteredRecords.map((record, index) => (
+                          <motion.tr
+                            layout
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            key={record.id}
+                            className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                          >
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle">
+                              <span className="text-[12px] font-semibold text-gray-500 dark:text-slate-400 inline-block">
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                              <div className="flex flex-col justify-center">
+                                <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
+                                  {record.name}
+                                </span>
+                                {record.note && (
+                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
+                                    {record.note}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <span className="font-bold text-[14px] sm:text-[15px] text-orange-600 dark:text-orange-400 whitespace-nowrap">
+                                {formatCurrency(record.amount)}
+                              </span>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <button 
+                                  onClick={() => setCertificateRecord(record)}
+                                  className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
+                                  title="ប័ណ្ណអនុមោទនា"
+                                >
+                                  <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                </button>
+                                {userRole === 'admin' && !isListClosed && (
+                                  <>
+                                    <button 
+                                      onClick={() => openEditModal(record)}
+                                      className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
+                                    >
+                                      <Edit2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDeleteRecord(record.id)}
+                                      className="p-1 sm:p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors focus:outline-none"
+                                    >
+                                      <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </AnimatePresence>
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
 
-          {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' && filteredRecords.length > 0 && (
+          {selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' && filteredRecords.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+              <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
+                <span className="font-bold text-blue-800">{formatCurrency(totalAmount)}</span>
+              </div>
+            </div>
+          )}
+
+          {selectedCategory?.name === 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
@@ -519,22 +591,26 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             </div>
           )}
 
-          {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' && filteredRecords.length > 0 && (
+                    {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
-                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className="font-bold text-orange-800">{formatCurrency(totalAmount)}</span>
               </div>
-              <div className="bg-blue-100/50 p-3 flex flex-col gap-1">
+              <div className="bg-blue-100/50 p-3 flex flex-col gap-1 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex justify-between items-center">
                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">ចំណាយទិញព្រំ (១ដុំ 2m x 25m = ៤២ម៉ឺន) ២ដុំ អស់</span>
                    <span className="font-bold text-blue-800">840,000៛</span>
                 </div>
               </div>
+              <div className="bg-green-100/50 p-3 flex justify-between items-center">
+                <span className="text-sm font-bold text-gray-800 dark:text-slate-200">បច្ច័យនៅសល់</span>
+                <span className="font-bold text-green-700">{formatCurrency(totalAmount - 840000)}</span>
+              </div>
             </div>
           )}
 
-          {selectedCategory?.name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២' && filteredRecords.length > 0 && (
+          {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-orange-100/50 p-3 flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
@@ -565,7 +641,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           >
             <div className="bg-white dark:bg-slate-900 p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
               <h3 className="font-bold text-xl text-gray-900 dark:text-white">
-                {editingRecord ? t('list_edit_title') : t('list_add_title')}
+                {editingRecord ? `${t('list_edit_title')} - ${selectedCategory?.name}` : `${t('list_add_title')} - ${selectedCategory?.name}`}
               </h3>
               <button 
                 onClick={() => setIsRecordModalOpen(false)}
@@ -606,18 +682,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  {t('list_note')}
-                </label>
-                <input
-                  type="text"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('list_note_ph')}
-                />
-              </div>
+
               
 
 
@@ -642,7 +707,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                     <Bell className="w-5 h-5 text-blue-600 dark:text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                    <h4 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
                     <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -824,7 +889,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                   disabled={isDownloading}
                   className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-bold text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-2 focus:outline-none"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                   <span>ចែករំលែក</span>
                 </button>
                 <button
@@ -833,10 +898,10 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                   className="flex-[2] py-3 px-4 bg-orange-500 text-white rounded-xl font-bold text-[14px] hover:bg-orange-600 shadow-sm shadow-orange-500/20 transition-all flex items-center justify-center gap-2 focus:outline-none disabled:opacity-70"
                 >
                   {isDownloading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
                   ) : (
                     <>
-                      <Download className="w-4 h-4" />
+                      <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                       <span>ទាញយករូបភាព</span>
                     </>
                   )}
@@ -856,7 +921,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] bg-zinc-900 text-white px-5 py-3 rounded-full shadow-2xl flex items-center space-x-3"
           >
             <div className="bg-emerald-500 rounded-full p-1">
-              <Check className="w-4 h-4 text-white" />
+              <Check className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-white" />
             </div>
             <span className="font-medium text-sm font-battambang">រក្សាទុកបានជោគជ័យ</span>
           </motion.div>

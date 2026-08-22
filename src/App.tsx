@@ -84,8 +84,10 @@ export default function App() {
           setUnreadCount(unread.length);
         }
       }
-    } catch (err) {
-      console.error('Failed to fetch notifications:', err);
+    } catch (err: any) {
+      if (err.message !== 'Failed to fetch') {
+        console.error('Failed to fetch notifications:', err);
+      }
     }
   };
 

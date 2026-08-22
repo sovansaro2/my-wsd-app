@@ -68,6 +68,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [newNote, setNewNote] = useState('');
   const [newNotifyPublic, setNewNotifyPublic] = useState(false);
+  const [addToRoofFund, setAddToRoofFund] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -296,6 +297,33 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
       await api.createFinancialRecord(recordData);
       
+      // Auto-add to Roof Fund if toggled
+      if (newRecordType === 'income' && addToRoofFund) {
+        try {
+          const categories = await api.getNameListCategories();
+          let roofCategory = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+          if (!roofCategory) {
+            roofCategory = await api.createNameListCategory({
+              name: 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ',
+              description: 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'
+            });
+          }
+          
+          if (roofCategory) {
+            await api.createNameListRecord({
+              category_id: roofCategory.id,
+              name: newDescription.trim(),
+              amount: parseFloat(newAmount.replace(/,/g, '')),
+              note: newNote || null,
+              notify_public: newNotifyPublic,
+              is_100k_donor: false
+            });
+          }
+        } catch (e) {
+          console.error("Failed to add to roof fund", e);
+        }
+      }
+
       fetchRecords(selectedPeriod.id);
       setIsAddModalOpen(false);
       
@@ -303,6 +331,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       setNewAmount('');
       setNewNote('');
       setNewNotifyPublic(false);
+      setAddToRoofFund(false);
     } catch (error) {
       console.error('Error saving record:', error);
       alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ: ' + (error.message || ''));
@@ -444,7 +473,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className="rounded-full border border-green-600 p-0.5">
-                <ArrowDownCircle className="w-4 h-4 text-green-600" strokeWidth={2.5} />
+                <ArrowDownCircle className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-green-600" strokeWidth={2.5} />
               </div>
               <p className="text-gray-600 dark:text-slate-400 text-[13px] font-semibold">{t('records_prev_balance')}</p>
             </div>
@@ -455,7 +484,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className="rounded-full border border-[#ea580c] p-0.5">
-                <ArrowUpCircle className="w-4 h-4 text-[#ea580c]" strokeWidth={2.5} />
+                <ArrowUpCircle className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-[#ea580c]" strokeWidth={2.5} />
               </div>
               <p className="text-gray-600 dark:text-slate-400 text-[13px] font-semibold">{t('records_current_balance')}</p>
             </div>
@@ -476,7 +505,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
           }`}
         >
-          <ArrowDownCircle className={`w-4 h-4 ${activeTab === 'income' ? 'text-green-600' : ''}`} />
+          <ArrowDownCircle className={`w-4 h-4 sm:w-[18px] sm:h-[18px] ${activeTab === 'income' ? 'text-green-600' : ''}`} />
           {t('records_total_income')} ({formatCurrency(totalIncome)})
         </button>
         <button 
@@ -487,7 +516,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
           }`}
         >
-          <ArrowUpCircle className={`w-4 h-4 ${activeTab === 'expense' ? 'text-rose-600' : ''}`} />
+          <ArrowUpCircle className={`w-4 h-4 sm:w-[18px] sm:h-[18px] ${activeTab === 'expense' ? 'text-rose-600' : ''}`} />
           {t('records_total_expense')} ({formatCurrency(totalExpense)})
         </button>
       </div>
@@ -505,47 +534,70 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               transition={{ duration: 0.2 }}
               className="space-y-2"
             >
-              {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
-                <div key={record.id} className="bg-white dark:bg-slate-900 rounded-xl p-3 border border-gray-100 dark:border-slate-800 shadow-sm dark:shadow-none flex flex-col relative">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-100 dark:bg-slate-800 text-[11px] font-semibold text-zinc-500 dark:text-slate-400">
-                        {index + 1}
-                      </span>
-                      <h3 className="font-semibold text-[15px] text-zinc-900 dark:text-white leading-tight">{record.description}</h3>
-                    </div>
-                    <span className={`font-bold text-[15px] ${activeTab === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-end text-[12px] text-zinc-400 dark:text-slate-500 mt-1 pl-8.5">
-                    <div className="flex flex-col gap-1 items-start">
-                      <span>{formatDate(record.record_date)}</span>
-                      {record.note && (
-                        <span className="bg-zinc-50 dark:bg-slate-800/50 border border-zinc-100 dark:border-slate-800 px-2 py-0.5 rounded-md text-[11px] truncate max-w-[140px] text-zinc-500 dark:text-slate-400">
-                          {record.note}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {activeTab === 'income' && (
-                        <button 
-                          onClick={() => setCertificateRecord(record)}
-                          className="p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-md transition-colors focus:outline-none"
-                          title="ប័ណ្ណអនុមោទនា"
-                        >
-                          <Award className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {(activeTab === 'income' ? incomeRecords : expenseRecords).length === 0 && (
+              {(activeTab === 'income' ? incomeRecords : expenseRecords).length === 0 ? (
                 <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm">
                   {activeTab === 'income' ? t('records_empty_income') : t('records_empty_expense')}
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap">ល.រ</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">បរិយាយ</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
+                          {activeTab === 'income' && <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap">សកម្មភាព</th>}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                        {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
+                          <tr
+                            key={record.id}
+                            className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                          >
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle">
+                              <span className="text-[12px] font-semibold text-gray-500 dark:text-slate-400 inline-block">
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                              <div className="flex flex-col justify-center">
+                                <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
+                                  {record.description}
+                                </span>
+                                <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">{formatDate(record.record_date)}</span>
+                                {record.note && (
+                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 line-clamp-1">
+                                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
+                                    {record.note}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <span className={`font-bold text-[14px] sm:text-[15px] whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                                {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
+                              </span>
+                            </td>
+                            {activeTab === 'income' && (
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                                <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                  <button 
+                                    onClick={() => setCertificateRecord(record)}
+                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
+                                    title="ប័ណ្ណអនុមោទនា"
+                                  >
+                                    <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -746,7 +798,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                      <h4 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
                       <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
