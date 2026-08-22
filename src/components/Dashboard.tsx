@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../lib/apiClient';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell
-} from 'recharts';
+
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award } from 'lucide-react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -124,27 +121,6 @@ export default function Dashboard() {
     balance = totalIncome - totalExpense;
   }
 
-  // Chart Data: Income vs Expense per Seil
-  const chartData = seils.map(seil => {
-    const seilFin = financials.filter(f => f.seil_id === seil.id);
-    let inc = 0;
-    let exp = 0;
-    seilFin.forEach(f => {
-      if (f.type === 'income') inc += f.amount;
-      if (f.type === 'expense') exp += f.amount;
-    });
-    return {
-      name: seil.name,
-      [t('dashboard_income')]: inc,
-      [t('dashboard_expense')]: exp
-    };
-  }).reverse(); // chronological
-
-  const pieData = [
-    { name: t('dashboard_total_income'), value: totalIncome },
-    { name: t('dashboard_total_expense'), value: totalExpense },
-  ];
-  const COLORS = ['#22c55e', '#ef4444'];
   const seilCount = seils.length > 0 ? seils.length : 0;
 
   return (
@@ -220,58 +196,6 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-
-      {/* Bar Chart */}
-      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors">
-        <h3 className="text-md font-bold text-gray-800 dark:text-slate-200 mb-4">{t('dashboard_chart_title')}</h3>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} width={60} tickFormatter={(value) => `៛${value/1000}k`} />
-              <Tooltip 
-                cursor={{ fill: '#f8fafc' }} 
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-              />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-              <Bar dataKey={t('dashboard_income')} fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey={t('dashboard_expense')} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Pie Chart */}
-      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors">
-        <h3 className="text-md font-bold text-gray-800 dark:text-slate-200 mb-2">{t('dashboard_pie_title')}</h3>
-        <div className="h-64 w-full flex items-center justify-center">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                formatter={(value: number) => [`៛ ${value.toLocaleString()}`, t('dashboard_amount')]}
-              />
-              <Legend wrapperStyle={{ fontSize: '12px' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      </div>
 
       {/* 100k+ Donors Section */}
       <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors mt-8 overflow-hidden">
@@ -381,6 +305,7 @@ export default function Dashboard() {
           </>
         )}
       </AnimatePresence>
+    </div>
     </div>
   );
 }

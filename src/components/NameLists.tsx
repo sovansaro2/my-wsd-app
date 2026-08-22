@@ -339,7 +339,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
     return (
       <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
-        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
+        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">បញ្ជីផ្សេងៗ</h2>
         </div>
         <div className="px-4 py-6 max-w-3xl mx-auto w-full">
@@ -378,7 +378,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                  <button 
                    key={cat.id}
                    onClick={() => setSelectedCategory(cat)}
-                   className="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
+                   className="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
                  >
                    <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
                      {getCategoryIcon(cat.name)}
@@ -402,7 +402,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
-      <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-sm dark:shadow-none border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
+      <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
           {/* Detail View Header */}
           <div className="flex items-center gap-3">
@@ -421,7 +421,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             {userRole === 'admin' && !isListClosed && (
               <button 
                 onClick={openAddModal}
-                className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-sm dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
                 title={t('list_add_new')}
               >
                 <Plus className="w-5 h-5" />
@@ -481,19 +481,19 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2"
+                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-none overflow-hidden mt-2"
               >
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
-                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap">ល.រ</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">ឈ្មោះសប្បុរសជន</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-20 sm:w-28 text-right whitespace-nowrap">សកម្មភាព</th>
+                      <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">ឈ្មោះសប្បុរសជន</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
+                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-20 sm:w-28 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    <tbody >
                       <AnimatePresence>
                         {filteredRecords.map((record, index) => (
                           <motion.tr
@@ -503,14 +503,14 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
                             key={record.id}
-                            className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                            className="odd:bg-white even:bg-slate-50/80 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors group"
                           >
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle border border-gray-200 dark:border-slate-700">
                               <span className="text-[12px] font-semibold text-gray-500 dark:text-slate-400 inline-block">
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
                                 <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
                                   {record.name}
@@ -523,20 +523,22 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                                 )}
                               </div>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                               <span className="font-bold text-[14px] sm:text-[15px] text-orange-600 dark:text-orange-400 whitespace-nowrap">
                                 {formatCurrency(record.amount)}
                               </span>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                               <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                <button 
-                                  onClick={() => setCertificateRecord(record)}
-                                  className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
-                                  title="ប័ណ្ណអនុមោទនា"
-                                >
-                                  <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-                                </button>
+                                {selectedCategory?.name !== 'លុយជាងដក' && (
+                                  <button 
+                                    onClick={() => setCertificateRecord(record)}
+                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
+                                    title="ប័ណ្ណអនុមោទនា"
+                                  >
+                                    <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                )}
                                 {userRole === 'admin' && !isListClosed && (
                                   <>
                                     <button 
@@ -566,7 +568,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           </AnimatePresence>
 
           {selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' && filteredRecords.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className="font-bold text-blue-800">{formatCurrency(totalAmount)}</span>
@@ -575,7 +577,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           )}
 
           {selectedCategory?.name === 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ' && filteredRecords.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-blue-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className="font-bold text-blue-800">{formatCurrency(totalAmount)}</span>
@@ -592,7 +594,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           )}
 
                     {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' && filteredRecords.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className="font-bold text-orange-800">{formatCurrency(totalAmount)}</span>
@@ -611,7 +613,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           )}
 
           {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)' && filteredRecords.length > 0 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
               <div className="bg-orange-100/50 p-3 flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
                 <span className="font-bold text-orange-800">{formatCurrency(totalAmount)}</span>
@@ -639,7 +641,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
             onClick={(e) => e.stopPropagation()}
             className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
           >
-            <div className="bg-white dark:bg-slate-900 p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+            <div className="bg-white dark:bg-slate-900 p-5 flex justify-between items-center border-b border-gray-200 dark:border-slate-800">
               <h3 className="font-bold text-xl text-gray-900 dark:text-white">
                 {editingRecord ? `${t('list_edit_title')} - ${selectedCategory?.name}` : `${t('list_add_title')} - ${selectedCategory?.name}`}
               </h3>
@@ -723,7 +725,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
               )}
             </div>
             
-            <div className="p-5 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3 pb-24 sm:pb-5">
+            <div className="p-5 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3 pb-24 sm:pb-5">
               <button
                 onClick={() => setIsRecordModalOpen(false)}
                 className="flex-1 py-3.5 px-4 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-2xl font-bold text-[15px] hover:bg-gray-50 dark:bg-slate-800/50 transition-colors focus:outline-none"
@@ -801,7 +803,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                       {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
                          <div 
-                           className="w-[65px] h-[65px] mb-1 drop-shadow-sm"
+                           className="w-[65px] h-[65px] mb-1 drop-shadow-none"
                            style={{
                              backgroundImage: `url(${logoDataUrl})`,
                              backgroundSize: 'contain',
@@ -815,7 +817,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
                       {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
-                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-sm leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                           <span className="text-orange-500 text-xl font-bold">៙ ❖ ៚</span>
@@ -895,7 +897,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 <button
                   onClick={handleDownloadCertificate}
                   disabled={isDownloading}
-                  className="flex-[2] py-3 px-4 bg-orange-500 text-white rounded-xl font-bold text-[14px] hover:bg-orange-600 shadow-sm shadow-orange-500/20 transition-all flex items-center justify-center gap-2 focus:outline-none disabled:opacity-70"
+                  className="flex-[2] py-3 px-4 bg-orange-500 text-white rounded-xl font-bold text-[14px] hover:bg-orange-600 shadow-none shadow-orange-500/20 transition-all flex items-center justify-center gap-2 focus:outline-none disabled:opacity-70"
                 >
                   {isDownloading ? (
                     <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />

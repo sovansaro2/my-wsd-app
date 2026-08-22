@@ -379,7 +379,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang">
       {/* Header & Selector */}
-      <div className="bg-white dark:bg-slate-900 px-4 py-5 border-b border-gray-100 dark:border-slate-800 relative z-10 shadow-sm dark:shadow-none">
+      <div className="bg-white dark:bg-slate-900 px-4 py-5 border-b border-gray-200 dark:border-slate-800 relative z-10 shadow-none dark:shadow-none">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('records_title')}</h2>
           <div className="flex items-center gap-3">
@@ -409,7 +409,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
+                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-800 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
                     >
                       {periods.map((p, index) => {
                         const isClosed = index !== 0; // Assume first period (latest) is active, rest are closed
@@ -450,7 +450,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             <button 
               onClick={handleDownload}
               disabled={isDownloading || isLoading || records.length === 0}
-              className="flex items-center justify-center bg-zinc-100 dark:bg-slate-800 text-zinc-600 dark:text-slate-300 w-12 h-12 rounded-2xl shadow-sm dark:shadow-none hover:bg-zinc-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-500/50 flex-shrink-0 disabled:opacity-50"
+              className="flex items-center justify-center bg-zinc-100 dark:bg-slate-800 text-zinc-600 dark:text-slate-300 w-12 h-12 rounded-2xl shadow-none dark:shadow-none hover:bg-zinc-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-500/50 flex-shrink-0 disabled:opacity-50"
               title="ទាញយកជារូបភាព"
             >
               {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
@@ -459,7 +459,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             {userRole === 'admin' && (
               <button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-sm dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                className="flex items-center justify-center bg-orange-500 text-white w-12 h-12 rounded-2xl shadow-none dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
                 title={t('records_add_new')}
               >
                 <Plus className="w-6 h-6" />
@@ -470,7 +470,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         {/* Summary Dashboard */}
         <div className="grid grid-cols-2 gap-3 mt-4 max-w-3xl mx-auto">
           {/* Previous Balance */}
-          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-200 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-none">
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className="rounded-full border border-green-600 p-0.5">
                 <ArrowDownCircle className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-green-600" strokeWidth={2.5} />
@@ -481,7 +481,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
           
           {/* Current Balance */}
-          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-100 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-[20px] p-4 border border-gray-200 dark:border-slate-800 flex flex-col items-center justify-center text-center shadow-none">
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className="rounded-full border border-[#ea580c] p-0.5">
                 <ArrowUpCircle className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-[#ea580c]" strokeWidth={2.5} />
@@ -501,7 +501,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           onClick={() => setActiveTab('income')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all ${
             activeTab === 'income' 
-              ? 'bg-white dark:bg-slate-900 text-emerald-600 border border-gray-200 dark:border-slate-700/60 shadow-sm dark:shadow-none' 
+              ? 'bg-white dark:bg-slate-900 text-emerald-600 border border-gray-200 dark:border-slate-700/60 shadow-none dark:shadow-none' 
               : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
           }`}
         >
@@ -512,7 +512,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           onClick={() => setActiveTab('expense')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all ${
             activeTab === 'expense' 
-              ? 'bg-white dark:bg-slate-900 text-rose-600 border border-gray-200 dark:border-slate-700/60 shadow-sm dark:shadow-none' 
+              ? 'bg-white dark:bg-slate-900 text-rose-600 border border-gray-200 dark:border-slate-700/60 shadow-none dark:shadow-none' 
               : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
           }`}
         >
@@ -539,29 +539,29 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   {activeTab === 'income' ? t('records_empty_income') : t('records_empty_expense')}
                 </div>
               ) : (
-                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2">
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-none overflow-hidden mt-2">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap">ល.រ</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">បរិយាយ</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
-                          {activeTab === 'income' && <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap">សកម្មភាព</th>}
+                        <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">បរិយាយ</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
+                          {activeTab === 'income' && <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                      <tbody >
                         {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
                           <tr
                             key={record.id}
-                            className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                            className="odd:bg-white even:bg-slate-50/80 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors group"
                           >
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle border border-gray-200 dark:border-slate-700">
                               <span className="text-[12px] font-semibold text-gray-500 dark:text-slate-400 inline-block">
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
                                 <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
                                   {record.description}
@@ -575,13 +575,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                 )}
                               </div>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                               <span className={`font-bold text-[14px] sm:text-[15px] whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                                 {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
                               </span>
                             </td>
                             {activeTab === 'income' && (
-                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                                 <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
@@ -626,7 +626,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <h3 className="font-bold text-lg text-emerald-700 border-b-2 border-emerald-200 pb-2 mb-4">ប្រភពចំណូលបញ្ចី (+)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {incomeRecords.length > 0 ? incomeRecords.map(r => (
-                  <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-100 pb-2">
+                  <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-200 pb-2">
                     <span className="pr-4">{r.description}</span>
                     <span className="text-emerald-700 font-semibold whitespace-nowrap">{formatCurrency(r.amount)}</span>
                   </div>
@@ -643,7 +643,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <h3 className="font-bold text-lg text-rose-700 border-b-2 border-rose-200 pb-2 mb-4">ប្រភពចំណាយបញ្ចី (-)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {expenseRecords.length > 0 ? expenseRecords.map(r => (
-                  <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-100 pb-2">
+                  <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-200 pb-2">
                     <span className="pr-4">{r.description}</span>
                     <span className="text-rose-700 font-semibold whitespace-nowrap">{formatCurrency(r.amount)}</span>
                   </div>
@@ -704,7 +704,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl overflow-hidden max-w-lg mx-auto pb-safe flex flex-col max-h-[90vh]"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-slate-800">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-800">
                 <h3 className="text-[17px] font-bold text-gray-900 dark:text-white">{t('records_add_new_title')}</h3>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
@@ -724,7 +724,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       onClick={() => setNewRecordType('income')}
                       className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
                         newRecordType === 'income'
-                          ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-sm dark:shadow-none'
+                          ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-none dark:shadow-none'
                           : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
                       }`}
                     >
@@ -735,7 +735,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       onClick={() => setNewRecordType('expense')}
                       className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
                         newRecordType === 'expense'
-                          ? 'bg-white dark:bg-slate-900 text-rose-500 shadow-sm dark:shadow-none'
+                          ? 'bg-white dark:bg-slate-900 text-rose-500 shadow-none dark:shadow-none'
                           : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
                       }`}
                     >
@@ -815,7 +815,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 dark:bg-orange-600 text-white font-bold text-[15px] shadow-sm dark:shadow-none hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
+                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 dark:bg-orange-600 text-white font-bold text-[15px] shadow-none dark:shadow-none hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
                   >
                     {isSaving ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -879,7 +879,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
                          <div 
-                           className="w-[65px] h-[65px] mb-1 drop-shadow-sm"
+                           className="w-[65px] h-[65px] mb-1 drop-shadow-none"
                            style={{
                              backgroundImage: `url(${logoDataUrl})`,
                              backgroundSize: 'contain',
@@ -893,7 +893,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
                       {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
-                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-sm leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                           <span className="text-orange-500 text-xl font-bold">៙ ❖ ៚</span>

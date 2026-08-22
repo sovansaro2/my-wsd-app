@@ -254,7 +254,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-2 font-battambang relative">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800/60 px-4 py-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 shadow-sm dark:shadow-none">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800/60 px-4 py-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 shadow-none dark:shadow-none">
         <div className="flex items-center gap-3">
           <button 
             onClick={onBack}
@@ -284,7 +284,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
               <p className="text-[15px]">មិនទាន់មានបញ្ជីសីលនៅឡើយទេ</p>
               <button 
                 onClick={openAddSeilModal}
-                className="mt-6 px-6 py-2.5 bg-zinc-900 dark:bg-orange-600 text-white rounded-full font-semibold text-[15px] shadow-sm dark:shadow-none hover:bg-zinc-800 transition-colors"
+                className="mt-6 px-6 py-2.5 bg-zinc-900 dark:bg-orange-600 text-white rounded-full font-semibold text-[15px] shadow-none dark:shadow-none hover:bg-zinc-800 transition-colors"
               >
                 បង្កើតសីលដំបូង
               </button>
@@ -296,7 +296,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                   <select 
-                    className="w-full appearance-none bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700/60 text-zinc-900 dark:text-white py-3.5 px-4 rounded-xl font-semibold text-[15px] outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 shadow-sm dark:shadow-none"
+                    className="w-full appearance-none bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700/60 text-zinc-900 dark:text-white py-3.5 px-4 rounded-xl font-semibold text-[15px] outline-none focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5 shadow-none dark:shadow-none"
                     value={selectedPeriod?.id || ''}
                     onChange={(e) => {
                       const p = periods.find(x => x.id === e.target.value);
@@ -324,23 +324,23 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 {records.length === 0 ? (
                   <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm">មិនមានទិន្នន័យ</div>
                 ) : (
-                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mt-2">
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-none overflow-hidden mt-2">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-800 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
-                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap">បរិយាយ</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right">ថវិកា</th>
-                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap">សកម្មភាព</th>
+                          <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">បរិយាយ</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                        <tbody >
                           {records.map((record) => (
                             <tr
                               key={record.id}
-                              className="bg-white dark:bg-slate-900 hover:bg-orange-50/50 dark:hover:bg-slate-800/50 transition-colors group"
+                              className="odd:bg-white even:bg-slate-50/80 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors group"
                             >
-                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle">
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                                 <div className="flex flex-col justify-center">
                                   <div className="flex items-center gap-2">
                                     <span className={`w-2 h-2 rounded-full shrink-0 ${record.type === 'income' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
@@ -357,12 +357,12 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                                   )}
                                 </div>
                               </td>
-                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                                 <span className={`font-bold text-[14px] sm:text-[15px] whitespace-nowrap ${record.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                                   {record.type === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
                                 </span>
                               </td>
-                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right">
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                                 <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                   <button 
                                     onClick={() => openEditRecordModal(record)}
@@ -421,7 +421,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
               onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
             >
-              <div className="p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+              <div className="p-5 flex justify-between items-center border-b border-gray-200 dark:border-slate-800">
                 <h3 className="font-bold text-xl text-gray-900 dark:text-white">
                   កែប្រែឈ្មោះសីល
                 </h3>
@@ -496,7 +496,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
               onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
             >
-              <div className="p-5 flex justify-between items-center border-b border-gray-100 dark:border-slate-800">
+              <div className="p-5 flex justify-between items-center border-b border-gray-200 dark:border-slate-800">
                 <h3 className="font-bold text-xl text-gray-900 dark:text-white">
                   {editingRecord ? 'កែប្រែទិន្នន័យ' : 'បញ្ចូលទិន្នន័យថ្មី'}
                 </h3>
@@ -512,13 +512,13 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                 <div className="flex gap-2 p-1 bg-gray-100 dark:bg-slate-800 rounded-xl mb-2">
                   <button
                     onClick={() => setRecordType('income')}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'income' ? 'bg-white dark:bg-slate-900 text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'income' ? 'bg-white dark:bg-slate-900 text-emerald-600 shadow-none' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
                   >
                     ចំណូលបញ្ចី (+)
                   </button>
                   <button
                     onClick={() => setRecordType('expense')}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'expense' ? 'bg-white dark:bg-slate-900 text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
+                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${recordType === 'expense' ? 'bg-white dark:bg-slate-900 text-rose-600 shadow-none' : 'text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-300'}`}
                   >
                     ចំណាយបញ្ចី (-)
                   </button>
