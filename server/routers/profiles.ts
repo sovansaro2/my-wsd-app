@@ -1,8 +1,37 @@
 import { Router } from 'express';
 import { supabaseAdmin} from '../database';
-import { requireAuth } from '../auth/dependencies';
+import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
+
+// GET /api/profiles (Admin only)
+router.get('/', requireAuth, requireAdmin, async (req, res) => {
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .select('id, email, full_name, phone_number, role, avatar_url, created_at')
+    .order('created_at', { ascending: false });
+    
+  if (error) return res.status(400).json({ detail: error.message });
+  res.json(data);
+});
+
+// PUT /api/profiles/:id/role (Admin only)
+router.put('/:id/role', requireAuth, requireAdmin, async (req, res) => {
+  const { role } = req.body;
+  if (!['admin', 'user'].includes(role)) {
+    return res.status(400).json({ detail: 'Invalid role' });
+  }
+  
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .update({ role })
+    .eq('id', req.params.id)
+    .select('id, email, full_name, phone_number, role, avatar_url, created_at')
+    .single();
+    
+  if (error) return res.status(400).json({ detail: error.message });
+  res.json(data);
+});
 
 // GET /api/profiles/me
 router.get('/me', requireAuth, async (req, res) => {

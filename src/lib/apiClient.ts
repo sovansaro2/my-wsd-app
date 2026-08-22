@@ -42,6 +42,7 @@ export const api = {
   updateSeilPeriod: (id: string, data: any) => apiFetch(`/api/seil-periods/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   // Name Lists
+  get100kDonors: () => apiFetch('/api/name-lists/donors-100k'),
   getNameListCategories: () => apiFetch('/api/name-lists/categories'),
   createNameListCategory: (data: any) => apiFetch('/api/name-lists/categories', { method: 'POST', body: JSON.stringify(data) }),
   deleteNameListCategory: (id: string) => apiFetch(`/api/name-lists/categories/${id}`, { method: 'DELETE' }),
@@ -52,6 +53,8 @@ export const api = {
   updateNameListRecord: (id: string, data: any) => apiFetch(`/api/name-lists/records/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   // Profile
+  getUsers: () => apiFetch('/api/profiles'),
+  updateUserRole: (id: string, role: string) => apiFetch(`/api/profiles/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
   updateProfile: (data: any) => apiFetch('/api/profiles/me', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Uploads

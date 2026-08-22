@@ -36,6 +36,7 @@ interface NameRecord {
   amount: number;
   note: string | null;
   referrer: string | null;
+  is_100k_donor?: boolean;
 }
 
 export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | null }) {
@@ -61,6 +62,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   const [note, setNote] = useState('');
   const [referrer, setReferrer] = useState('');
   const [notifyPublic, setNotifyPublic] = useState(false);
+  const [is100kDonor, setIs100kDonor] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Dynamic Image States
@@ -118,6 +120,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     setNote('');
     setReferrer('');
     setNotifyPublic(false);
+    setIs100kDonor(false);
     setIsRecordModalOpen(true);
   };
 
@@ -127,7 +130,8 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     setAmount(record.amount.toString());
     setNote(record.note || '');
     setReferrer(record.referrer || '');
-    setNotifyPublic(false); // Notifications usually only on create, or optional on edit
+    setNotifyPublic(false);
+    setIs100kDonor(record.is_100k_donor || false); // Notifications usually only on create, or optional on edit
     setIsRecordModalOpen(true);
   };
 
@@ -288,8 +292,7 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
 
   const filteredRecords = records.filter(record => 
     record.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (record.note && record.note.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (record.referrer && record.referrer.toLowerCase().includes(searchQuery.toLowerCase()))
+    (record.note && record.note.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
@@ -457,20 +460,12 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                         <h3 className="font-semibold text-zinc-900 dark:text-white text-[15px] leading-tight">{record.name}</h3>
                         <div className="font-bold text-zinc-900 dark:text-white text-[15px] mt-1">{formatCurrency(record.amount)}</div>
                         
-                        {(record.note || record.referrer) && (
+                        {record.note && (
                           <div className="flex flex-col gap-1 mt-2">
-                            {record.note && (
-                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
-                                <span className="w-1 h-1 rounded-full bg-zinc-300 shrink-0"></span>
-                                <span className="truncate">{record.note}</span>
-                              </div>
-                            )}
-                            {record.referrer && (
-                              <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
-                                <span className="w-1 h-1 rounded-full bg-amber-400 shrink-0"></span>
-                                <span className="truncate">{t('list_referrer')}៖ {record.referrer}</span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2 text-[12px] text-zinc-500 dark:text-slate-400 bg-zinc-50 px-2 py-1 rounded-md">
+                              <span className="w-1 h-1 rounded-full bg-zinc-300 shrink-0"></span>
+                              <span className="truncate">{record.note}</span>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -601,7 +596,11 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 <input
                   type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                        const val = e.target.value;
+                        setAmount(val);
+                        if (Number(val) >= 100000) setIs100kDonor(true);
+                      }}
                   className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={t('list_amount_ph')}
                 />
@@ -620,17 +619,21 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  {t('list_ref')}
-                </label>
-                <input
-                  type="text"
-                  value={referrer}
-                  onChange={(e) => setReferrer(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                  placeholder={t('list_ref_ph')}
+
+
+
+              {/* Checkbox for 100k Donor */}
+              <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                <input 
+                  type="checkbox" 
+                  id="is100kDonor" 
+                  checked={is100kDonor}
+                  onChange={(e) => setIs100kDonor(e.target.checked)}
+                  className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                 />
+                <label htmlFor="is100kDonor" className="text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                  ✅ បញ្ជូនទៅបញ្ជីសប្បុរសជនចាប់ពី ១០០,០០០៛ ឡើង
+                </label>
               </div>
 
               {!editingRecord && (

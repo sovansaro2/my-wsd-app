@@ -15,11 +15,12 @@ import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
 import Reports from './components/Reports';
 import NameLists from './components/NameLists';
+import Users from './components/Users';
 import InstallPrompt from './components/InstallPrompt';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -95,9 +97,8 @@ export default function App() {
     }
   };
 
-  const handleNotificationClick = (target_tab: string) => {
-    setActiveTab(target_tab as any);
-    setShowNotifications(false);
+  const handleNotificationClick = (notif: any) => {
+    setSelectedNotification(notif);
   };
 
   const handleLogout = async () => {
@@ -146,11 +147,10 @@ export default function App() {
               onClick={() => setShowNotifications(false)}
             />
             <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-slate-950 z-[70] shadow-2xl flex flex-col"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[80vh] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/5">
                 <h3 className="font-battambang font-bold text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
@@ -167,7 +167,7 @@ export default function App() {
                     notifications.map(notif => (
                       <div 
                         key={notif.id}
-                        onClick={() => handleNotificationClick(notif.target_tab)}
+                        onClick={() => handleNotificationClick(notif)}
                         className="p-4 hover:bg-orange-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer bg-white dark:bg-transparent"
                       >
                         <div className="flex items-start gap-3.5">
@@ -190,6 +190,83 @@ export default function App() {
                       <p className="text-gray-500 dark:text-slate-400 text-[14px] font-battambang">មិនមានការជូនដំណឹងថ្មីទេ</p>
                     </div>
                   )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Notification Detail Modal */}
+      <AnimatePresence>
+        {selectedNotification && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="fixed inset-0 bg-black/60 z-[80] backdrop-blur-sm"
+              onClick={() => setSelectedNotification(null)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-white dark:bg-slate-900 z-[90] shadow-2xl rounded-3xl overflow-hidden flex flex-col"
+            >
+              <div className={`p-6 pb-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between ${
+                selectedNotification.type === 'income' ? 'bg-emerald-50 dark:bg-emerald-900/20' : 
+                selectedNotification.type === 'expense' ? 'bg-rose-50 dark:bg-rose-900/20' : 
+                'bg-blue-50 dark:bg-blue-900/20'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    selectedNotification.type === 'income' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 
+                    selectedNotification.type === 'expense' ? 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400' : 
+                    'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                  }`}>
+                    <Bell className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-battambang font-bold text-gray-900 dark:text-white text-lg">
+                    {selectedNotification.title}
+                  </h3>
+                </div>
+                <button 
+                  onClick={() => setSelectedNotification(null)}
+                  className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <p className="text-[15px] text-gray-700 dark:text-slate-300 font-battambang leading-relaxed mb-6">
+                  {selectedNotification.message}
+                </p>
+                
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 flex items-center gap-2">
+                    ពេលវេលា៖ {new Date(selectedNotification.created_at).toLocaleDateString('km-KH')} {new Date(selectedNotification.created_at).toLocaleTimeString('km-KH', {hour: '2-digit', minute:'2-digit'})}
+                  </p>
+                </div>
+                
+                <div className="mt-8 flex gap-3">
+                  <button
+                    onClick={() => setSelectedNotification(null)}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    បិទ
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab(selectedNotification.target_tab as any);
+                      setShowNotifications(false);
+                      setSelectedNotification(null);
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
+                  >
+                    ទៅកាន់ទំព័រ
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -224,6 +301,7 @@ export default function App() {
     
     onManageFinancials={() => setActiveTab('manage_financials')}
     onManageNameLists={() => setActiveTab('manage_name_lists')}
+    onManageUsers={() => setActiveTab('users')}
     onCertificates={() => setActiveTab('certificates')}
   />
             )}
@@ -238,6 +316,9 @@ export default function App() {
             )}
             {activeTab === 'manage_name_lists' && userRole === 'admin' && (
               <ManageNameLists onBack={() => setActiveTab('account')} />
+            )}
+            {activeTab === 'users' && userRole === 'admin' && (
+              <Users onBack={() => setActiveTab('account')} />
             )}
           </motion.div>
         </AnimatePresence>
