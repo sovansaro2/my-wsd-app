@@ -12,27 +12,28 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'icon.svg'],
-      workbox: { maximumFileSizeToCacheInBytes: 5000000 }, manifest: {
-        name: 'វត្តស្នាយដួច (Wat Snay Duoc)',
+      includeAssets: ['favicon.ico', 'icon.svg', 'icon.png'],
+      workbox: { maximumFileSizeToCacheInBytes: 5000000 },
+      manifest: {
+        name: 'វត្តស្នាយដួច',
         short_name: 'វត្តស្នាយដួច',
         description: 'កម្មវិធីគ្រប់គ្រងទិន្នន័យវត្តស្នាយដួច',
-        theme_color: '#ffffff',
-        background_color: '#FAFAFA',
+        theme_color: '#1e40af',
+        background_color: '#ffffff',
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'icon.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icon.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'icon.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'

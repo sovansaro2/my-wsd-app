@@ -1,14 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, X } from 'lucide-react';
+import { Download, X, Share } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
+    // Check if it's already installed (standalone mode)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         (window.navigator as any).standalone || 
+                         document.referrer.includes('android-app://');
+    
+    if (isStandalone) {
+      return; // Do not show if already installed
+    }
+
+    // Detect iOS
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    
+    if (isIosDevice) {
+      setIsIOS(true);
+      setShowPrompt(true);
+    }
+
     const handler = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
@@ -60,21 +79,29 @@ export default function InstallPrompt() {
             
             <div className="flex-1">
               <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">
-                {t('install_title') || 'ទាញយកកម្មវិធី'}
+                {t('install_title') || 'ដំឡើងកម្មវិធី'}
               </h4>
-              <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight">
-                {t('install_desc') || 'ទាញយកកម្មវិធីនេះដាក់លើអេក្រង់ទូរស័ព្ទរបស់អ្នក ដើម្បីងាយស្រួលប្រើប្រាស់។'}
-              </p>
+              {isIOS ? (
+                <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight">
+                  សូមចុចប៊ូតុង <Share className="w-3 h-3 inline" /> (Share) រួចជ្រើសរើស "Add to Home Screen" ដើម្បីដំឡើង។
+                </p>
+              ) : (
+                <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight">
+                  {t('install_desc') || 'ទាញយកកម្មវិធីនេះដាក់លើអេក្រង់ទូរស័ព្ទរបស់អ្នក ដើម្បីងាយស្រួលប្រើប្រាស់។'}
+                </p>
+              )}
             </div>
 
-            <div className="flex flex-col gap-2 shrink-0">
-              <button
-                onClick={handleInstallClick}
-                className="bg-blue-600 text-white text-[13px] font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                {t('install_btn') || 'ទាញយក'}
-              </button>
-            </div>
+            {!isIOS && deferredPrompt && (
+              <div className="flex flex-col gap-2 shrink-0">
+                <button
+                  onClick={handleInstallClick}
+                  className="bg-blue-600 text-white text-[13px] font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  {t('install_btn') || 'ដំឡើង'}
+                </button>
+              </div>
+            )}
             
             <button 
               onClick={handleClose}
