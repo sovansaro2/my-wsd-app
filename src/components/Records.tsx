@@ -234,19 +234,22 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
       
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      const reportWidth = reportRef.current.scrollWidth || 800;
+      const reportHeight = reportRef.current.scrollHeight;
+      
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
-        width: 794,
-        height: 559,
+        width: reportWidth,
+        height: reportHeight,
         pixelRatio: 2,
         
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
           margin: '0',
-          width: '800px'
+          width: `${reportWidth}px`
         }
       });
       
