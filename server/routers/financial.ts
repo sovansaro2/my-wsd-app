@@ -37,7 +37,15 @@ router.get('/financial-records', async (req, res) => {
 
 router.post('/financial-records', requireAuth, requireAdmin, async (req, res) => {
   const { notify_public, seil_name, ...recordBody } = req.body;
-  const { data, error } = await supabaseAdmin.from('financial_records').insert([recordBody]).select();
+  let { data, error } = await supabaseAdmin.from('financial_records').insert([recordBody]).select();
+  
+  if (error && (error.code === '42703' || (error.message && error.message.includes('is_high_level')))) {
+    delete recordBody.is_high_level;
+    const retry = await supabaseAdmin.from('financial_records').insert([recordBody]).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   
@@ -59,7 +67,16 @@ router.post('/financial-records', requireAuth, requireAdmin, async (req, res) =>
 });
 
 router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('financial_records').update(req.body).eq('id', req.params.id).select();
+  let recordBody = { ...req.body };
+  let { data, error } = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+  
+  if (error && (error.code === '42703' || (error.message && error.message.includes('is_high_level')))) {
+    delete recordBody.is_high_level;
+    const retry = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);

@@ -820,8 +820,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
+                                <div className="flex items-start justify-between gap-2">
+                                  <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight break-words">
                                     {record.description}
                                   </span>
                                   <button 
@@ -829,7 +829,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                       e.stopPropagation();
                                       toggleHighLevel(record);
                                     }}
-                                    className={`p-1 rounded-full transition-colors ${record.is_high_level ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-300 dark:text-slate-600 hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
+                                    className={`shrink-0 p-1 rounded-full transition-colors ${record.is_high_level ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-300 dark:text-slate-600 hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
                                     title="ថវិកាកម្រិតខ្ពស់"
                                   >
                                     <Star className="w-4 h-4" fill={record.is_high_level ? "currentColor" : "none"} />
