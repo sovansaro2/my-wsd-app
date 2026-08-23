@@ -3,304 +3,136 @@ import re
 with open('src/components/Records.tsx', 'r') as f:
     content = f.read()
 
-# Add imports
-if 'Pencil' not in content:
+# Add is_high_level to FinancialRecord interface
+if "is_high_level?: boolean;" not in content:
     content = content.replace(
-        "import { ChevronDown,",
-        "import { ChevronDown, Pencil,"
+        "  note: string | null;\n}",
+        "  note: string | null;\n  is_high_level?: boolean;\n}"
     )
 
-# Add states
-state_block = """  // Add Record Modal State
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);"""
-new_state_block = """  // Seil Modal State
-  const [isSeilModalOpen, setIsSeilModalOpen] = useState(false);
-  const [isEditSeilModalOpen, setIsEditSeilModalOpen] = useState(false);
-  const [seilName, setSeilName] = useState('');
-  const [seilDateRange, setSeilDateRange] = useState('');
-  const [seilPreviousBalance, setSeilPreviousBalance] = useState('');
-  const [editingSeil, setEditingSeil] = useState<SeilPeriod | null>(null);
-  const [isSavingSeil, setIsSavingSeil] = useState(false);
+# Add isHighLevel state
+if "const [isHighLevel, setIsHighLevel] = useState(false);" not in content:
+    content = content.replace(
+        "  const [notifyPublic, setNotifyPublic] = useState(false);\n  const [isSaving, setIsSaving] = useState(false);",
+        "  const [notifyPublic, setNotifyPublic] = useState(false);\n  const [isHighLevel, setIsHighLevel] = useState(false);\n  const [isSaving, setIsSaving] = useState(false);"
+    )
 
-  // Add Record Modal State
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);"""
+# Reset state when opening Add modal
+content = content.replace(
+        "    setNotifyPublic(false);\n    setIsAddModalOpen(true);",
+        "    setNotifyPublic(false);\n    setIsHighLevel(false);\n    setIsAddModalOpen(true);"
+    )
 
-content = content.replace(state_block, new_state_block)
+# Reset state when opening Edit modal
+content = content.replace(
+        "    setNotifyPublic(false);\n    setIsEditModalOpen(true);",
+        "    setNotifyPublic(false);\n    setIsHighLevel(record.is_high_level || false);\n    setIsEditModalOpen(true);"
+    )
 
-# Add functions
-func_hook = "  const handleAddRecord = async (e: React.FormEvent) => {"
-new_funcs = """  const openAddSeilModal = () => {
-    setSeilName('');
-    setSeilDateRange('');
-    setSeilPreviousBalance('');
-    setEditingSeil(null);
-    setIsSeilModalOpen(true);
-  };
+# Send is_high_level in API
+save_block = """      const recordData = {
+        seil_id: selectedPeriod.id,
+        type: newRecordType,
+        description: newDescription.trim(),
+        amount: parseFloat(newAmount),
+        note: newNote.trim() || null,
+        record_date: customDate ? new Date(customDate).toISOString().split('T')[0] : null,
+        ...(notifyPublic && !editingRecord ? { notify_public: true, seil_name: selectedPeriod.name } : {})
+      };"""
+new_save_block = """      const recordData = {
+        seil_id: selectedPeriod.id,
+        type: newRecordType,
+        description: newDescription.trim(),
+        amount: parseFloat(newAmount),
+        note: newNote.trim() || null,
+        record_date: customDate ? new Date(customDate).toISOString().split('T')[0] : null,
+        is_high_level: isHighLevel,
+        ...(notifyPublic && !editingRecord ? { notify_public: true, seil_name: selectedPeriod.name } : {})
+      };"""
+content = content.replace(save_block, new_save_block)
 
-  const openEditSeilModal = (seil: SeilPeriod, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditingSeil(seil);
-    setSeilName(seil.name);
-    setSeilDateRange(seil.date_range_text || '');
-    setSeilPreviousBalance(seil.previous_balance ? seil.previous_balance.toString() : '');
-    setIsEditSeilModalOpen(true);
-  };
+# Add Star icon import
+if "Star" not in content:
+    content = content.replace("import { Search, Plus, Pencil, Edit2,", "import { Search, Plus, Pencil, Edit2, Star,")
 
-  const saveSeil = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!seilName) return;
-    setIsSavingSeil(true);
+# Add toggleHighLevel function
+funcs_hook = "  const handleEdit = (record: FinancialRecord) => {"
+new_funcs = """  const toggleHighLevel = async (record: FinancialRecord) => {
     try {
-      const data = await api.createSeilPeriod({ name: seilName, date_range_text: seilDateRange || null, previous_balance: parseFloat(seilPreviousBalance || '0') });
-      setIsSeilModalOpen(false);
-      await fetchPeriods();
-      if (data) setSelectedPeriod(data);
-    } catch (error) {
-      console.error('Error saving seil:', error);
-    } finally {
-      setIsSavingSeil(false);
-    }
-  };
-
-  const handleUpdateSeil = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingSeil || !seilName) return;
-    setIsSavingSeil(true);
-    try {
-      const data = await api.updateSeilPeriod(editingSeil.id, { 
-        name: seilName, 
-        date_range_text: seilDateRange || null, 
-        previous_balance: parseFloat(seilPreviousBalance || '0') 
-      });
-      setIsEditSeilModalOpen(false);
-      await fetchPeriods();
-      if (data && selectedPeriod?.id === editingSeil.id) {
-         setSelectedPeriod(data);
-      }
+      const newValue = !record.is_high_level;
+      await api.updateFinancialRecord(record.id, { is_high_level: newValue });
+      setRecords(records.map(r => r.id === record.id ? { ...r, is_high_level: newValue } : r));
     } catch (err) {
-      console.error('Error updating seil:', err);
-    } finally {
-      setIsSavingSeil(false);
+      console.error('Error toggling high level:', err);
     }
   };
 
-  const handleAddRecord = async (e: React.FormEvent) => {"""
+  const handleEdit = (record: FinancialRecord) => {"""
+content = content.replace(funcs_hook, new_funcs)
 
-content = content.replace(func_hook, new_funcs)
+# Update UI to add Star
+old_item = """                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] sm:text-[16px] font-bold text-gray-900 dark:text-white truncate">
+                        {record.description}
+                      </p>
+                      {record.note && (
+                        <p className="text-[12px] sm:text-xs text-gray-500 dark:text-slate-400 truncate mt-0.5">{record.note}</p>
+                      )}
+                    </div>"""
+new_item = """                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-[15px] sm:text-[16px] font-bold text-gray-900 dark:text-white truncate">
+                          {record.description}
+                        </p>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleHighLevel(record);
+                          }}
+                          className={`p-1 rounded-full transition-colors ${record.is_high_level ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-300 dark:text-slate-600 hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
+                          title="ថវិកាកម្រិតខ្ពស់"
+                        >
+                          <Star className="w-4 h-4" fill={record.is_high_level ? "currentColor" : "none"} />
+                        </button>
+                      </div>
+                      {record.note && (
+                        <p className="text-[12px] sm:text-xs text-gray-500 dark:text-slate-400 truncate mt-0.5">{record.note}</p>
+                      )}
+                    </div>"""
+content = content.replace(old_item, new_item)
 
-# Modify the + button header
-old_header_btn = """             {userRole === 'admin' && onAddRecord && (
-               <button 
-                 onClick={onAddRecord}
-                 className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
-               >
-                 <Plus className="w-6 h-6" />
-               </button>
-             )}"""
-new_header_btn = """             {userRole === 'admin' && (
-               <button 
-                 onClick={openAddSeilModal}
-                 className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
-               >
-                 <Plus className="w-6 h-6" />
-               </button>
-             )}"""
-content = content.replace(old_header_btn, new_header_btn)
-
-# Add Pencil icon to periods grid
-old_period_button = """                <button 
-                  key={period.id}
-                  onClick={() => setSelectedPeriod(period)}
-                  className="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
-                >"""
-new_period_button = """                <button 
-                  key={period.id}
-                  onClick={() => setSelectedPeriod(period)}
-                  className="relative flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
-                >
-                  {userRole === 'admin' && (
-                    <div 
-                      onClick={(e) => openEditSeilModal(period, e)}
-                      className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-colors"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
+# Add the checkbox in the Modal
+modal_field_hook = """                  {/* Public Notification */}"""
+high_level_checkbox = """                  {/* High Level Budget */}
+                  {newRecordType === 'income' && (
+                    <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                      <input 
+                        type="checkbox" 
+                        id="isHighLevel" 
+                        checked={isHighLevel}
+                        onChange={(e) => setIsHighLevel(e.target.checked)}
+                        className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                      />
+                      <label htmlFor="isHighLevel" className="text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                        ✅ ថវិកាកម្រិតខ្ពស់
+                      </label>
                     </div>
-                  )}"""
-content = content.replace(old_period_button, new_period_button)
+                  )}
 
-# Add Modals at the end of the file
-modals = """      {/* Seil Modals */}
-      <AnimatePresence>
-        {isSeilModalOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsSeilModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
-            />
-            <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
-              >
-                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">បន្ថែមបញ្ជីចំណូល-ចំណាយថ្មី</h3>
-                  <button
-                    onClick={() => setIsSeilModalOpen(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <form onSubmit={saveSeil} className="p-4 sm:p-5 space-y-4">
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      ឈ្មោះបញ្ជី (ឧ. សីលទី១, បុណ្យផ្កា...) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={seilName}
-                      onChange={(e) => setSeilName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
-                      placeholder="បញ្ចូលឈ្មោះបញ្ជី"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      កាលបរិច្ឆេទ (ឧ. ១៣-២១ សីហា)
-                    </label>
-                    <input
-                      type="text"
-                      value={seilDateRange}
-                      onChange={(e) => setSeilDateRange(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
-                      placeholder="បញ្ចូលកាលបរិច្ឆេទ"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      ប្រាក់ប្រតិបត្តិការសល់ពីមុន (៛)
-                    </label>
-                    <input
-                      type="number"
-                      value={seilPreviousBalance}
-                      onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="pt-2">
-                    <button
-                      type="submit"
-                      disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
-                    >
-                      {isSavingSeil ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <>
-                          <Check className="w-5 h-5 mr-2" />
-                          រក្សាទុក
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-          </>
-        )}
+                  {/* Public Notification */}"""
+content = content.replace(modal_field_hook, high_level_checkbox)
 
-        {isEditSeilModalOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsEditSeilModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
-            />
-            <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
-              >
-                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">កែប្រែបញ្ជី</h3>
-                  <button
-                    onClick={() => setIsEditSeilModalOpen(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <form onSubmit={handleUpdateSeil} className="p-4 sm:p-5 space-y-4">
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      ឈ្មោះបញ្ជី <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={seilName}
-                      onChange={(e) => setSeilName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      កាលបរិច្ឆេទ
-                    </label>
-                    <input
-                      type="text"
-                      value={seilDateRange}
-                      onChange={(e) => setSeilDateRange(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
-                      ប្រាក់ប្រតិបត្តិការសល់ពីមុន (៛)
-                    </label>
-                    <input
-                      type="number"
-                      value={seilPreviousBalance}
-                      onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
-                    />
-                  </div>
-                  <div className="pt-2">
-                    <button
-                      type="submit"
-                      disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
-                    >
-                      {isSavingSeil ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <>
-                          <Check className="w-5 h-5 mr-2" />
-                          រក្សាទុក
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-          </>
-        )}
-      </AnimatePresence>
+# Auto-check if amount >= 100000
+amount_input_hook = """                        setNewAmount(e.target.value);
+                      }}"""
+amount_input_new = """                        const val = e.target.value;
+                        setNewAmount(val);
+                        if (newRecordType === 'income' && Number(val) >= 100000) {
+                          setIsHighLevel(true);
+                        }
+                      }}"""
+content = content.replace(amount_input_hook, amount_input_new)
 
-      {/* Add Record Modal */}"""
-content = content.replace("      {/* Add Record Modal */}", modals)
 
 with open('src/components/Records.tsx', 'w') as f:
     f.write(content)

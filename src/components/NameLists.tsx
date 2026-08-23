@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Pencil, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
+import { Search, Plus, Pencil, Star, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -167,6 +167,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setIsRecordModalOpen(true);
   };
 
+  const toggleHighLevel = async (record: NameRecord) => {
+    try {
+      const newValue = !record.is_100k_donor;
+      await api.updateNameListRecord(record.id, { is_100k_donor: newValue });
+      setRecords(records.map(r => r.id === record.id ? { ...r, is_100k_donor: newValue } : r));
+    } catch (err) {
+      console.error('Error toggling high level:', err);
+    }
+  };
+
   const openEditModal = (record: NameRecord) => {
     setEditingRecord(record);
     setName(record.name);
@@ -189,6 +199,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         amount: parseFloat(amount),
         note: note.trim() || null,
         referrer: referrer.trim() || null,
+        is_100k_donor: is100kDonor,
         ...(notifyPublic && !editingRecord ? { notify_public: true, category_name: selectedCategory.name } : {})
       };
 
@@ -848,7 +859,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                 />
                 <label htmlFor="is100kDonor" className="text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
-                  ✅ បញ្ជូនទៅបញ្ជីសប្បុរសជនចាប់ពី ១០០,០០០៛ ឡើង
+                  ✅ ថវិកាកម្រិតខ្ពស់
                 </label>
               </div>
 

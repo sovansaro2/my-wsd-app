@@ -204,7 +204,7 @@ export default function Dashboard() {
             <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 rounded-lg">
               <Award className="w-5 h-5" />
             </div>
-            <h3 className="text-md font-bold text-gray-800 dark:text-slate-200">សប្បុរសជន (១០០,០០០៛ ឡើង)</h3>
+            <h3 className="text-md font-bold text-gray-800 dark:text-slate-200">ថវិកាកម្រិតខ្ពស់</h3>
           </div>
           <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
             {hundredKDonors.length} រូប
