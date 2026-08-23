@@ -1,31 +1,3 @@
-CREATE TABLE IF NOT EXISTS public.seil_periods (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  date_range_text TEXT,
-  previous_balance NUMERIC DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS public.financial_records (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  seil_id UUID REFERENCES public.seil_periods(id) ON DELETE CASCADE,
-  type TEXT CHECK (type IN ('income', 'expense')),
-  description TEXT NOT NULL,
-  amount NUMERIC NOT NULL,
-  record_date DATE,
-  note TEXT,
-  is_high_level BOOLEAN DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-ALTER TABLE public.seil_periods ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.financial_records ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Allow public read seil_periods" ON public.seil_periods FOR SELECT USING (true);
-CREATE POLICY "Allow public read financial_records" ON public.financial_records FOR SELECT USING (true);
-CREATE POLICY "Allow all operations on seil_periods" ON public.seil_periods FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all operations on financial_records" ON public.financial_records FOR ALL USING (true) WITH CHECK (true);
-
 DO $$
 DECLARE
   v_seil_id UUID;
@@ -57,21 +29,3 @@ BEGIN
     (v_seil_id, 'expense', 'ចូលរួមមន្ទីរពេទ្យគន្ធបុប្ផា', 50000, NULL, 'សាលាអរគុណ');
   END IF;
 END $$;
-
-CREATE TABLE IF NOT EXISTS public.name_list_categories (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS public.name_list_records (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  category_id UUID REFERENCES public.name_list_categories(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  amount NUMERIC NOT NULL,
-  note TEXT,
-  referrer TEXT,
-  is_100k_donor BOOLEAN DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
