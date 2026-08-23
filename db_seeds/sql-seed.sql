@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.financial_records (
   amount NUMERIC NOT NULL,
   record_date DATE,
   note TEXT,
+  is_high_level BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
