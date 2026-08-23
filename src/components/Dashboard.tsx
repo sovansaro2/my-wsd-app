@@ -126,13 +126,8 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-24 overflow-y-auto font-battambang transition-colors duration-200">
       
-      <div className="px-4 pt-6 pb-2">
-        <div className="max-w-3xl mx-auto w-full flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{t('dashboard_title')}</h2>
-        </div>
-      </div>
       
-      <div className="max-w-3xl mx-auto w-full px-4 space-y-8 mt-2">
+      <div className="max-w-3xl mx-auto w-full px-4 space-y-8 mt-6">
 
       {error && (
         <div className="bg-red-100 text-red-700 p-3 rounded-xl text-sm">
@@ -167,7 +162,7 @@ export default function Dashboard() {
                 <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
                   <TrendingUp className="w-4 h-4 text-emerald-600" />
                 </div>
-                <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_income')}</p>
+                <p className="text-xs text-slate-500 font-semibold">{t('dashboard_total_income')}</p>
               </div>
               <button onClick={handleToggleVisibility} className="text-slate-400 hover:text-emerald-500 transition-colors">
                 {isAmountVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -184,7 +179,7 @@ export default function Dashboard() {
                 <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/20 flex items-center justify-center">
                   <TrendingDown className="w-4 h-4 text-rose-600" />
                 </div>
-                <p className="text-[11px] text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
+                <p className="text-xs text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
               </div>
               <button onClick={handleToggleVisibility} className="text-slate-400 hover:text-rose-500 transition-colors">
                 {isAmountVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -225,7 +220,7 @@ export default function Dashboard() {
                   </span>
                   <div>
                     <span className="font-bold text-gray-900 dark:text-white text-left block leading-tight">{donor.name}</span>
-                    <span className="text-[11px] text-gray-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                    <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                       {donor.category_name}
                     </span>

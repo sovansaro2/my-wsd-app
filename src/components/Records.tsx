@@ -543,11 +543,11 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
                      <Wallet className="w-6 h-6 text-blue-500" />
                   </div>
-                  <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-[13px] sm:text-[14px] leading-snug line-clamp-2">
+                  <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
                     {period.name}
                   </h4>
                   {period.date_range_text && (
-                    <p className="text-[11px] sm:text-xs text-gray-500 dark:text-slate-400 mt-1 text-center">
+                    <p className="text-xs sm:text-[13px] text-gray-500 dark:text-slate-400 mt-1 text-center">
                       {period.date_range_text}
                     </p>
                   )}
@@ -1179,7 +1179,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                      <h4 className="text-sm sm:text-[15px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
                       <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">

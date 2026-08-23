@@ -409,7 +409,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     
     if (statusText) {
       return (
-        <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border shrink-0 w-fit ${statusClass}`}>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full border shrink-0 w-fit ${statusClass}`}>
           {statusText}
         </span>
       );
@@ -496,7 +496,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                    <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
                      {getCategoryIcon(cat.name)}
                    </div>
-                   <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-[13px] sm:text-[14px] leading-snug line-clamp-2">
+                   <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
                      {cat.name}
                    </h4>
                  </button>
@@ -767,7 +767,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                       }`}
                                     >
                                       {confirmingRecordDeleteId === record.id ? (
-                                        <span className="text-[11px] font-bold px-1 font-battambang">លុប?</span>
+                                        <span className="text-xs font-bold px-1 font-battambang">លុប?</span>
                                       ) : (
                                         <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                                       )}
@@ -928,7 +928,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <Bell className="w-5 h-5 text-blue-600 dark:text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                    <h4 className="text-sm sm:text-[15px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
                     <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -1030,8 +1030,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                              backgroundRepeat: 'no-repeat'
                            }}
                          />
-                         <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
-                         <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
+                         <span className="text-xs font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
+                         <span className="text-xs font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
                       </div>
 
                       {/* Title - Center */}

@@ -343,7 +343,7 @@ export default function App() {
               />
             )}
             <Home className="h-[22px] w-[22px]" />
-            <span className="text-[10px] font-medium font-battambang">{t('nav_home')}</span>
+            <span className="text-[11px] sm:text-xs font-medium font-battambang">{t('nav_home')}</span>
           </motion.button>
           
           <motion.button
@@ -359,7 +359,7 @@ export default function App() {
               />
             )}
             <CircleDollarSign className="h-[22px] w-[22px]" />
-            <span className="text-[10px] font-medium font-battambang">{t('nav_finance')}</span>
+            <span className="text-[11px] sm:text-xs font-medium font-battambang">{t('nav_finance')}</span>
           </motion.button>
 
           <motion.button
@@ -375,7 +375,7 @@ export default function App() {
               />
             )}
             <List className="h-[22px] w-[22px]" />
-            <span className="text-[10px] font-medium font-battambang">{t('nav_list')}</span>
+            <span className="text-[11px] sm:text-xs font-medium font-battambang">{t('nav_list')}</span>
           </motion.button>
 
           <motion.button
@@ -391,7 +391,7 @@ export default function App() {
               />
             )}
             <FileText className="h-[22px] w-[22px]" />
-            <span className="text-[10px] font-medium font-battambang">របាយការណ៍</span>
+            <span className="text-[11px] sm:text-xs font-medium font-battambang">របាយការណ៍</span>
           </motion.button>
           
           <motion.button
@@ -407,7 +407,7 @@ export default function App() {
               />
             )}
             <User className="h-[22px] w-[22px]" />
-            <span className="text-[10px] font-medium font-battambang">{t('nav_account')}</span>
+            <span className="text-[11px] sm:text-xs font-medium font-battambang">{t('nav_account')}</span>
           </motion.button>
         </div>
       </nav>
