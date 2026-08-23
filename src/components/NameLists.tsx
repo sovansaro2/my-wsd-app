@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
+import { Search, Plus, Pencil, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -39,7 +39,7 @@ interface NameRecord {
   is_100k_donor?: boolean;
 }
 
-export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | null }) {
+export default function NameLists({ userRole, onManageNameLists }: { userRole?: 'admin' | 'user' | null, onManageNameLists?: () => void }) {
   const { t } = useLanguage();
   const [categories, setCategories] = useState<ListCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ListCategory | null>(null);
@@ -49,6 +49,12 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Modals state
+  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<ListCategory | null>(null);
+  const [catName, setCatName] = useState('');
+  const [catDesc, setCatDesc] = useState('');
+  const [isSavingCat, setIsSavingCat] = useState(false);
+
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<NameRecord | null>(null);
   const [certificateRecord, setCertificateRecord] = useState<NameRecord | null>(null);
@@ -80,6 +86,43 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
       fetchRecords(selectedCategory.id);
     }
   }, [selectedCategory]);
+
+  const openAddCatModal = () => {
+    setEditingCategory(null);
+    setCatName('');
+    setCatDesc('');
+    setIsCatModalOpen(true);
+  };
+
+  const openEditCatModal = (cat: ListCategory, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingCategory(cat);
+    setCatName(cat.name);
+    setCatDesc(cat.description || '');
+    setIsCatModalOpen(true);
+  };
+
+  const saveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!catName) return;
+    setIsSavingCat(true);
+    try {
+      if (editingCategory) {
+        const data = await api.updateListCategory(editingCategory.id, { name: catName, description: catDesc });
+        if (data && selectedCategory?.id === editingCategory.id) {
+          setSelectedCategory(data);
+        }
+      } else {
+        await api.createListCategory({ name: catName, description: catDesc });
+      }
+      setIsCatModalOpen(false);
+      fetchCategories();
+    } catch (err) {
+      console.error('Error saving category:', err);
+    } finally {
+      setIsSavingCat(false);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -338,9 +381,20 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
     const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
 
     return (
-      <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
+      <>
+            <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
         <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">បញ្ជីផ្សេងៗ</h2>
+          <div className="max-w-3xl mx-auto w-full flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">បញ្ជីផ្សេងៗ</h2>
+            {userRole === 'admin' && (
+              <button 
+                onClick={openAddCatModal}
+                className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+            )}
+          </div>
         </div>
         <div className="px-4 py-6 max-w-3xl mx-auto w-full">
           {roofCat && (
@@ -353,6 +407,14 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                 onClick={() => setSelectedCategory(roofCat)}
                 className="w-full text-left bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg shadow-orange-500/20 relative overflow-hidden transition-transform active:scale-95"
               >
+                {userRole === 'admin' && (
+                  <div 
+                    onClick={(e) => openEditCatModal(roofCat, e)}
+                    className="absolute top-3 right-3 z-20 p-2 text-white/70 hover:text-white hover:bg-white/20 rounded-full transition-colors"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </div>
+                )}
                 <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 <div className="absolute left-0 bottom-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-10 -mb-10"></div>
                 <div className="relative z-10 flex items-center gap-4">
@@ -378,8 +440,16 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
                  <button 
                    key={cat.id}
                    onClick={() => setSelectedCategory(cat)}
-                   className="flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
+                   className="relative flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
                  >
+                   {userRole === 'admin' && (
+                    <div 
+                      onClick={(e) => openEditCatModal(cat, e)}
+                      className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </div>
+                  )}
                    <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
                      {getCategoryIcon(cat.name)}
                    </div>
@@ -397,6 +467,85 @@ export default function NameLists({ userRole }: { userRole?: 'admin' | 'user' | 
           </div>
         </div>
       </div>
+
+      {/* Category Modals */}
+      <AnimatePresence>
+        {isCatModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCatModalOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            />
+            <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
+              >
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    {editingCategory ? 'កែប្រែបញ្ជី' : 'បន្ថែមបញ្ជីថ្មី'}
+                  </h3>
+                  <button
+                    onClick={() => setIsCatModalOpen(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <form onSubmit={saveCategory} className="p-4 sm:p-5 space-y-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ឈ្មោះបញ្ជី <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={catName}
+                      onChange={(e) => setCatName(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      placeholder="បញ្ចូលឈ្មោះបញ្ជី"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ការពិពណ៌នា
+                    </label>
+                    <textarea
+                      value={catDesc}
+                      onChange={(e) => setCatDesc(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm h-24 resize-none"
+                      placeholder="បញ្ចូលការពិពណ៌នាបញ្ជី"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSavingCat}
+                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                    >
+                      {isSavingCat ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Check className="w-5 h-5 mr-2" />
+                          រក្សាទុក
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+      </>
+
     );
   }
 

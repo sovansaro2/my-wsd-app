@@ -392,7 +392,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
       )}
 
       {/* Floating Add Button */}
-      {!loading && !error && selectedPeriod && (
+      {!isLoading && !errorMessage && selectedPeriod && (
         <div className="fixed bottom-24 right-4 sm:right-6 sm:bottom-6 z-40">
           <button 
             onClick={openAddRecordModal}
@@ -468,7 +468,7 @@ export default function ManageFinancialRecords({ onBack }: ManageFinancialRecord
                   បោះបង់
                 </button>
                 <button
-                  onClick={handleSaveSeil}
+                  onClick={saveSeil}
                   disabled={!seilName.trim()}
                   className="flex-1 px-4 py-3 text-white font-bold bg-orange-600 hover:bg-orange-700 rounded-xl transition-all shadow-md shadow-orange-600/20 disabled:opacity-50 focus:outline-none flex justify-center items-center gap-2"
                 >

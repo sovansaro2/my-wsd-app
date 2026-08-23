@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
+import { ChevronDown, Pencil, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -59,6 +59,15 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   // Dynamic Image States
   const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
+
+  // Seil Modal State
+  const [isSeilModalOpen, setIsSeilModalOpen] = useState(false);
+  const [isEditSeilModalOpen, setIsEditSeilModalOpen] = useState(false);
+  const [seilName, setSeilName] = useState('');
+  const [seilDateRange, setSeilDateRange] = useState('');
+  const [seilPreviousBalance, setSeilPreviousBalance] = useState('');
+  const [editingSeil, setEditingSeil] = useState<SeilPeriod | null>(null);
+  const [isSavingSeil, setIsSavingSeil] = useState(false);
 
   // Add Record Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -196,7 +205,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       if (data && data.length > 0) {
         setPeriods(data);
-        setSelectedPeriod(data[0]); // Select first by default
       }
     } catch (e) {
       console.error('Error fetching periods:', e);
@@ -279,6 +287,61 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     }
   };
 
+  const openAddSeilModal = () => {
+    setSeilName('');
+    setSeilDateRange('');
+    setSeilPreviousBalance('');
+    setEditingSeil(null);
+    setIsSeilModalOpen(true);
+  };
+
+  const openEditSeilModal = (seil: SeilPeriod, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSeil(seil);
+    setSeilName(seil.name);
+    setSeilDateRange(seil.date_range_text || '');
+    setSeilPreviousBalance(seil.previous_balance ? seil.previous_balance.toString() : '');
+    setIsEditSeilModalOpen(true);
+  };
+
+  const saveSeil = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!seilName) return;
+    setIsSavingSeil(true);
+    try {
+      const data = await api.createSeilPeriod({ name: seilName, date_range_text: seilDateRange || null, previous_balance: parseFloat(seilPreviousBalance || '0') });
+      setIsSeilModalOpen(false);
+      await fetchPeriods();
+      if (data) setSelectedPeriod(data);
+    } catch (error) {
+      console.error('Error saving seil:', error);
+    } finally {
+      setIsSavingSeil(false);
+    }
+  };
+
+  const handleUpdateSeil = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSeil || !seilName) return;
+    setIsSavingSeil(true);
+    try {
+      const data = await api.updateSeilPeriod(editingSeil.id, { 
+        name: seilName, 
+        date_range_text: seilDateRange || null, 
+        previous_balance: parseFloat(seilPreviousBalance || '0') 
+      });
+      setIsEditSeilModalOpen(false);
+      await fetchPeriods();
+      if (data && selectedPeriod?.id === editingSeil.id) {
+         setSelectedPeriod(data);
+      }
+    } catch (err) {
+      console.error('Error updating seil:', err);
+    } finally {
+      setIsSavingSeil(false);
+    }
+  };
+
   const handleSaveRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPeriod || !newDescription || !newAmount) return;
@@ -358,13 +421,234 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     return <LoadingScreen className="h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200" />;
   }
 
-  if (periods.length === 0) {
+  if (!selectedPeriod) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-6 text-center bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200">
-        <Wallet className="w-16 h-16 text-zinc-200 mb-4" />
-        <h2 className="text-xl font-bold text-zinc-800 dark:text-slate-200 mb-2">មិនទាន់មានទិន្នន័យ</h2>
-        <p className="text-zinc-500 dark:text-slate-400 text-sm max-w-xs">សូមបញ្ជូលទិន្នន័យចំណូលចំណាយរបស់អ្នកនៅផ្នែកគ្រប់គ្រង។</p>
+      <>
+            <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
+        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
+          <div className="max-w-3xl mx-auto w-full flex items-center justify-between">
+             <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('records_title')}</h2>
+             {userRole === 'admin' && (
+               <button 
+                 onClick={openAddSeilModal}
+                 className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
+               >
+                 <Plus className="w-6 h-6" />
+               </button>
+             )}
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              {periods.map(period => (
+                <button 
+                  key={period.id}
+                  onClick={() => setSelectedPeriod(period)}
+                  className="relative flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
+                >
+                  {userRole === 'admin' && (
+                    <div 
+                      onClick={(e) => openEditSeilModal(period, e)}
+                      className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </div>
+                  )}
+                  <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
+                     <Wallet className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-[13px] sm:text-[14px] leading-snug line-clamp-2">
+                    {period.name}
+                  </h4>
+                  {period.date_range_text && (
+                    <p className="text-[11px] sm:text-xs text-gray-500 dark:text-slate-400 mt-1 text-center">
+                      {period.date_range_text}
+                    </p>
+                  )}
+                </button>
+              ))}
+              {periods.length === 0 && (
+                <div className="col-span-full py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
+                   មិនទាន់មានទិន្នន័យនៅឡើយទេ
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
+{/* Seil Modals */}
+      <AnimatePresence>
+        {isSeilModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSeilModalOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            />
+            <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
+              >
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">បន្ថែមបញ្ជីចំណូល-ចំណាយថ្មី</h3>
+                  <button
+                    onClick={() => setIsSeilModalOpen(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <form onSubmit={saveSeil} className="p-4 sm:p-5 space-y-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ឈ្មោះបញ្ជី (ឧ. សីលទី១, បុណ្យផ្កា...) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={seilName}
+                      onChange={(e) => setSeilName(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      placeholder="បញ្ចូលឈ្មោះបញ្ជី"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      កាលបរិច្ឆេទ (ឧ. ១៣-២១ សីហា)
+                    </label>
+                    <input
+                      type="text"
+                      value={seilDateRange}
+                      onChange={(e) => setSeilDateRange(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      placeholder="បញ្ចូលកាលបរិច្ឆេទ"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ប្រាក់ប្រតិបត្តិការសល់ពីមុន (៛)
+                    </label>
+                    <input
+                      type="number"
+                      value={seilPreviousBalance}
+                      onChange={(e) => setSeilPreviousBalance(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSavingSeil}
+                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                    >
+                      {isSavingSeil ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Check className="w-5 h-5 mr-2" />
+                          រក្សាទុក
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </>
+        )}
+
+        {isEditSeilModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEditSeilModalOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            />
+            <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
+              >
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">កែប្រែបញ្ជី</h3>
+                  <button
+                    onClick={() => setIsEditSeilModalOpen(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <form onSubmit={handleUpdateSeil} className="p-4 sm:p-5 space-y-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ឈ្មោះបញ្ជី <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={seilName}
+                      onChange={(e) => setSeilName(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      កាលបរិច្ឆេទ
+                    </label>
+                    <input
+                      type="text"
+                      value={seilDateRange}
+                      onChange={(e) => setSeilDateRange(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ប្រាក់ប្រតិបត្តិការសល់ពីមុន (៛)
+                    </label>
+                    <input
+                      type="number"
+                      value={seilPreviousBalance}
+                      onChange={(e) => setSeilPreviousBalance(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSavingSeil}
+                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                    >
+                      {isSavingSeil ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Check className="w-5 h-5 mr-2" />
+                          រក្សាទុក
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+            </>
+
     );
   }
 
@@ -378,73 +662,23 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang">
-      {/* Header & Selector */}
-      <div className="bg-white dark:bg-slate-900 px-4 py-5 border-b border-gray-200 dark:border-slate-800 relative z-10 shadow-none dark:shadow-none">
+      {/* Detail Header */}
+      <div className="bg-white dark:bg-slate-900 px-4 py-5 border-b border-gray-200 dark:border-slate-800 relative z-10 shadow-none dark:shadow-none sticky top-0">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('records_title')}</h2>
           <div className="flex items-center gap-3">
-            <div className="relative flex-1 min-w-0">
-              <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full text-left bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white py-3.5 px-4 rounded-[16px] font-semibold text-[13.5px] sm:text-[14px] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2 truncate pr-2">
-                  <Calendar className="w-5 h-5 text-gray-500 shrink-0" />
-                  <span className="truncate">
-                    {selectedPeriod ? `${selectedPeriod.name} (${selectedPeriod.date_range_text})` : 'ជ្រើសរើស...'}
-                  </span>
-                </div>
-                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <>
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setIsDropdownOpen(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-800 overflow-hidden z-50 max-h-[60vh] overflow-y-auto"
-                    >
-                      {periods.map((p, index) => {
-                        const isClosed = index !== 0; // Assume first period (latest) is active, rest are closed
-                        return (
-                        <button
-                          key={p.id}
-                          onClick={() => {
-                            setSelectedPeriod(p);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-orange-50 transition-colors flex items-center justify-between ${selectedPeriod?.id === p.id ? 'bg-orange-50/50 text-orange-600' : 'text-gray-700 dark:text-slate-300'}`}
-                        >
-                          <span className="font-medium text-[13.5px] sm:text-[14px] leading-relaxed pr-2 whitespace-nowrap overflow-hidden text-ellipsis flex-1">
-                            {p.name} {p.date_range_text ? `(${p.date_range_text})` : ''}
-                          </span>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {isClosed ? (
-                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 whitespace-nowrap">
-                                បញ្ជីបានបិទ
-                              </span>
-                            ) : (
-                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 whitespace-nowrap">
-                                កំពុងប្រតិបត្តិការ
-                              </span>
-                            )}
-                            {selectedPeriod?.id === p.id && (
-                              <Check className="w-5 h-5 text-orange-500" />
-                            )}
-                          </div>
-                        </button>
-                      )})}
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+            <button 
+              onClick={() => setSelectedPeriod(null)}
+              className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight truncate">{selectedPeriod?.name}</h2>
+              {selectedPeriod?.date_range_text && (
+                 <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{selectedPeriod.date_range_text}</p>
+              )}
             </div>
             
             <button 

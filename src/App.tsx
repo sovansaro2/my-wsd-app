@@ -293,14 +293,19 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 'home' && <Dashboard />}
-            {activeTab === 'records' && (
+            {['records', 'manage_financials'].includes(activeTab) && (
               <RecordsComponent 
                 userRole={userRole} 
                 onAddRecord={() => setActiveTab('manage_financials')} 
               />
             )}
             {activeTab === 'reports' && <Reports />}
-            {activeTab === 'categories' && <NameLists userRole={userRole} />}
+            {['categories', 'manage_name_lists'].includes(activeTab) && (
+              <NameLists 
+                userRole={userRole}
+                onManageNameLists={() => setActiveTab('manage_name_lists')} 
+              />
+            )}
             {activeTab === 'account' && (
               <AccountProfile
     userRole={userRole}
@@ -319,10 +324,10 @@ export default function App() {
 
             {/* Admin Management Views */}
             {activeTab === 'manage_financials' && userRole === 'admin' && (
-              <ManageFinancialRecords onBack={() => setActiveTab('account')} />
+              <ManageFinancialRecords onBack={() => setActiveTab('records')} />
             )}
             {activeTab === 'manage_name_lists' && userRole === 'admin' && (
-              <ManageNameLists onBack={() => setActiveTab('account')} />
+              <ManageNameLists onBack={() => setActiveTab('categories')} />
             )}
             {activeTab === 'users' && userRole === 'admin' && (
               <Users onBack={() => setActiveTab('account')} />
@@ -356,9 +361,9 @@ export default function App() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('records')}
-            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'records' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['records', 'manage_financials'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            {activeTab === 'records' && (
+            {['records', 'manage_financials'].includes(activeTab) && (
               <motion.div
                 layoutId="bottom-nav-indicator"
                 className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
@@ -372,9 +377,9 @@ export default function App() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('categories')}
-            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'categories' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['categories', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            {activeTab === 'categories' && (
+            {['categories', 'manage_name_lists'].includes(activeTab) && (
               <motion.div
                 layoutId="bottom-nav-indicator"
                 className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
@@ -404,9 +409,9 @@ export default function App() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('account')}
-            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['account', 'users', 'certificates'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            {['account', 'manage_financials', 'manage_name_lists'].includes(activeTab) && (
+            {['account', 'users', 'certificates'].includes(activeTab) && (
               <motion.div
                 layoutId="bottom-nav-indicator"
                 className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
