@@ -71,10 +71,16 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
   let { data, error } = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_high_level')))) {
-    delete recordBody.is_high_level;
-    const retry = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
-    data = retry.data;
-    error = retry.error;
+    delete (recordBody as any).is_high_level;
+    if (Object.keys(recordBody).length === 0) {
+      const existing = await supabaseAdmin.from('financial_records').select('*').eq('id', req.params.id);
+      data = existing.data;
+      error = existing.error;
+    } else {
+      const retry = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+      data = retry.data;
+      error = retry.error;
+    }
   }
 
   if (error) return res.status(400).json({ detail: error.message });

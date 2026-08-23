@@ -57,3 +57,21 @@ BEGIN
     (v_seil_id, 'expense', 'ចូលរួមមន្ទីរពេទ្យគន្ធបុប្ផា', 50000, NULL, 'សាលាអរគុណ');
   END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS public.name_list_categories (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.name_list_records (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  category_id UUID REFERENCES public.name_list_categories(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  note TEXT,
+  referrer TEXT,
+  is_100k_donor BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
