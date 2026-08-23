@@ -10,8 +10,6 @@ import Dashboard from './components/Dashboard';
 
 import AccountProfile from './components/AccountProfile';
 import Certificates from './components/Certificates';
-import ManageNameLists from './components/ManageNameLists';
-import ManageFinancialRecords from './components/ManageFinancialRecords';
 import RecordsComponent from './components/Records';
 import Reports from './components/Reports';
 import NameLists from './components/NameLists';
@@ -293,26 +291,22 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 'home' && <Dashboard />}
-            {['records', 'manage_financials'].includes(activeTab) && (
+            {activeTab === 'records' && (
               <RecordsComponent 
                 userRole={userRole} 
-                onAddRecord={() => setActiveTab('manage_financials')} 
-              />
+                />
             )}
             {activeTab === 'reports' && <Reports />}
-            {['categories', 'manage_name_lists'].includes(activeTab) && (
+            {activeTab === 'categories' && (
               <NameLists 
                 userRole={userRole}
-                onManageNameLists={() => setActiveTab('manage_name_lists')} 
-              />
+                />
             )}
             {activeTab === 'account' && (
               <AccountProfile
     userRole={userRole}
     onLogout={handleLogout}
     
-    onManageFinancials={() => setActiveTab('manage_financials')}
-    onManageNameLists={() => setActiveTab('manage_name_lists')}
     onManageUsers={() => setActiveTab('users')}
     onCertificates={() => setActiveTab('certificates')}
   />
@@ -323,12 +317,6 @@ export default function App() {
             )}
 
             {/* Admin Management Views */}
-            {activeTab === 'manage_financials' && userRole === 'admin' && (
-              <ManageFinancialRecords onBack={() => setActiveTab('records')} />
-            )}
-            {activeTab === 'manage_name_lists' && userRole === 'admin' && (
-              <ManageNameLists onBack={() => setActiveTab('categories')} />
-            )}
             {activeTab === 'users' && userRole === 'admin' && (
               <Users onBack={() => setActiveTab('account')} />
             )}
@@ -361,9 +349,9 @@ export default function App() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('records')}
-            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['records', 'manage_financials'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'records' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            {['records', 'manage_financials'].includes(activeTab) && (
+            {activeTab === 'records' && (
               <motion.div
                 layoutId="bottom-nav-indicator"
                 className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"
@@ -377,9 +365,9 @@ export default function App() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setActiveTab('categories')}
-            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${['categories', 'manage_name_lists'].includes(activeTab) ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            className={`relative flex flex-col items-center gap-1 p-2 min-w-[4rem] transition-colors ${activeTab === 'categories' ? 'text-orange-500 dark:text-orange-400' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
           >
-            {['categories', 'manage_name_lists'].includes(activeTab) && (
+            {activeTab === 'categories' && (
               <motion.div
                 layoutId="bottom-nav-indicator"
                 className="absolute inset-0 bg-orange-50 dark:bg-orange-500/10 rounded-xl -z-10"

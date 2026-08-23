@@ -72,6 +72,12 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
   // Add Record Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+  // Edit Record Modal State
+  const [isEditRecordModalOpen, setIsEditRecordModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [editErrorMessage, setEditErrorMessage] = useState('');
   const [newRecordType, setNewRecordType] = useState<'income' | 'expense'>('expense');
   const [newDescription, setNewDescription] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -354,6 +360,72 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     }
   };
 
+
+  const openEditRecordModal = (record: FinancialRecord) => {
+    setEditingRecord(record);
+    setNewRecordType(record.type);
+    setNewDescription(record.description);
+    setNewAmount(record.amount.toString());
+    setNewDate(record.record_date || new Date().toISOString().split('T')[0]);
+    setNewNote(record.note || '');
+    setIsHighLevel(record.is_high_level || false);
+    setIsEditRecordModalOpen(true);
+    setIsConfirmingDelete(false);
+    setEditErrorMessage('');
+  };
+
+  const handleUpdateRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRecord || !newDescription || !newAmount) return;
+
+    setIsSaving(true);
+    try {
+      const recordData = {
+        type: newRecordType,
+        description: newDescription,
+        amount: parseFloat(newAmount.replace(/,/g, '')),
+        record_date: newDate || null,
+        note: newNote || null,
+        is_high_level: isHighLevel
+      };
+
+      await api.updateFinancialRecord(editingRecord.id, recordData);
+      
+      const updatedData = await api.getFinancialRecords(selectedPeriod!.id);
+      setRecords(updatedData);
+      
+      setIsEditRecordModalOpen(false);
+      setEditingRecord(null);
+    } catch (err: any) {
+      setEditErrorMessage(err.message || 'Error updating record');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteRecord = async (id: string) => {
+    if (!isConfirmingDelete) {
+      setIsConfirmingDelete(true);
+      return;
+    }
+    
+    setIsSaving(true);
+    setEditErrorMessage('');
+    try {
+      await api.deleteFinancialRecord(id);
+      setRecords(records.filter(r => r.id !== id));
+      if (isEditRecordModalOpen) {
+        setIsEditRecordModalOpen(false);
+        setEditingRecord(null);
+        setIsConfirmingDelete(false);
+      }
+    } catch (err: any) {
+      setEditErrorMessage(err.message || 'Error deleting record');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSaveRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPeriod || !newDescription || !newAmount) return;
@@ -377,10 +449,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       if (newRecordType === 'income' && addToRoofFund) {
         try {
           const categories = await api.getNameListCategories();
-          let roofCategory = categories.find((c: any) => c.name.includes('បញ្ជីឈ្មោះសប្បុរសជនចូលរួមកសាងដំបូលព្រះវិហារ'));
+          let roofCategory = categories.find((c: any) => c.name.includes('កសាងដំបូលព្រះវិហារ'));
           if (!roofCategory) {
             roofCategory = await api.createNameListCategory({
-              name: 'បញ្ជីឈ្មោះសប្បុរសជនចូលរួមកសាងដំបូលព្រះវិហារ',
+              name: 'កសាងដំបូលព្រះវិហារ',
               description: 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'
             });
           }
@@ -802,9 +874,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       <thead>
                         <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
                           <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">បរិយាយ</th>
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">{activeTab === 'income' ? 'ឈ្មោះ' : 'បរិយាយ'}</th>
                           <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
-                          {activeTab === 'income' && <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>}
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>
                         </tr>
                       </thead>
                       <tbody >
@@ -849,9 +921,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                 {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
                               </span>
                             </td>
-                            {activeTab === 'income' && (
-                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
-                                <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
+                              <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <button 
+                                  onClick={() => openEditRecordModal(record)}
+                                  className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
+                                  title="កែប្រែ"
+                                >
+                                  <Pencil className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                </button>
+                                {activeTab === 'income' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
                                     className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
@@ -859,9 +938,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   >
                                     <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                                   </button>
-                                </div>
-                              </td>
-                            )}
+                                )}
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -1129,6 +1208,157 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+            {/* Edit Record Modal */}
+      <AnimatePresence>
+        {isEditRecordModalOpen && editingRecord && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-0"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsEditRecordModalOpen(false);
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800">
+                <h3 className="text-xl font-battambang font-bold text-gray-900 dark:text-white">កែប្រែទិន្នន័យ</h3>
+                <button 
+                  onClick={() => setIsEditRecordModalOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="overflow-y-auto flex-1">
+                <form id="editRecordForm" onSubmit={handleUpdateRecord} className="p-6 space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                      {newRecordType === 'income' ? (t('records_description_income') || 'ឈ្មោះសប្បុរសជន') : (t('records_description_expense') || 'បរិយាយ (មុខទំនិញ)')}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      placeholder={newRecordType === 'income' ? (t('records_description_income_ph') || 'សូមបញ្ជូលឈ្មោះ') : (t('records_description_expense_ph') || 'ឧ. ទិញទឹកសុទ្ធ...')}
+                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_amount')}</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-slate-500">៛</span>
+                      <input
+                        type="text"
+                        required
+                        value={newAmount}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          setNewAmount(val ? parseInt(val).toLocaleString() : '');
+                        }}
+                        placeholder={t('records_amount_ph')}
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all font-bold placeholder:font-normal placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_date')}</label>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          required
+                          value={newDate}
+                          onChange={(e) => setNewDate(e.target.value)}
+                          className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_note')}</label>
+                      <input
+                        type="text"
+                        value={newNote}
+                        onChange={(e) => setNewNote(e.target.value)}
+                        placeholder={t('records_note_ph')}
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  {newRecordType === 'income' && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                        <input 
+                          type="checkbox" 
+                          id="editIsHighLevel" 
+                          checked={isHighLevel}
+                          onChange={(e) => setIsHighLevel(e.target.checked)}
+                          className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                        />
+                        <label htmlFor="editIsHighLevel" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                          <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                </form>
+              </div>
+
+              {editErrorMessage && (
+                <div className="px-6 pb-2">
+                  <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-battambang">
+                    {editErrorMessage}
+                  </div>
+                </div>
+              )}
+              <div className="p-6 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteRecord(editingRecord.id)}
+                  disabled={isSaving}
+                  className={`px-6 py-3.5 rounded-2xl font-battambang font-bold text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
+                    isConfirmingDelete 
+                      ? 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-600' 
+                      : 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 focus:ring-red-500'
+                  }`}
+                >
+                  {isConfirmingDelete ? 'បញ្ជាក់ការលុប?' : 'លុប'}
+                </button>
+                <button
+                  type="submit"
+                  form="editRecordForm"
+                  disabled={isSaving}
+                  className="flex-1 px-6 py-3.5 rounded-2xl font-battambang font-bold text-[15px] transition-all bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 shadow-xl shadow-gray-900/20 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      កំពុងរក្សាទុក...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5" />
+                      រក្សាទុកការកែប្រែ
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

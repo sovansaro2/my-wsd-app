@@ -54,6 +54,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [catName, setCatName] = useState('');
   const [catDesc, setCatDesc] = useState('');
   const [isSavingCat, setIsSavingCat] = useState(false);
+  const [confirmingRecordDeleteId, setConfirmingRecordDeleteId] = useState<string | null>(null);
+  const [confirmingCatDeleteId, setConfirmingCatDeleteId] = useState<string | null>(null);
+  const [catErrorMessage, setCatErrorMessage] = useState('');
 
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<NameRecord | null>(null);
@@ -102,18 +105,43 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setIsCatModalOpen(true);
   };
 
+  const handleDeleteCategory = async () => {
+    if (!editingCategory) return;
+    if (confirmingCatDeleteId !== editingCategory.id) {
+      setConfirmingCatDeleteId(editingCategory.id);
+      return;
+    }
+    
+    setIsSavingCat(true);
+    setCatErrorMessage('');
+    try {
+      await api.deleteNameListCategory(editingCategory.id);
+      if (selectedCategory?.id === editingCategory.id) {
+        setSelectedCategory(null);
+      }
+      setIsCatModalOpen(false);
+      setConfirmingCatDeleteId(null);
+      fetchCategories();
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      setCatErrorMessage(err.message || 'Error deleting category');
+    } finally {
+      setIsSavingCat(false);
+    }
+  };
+
   const saveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!catName) return;
     setIsSavingCat(true);
     try {
       if (editingCategory) {
-        const data = await api.updateListCategory(editingCategory.id, { name: catName, description: catDesc });
+        const data = await api.updateNameListCategory(editingCategory.id, { name: catName, description: catDesc });
         if (data && selectedCategory?.id === editingCategory.id) {
           setSelectedCategory(data);
         }
       } else {
-        await api.createListCategory({ name: catName, description: catDesc });
+        await api.createNameListCategory({ name: catName, description: catDesc });
       }
       setIsCatModalOpen(false);
       fetchCategories();
@@ -222,10 +250,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   };
 
   const handleDeleteRecord = async (id: string) => {
-    if (!window.confirm(t('list_alert_delete'))) return;
+    if (confirmingRecordDeleteId !== id) {
+      setConfirmingRecordDeleteId(id);
+      return;
+    }
     
     try {
       await api.deleteNameListRecord(id);
+      setConfirmingRecordDeleteId(null);
       
       if (selectedCategory) fetchRecords(selectedCategory.id);
     } catch (error) {
@@ -533,11 +565,30 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       placeholder="បញ្ចូលការពិពណ៌នាបញ្ជី"
                     />
                   </div>
-                  <div className="pt-2">
+                  {catErrorMessage && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-battambang">
+                      {catErrorMessage}
+                    </div>
+                  )}
+                  <div className="pt-2 flex gap-3">
+                    {editingCategory && (
+                      <button
+                        type="button"
+                        disabled={isSavingCat}
+                        onClick={handleDeleteCategory}
+                        className={`flex items-center justify-center py-3 sm:py-3.5 px-4 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70 ${
+                          confirmingCatDeleteId === editingCategory.id 
+                            ? 'bg-red-600 text-white hover:bg-red-700 flex-1' 
+                            : 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40'
+                        }`}
+                      >
+                        {confirmingCatDeleteId === editingCategory.id ? 'បញ្ជាក់ការលុប?' : <Trash2 className="w-5 h-5" />}
+                      </button>
+                    )}
                     <button
                       type="submit"
                       disabled={isSavingCat}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="flex-1 flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
                     >
                       {isSavingCat ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -709,9 +760,17 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                     </button>
                                     <button 
                                       onClick={() => handleDeleteRecord(record.id)}
-                                      className="p-1 sm:p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors focus:outline-none"
+                                      className={`p-1 sm:p-1.5 rounded-lg transition-colors focus:outline-none ${
+                                        confirmingRecordDeleteId === record.id
+                                          ? 'bg-rose-600 text-white hover:bg-rose-700'
+                                          : 'text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30'
+                                      }`}
                                     >
-                                      <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                      {confirmingRecordDeleteId === record.id ? (
+                                        <span className="text-[11px] font-bold px-1 font-battambang">លុប?</span>
+                                      ) : (
+                                        <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                      )}
                                     </button>
                                   </>
                                 )}
