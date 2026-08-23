@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
+import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2, Landmark } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -377,10 +377,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       if (newRecordType === 'income' && addToRoofFund) {
         try {
           const categories = await api.getNameListCategories();
-          let roofCategory = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+          let roofCategory = categories.find((c: any) => c.name.includes('បញ្ជីឈ្មោះសប្បុរសជនចូលរួមកសាងដំបូលព្រះវិហារ'));
           if (!roofCategory) {
             roofCategory = await api.createNameListCategory({
-              name: 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ',
+              name: 'បញ្ជីឈ្មោះសប្បុរសជនចូលរួមកសាងដំបូលព្រះវិហារ',
               description: 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'
             });
           }
@@ -1013,13 +1013,15 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_description')}</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                      {newRecordType === 'income' ? (t('records_description_income') || 'ឈ្មោះសប្បុរសជន') : (t('records_description_expense') || 'បរិយាយ (មុខទំនិញ)')}
+                    </label>
                     <input
                       type="text"
                       required
                       value={newDescription}
                       onChange={(e) => setNewDescription(e.target.value)}
-                      placeholder={t('records_description_ph')}
+                      placeholder={newRecordType === 'income' ? (t('records_description_income_ph') || 'សូមបញ្ជូលឈ្មោះ') : (t('records_description_expense_ph') || 'ឧ. ទិញទឹកសុទ្ធ...')}
                       className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
                     />
                   </div>
@@ -1064,17 +1066,32 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
                   {/* High Level Budget Checkbox */}
                   {newRecordType === 'income' && (
-                    <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
-                      <input 
-                        type="checkbox" 
-                        id="isHighLevel" 
-                        checked={isHighLevel}
-                        onChange={(e) => setIsHighLevel(e.target.checked)}
-                        className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
-                      />
-                      <label htmlFor="isHighLevel" className="text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
-                        ✅ ថវិកាកម្រិតខ្ពស់
-                      </label>
+                    <div className="flex flex-col gap-2 mt-2">
+                      <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                        <input 
+                          type="checkbox" 
+                          id="isHighLevel" 
+                          checked={isHighLevel}
+                          onChange={(e) => setIsHighLevel(e.target.checked)}
+                          className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                        />
+                        <label htmlFor="isHighLevel" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                          <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
+                        </label>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
+                        <input 
+                          type="checkbox" 
+                          id="addToRoofFund" 
+                          checked={addToRoofFund}
+                          onChange={(e) => setAddToRoofFund(e.target.checked)}
+                          className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                        />
+                        <label htmlFor="addToRoofFund" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-blue-800 dark:text-blue-300 select-none cursor-pointer">
+                          <Landmark className="w-4 h-4 text-blue-500" /> បន្ថែមចូលបញ្ជីកសាងដំបូលព្រះវិហារ
+                        </label>
+                      </div>
                     </div>
                   )}
 
