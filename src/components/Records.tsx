@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, Pencil, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
+import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -78,6 +78,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [newNote, setNewNote] = useState('');
   const [newNotifyPublic, setNewNotifyPublic] = useState(false);
+  const [isHighLevel, setIsHighLevel] = useState(false);
   const [addToRoofFund, setAddToRoofFund] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -343,6 +344,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     }
   };
 
+  const toggleHighLevel = async (record: FinancialRecord) => {
+    try {
+      const newValue = !record.is_high_level;
+      await api.updateFinancialRecord(record.id, { is_high_level: newValue });
+      setRecords(records.map(r => r.id === record.id ? { ...r, is_high_level: newValue } : r));
+    } catch (err) {
+      console.error('Error toggling high level:', err);
+    }
+  };
+
   const handleSaveRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPeriod || !newDescription || !newAmount) return;
@@ -356,6 +367,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         amount: parseFloat(newAmount.replace(/,/g, '')),
         record_date: newDate || null,
         note: newNote || null,
+        is_high_level: isHighLevel,
         ...(newNotifyPublic ? { notify_public: true, seil_name: selectedPeriod.name } : {})
       };
 
@@ -696,7 +708,17 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
               {userRole === 'admin' && (
                 <button 
-                  onClick={() => setIsAddModalOpen(true)}
+                  onClick={() => {
+                    setNewRecordType('income');
+                    setNewDescription('');
+                    setNewAmount('');
+                    setNewNote('');
+                    setNewDate(new Date().toISOString().split('T')[0]);
+                    setNewNotifyPublic(false);
+                    setAddToRoofFund(false);
+                    setIsHighLevel(false);
+                    setIsAddModalOpen(true);
+                  }}
                   className="w-10 h-10 flex items-center justify-center bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors shadow-sm focus:outline-none"
                   title={t('records_add_new')}
                 >
@@ -798,9 +820,21 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
-                                <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
-                                  {record.description}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight">
+                                    {record.description}
+                                  </span>
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleHighLevel(record);
+                                    }}
+                                    className={`p-1 rounded-full transition-colors ${record.is_high_level ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-300 dark:text-slate-600 hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
+                                    title="ថវិកាកម្រិតខ្ពស់"
+                                  >
+                                    <Star className="w-4 h-4" fill={record.is_high_level ? "currentColor" : "none"} />
+                                  </button>
+                                </div>
                                 <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">{formatDate(record.record_date)}</span>
                                 {record.note && (
                                   <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 line-clamp-1">
@@ -1027,6 +1061,22 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       />
                     </div>
                   </div>
+
+                  {/* High Level Budget Checkbox */}
+                  {newRecordType === 'income' && (
+                    <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                      <input 
+                        type="checkbox" 
+                        id="isHighLevel" 
+                        checked={isHighLevel}
+                        onChange={(e) => setIsHighLevel(e.target.checked)}
+                        className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                      />
+                      <label htmlFor="isHighLevel" className="text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                        ✅ ថវិកាកម្រិតខ្ពស់
+                      </label>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
                     <div className="flex-shrink-0">
