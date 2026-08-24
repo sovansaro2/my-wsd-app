@@ -1119,56 +1119,91 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <div className="absolute inset-[29px] border-[2px] border-[#991b1b] z-10 pointer-events-none"></div>
                         <div className="absolute inset-[36px] border-[1px] border-dashed border-[#d4af37] z-10 pointer-events-none opacity-70"></div>
                         
-                        {/* Corner Ornaments */}
-                        <div className="absolute top-[6px] left-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
-                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
-                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
-                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
-                          </div>
+                        {/* Corner Ornaments (Khmer Style SVG) */}
+                        <div className="absolute top-[8px] left-[8px] z-20 pointer-events-none">
+                          <svg width="75" height="75" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+                            <path d="M 0 0 L 100 0 Q 80 20 60 40 Q 80 60 40 60 Q 60 80 0 100 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M 0 0 L 80 0 Q 60 15 45 30 Q 60 45 30 45 Q 45 60 0 80 Z" fill="#991b1b"/>
+                            <path d="M 0 0 L 55 0 Q 40 10 30 20 Q 40 30 20 30 Q 30 40 0 55 Z" fill="#fdfaf0"/>
+                            <circle cx="12" cy="12" r="4" fill="#991b1b"/>
+                          </svg>
                         </div>
-                        <div className="absolute top-[6px] right-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
-                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
-                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
-                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
-                          </div>
+                        <div className="absolute top-[8px] right-[8px] z-20 pointer-events-none">
+                          <svg width="75" height="75" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md transform scale-x-[-1]">
+                            <path d="M 0 0 L 100 0 Q 80 20 60 40 Q 80 60 40 60 Q 60 80 0 100 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M 0 0 L 80 0 Q 60 15 45 30 Q 60 45 30 45 Q 45 60 0 80 Z" fill="#991b1b"/>
+                            <path d="M 0 0 L 55 0 Q 40 10 30 20 Q 40 30 20 30 Q 30 40 0 55 Z" fill="#fdfaf0"/>
+                            <circle cx="12" cy="12" r="4" fill="#991b1b"/>
+                          </svg>
                         </div>
-                        <div className="absolute bottom-[6px] left-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
-                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
-                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
-                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
-                          </div>
+                        <div className="absolute bottom-[8px] left-[8px] z-20 pointer-events-none">
+                          <svg width="75" height="75" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md transform scale-y-[-1]">
+                            <path d="M 0 0 L 100 0 Q 80 20 60 40 Q 80 60 40 60 Q 60 80 0 100 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M 0 0 L 80 0 Q 60 15 45 30 Q 60 45 30 45 Q 45 60 0 80 Z" fill="#991b1b"/>
+                            <path d="M 0 0 L 55 0 Q 40 10 30 20 Q 40 30 20 30 Q 30 40 0 55 Z" fill="#fdfaf0"/>
+                            <circle cx="12" cy="12" r="4" fill="#991b1b"/>
+                          </svg>
                         </div>
-                        <div className="absolute bottom-[6px] right-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
-                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
-                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
-                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
-                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
-                          </div>
+                        <div className="absolute bottom-[8px] right-[8px] z-20 pointer-events-none">
+                          <svg width="75" height="75" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md transform scale-x-[-1] scale-y-[-1]">
+                            <path d="M 0 0 L 100 0 Q 80 20 60 40 Q 80 60 40 60 Q 60 80 0 100 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M 0 0 L 80 0 Q 60 15 45 30 Q 60 45 30 45 Q 45 60 0 80 Z" fill="#991b1b"/>
+                            <path d="M 0 0 L 55 0 Q 40 10 30 20 Q 40 30 20 30 Q 30 40 0 55 Z" fill="#fdfaf0"/>
+                            <circle cx="12" cy="12" r="4" fill="#991b1b"/>
+                          </svg>
                         </div>
 
-                        {/* Edge Midpoint Accents */}
-                        <div className="absolute top-[17px] left-1/2 -translate-x-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
-                        <div className="absolute top-[13px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
-                        
-                        <div className="absolute bottom-[17px] left-1/2 -translate-x-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
-                        <div className="absolute bottom-[13px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
-                        
-                        <div className="absolute top-1/2 left-[17px] -translate-y-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
-                        <div className="absolute top-1/2 left-[13px] -translate-y-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
-
-                        <div className="absolute top-1/2 right-[17px] -translate-y-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
-                        <div className="absolute top-1/2 right-[13px] -translate-y-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
+                        {/* Edge Midpoint Accents (Khmer Star/Diamond) */}
+                        <div className="absolute top-[8px] left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                          <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+                            <path d="M50 0 C65 25 75 35 100 50 C75 65 65 75 50 100 C35 75 25 65 0 50 C25 35 35 25 50 0 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M50 15 C60 30 70 40 85 50 C70 60 60 70 50 85 C40 70 30 60 15 50 C30 40 40 30 50 15 Z" fill="#991b1b"/>
+                            <circle cx="50" cy="50" r="12" fill="#fdfaf0"/>
+                            <circle cx="50" cy="50" r="5" fill="#991b1b"/>
+                          </svg>
+                        </div>
+                        <div className="absolute bottom-[8px] left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                          <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+                            <path d="M50 0 C65 25 75 35 100 50 C75 65 65 75 50 100 C35 75 25 65 0 50 C25 35 35 25 50 0 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M50 15 C60 30 70 40 85 50 C70 60 60 70 50 85 C40 70 30 60 15 50 C30 40 40 30 50 15 Z" fill="#991b1b"/>
+                            <circle cx="50" cy="50" r="12" fill="#fdfaf0"/>
+                            <circle cx="50" cy="50" r="5" fill="#991b1b"/>
+                          </svg>
+                        </div>
+                        <div className="absolute top-1/2 left-[8px] -translate-y-1/2 z-20 pointer-events-none">
+                          <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+                            <path d="M50 0 C65 25 75 35 100 50 C75 65 65 75 50 100 C35 75 25 65 0 50 C25 35 35 25 50 0 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M50 15 C60 30 70 40 85 50 C70 60 60 70 50 85 C40 70 30 60 15 50 C30 40 40 30 50 15 Z" fill="#991b1b"/>
+                            <circle cx="50" cy="50" r="12" fill="#fdfaf0"/>
+                            <circle cx="50" cy="50" r="5" fill="#991b1b"/>
+                          </svg>
+                        </div>
+                        <div className="absolute top-1/2 right-[8px] -translate-y-1/2 z-20 pointer-events-none">
+                          <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+                            <path d="M50 0 C65 25 75 35 100 50 C75 65 65 75 50 100 C35 75 25 65 0 50 C25 35 35 25 50 0 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
+                            <path d="M50 15 C60 30 70 40 85 50 C70 60 60 70 50 85 C40 70 30 60 15 50 C30 40 40 30 50 15 Z" fill="#991b1b"/>
+                            <circle cx="50" cy="50" r="12" fill="#fdfaf0"/>
+                            <circle cx="50" cy="50" r="5" fill="#991b1b"/>
+                          </svg>
+                        </div>
 
                         {/* Background Watermark */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none overflow-hidden -z-10">
-                          <span style={{ fontSize: '450px', color: '#d4af37' }}>🪷</span>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none overflow-hidden -z-10">
+                          <svg width="450" height="450" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="none" stroke="#d4af37" strokeWidth="0.6">
+                              <circle cx="50" cy="50" r="48" strokeDasharray="1 2"/>
+                              <circle cx="50" cy="50" r="42" />
+                              <circle cx="50" cy="50" r="30" />
+                              <path d="M50 2 L50 98 M2 50 L98 50 M16 16 L84 84 M16 84 L84 16" opacity="0.5"/>
+                              {Array.from({length: 12}).map((_, i) => (
+                                <path key={`outer-${i}`} d="M50 2 Q 60 25 50 48 Q 40 25 50 2 Z" transform={`rotate(${i*30} 50 50)`} fill="rgba(212, 175, 55, 0.15)" strokeWidth="0.4" />
+                              ))}
+                              {Array.from({length: 12}).map((_, i) => (
+                                <path key={`inner-${i}`} d="M50 20 Q 56 35 50 50 Q 44 35 50 20 Z" transform={`rotate(${i*30 + 15} 50 50)`} fill="rgba(153, 27, 27, 0.1)" strokeWidth="0.4" />
+                              ))}
+                            </g>
+                            <circle cx="50" cy="50" r="8" fill="#d4af37" opacity="0.2"/>
+                          </svg>
                         </div>
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#fff8dc_0%,_transparent_80%)] -z-10 pointer-events-none"></div>
 
@@ -1196,23 +1231,42 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                         {/* Top Section */}
                         <div className="relative z-30 flex flex-col items-center mt-3 mb-1 space-y-1 text-center">
-                          <h2 className="text-[38px] text-[#991b1b] font-normal leading-none tracking-wide drop-shadow-sm mb-1" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
-                            បុណ្យកឋិនទានសាមគ្គី
-                          </h2>
+                          <div className="flex items-center justify-center space-x-3 mb-1">
+                            <svg width="24" height="12" viewBox="0 0 30 15" fill="none"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
+                            <h2 className="text-[38px] text-[#991b1b] font-normal leading-none tracking-wide drop-shadow-sm" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
+                              បុណ្យកឋិនទានសាមគ្គី
+                            </h2>
+                            <svg width="24" height="12" viewBox="0 0 30 15" fill="none" className="transform scale-x-[-1]"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
+                          </div>
+                          
                           <h3 className="text-[22px] text-[#1e3a8a] font-moul leading-tight mt-1">
                             វត្តវារីបាការាម (ស្នាយដួច)
                           </h3>
-                          <p className="text-[15px] text-gray-800 font-battambang mt-1 font-medium">
+                          
+                          {/* Elegant Divider */}
+                          <div className="flex items-center justify-center w-full max-w-[250px] my-1.5 opacity-90">
+                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
+                            <div className="mx-2 rotate-45 w-[5px] h-[5px] bg-[#991b1b] border-[1px] border-[#d4af37]"></div>
+                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-[#d4af37] to-[#d4af37]"></div>
+                          </div>
+
+                          <p className="text-[15px] text-gray-800 font-battambang font-medium">
                             ភូមិពន្សាំង ឃុំជើងគួន ស្រុកសំរោង ខេត្តតាកែវ
                           </p>
                         </div>
 
                         {/* Center Section - Name */}
-                        <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-3 w-full px-2">
-                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border-4 border-double border-[#d4af37] rounded-2xl py-6 px-4 flex flex-col items-center justify-center shadow-[0_10px_30px_rgba(153,27,27,0.1)] relative min-h-[140px]">
+                        <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-2 w-full px-2">
+                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-6 px-4 flex flex-col items-center justify-center shadow-[0_8px_30px_rgba(153,27,27,0.12)] relative min-h-[140px]">
+                            {/* Small Inner Box Corner Ornaments */}
+                            <svg className="absolute top-1.5 left-1.5 w-6 h-6 opacity-70" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
+                            <svg className="absolute top-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
+                            <svg className="absolute bottom-1.5 left-1.5 w-6 h-6 opacity-70 transform scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
+                            <svg className="absolute bottom-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1] scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
+
                             {/* Top label */}
-                            <div className="absolute -top-4 bg-[#991b1b] px-6 py-1 rounded-full border-2 border-[#d4af37] shadow-md">
-                              <span className="text-[#fdfaf0] font-battambang text-[15px] font-bold">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
+                            <div className="absolute -top-[14px] bg-[#991b1b] px-6 py-[2px] rounded-full border-2 border-[#d4af37] shadow-sm flex items-center justify-center">
+                              <span className="text-[#fdfaf0] font-battambang text-[14px] font-bold tracking-wide">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
                             <div className="w-full flex justify-center mt-4 mb-4 px-1">
@@ -1247,8 +1301,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </div>
                         </div>
 
+                        {/* Ornate Divider Bottom */}
+                        <div className="relative z-30 w-full px-12 flex items-center justify-center mt-1 mb-2 opacity-90">
+                          <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
+                          <svg width="40" height="12" viewBox="0 0 40 12" className="mx-2">
+                            <path d="M20 0 L40 6 L20 12 L0 6 Z" fill="#d4af37" />
+                            <path d="M20 2 L32 6 L20 10 L8 6 Z" fill="#991b1b" />
+                            <circle cx="20" cy="6" r="2" fill="#fdfaf0" />
+                          </svg>
+                          <div className="h-[2px] flex-1 bg-gradient-to-l from-transparent via-[#d4af37] to-[#d4af37]"></div>
+                        </div>
+
                         {/* Bottom Section - Event & Contact */}
-                        <div className="relative z-30 flex justify-between items-end mt-1 pt-3 pb-1 px-8 border-t-[2px] border-dashed border-[#d4af37]">
+                        <div className="relative z-30 flex justify-between items-end pb-1 px-8">
                           <div className="text-left font-battambang">
                             <h4 className="text-[#991b1b] font-bold mb-1 text-[16px]">កម្មវិធីបុណ្យ</h4>
                             <p className="text-gray-800 text-[14px] leading-[1.6] font-medium">
@@ -1258,7 +1323,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </div>
                           <div className="text-right font-battambang">
                             <h4 className="text-[#991b1b] font-bold mb-1 text-[16px]">ទំនាក់ទំនង</h4>
-                            <p className="text-gray-800 text-[14px] leading-[1.6] font-bold tracking-wide">
+                            <p className="text-gray-800 text-[14px] leading-[1.6] font-bold tracking-wide text-right">
                               016 759 264<br/>
                               016 407 774
                             </p>
