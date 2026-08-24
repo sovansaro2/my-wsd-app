@@ -1119,7 +1119,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     {isKathina ? (
                       <div 
                         ref={certificateRef}
-                        className="w-[794px] h-[559px] bg-[#fdfaf0] flex flex-col p-8 relative overflow-hidden z-0"
+                        className="w-[794px] h-[559px] bg-[#fdfaf0] flex flex-col pt-[42px] pb-[40px] px-[48px] relative overflow-hidden z-0"
                         style={{
                           backgroundColor: '#fdfaf0'
                         }}
@@ -1243,7 +1243,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         />
 
                         {/* Top Section */}
-                        <div className="relative z-30 flex flex-col items-center mt-3 mb-1 space-y-1 text-center">
+                        <div className="relative z-30 flex flex-col items-center mt-2 mb-0 space-y-1 text-center">
                           <div className="flex items-center justify-center space-x-3 mb-1">
                             <svg width="24" height="12" viewBox="0 0 30 15" fill="none"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
                             <h2 className="text-[38px] text-[#991b1b] font-normal leading-none tracking-wide drop-shadow-sm" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
@@ -1257,7 +1257,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </h3>
                           
                           {/* Elegant Divider */}
-                          <div className="flex items-center justify-center w-full max-w-[250px] my-1.5 opacity-90">
+                          <div className="flex items-center justify-center w-full max-w-[250px] my-1 opacity-90">
                             <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
                             <div className="mx-2 rotate-45 w-[5px] h-[5px] bg-[#991b1b] border-[1px] border-[#d4af37]"></div>
                             <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-[#d4af37] to-[#d4af37]"></div>
@@ -1269,8 +1269,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </div>
 
                         {/* Center Section - Name */}
-                        <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-2 w-full px-2">
-                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-6 px-4 flex flex-col items-center justify-center shadow-[0_8px_30px_rgba(153,27,27,0.12)] relative min-h-[140px]">
+                        <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-1 w-full px-2">
+                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-3 px-4 flex flex-col items-center justify-center shadow-[0_8px_30px_rgba(153,27,27,0.12)] relative min-h-[120px]">
                             {/* Small Inner Box Corner Ornaments */}
                             <svg className="absolute top-1.5 left-1.5 w-6 h-6 opacity-70" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute top-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
@@ -1282,12 +1282,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                               <span className="text-[#fdfaf0] font-battambang text-[14px] font-bold tracking-wide">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
-                            <div className="w-full flex justify-center mt-2 mb-2 px-1">
+                            <div className="w-full flex justify-center mt-1 mb-1 px-1">
                               <h1 
-                                className="text-[#1e3a8a] leading-[1.8] py-2 text-center break-words" 
+                                className="text-[#1e3a8a] leading-[1.5] py-1 text-center break-words" 
                                 style={{ 
                                   fontFamily: '"Khmer OS Muol Light", Moul, "Khmer OS Kulen", Koulen, cursive',
-                                  fontSize: certificateRecord.name.length > 40 ? '26px' : certificateRecord.name.length > 30 ? '32px' : certificateRecord.name.length > 20 ? '38px' : '48px',
+                                  fontSize: certificateRecord.name.length > 40 ? '24px' : certificateRecord.name.length > 30 ? '30px' : certificateRecord.name.length > 20 ? '36px' : '46px',
                                   textShadow: '1px 1px 3px rgba(0,0,0,0.15)'
                                 }}
                               >
@@ -1296,7 +1296,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             </div>
                             
                             {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others) && (
-                              <div className="flex justify-center items-center gap-6 font-battambang mt-1">
+                              <div className="flex justify-center items-center gap-6 font-battambang mt-0">
                                 {certificateRecord.metadata?.trai_liang && (
                                   <div className="bg-[#fdfaf0] px-5 py-1.5 rounded border border-[#d4af37] shadow-sm">
                                     <span className="text-gray-600 mr-2 text-[15px]">ត្រៃ/លៀង៖</span>
@@ -1315,7 +1315,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </div>
 
                         {/* Ornate Divider Bottom */}
-                        <div className="relative z-30 w-full px-12 flex items-center justify-center mt-1 mb-2 opacity-90">
+                        <div className="relative z-30 w-full px-12 flex items-center justify-center mt-0 mb-1 opacity-90">
                           <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
                           <svg width="40" height="12" viewBox="0 0 40 12" className="mx-2">
                             <path d="M20 0 L40 6 L20 12 L0 6 Z" fill="#d4af37" />
@@ -1326,7 +1326,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </div>
 
                         {/* Bottom Section - Event & Contact */}
-                        <div className="relative z-30 flex justify-between items-end pb-1 px-8">
+                        <div className="relative z-30 flex justify-between items-end pb-0 px-8">
                           <div className="text-left font-battambang">
                             <h4 className="text-[#991b1b] font-bold mb-1 text-[16px]">កម្មវិធីបុណ្យ</h4>
                             <p className="text-gray-800 text-[14px] leading-[1.6] font-medium">
