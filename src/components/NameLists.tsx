@@ -295,13 +295,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
-        pixelRatio: 2,
+        pixelRatio: 3,
         
         style: {
           transform: "scale(1)",
@@ -354,13 +354,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
-        pixelRatio: 2,
+        pixelRatio: 3,
         
         style: {
           transform: "scale(1)",
@@ -1090,7 +1090,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               className="bg-gray-100 rounded-2xl sm:rounded-3xl w-full max-w-4xl flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sm:rounded-t-3xl rounded-t-2xl shrink-0 z-10 relative">
-                <h2 className="text-[16px] font-bold text-gray-900 font-battambang">លិខិតថ្លែងអំណរគុណ</h2>
+                <h2 className="text-[16px] font-bold text-gray-900 font-battambang">{isKathina ? 'លិខិតឈ្មោះ' : 'លិខិតថ្លែងអំណរគុណ'}</h2>
                 <button
                   onClick={() => setCertificateRecord(null)}
                   className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
@@ -1103,9 +1103,135 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 {/* Responsive scaling wrapper */}
                 <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-xl">
-                    {/* Certificate Container (Fixed A5 Landscape Size: 794x559 px) */}
-                    <div 
-                      ref={certificateRef}
+                    {isKathina ? (
+                      <div 
+                        ref={certificateRef}
+                        className="w-[794px] h-[559px] bg-[#fdfaf0] flex flex-col p-8 relative overflow-hidden z-0"
+                        style={{
+                          backgroundColor: '#fdfaf0'
+                        }}
+                      >
+                        {/* Complex Outer Border */}
+                        <div className="absolute inset-0 border-[14px] border-[#991b1b] z-10 pointer-events-none"></div>
+                        <div className="absolute inset-[14px] border-[6px] border-[#d4af37] z-10 pointer-events-none"></div>
+                        <div className="absolute inset-[24px] border-[2px] border-[#991b1b] z-10 pointer-events-none"></div>
+                        
+                        {/* Corner Ornaments */}
+                        <div className="absolute top-[8px] left-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
+                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        </div>
+                        <div className="absolute top-[8px] right-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
+                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        </div>
+                        <div className="absolute bottom-[8px] left-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
+                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        </div>
+                        <div className="absolute bottom-[8px] right-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
+                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        </div>
+
+                        {/* Background Watermark */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none overflow-hidden -z-10">
+                          <span style={{ fontSize: '450px', color: '#d4af37' }}>🪷</span>
+                        </div>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#fff8dc_0%,_transparent_80%)] -z-10 pointer-events-none"></div>
+
+                        {/* Tevoda Left */}
+                        <img 
+                          src="/tevoda.png" 
+                          alt="ទេវតា" 
+                          className="absolute top-[45px] left-[55px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transform scale-x-[-1]"
+                          onError={(e) => { 
+                            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='130' viewBox='0 0 80 130'%3E%3Crect width='80' height='130' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3Etevoda.png%3C/text%3E%3C/svg%3E";
+                            e.currentTarget.className = "absolute top-[45px] left-[55px] w-[80px] h-[130px] object-contain z-20 opacity-60 transform scale-x-[-1]";
+                          }}
+                        />
+
+                        {/* Tevoda Right */}
+                        <img 
+                          src="/tevoda.png" 
+                          alt="ទេវតា" 
+                          className="absolute top-[45px] right-[55px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+                          onError={(e) => { 
+                            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='130' viewBox='0 0 80 130'%3E%3Crect width='80' height='130' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3Etevoda.png%3C/text%3E%3C/svg%3E";
+                            e.currentTarget.className = "absolute top-[45px] right-[55px] w-[80px] h-[130px] object-contain z-20 opacity-60";
+                          }}
+                        />
+
+                        {/* Top Section */}
+                        <div className="relative z-30 flex flex-col items-center mt-3 mb-1 space-y-1 text-center">
+                          <h2 className="text-[38px] text-[#991b1b] font-normal leading-none tracking-wide drop-shadow-sm mb-1" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
+                            បុណ្យកឋិនទានសាមគ្គី
+                          </h2>
+                          <h3 className="text-[22px] text-[#1e3a8a] font-moul leading-tight mt-1">
+                            វត្តវារីបាការាម (ស្នាយដួច)
+                          </h3>
+                          <p className="text-[15px] text-gray-800 font-battambang mt-1 font-medium">
+                            ភូមិពន្សាំង ឃុំជើងគួន ស្រុកសំរោង ខេត្តតាកែវ
+                          </p>
+                        </div>
+
+                        {/* Center Section - Name */}
+                        <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-3 w-full px-2">
+                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border-4 border-double border-[#d4af37] rounded-2xl py-6 px-4 flex flex-col items-center justify-center shadow-[0_10px_30px_rgba(153,27,27,0.1)] relative min-h-[140px]">
+                            {/* Top label */}
+                            <div className="absolute -top-4 bg-[#991b1b] px-6 py-1 rounded-full border-2 border-[#d4af37] shadow-md">
+                              <span className="text-[#fdfaf0] font-battambang text-[15px] font-bold">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
+                            </div>
+                            
+                            <div className="w-full flex justify-center mt-4 mb-4 px-1">
+                              <h1 
+                                className="text-[#1e3a8a] leading-[1.6] py-3 text-center whitespace-nowrap" 
+                                style={{ 
+                                  fontFamily: '"Khmer OS Muol Light", Moul, "Khmer OS Kulen", Koulen, cursive',
+                                  fontSize: certificateRecord.name.length > 40 ? '26px' : certificateRecord.name.length > 30 ? '32px' : certificateRecord.name.length > 20 ? '40px' : '50px',
+                                  textShadow: '1px 1px 3px rgba(0,0,0,0.15)'
+                                }}
+                              >
+                                {certificateRecord.name}
+                              </h1>
+                            </div>
+                            
+                            {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others) && (
+                              <div className="flex justify-center items-center gap-6 font-battambang mt-1">
+                                {certificateRecord.metadata?.trai_liang && (
+                                  <div className="bg-[#fdfaf0] px-5 py-1.5 rounded border border-[#d4af37] shadow-sm">
+                                    <span className="text-gray-600 mr-2 text-[15px]">ត្រៃ/លៀង៖</span>
+                                    <span className="font-bold text-[#991b1b] text-[16px]">{certificateRecord.metadata.trai_liang}</span>
+                                  </div>
+                                )}
+                                {certificateRecord.metadata?.others && (
+                                  <div className="bg-[#fdfaf0] px-5 py-1.5 rounded border border-[#d4af37] shadow-sm">
+                                    <span className="text-gray-500 mr-2 text-[15px]">ផ្សេងៗ៖</span>
+                                    <span className="font-bold text-[#991b1b] text-[16px]">{certificateRecord.metadata.others}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Bottom Section - Event & Contact */}
+                        <div className="relative z-30 flex justify-between items-end mt-1 pt-3 pb-1 px-8 border-t-[2px] border-dashed border-[#d4af37]">
+                          <div className="text-left font-battambang">
+                            <h4 className="text-[#991b1b] font-bold mb-1 text-[16px]">កម្មវិធីបុណ្យ</h4>
+                            <p className="text-gray-800 text-[14px] leading-[1.6] font-medium">
+                              ថ្ងៃសៅរ៍-អាទិត្យ ៥-៦រោច ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០<br/>
+                              ត្រូវនឹងថ្ងៃទី៣១ ខែវិច្ឆិកា ឆ្នាំ២០២៦
+                            </p>
+                          </div>
+                          <div className="text-right font-battambang">
+                            <h4 className="text-[#991b1b] font-bold mb-1 text-[16px]">ទំនាក់ទំនង</h4>
+                            <p className="text-gray-800 text-[14px] leading-[1.6] font-bold tracking-wide">
+                              016 759 264<br/>
+                              016 407 774
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div 
+                        ref={certificateRef}
                       className="w-[794px] h-[559px] bg-white flex flex-col p-6 sm:p-8 border-[12px] border-orange-50/50 relative"
                       style={{
                         backgroundColor: '#ffffff'
@@ -1203,11 +1329,11 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       </div>
                     </div>
                   </div>
+                  </div>
+                    )}
                 </div>
                   </div>
                 </div>
-              </div>
-
               {/* Action Buttons */}
               <div className="p-4 sm:p-6 bg-white border-t border-gray-200 shrink-0 flex gap-3 z-10 relative shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
                 <button
