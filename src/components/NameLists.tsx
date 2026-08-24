@@ -1282,12 +1282,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                               <span className="text-[#fdfaf0] font-battambang text-[14px] font-bold tracking-wide">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
-                            <div className="w-full flex justify-center mt-4 mb-4 px-1">
+                            <div className="w-full flex justify-center mt-2 mb-2 px-1">
                               <h1 
-                                className="text-[#1e3a8a] leading-[1.6] py-3 text-center whitespace-nowrap" 
+                                className="text-[#1e3a8a] leading-[1.8] py-2 text-center break-words" 
                                 style={{ 
                                   fontFamily: '"Khmer OS Muol Light", Moul, "Khmer OS Kulen", Koulen, cursive',
-                                  fontSize: certificateRecord.name.length > 40 ? '26px' : certificateRecord.name.length > 30 ? '32px' : certificateRecord.name.length > 20 ? '40px' : '50px',
+                                  fontSize: certificateRecord.name.length > 40 ? '26px' : certificateRecord.name.length > 30 ? '32px' : certificateRecord.name.length > 20 ? '38px' : '48px',
                                   textShadow: '1px 1px 3px rgba(0,0,0,0.15)'
                                 }}
                               >
