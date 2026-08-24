@@ -1111,24 +1111,60 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           backgroundColor: '#fdfaf0'
                         }}
                       >
-                        {/* Complex Outer Border */}
-                        <div className="absolute inset-0 border-[14px] border-[#991b1b] z-10 pointer-events-none"></div>
-                        <div className="absolute inset-[14px] border-[6px] border-[#d4af37] z-10 pointer-events-none"></div>
-                        <div className="absolute inset-[24px] border-[2px] border-[#991b1b] z-10 pointer-events-none"></div>
+                        {/* Complex Outer Border Kbach */}
+                        <div className="absolute inset-0 border-[16px] border-[#991b1b] z-10 pointer-events-none shadow-[inset_0_0_12px_rgba(0,0,0,0.4)]"></div>
+                        <div className="absolute inset-[16px] border-[4px] border-[#fdfaf0] z-10 pointer-events-none"></div>
+                        <div className="absolute inset-[20px] border-[6px] border-[#d4af37] z-10 pointer-events-none shadow-sm"></div>
+                        <div className="absolute inset-[26px] border-[3px] border-[#fdfaf0] z-10 pointer-events-none"></div>
+                        <div className="absolute inset-[29px] border-[2px] border-[#991b1b] z-10 pointer-events-none"></div>
+                        <div className="absolute inset-[36px] border-[1px] border-dashed border-[#d4af37] z-10 pointer-events-none opacity-70"></div>
                         
                         {/* Corner Ornaments */}
-                        <div className="absolute top-[8px] left-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
-                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        <div className="absolute top-[6px] left-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
+                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
+                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
+                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
+                          </div>
                         </div>
-                        <div className="absolute top-[8px] right-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
-                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        <div className="absolute top-[6px] right-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
+                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
+                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
+                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
+                          </div>
                         </div>
-                        <div className="absolute bottom-[8px] left-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
-                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        <div className="absolute bottom-[6px] left-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
+                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
+                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
+                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
+                          </div>
                         </div>
-                        <div className="absolute bottom-[8px] right-[8px] w-12 h-12 bg-[#d4af37] border-[3px] border-[#991b1b] rounded-full z-20 flex items-center justify-center shadow-md">
-                           <div className="w-5 h-5 bg-[#991b1b] rounded-full border-2 border-[#fdfaf0]"></div>
+                        <div className="absolute bottom-[6px] right-[6px] w-[34px] h-[34px] z-20 pointer-events-none flex items-center justify-center">
+                          <div className="absolute w-[44px] h-[8px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[8px] h-[44px] bg-[#d4af37] shadow-sm"></div>
+                          <div className="absolute w-[28px] h-[28px] bg-[#991b1b] border-[3px] border-[#d4af37] rotate-45 shadow-sm"></div>
+                          <div className="absolute w-[18px] h-[18px] bg-[#d4af37] border-[2px] border-[#fdfaf0] flex items-center justify-center">
+                            <div className="w-[6px] h-[6px] bg-[#991b1b] rounded-full"></div>
+                          </div>
                         </div>
+
+                        {/* Edge Midpoint Accents */}
+                        <div className="absolute top-[17px] left-1/2 -translate-x-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
+                        <div className="absolute top-[13px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
+                        
+                        <div className="absolute bottom-[17px] left-1/2 -translate-x-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
+                        <div className="absolute bottom-[13px] left-1/2 -translate-x-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
+                        
+                        <div className="absolute top-1/2 left-[17px] -translate-y-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
+                        <div className="absolute top-1/2 left-[13px] -translate-y-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
+
+                        <div className="absolute top-1/2 right-[17px] -translate-y-1/2 w-[12px] h-[12px] bg-[#991b1b] border-[2px] border-[#fdfaf0] rotate-45 z-20 pointer-events-none"></div>
+                        <div className="absolute top-1/2 right-[13px] -translate-y-1/2 w-[20px] h-[20px] border-[2px] border-[#d4af37] rotate-45 z-10 pointer-events-none"></div>
 
                         {/* Background Watermark */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none overflow-hidden -z-10">
