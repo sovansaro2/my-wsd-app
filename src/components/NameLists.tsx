@@ -37,6 +37,7 @@ interface NameRecord {
   note: string | null;
   referrer: string | null;
   is_100k_donor?: boolean;
+  metadata?: any;
 }
 
 export default function NameLists({ userRole, onManageNameLists }: { userRole?: 'admin' | 'user' | null, onManageNameLists?: () => void }) {
@@ -70,6 +71,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [referrer, setReferrer] = useState('');
+  const [traiLiang, setTraiLiang] = useState('');
+  const [others, setOthers] = useState('');
   const [notifyPublic, setNotifyPublic] = useState(false);
   const [is100kDonor, setIs100kDonor] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -190,6 +193,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setAmount('');
     setNote('');
     setReferrer('');
+    setTraiLiang('');
+    setOthers('');
     setNotifyPublic(false);
     setIs100kDonor(false);
     setIsRecordModalOpen(true);
@@ -211,23 +216,30 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setAmount(record.amount.toString());
     setNote(record.note || '');
     setReferrer(record.referrer || '');
+    setTraiLiang(record.metadata?.trai_liang || '');
+    setOthers(record.metadata?.others || '');
     setNotifyPublic(false);
     setIs100kDonor(record.is_100k_donor || false); // Notifications usually only on create, or optional on edit
     setIsRecordModalOpen(true);
   };
 
   const handleSaveRecord = async () => {
-    if (!name.trim() || !amount.trim() || !selectedCategory) return;
+    const isKathinaList = selectedCategory?.name?.includes('កឋិន');
+    if (!name.trim() || (!isKathinaList && !amount.trim()) || !selectedCategory) return;
     
     setIsSaving(true);
     try {
       const recordData = {
         category_id: selectedCategory.id,
         name: name.trim(),
-        amount: parseFloat(amount),
+        amount: parseFloat(amount) || 0,
         note: note.trim() || null,
         referrer: referrer.trim() || null,
         is_100k_donor: is100kDonor,
+        metadata: {
+            trai_liang: traiLiang.trim() || null,
+            others: others.trim() || null
+        },
         ...(notifyPublic && !editingRecord ? { notify_public: true, category_name: selectedCategory.name } : {})
       };
 
@@ -378,12 +390,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
   const filteredRecords = records.filter(record => 
     record.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (record.note && record.note.toLowerCase().includes(searchQuery.toLowerCase()))
+    (record.note && record.note.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (record.metadata?.trai_liang && record.metadata.trai_liang.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (record.metadata?.others && record.metadata.others.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
   const closedLists = ['បញ្ជីឈ្មោះបុណ្យផ្កា', 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ', 'ទិញកម្រាលព្រំ (វគ្គ១)'];
   const isListClosed = closedLists.includes(selectedCategory?.name || '');
+  const isKathina = selectedCategory?.name?.includes('កឋិន');
+  const isBonnPhka = selectedCategory?.name?.includes('បុណ្យផ្កា');
 
 
   const getCategoryIcon = (name: string) => {
@@ -421,7 +437,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
   if (!selectedCategory) {
     const roofCat = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
-    const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+    const kathinaCats = categories.filter((c: any) => c.name.includes('កឋិន'));
+    const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ' && !c.name.includes('កឋិន'));
 
     return (
       <>
@@ -470,6 +487,39 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   </div>
                 </div>
               </button>
+            </div>
+          )}
+
+          {kathinaCats.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-[14px] font-bold text-gray-500 dark:text-slate-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                បុណ្យកឋិន
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                {kathinaCats.map(cat => (
+                  <button 
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat)}
+                    className="relative flex flex-col items-center justify-center p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/50 shadow-sm hover:shadow-md transition-all active:scale-95 group overflow-hidden"
+                  >
+                    {userRole === 'admin' && (
+                      <div 
+                        onClick={(e) => openEditCatModal(cat, e)}
+                        className="absolute top-2 right-2 p-1.5 text-amber-600/50 hover:text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-full transition-colors z-10"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-800/50 rounded-full flex items-center justify-center mb-3 transition-colors shadow-inner text-2xl">
+                      🥻
+                    </div>
+                    <h4 className="font-bold text-amber-900 dark:text-amber-400 text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
+                      {cat.name}
+                    </h4>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -640,16 +690,18 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             )}
           </div>
           {/* Search */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder={t('list_search')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          </div>
+          {isBonnPhka && (
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={t('list_search')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -700,7 +752,15 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
                         <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
                         <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">ឈ្មោះសប្បុរសជន</th>
-                        <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
+                        {isKathina && (
+                          <>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">ត្រៃ/លៀង</th>
+                            <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">ផ្សេងៗ</th>
+                          </>
+                        )}
+                        {!isKathina && (
+                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
+                        )}
                         <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-20 sm:w-28 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>
                       </tr>
                     </thead>
@@ -734,11 +794,27 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 )}
                               </div>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
-                              <span className="font-bold text-[14px] sm:text-[15px] text-orange-600 dark:text-orange-400 whitespace-nowrap">
-                                {formatCurrency(record.amount)}
-                              </span>
-                            </td>
+                            {isKathina && (
+                              <>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
+                                  <span className="text-[13px] sm:text-[14px] text-gray-700 dark:text-slate-300">
+                                    {record.metadata?.trai_liang || '-'}
+                                  </span>
+                                </td>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
+                                  <span className="text-[13px] sm:text-[14px] text-gray-700 dark:text-slate-300">
+                                    {record.metadata?.others || (record.amount > 0 ? formatCurrency(record.amount) : '-')}
+                                  </span>
+                                </td>
+                              </>
+                            )}
+                            {!isKathina && (
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
+                                <span className="font-bold text-[14px] sm:text-[15px] text-orange-600 dark:text-orange-400 whitespace-nowrap">
+                                  {formatCurrency(record.amount)}
+                                </span>
+                              </td>
+                            )}
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                               <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 {selectedCategory?.name !== 'លុយជាងដក' && (
@@ -881,14 +957,43 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={t('list_name_ph')}
                 />
               </div>
+
+              {isKathina && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ត្រៃ/លៀង
+                    </label>
+                    <input
+                      type="text"
+                      value={traiLiang}
+                      onChange={(e) => setTraiLiang(e.target.value)}
+                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="ឧ. ១ត្រៃ ២លៀង..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                      ផ្សេងៗ
+                    </label>
+                    <input
+                      type="text"
+                      value={others}
+                      onChange={(e) => setOthers(e.target.value)}
+                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="កំណត់សម្គាល់ផ្សេងៗ..."
+                    />
+                  </div>
+                </>
+              )}
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  {t('list_amount')}
+                  {isKathina ? 'ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount')}
                 </label>
                 <input
                   type="number"
@@ -898,7 +1003,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         setAmount(val);
                         if (Number(val) >= 100000) setIs100kDonor(true);
                       }}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={t('list_amount_ph')}
                 />
               </div>
@@ -953,7 +1058,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </button>
               <button
                 onClick={handleSaveRecord}
-                disabled={isSaving || !name.trim() || !amount.trim()}
+                disabled={isSaving || !name.trim() || (!isKathina && !amount.trim())}
                 className="flex-1 py-3.5 px-4 bg-orange-500 text-white rounded-2xl font-bold text-[15px] hover:bg-orange-600 shadow-md shadow-orange-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none"
               >
                 {isSaving ? (
