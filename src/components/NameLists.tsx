@@ -511,8 +511,21 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <Pencil className="w-3.5 h-3.5" />
                       </div>
                     )}
-                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-800/50 rounded-full flex items-center justify-center mb-3 transition-colors shadow-inner text-2xl">
-                      🥻
+                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-800/50 rounded-full flex items-center justify-center mb-3 transition-colors shadow-inner">
+                      <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        {/* Glow */}
+                        <circle cx="50" cy="45" r="40" fill="#FDE68A" opacity="0.4" />
+                        {/* Phan (Tray) */}
+                        <path d="M40 95 L60 95 L55 80 L45 80 Z" fill="#D97706" />
+                        <path d="M20 80 Q50 95 80 80 L90 65 Q50 80 10 65 Z" fill="#FBBF24" />
+                        {/* Folded Robes (Trai) */}
+                        <path d="M25 65 L32 20 Q50 5 68 20 L75 65 Z" fill="#F97316" />
+                        <path d="M32 20 L50 65 L68 20 Z" fill="#EA580C" opacity="0.5" />
+                        {/* Ribbon/Tie */}
+                        <rect x="45" y="12" width="10" height="53" fill="#C2410C" rx="2" />
+                        <path d="M40 35 L60 35" stroke="#9A3412" strokeWidth="2" />
+                        <path d="M40 45 L60 45" stroke="#9A3412" strokeWidth="2" />
+                      </svg>
                     </div>
                     <h4 className="font-bold text-amber-900 dark:text-amber-400 text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
                       {cat.name}
