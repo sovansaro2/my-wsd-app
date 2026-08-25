@@ -4,11 +4,12 @@ import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../l
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function Reports() {
+export default function Reports({ userRole }: { userRole: 'admin' | 'user' | null }) {
   const { t } = useLanguage();
   const [reports, setReports] = useState<SavedReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [reportToDelete, setReportToDelete] = useState<string | null>(null);
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
   useEffect(() => {
     loadReports();
@@ -53,31 +54,80 @@ export default function Reports() {
   return (
     <div className="p-4 space-y-4">
       <h2 className="text-xl font-bold text-gray-900 dark:text-white font-moul">របាយការណ៍ដែលបានរក្សាទុក</h2>
-      {reports.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
-          មិនមានរបាយការណ៍ទេ
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {reports.map(report => (
-            <div key={report.id} className="flex items-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
-              {getIcon(report.type)}
-              <div className="ml-4 flex-1">
-                <h3 className="font-bold text-gray-900 dark:text-white">{report.title}</h3>
-                <p className="text-xs text-gray-500">{new Date(report.date).toLocaleString('en-GB')}</p>
-              </div>
-              <div className="flex space-x-2">
-                <button onClick={() => handleDownload(report)} className="p-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100">
-                  <Download className="w-5 h-5" />
-                </button>
-                <button onClick={() => setReportToDelete(report.id)} className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100">
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
+      
+      <div className="relative">
+        {userRole !== 'admin' && (
+          <div 
+            className="absolute inset-0 z-10 cursor-pointer" 
+            onClick={() => setShowAccessDenied(true)}
+          />
+        )}
+        
+        <div className={userRole !== 'admin' ? 'opacity-50 pointer-events-none select-none filter grayscale-[30%]' : ''}>
+          {reports.length === 0 ? (
+            <div className="text-center py-12 text-gray-500 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
+              មិនមានរបាយការណ៍ទេ
             </div>
-          ))}
+          ) : (
+            <div className="space-y-3">
+              {reports.map(report => (
+                <div key={report.id} className="flex items-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
+                  {getIcon(report.type)}
+                  <div className="ml-4 flex-1">
+                    <h3 className="font-bold text-gray-900 dark:text-white">{report.title}</h3>
+                    <p className="text-xs text-gray-500">{new Date(report.date).toLocaleString('en-GB')}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button onClick={() => handleDownload(report)} className="p-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100">
+                      <Download className="w-5 h-5" />
+                    </button>
+                    <button onClick={() => setReportToDelete(report.id)} className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Access Denied Modal */}
+      <AnimatePresence>
+        {showAccessDenied && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAccessDenied(false)}
+              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-8 h-8 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-battambang">មិនមានសិទ្ធិអនុញ្ញាត</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6 font-battambang leading-relaxed">
+                  ទំព័រនេះសម្រាប់តែអ្នកគ្រប់គ្រងតែប៉ុណ្ណោះ។
+                </p>
+                <button
+                  onClick={() => setShowAccessDenied(false)}
+                  className="w-full py-3 px-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 font-battambang"
+                >
+                  យល់ព្រម
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>

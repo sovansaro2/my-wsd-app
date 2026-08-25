@@ -1,12 +1,17 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '../lib/apiClient';
+
+const generateEmailFromUsername = (username: string) => {
+  const normalized = username.trim().replace(/\s+/g, ' ').toLowerCase();
+  const hex = Array.from(new TextEncoder().encode(normalized))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `${hex}@wsd.local`;
+};
 
 export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | 'user') => void }) {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
@@ -19,24 +24,43 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     setError(null);
     setSuccess(null);
     
+    if (username.trim().length < 2) {
+      setError('ឈ្មោះអ្នកប្រើប្រាស់ត្រូវមានយ៉ាងហោចណាស់ ២ តួអក្សរ។');
+      setIsLoading(false);
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៦ តួអក្សរ។');
+      setIsLoading(false);
+      return;
+    }
+    
+    const fakeEmail = generateEmailFromUsername(username);
+    
     try {
       if (isLogin) {
-        // Login Flow - Custom Backend
-        const data = await api.login(email, password);
+        // Login Flow
+        const data = await api.login(fakeEmail, password);
         localStorage.setItem('access_token', data.access_token);
         onLogin((data.user?.role) || 'user');
       } else {
-        // Sign Up Flow - Custom Backend
-        await api.signup(email, password, fullName, phone);
+        // Sign Up Flow
+        await api.signup(fakeEmail, password, username.trim(), '');
         setSuccess('បង្កើតគណនីបានជោគជ័យ! លោកអ្នកអាចចូលគណនីបានហើយ។');
         setIsLogin(true);
-        setPhone('');
-        setFullName('');
         setPassword('');
         setIsLoading(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'មានបញ្ហាបច្ចេកទេស សូមព្យាយាមម្តងទៀត។');
+      const errorMsg = err instanceof Error ? err.message : 'មានបញ្ហាបច្ចេកទេស សូមព្យាយាមម្តងទៀត។';
+      if (errorMsg.includes('already registered') || errorMsg.includes('already exists')) {
+        setError('ឈ្មោះនេះមានអ្នកប្រើប្រាស់រួចហើយ សូមជ្រើសរើសឈ្មោះផ្សេង។');
+      } else if (errorMsg.includes('Invalid login credentials') || errorMsg.includes('អុីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ')) {
+        setError('ឈ្មោះ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ។');
+      } else {
+        setError(errorMsg);
+      }
       setIsLoading(false);
     }
   };
@@ -72,55 +96,28 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">
-              អ៉ីមែល (Email)
+            <label className="mb-1.5 block text-[14px] font-semibold text-zinc-700 tracking-wide">
+              ឈ្មោះអ្នកប្រើប្រាស់
             </label>
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-              placeholder="បញ្ចូលអ៉ីមែល"
+              placeholder="បញ្ចូលឈ្មោះរបស់អ្នក"
             />
           </div>
           
-          {!isLogin && (
-            <>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">ឈ្មោះពេញ</label>
-                <input
-                  type="text"
-                  required={!isLogin}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-                  placeholder="បញ្ចូលឈ្មោះពេញ"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">លេខទូរស័ព្ទ</label>
-                <input
-                  type="tel"
-                  required={!isLogin}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-                  placeholder="បញ្ចូលលេខទូរស័ព្ទ"
-                />
-              </div>
-            </>
-          )}
-          
           <div>
-            <label className="mb-1.5 block text-[13px] font-semibold text-zinc-500 uppercase tracking-wide">ពាក្យសម្ងាត់</label>
+            <label className="mb-1.5 block text-[14px] font-semibold text-zinc-700 tracking-wide">ពាក្យសម្ងាត់</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px]"
-              placeholder="បញ្ចូលពាក្យសម្ងាត់"
+              placeholder="បញ្ចូលពាក្យសម្ងាត់ (យ៉ាងហោច ៦ ខ្ទង់)"
             />
           </div>
           
@@ -129,18 +126,35 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
             disabled={isLoading}
             className="mt-8 w-full rounded-2xl bg-zinc-900 px-4 py-3.5 font-bold text-white shadow-sm transition-all hover:bg-zinc-800 focus:outline-none active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-[15px]"
           >
-            {isLoading ? 'កំពុងដំណើរការ...' : (isLogin ? 'ចូលគណនី' : 'បង្កើតគណនី')}
+            {isLoading ? 'កំពុងដំណើរការ...' : (isLogin ? 'ចូលគណនី' : 'ចុះឈ្មោះ')}
           </button>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 space-y-4 text-center">
           <button
             type="button"
             onClick={toggleMode}
-            className="text-[13px] font-semibold text-zinc-500 hover:text-zinc-900 transition-colors"
+            className="text-[14px] font-semibold text-zinc-600 hover:text-zinc-900 transition-colors block w-full"
           >
-            {isLogin ? 'មិនទាន់មានគណនីមែនទេ? បង្កើតគណនីថ្មី' : 'មានគណនីរួចហើយ? ចូលគណនី'}
+            {isLogin ? 'មិនទាន់មានគណនីមែនទេ? ចុះឈ្មោះថ្មី' : 'មានគណនីរួចហើយ? ចូលគណនី'}
           </button>
+          
+          {isLogin && (
+            <div className="pt-4 border-t border-gray-100">
+              <p className="text-[13px] text-zinc-500 mb-1">ភ្លេចពាក្យសម្ងាត់ ឬមានបញ្ហាក្នុងការចូលប្រើ?</p>
+              <a 
+                href="https://t.me/sovansaro" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[14px] font-bold text-[#2AABEE] hover:text-[#229ED9] transition-colors flex items-center justify-center gap-1.5"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.2-1.58.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.97 1.25-5.55 3.67-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.07-.78 4.2-1.82 7-3.03 8.4-3.61 4-.1.67-1.12.87-1.12 1.05 0 .2.04.38.11.53.11.13.33.29.58.5z"/>
+                </svg>
+                ទំនាក់ទំនង Admin តាម Telegram
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

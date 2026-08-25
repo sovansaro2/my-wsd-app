@@ -55,6 +55,7 @@ export const api = {
   // Profile
   getUsers: () => apiFetch('/api/profiles'),
   updateUserRole: (id: string, role: string) => apiFetch(`/api/profiles/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+  resetUserPassword: (id: string, password: string) => apiFetch(`/api/profiles/${id}/reset-password`, { method: 'PUT', body: JSON.stringify({ password }) }),
   updateProfile: (data: any) => apiFetch('/api/profiles/me', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Uploads

@@ -10,6 +10,8 @@ import { useTheme } from '../contexts/ThemeContext';
 
 interface AccountProfileProps {
   userRole: 'admin' | 'user' | null;
+  actualRole?: 'admin' | 'user' | null;
+  onViewModeChange?: (mode: 'admin' | 'user') => void;
   onLogout: () => void;
   
   onManageFinancials?: () => void;
@@ -18,7 +20,7 @@ interface AccountProfileProps {
   onCertificates?: () => void;
 }
 
-export default function AccountProfile({ userRole, onLogout, onManageFinancials, onManageNameLists, onManageUsers, onCertificates }: AccountProfileProps) {
+export default function AccountProfile({ userRole, actualRole, onViewModeChange, onLogout, onManageFinancials, onManageNameLists, onManageUsers, onCertificates }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
@@ -256,13 +258,25 @@ export default function AccountProfile({ userRole, onLogout, onManageFinancials,
         {/* Soft decorative background shapes */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 dark:bg-indigo-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-70 translate-x-1/3 -translate-y-1/3"></div>
         <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-100 dark:bg-purple-900/30 rounded-tl-full opacity-60 dark:opacity-40"></div>
-        <div className="absolute top-6 right-8 grid grid-cols-4 gap-2 opacity-10">
+        <div className="absolute top-6 right-8 grid grid-cols-4 gap-2 opacity-10 pointer-events-none">
           {[...Array(16)].map((_, i) => (
             <div key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-900 dark:bg-indigo-300"></div>
           ))}
         </div>
 
-        <div className="relative p-6 flex items-center space-x-5 z-10">
+        {actualRole === 'admin' && onViewModeChange && (
+          <div className="absolute top-4 right-4 z-20">
+            <button
+              onClick={() => onViewModeChange(userRole === 'admin' ? 'user' : 'admin')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200 dark:border-slate-700 shadow-sm text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-800 transition-colors font-battambang"
+            >
+              <UserCircle2 className="w-3.5 h-3.5" />
+              {userRole === 'admin' ? 'ប្តូរទៅ User' : 'ប្តូរទៅ Admin'}
+            </button>
+          </div>
+        )}
+
+        <div className="relative p-6 flex items-center space-x-5 z-10 pt-10">
           <div className="relative">
             <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-zinc-100 dark:bg-slate-800 flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-sm flex-shrink-0 relative z-10">
               {avatarUrl ? (

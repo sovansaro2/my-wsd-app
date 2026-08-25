@@ -33,6 +33,23 @@ router.put('/:id/role', requireAuth, requireAdmin, async (req, res) => {
   res.json(data);
 });
 
+// PUT /api/profiles/:id/reset-password (Admin only)
+router.put('/:id/reset-password', requireAuth, requireAdmin, async (req, res) => {
+  const { password } = req.body;
+  if (!password || password.length < 6) {
+    return res.status(400).json({ detail: 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៦ តួអក្សរ' });
+  }
+
+  // Update password in Supabase Auth using Admin API
+  const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(req.params.id, {
+    password: password
+  });
+
+  if (authError) return res.status(400).json({ detail: authError.message });
+  
+  res.json({ success: true, message: 'ពាក្យសម្ងាត់ត្រូវបានកែប្រែដោយជោគជ័យ' });
+});
+
 // GET /api/profiles/me
 router.get('/me', requireAuth, async (req, res) => {
   const { data, error } = await supabaseAdmin.from('profiles').select('id, email, full_name, phone_number, role, avatar_url, created_at').eq('id', req.user!.id).maybeSingle();

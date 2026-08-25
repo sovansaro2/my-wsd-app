@@ -24,6 +24,7 @@ type Role = 'admin' | 'user' | null;
 export default function App() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [actualRole, setActualRole] = useState<Role>(null);
   const [userRole, setUserRole] = useState<Role>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   
@@ -58,10 +59,13 @@ export default function App() {
   const fetchUserRole = async () => {
     try {
       const data = await api.getMe();
-      setUserRole(data?.role as Role || 'user');
+      const role = data?.role as Role || 'user';
+      setActualRole(role);
+      setUserRole(role);
     } catch (err) {
       console.log('Session expired or unauthorized');
       localStorage.removeItem('access_token'); // Token might be expired
+      setActualRole(null);
       setUserRole(null);
     } finally {
       setIsInitializing(false);
@@ -103,6 +107,7 @@ export default function App() {
 
   const handleLogout = async () => {
     localStorage.removeItem('access_token');
+    setActualRole(null);
     setUserRole(null);
     setActiveTab('home');
   };
@@ -296,7 +301,7 @@ export default function App() {
                 userRole={userRole} 
                 />
             )}
-            {activeTab === 'reports' && <Reports />}
+            {activeTab === 'reports' && <Reports userRole={userRole} />}
             {activeTab === 'categories' && (
               <NameLists 
                 userRole={userRole}
@@ -304,12 +309,14 @@ export default function App() {
             )}
             {activeTab === 'account' && (
               <AccountProfile
-    userRole={userRole}
-    onLogout={handleLogout}
-    
-    onManageUsers={() => setActiveTab('users')}
-    onCertificates={() => setActiveTab('certificates')}
-  />
+                userRole={userRole}
+                actualRole={actualRole}
+                onViewModeChange={(mode) => setUserRole(mode)}
+                onLogout={handleLogout}
+                
+                onManageUsers={() => setActiveTab('users')}
+                onCertificates={() => setActiveTab('certificates')}
+              />
             )}
             
             {activeTab === 'certificates' && (
