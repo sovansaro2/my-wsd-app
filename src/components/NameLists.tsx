@@ -47,6 +47,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [records, setRecords] = useState<NameRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Modals state
@@ -89,6 +90,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
   useEffect(() => {
     if (selectedCategory) {
+      setSearchQuery('');
+      setShowSearchInput(false);
       fetchRecords(selectedCategory.id);
     }
   }, [selectedCategory]);
@@ -399,7 +402,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const closedLists = ['បញ្ជីឈ្មោះបុណ្យផ្កា', 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ', 'ទិញកម្រាលព្រំ (វគ្គ១)'];
   const isListClosed = closedLists.includes(selectedCategory?.name || '');
   const isKathina = selectedCategory?.name?.includes('កឋិន');
-  const isBonnPhka = selectedCategory?.name?.includes('បុណ្យផ្កា');
 
 
   const getCategoryIcon = (name: string) => {
@@ -692,25 +694,35 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               {selectedCategory?.name}
             </h2>
             
-            {userRole === 'admin' && !isListClosed && (
-              <button 
-                onClick={openAddModal}
-                className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
-                title={t('list_add_new')}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowSearchInput(!showSearchInput)}
+                className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 ${showSearchInput ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400' : 'bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800'}`}
+                title={t('list_search')}
               >
-                <Plus className="w-5 h-5" />
+                <Search className="w-5 h-5" />
               </button>
-            )}
+              {userRole === 'admin' && !isListClosed && (
+                <button 
+                  onClick={openAddModal}
+                  className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                  title={t('list_add_new')}
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              )}
+            </div>
           </div>
           {/* Search */}
-          {isBonnPhka && (
-            <div className="relative">
+          {showSearchInput && (
+            <div className="relative mt-2">
               <input
                 type="text"
                 placeholder={t('list_search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-inner"
+                autoFocus
+                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-sm"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             </div>
