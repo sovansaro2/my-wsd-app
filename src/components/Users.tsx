@@ -144,7 +144,7 @@ export default function Users({ onBack }: UsersProps) {
 
       {/* Mobile-friendly User List */}
       <div className="grid grid-cols-1 gap-4">
-        <AnimatePresence>
+        <>
           {filteredUsers.length === 0 ? (
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-gray-500 dark:text-slate-400 font-battambang shadow-sm border border-gray-100 dark:border-slate-700">
               មិនមានទិន្នន័យ
@@ -225,11 +225,11 @@ export default function Users({ onBack }: UsersProps) {
               </motion.div>
             ))
           )}
-        </AnimatePresence>
+        </>
       </div>
       
       {/* Password Reset Modal */}
-      <AnimatePresence>
+      <>
         {resettingUser && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <motion.div
@@ -320,10 +320,10 @@ export default function Users({ onBack }: UsersProps) {
                         className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors font-battambang disabled:opacity-70 flex items-center justify-center gap-2"
                       >
                         {isResetting ? (
-                          <>
+                          <div>
                             <Loader2 className="w-5 h-5 animate-spin" />
                             កំពុងរក្សាទុក...
-                          </>
+                          </div>
                         ) : (
                           'រក្សាទុក'
                         )}
@@ -335,7 +335,7 @@ export default function Users({ onBack }: UsersProps) {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -21,7 +21,7 @@ router.post('/signup', async (req, res) => {
       }
     });
 
-    if (signUpError) { console.error('signUpError', signUpError); throw signUpError; }
+    if (signUpError) { throw signUpError; }
     
     res.json({ success: true, user: authData.user });
   } catch (e: any) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Pencil, Star, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map, Users } from 'lucide-react';
+import { Search, Plus, Pencil, Star, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map as MapIcon, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -407,7 +407,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const getCategoryIcon = (name: string) => {
     if (name.includes('បុណ្យផ្កា')) return <Flower className="w-6 h-6 text-pink-500" />;
     if (name.includes('កណ្ដឹង')) return <Bell className="w-6 h-6 text-amber-500" />;
-    if (name.includes('កម្រាលព្រំ')) return <Map className="w-6 h-6 text-purple-500" />;
+    if (name.includes('កម្រាលព្រំ')) return <MapIcon className="w-6 h-6 text-purple-500" />;
     if (name.includes('លុយជាង')) return <Hammer className="w-6 h-6 text-orange-500" />;
     if (name.includes('ចងដៃ')) return <Coins className="w-6 h-6 text-emerald-500" />;
     return <FileText className="w-6 h-6 text-blue-500" />;
@@ -577,9 +577,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       </div>
 
       {/* Category Modals */}
-      <AnimatePresence>
+      <>
         {isCatModalOpen && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -658,19 +658,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       {isSavingCat ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <>
+                        <div>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </>
+                        </div>
                       )}
                     </button>
                   </div>
                 </form>
               </motion.div>
             </div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
       </>
 
     );
@@ -752,7 +752,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             )}
           </div>
 
-          <AnimatePresence mode="popLayout">
+          <>
             {filteredRecords.length === 0 ? (
               <motion.div
                 key="empty"
@@ -790,7 +790,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       </tr>
                     </thead>
                     <tbody >
-                      <AnimatePresence>
+                      <>
                         {filteredRecords.map((record, index) => (
                           <motion.tr
                             layout
@@ -820,7 +820,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                               </div>
                             </td>
                             {isKathina && (
-                              <>
+                              <div>
                                 <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                                   <span className="text-[13px] sm:text-[14px] text-gray-700 dark:text-slate-300">
                                     {record.metadata?.trai_liang || '-'}
@@ -831,7 +831,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                     {record.metadata?.others || (record.amount > 0 ? formatCurrency(record.amount) : '-')}
                                   </span>
                                 </td>
-                              </>
+                              </div>
                             )}
                             {!isKathina && (
                               <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
@@ -852,7 +852,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                   </button>
                                 )}
                                 {userRole === 'admin' && !isListClosed && (
-                                  <>
+                                  <div>
                                     <button 
                                       onClick={() => openEditModal(record)}
                                       className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
@@ -873,19 +873,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                         <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                                       )}
                                     </button>
-                                  </>
+                                  </div>
                                 )}
                               </div>
                             </td>
                           </motion.tr>
                         ))}
-                      </AnimatePresence>
+                      </>
                     </tbody>
                   </table>
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </>
 
           {selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
@@ -944,7 +944,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       )}
 
       {/* Add/Edit Modal (Bottom Sheet on Mobile) */}
-      <AnimatePresence>
+      <>
       {isRecordModalOpen && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -988,7 +988,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </div>
 
               {isKathina && (
-                <>
+                <div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                       ត្រៃ/លៀង
@@ -1013,7 +1013,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       placeholder="កំណត់សម្គាល់ផ្សេងៗ..."
                     />
                   </div>
-                </>
+                </div>
               )}
               
               <div>
@@ -1096,10 +1096,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           </motion.div>
         </motion.div>
       )}
-      </AnimatePresence>
+      </>
 
       {/* Certificate Modal */}
-      <AnimatePresence>
+      <>
         {certificateRecord && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1478,19 +1478,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   {isDownloading ? (
                     <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
                   ) : (
-                    <>
+                    <div>
                       <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                       <span>ទាញយករូបភាព</span>
-                    </>
+                    </div>
                   )}
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </>
 
-      <AnimatePresence>
+      <>
         {showSuccessPopup && (
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -1504,7 +1504,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             <span className="font-medium text-sm font-battambang">រក្សាទុកបានជោគជ័យ</span>
           </motion.div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

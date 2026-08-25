@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award, Lock, Settings } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award, Lock as LockIcon, Settings } from 'lucide-react';
 import PinPad from './PinPad';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -302,15 +302,16 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Password Modal */}
-      <AnimatePresence>
-        {showPasswordModal && (
-          <>
+      
+      {/* PIN Setup Prompt Modal */}
+      <>
+        {showSetupPrompt && (
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowPasswordModal(false)}
+              onClick={() => setShowSetupPrompt(false)}
               className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
             />
             <motion.div
@@ -321,50 +322,65 @@ export default function Dashboard() {
             >
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-500/20 flex items-center justify-center">
-                    <Key className="w-5 h-5 text-indigo-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center">
+                    <LockIcon className="w-5 h-5 text-orange-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">បញ្ជាក់ពាក្យសម្ងាត់</h3>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">សុវត្ថិភាពទឹកប្រាក់</h3>
                 </div>
-                <button onClick={() => setShowPasswordModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                <button onClick={() => setShowSetupPrompt(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <form onSubmit={handlePasswordSubmit}>
-                <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
-                  សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីមើលទឹកប្រាក់៖
-                </p>
-                <input
-                  type="password"
-                  autoFocus
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow outline-none mb-2 font-mono"
-                  placeholder="********"
-                />
-                {passwordError && (
-                  <p className="text-red-500 text-xs font-medium mb-4">{passwordError}</p>
-                )}
-                <div className="mt-6 flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswordModal(false)}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    បោះបង់
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30"
-                  >
-                    បញ្ជាក់
-                  </button>
-                </div>
-              </form>
+              
+              <div className="text-sm text-gray-500 dark:text-slate-400 mb-6 font-battambang leading-relaxed">
+                <p className="mb-2">ដើម្បីមើលទឹកប្រាក់បាន លោកអ្នកត្រូវកំណត់ PIN សុវត្ថិភាព ៤ ខ្ទង់ជាមុនសិន។</p>
+                <p>សូមចូលទៅកាន់៖ <br/><span className="font-bold text-gray-700 dark:text-gray-300">គណនី {'>'} ការកំណត់ {'>'} សុវត្ថិភាព PIN</span></p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowSetupPrompt(false)}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  បិទ
+                </button>
+              </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
+
+      {/* PinPad Verification */}
+      <>
+        {showPinPad && (
+          <div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPinPad(false)}
+              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-[101] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl pt-8 pb-10 px-4"
+            >
+              <PinPad
+                title="បញ្ជាក់ PIN"
+                subtitle="សូមបញ្ចូល PIN ៤ ខ្ទង់របស់អ្នកដើម្បីមើលទឹកប្រាក់"
+                error={pinError}
+                onComplete={handlePinSubmit}
+                onCancel={() => setShowPinPad(false)}
+                isLoading={isPinLoading}
+              />
+            </motion.div>
+          </div>
+        )}
+      </>
+
     </div>
     </div>
   );

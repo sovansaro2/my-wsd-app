@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File, X, AlertTriangle } from 'lucide-react';
+import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, X, AlertTriangle } from 'lucide-react';
 import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../lib/reportUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -46,7 +46,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     if (type.includes('image')) return <FileImage className="w-8 h-8 text-blue-500" />;
     if (type.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />;
     if (type.includes('spreadsheet')) return <FileSpreadsheet className="w-8 h-8 text-green-500" />;
-    return <File className="w-8 h-8 text-gray-500" />;
+    return <FileIcon className="w-8 h-8 text-gray-500" />;
   };
 
   if (isLoading) return <div className="p-8 text-center text-gray-500">កំពុងផ្ទុក...</div>;
@@ -93,9 +93,9 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
       </div>
 
       {/* Access Denied Modal */}
-      <AnimatePresence>
+      <>
         {showAccessDenied && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -125,14 +125,14 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 </button>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Delete Confirmation Modal */}
-      <AnimatePresence>
+      <>
         {reportToDelete && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -170,9 +170,9 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -563,9 +563,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         </div>
       </div>
 {/* Seil Modals */}
-      <AnimatePresence>
+      <>
         {isSeilModalOpen && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -636,21 +636,21 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <>
+                        <div>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </>
+                        </div>
                       )}
                     </button>
                   </div>
                 </form>
               </motion.div>
             </div>
-          </>
+          </div>
         )}
 
         {isEditSeilModalOpen && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -718,19 +718,19 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <>
+                        <div>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </>
+                        </div>
                       )}
                     </button>
                   </div>
                 </form>
               </motion.div>
             </div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
             </>
 
@@ -854,7 +854,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       <div className="flex-1 overflow-y-auto px-4 pb-4 max-w-3xl mx-auto w-full">
         <div className="space-y-3 bg-[#FAFAFA] dark:bg-slate-950 p-4 -m-4 sm:p-6 sm:-m-6 rounded-xl">
           <div className="hidden" />
-          <AnimatePresence mode="wait">
+          <>
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, x: activeTab === 'income' ? -20 : 20 }}
@@ -949,7 +949,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 </div>
               )}
             </motion.div>
-          </AnimatePresence>
+          </>
         </div>
 
       {/* Hidden Report Container for Image Generation */}
@@ -1035,9 +1035,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       </div>
 
       {/* Add Record Modal */}
-      <AnimatePresence>
+      <>
         {isAddModalOpen && (
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1207,12 +1207,12 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 </form>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
             {/* Edit Record Modal */}
-      <AnimatePresence>
+      <>
         {isEditRecordModalOpen && editingRecord && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1345,25 +1345,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   className="flex-1 px-6 py-3.5 rounded-2xl font-battambang font-bold text-[15px] transition-all bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 shadow-xl shadow-gray-900/20 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSaving ? (
-                    <>
+                    <div>
                       <Loader2 className="w-5 h-5 animate-spin" />
                       កំពុងរក្សាទុក...
-                    </>
+                    </div>
                   ) : (
-                    <>
+                    <div>
                       <Check className="w-5 h-5" />
                       រក្សាទុកការកែប្រែ
-                    </>
+                    </div>
                   )}
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Certificate Modal */}
-      <AnimatePresence>
+      <>
         {certificateRecord && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
             <motion.div
@@ -1516,9 +1516,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+      </>
       {/* Success Popup */}
-      <AnimatePresence>
+      <>
         {showSuccessPopup && (
           <motion.div
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
@@ -1535,7 +1535,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

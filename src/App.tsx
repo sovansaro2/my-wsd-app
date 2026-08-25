@@ -146,9 +146,9 @@ export default function App() {
       </header>
 
       {/* Notifications Slide-over Drawer */}
-      <AnimatePresence>
+      <>
         {showNotifications && (
-          <>
+          <div>
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
@@ -203,14 +203,14 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Notification Detail Modal */}
-      <AnimatePresence>
+      <>
         {selectedNotification && (
-          <>
+          <div>
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
@@ -280,13 +280,13 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-lg mx-auto">
-        <AnimatePresence mode="wait">
+        <>
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
@@ -328,7 +328,7 @@ export default function App() {
               <Users onBack={() => setActiveTab('account')} />
             )}
           </motion.div>
-        </AnimatePresence>
+        </>
       </main>
 
       {/* Create Post Modal */}

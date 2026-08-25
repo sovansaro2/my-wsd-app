@@ -113,7 +113,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <AnimatePresence>
+            <>
               {filteredCertificates.map((cert) => (
                 <motion.div
                   key={cert.id}
@@ -162,13 +162,13 @@ export default function Certificates({ onBack }: CertificatesProps) {
                   </div>
                 </motion.div>
               ))}
-            </AnimatePresence>
+            </>
           </div>
         )}
       </div>
 
       {/* Delete Confirmation */}
-      <AnimatePresence>
+      <>
         {certToDelete && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <motion.div
@@ -204,7 +204,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

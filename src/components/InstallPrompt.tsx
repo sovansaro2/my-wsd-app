@@ -96,11 +96,11 @@ export default function InstallPrompt() {
   };
 
   return (
-    <AnimatePresence>
+    <>
       {showPrompt && (
         isInAppBrowser ? (
           // In-App Browser Modal (Facebook, Telegram, etc.)
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -154,13 +154,13 @@ export default function InstallPrompt() {
                     }`}
                   >
                     {copied ? (
-                      <>
+                      <div>
                         <Check className="w-5 h-5" /> បានចម្លងលីងរួចរាល់
-                      </>
+                      </div>
                     ) : (
-                      <>
+                      <div>
                         <Copy className="w-5 h-5" /> ចម្លងលីង (Copy Link)
-                      </>
+                      </div>
                     )}
                   </button>
                   <button 
@@ -172,10 +172,10 @@ export default function InstallPrompt() {
                 </div>
               </div>
             </motion.div>
-          </>
+          </div>
         ) : isIOS ? (
           // iOS Modal View
-          <>
+          <div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -235,7 +235,7 @@ export default function InstallPrompt() {
                 </button>
               </div>
             </motion.div>
-          </>
+          </div>
         ) : (
           // Android / Desktop Banner View
           <motion.div
@@ -278,6 +278,6 @@ export default function InstallPrompt() {
           </motion.div>
         )
       )}
-    </AnimatePresence>
+    </>
   );
 }
