@@ -30,6 +30,16 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   
+  // PIN states
+  const [hasBalancePin, setHasBalancePin] = useState(false);
+  const [showPinSetup, setShowPinSetup] = useState(false);
+  const [pinSetupStep, setPinSetupStep] = useState<'verify_current' | 'enter_new' | 'confirm_new' | 'forgot_pin_verify'>('enter_new');
+  const [authPassword, setAuthPassword] = useState('');
+  const [tempNewPin, setTempNewPin] = useState('');
+  const [currentPin, setCurrentPin] = useState('');
+  const [pinSetupError, setPinSetupError] = useState('');
+  const [isPinSettingLoading, setIsPinSettingLoading] = useState(false);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -58,6 +68,57 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  
+  const handlePinSetupComplete = async (pin: string) => {
+    if (pinSetupStep === 'verify_current') {
+      try {
+        setIsPinSettingLoading(true);
+        setPinSetupError('');
+        await api.verifyBalancePin(pin);
+        setCurrentPin(pin);
+        setPinSetupStep('enter_new');
+      } catch (err: any) {
+        setPinSetupError(err.message || 'PIN បច្ចុប្បន្នមិនត្រឹមត្រូវ');
+      } finally {
+        setIsPinSettingLoading(false);
+      }
+    } else if (pinSetupStep === 'enter_new') {
+      setTempNewPin(pin);
+      setPinSetupStep('confirm_new');
+    } else if (pinSetupStep === 'confirm_new') {
+      if (pin !== tempNewPin) {
+        setPinSetupError('PIN មិនដូចគ្នា');
+        setPinSetupStep('enter_new');
+        setTempNewPin('');
+        return;
+      }
+      
+      try {
+        setIsPinSettingLoading(true);
+        setPinSetupError('');
+        
+        if (currentPin) {
+          await api.updateBalancePin(pin, currentPin);
+        } else if (authPassword) {
+          await api.resetBalancePin(pin, authPassword);
+        } else {
+          await api.updateBalancePin(pin);
+        }
+        
+        setHasBalancePin(true);
+        setShowPinSetup(false);
+        setMessage({ type: 'success', text: 'បានកំណត់ PIN ដោយជោគជ័យ' });
+        setAuthPassword('');
+        setCurrentPin('');
+      } catch (err: any) {
+        setPinSetupError(err.message || 'មានបញ្ហាក្នុងការកំណត់ PIN');
+      } finally {
+        setIsPinSettingLoading(false);
+      }
+    }
+  };
+
+
   const fetchProfile = async () => {
     setIsLoading(true);
     try {
@@ -70,6 +131,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
       setFullName(profile.full_name || '');
       setOriginalFullName(profile.full_name || '');
       setPhone(profile.phone_number || '');
+      setHasBalancePin(!!profile.has_balance_pin);
       setAvatarUrl(profile.avatar_url || '');
     } catch (error) {
       console.log('Could not fetch profile');
@@ -340,6 +402,44 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               <span className="text-[15px] font-bold text-gray-800 dark:text-slate-200">{t('profile_view_edit')}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-indigo-600" />
+          </button>
+        </div>
+      </div>
+
+      
+      {/* Security Section */}
+      <div className="mb-4 mt-8">
+        <h4 className="text-[15px] font-bold text-gray-900 dark:text-white mb-2 pl-1">សុវត្ថិភាព</h4>
+        <div className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-gray-100/50 dark:border-slate-800/50 dark:shadow-none overflow-hidden flex flex-col divide-y divide-gray-50 dark:divide-slate-800/50">
+          <button 
+            onClick={() => {
+              if (hasBalancePin) {
+                setPinSetupStep('verify_current');
+              } else {
+                setPinSetupStep('enter_new');
+              }
+              setTempNewPin('');
+              setCurrentPin('');
+              setPinSetupError('');
+              setShowPinSetup(true);
+            }} 
+            className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none text-left"
+          >
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <Lock className="w-4 h-4 text-orange-500"/>
+                <span className="text-[15px] font-bold text-gray-800 dark:text-slate-200">PIN មើលទឹកប្រាក់</span>
+              </div>
+              <span className="text-[13px] text-gray-500 dark:text-slate-400 mt-0.5 ml-6">ការពារការបង្ហាញទឹកប្រាក់របស់អ្នក</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              {hasBalancePin ? (
+                <span className="text-xs font-semibold px-2 py-1 bg-emerald-50 text-emerald-600 rounded-lg">បានកំណត់</span>
+              ) : (
+                <span className="text-xs font-semibold px-2 py-1 bg-gray-100 text-gray-500 rounded-lg">មិនទាន់បានកំណត់</span>
+              )}
+              <ChevronRight className="w-4 h-4 text-indigo-600" />
+            </div>
           </button>
         </div>
       </div>

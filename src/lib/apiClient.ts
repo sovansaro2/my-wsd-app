@@ -28,6 +28,7 @@ export const api = {
   login: (email: string, password: string) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   signup: (email: string, password: string, full_name: string, phone_number?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, phone_number }) }),
   verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
+  verifyPassword: (password: string) => apiFetch('/api/auth/verify-password', { method: 'POST', body: JSON.stringify({ password }) }),
   getMe: () => apiFetch('/api/auth/me'),
 
   getNotifications: () => apiFetch('/api/notifications'),
@@ -57,6 +58,11 @@ export const api = {
   updateUserRole: (id: string, role: string) => apiFetch(`/api/profiles/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
   resetUserPassword: (id: string, password: string) => apiFetch(`/api/profiles/${id}/reset-password`, { method: 'PUT', body: JSON.stringify({ password }) }),
   updateProfile: (data: any) => apiFetch('/api/profiles/me', { method: 'PUT', body: JSON.stringify(data) }),
+
+  verifyBalancePin: (pin: string) => apiFetch('/api/profiles/me/verify-pin', { method: 'POST', body: JSON.stringify({ pin }) }),
+  updateBalancePin: (new_pin: string, current_pin?: string) => apiFetch('/api/profiles/me/balance-pin', { method: 'PUT', body: JSON.stringify({ new_pin, current_pin }) }),
+  resetBalancePin: (new_pin: string, password: string) => apiFetch('/api/profiles/me/reset-balance-pin', { method: 'PUT', body: JSON.stringify({ new_pin, password }) }),
+
 
   // Uploads
   uploadAvatar: async (file: File) => {

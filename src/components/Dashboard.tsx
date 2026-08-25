@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award, Lock, Settings } from 'lucide-react';
+import PinPad from './PinPad';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -39,26 +40,90 @@ export default function Dashboard() {
   const [hundredKDonors, setHundredKDonors] = useState<HundredKDonor[]>([]);
   const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
   const [isAmountVisible, setIsAmountVisible] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const handleToggleVisibility = () => {
+  const [showPinPad, setShowPinPad] = useState(false);
+  const [isPinLoading, setIsPinLoading] = useState(false);
+  const [pinError, setPinError] = useState('');
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLockedOut, setIsLockedOut] = useState(false);
+  const [hasPinConfigured, setHasPinConfigured] = useState<boolean | null>(null);
+  const [showSetupPrompt, setShowSetupPrompt] = useState(false);
+  // Auto hide balance
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isAmountVisible) {
+      timeoutId = setTimeout(() => setIsAmountVisible(false), 30000);
+    }
+    return () => { if (timeoutId) clearTimeout(timeoutId); };
+  }, [isAmountVisible]);
+
+  // Hide on background
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsAmountVisible(false);
+        setShowPinPad(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  const handleToggleVisibility = async () => {
     if (isAmountVisible) {
       setIsAmountVisible(false);
-    } else {
-      setShowPasswordModal(true);
-      setPasswordInput('');
-      setPasswordError('');
+      return;
+    }
+    
+    // Check if locked out
+    if (isLockedOut) {
+      setPinError('សូមរង់ចាំបន្តិច ហើយព្យាយាមម្ដងទៀត។');
+      setShowPinPad(true);
+      return;
+    }
+
+    try {
+      setIsPinLoading(true);
+      const profile = await api.getMe();
+      if (!profile?.has_balance_pin) {
+        setShowSetupPrompt(true);
+      } else {
+        setShowPinPad(true);
+        setPinError('');
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsPinLoading(false);
     }
   };
 
-  const handlePasswordSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (passwordInput === "wsd-app-v") {
+  const handlePinSubmit = async (pin: string) => {
+    if (isLockedOut) return;
+    try {
+      setIsPinLoading(true);
+      setPinError('');
+      await api.verifyBalancePin(pin);
+      
+      // Success
       setIsAmountVisible(true);
-      setShowPasswordModal(false);
-    } else {
-      setPasswordError('ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ!');
+      setShowPinPad(false);
+      setFailedAttempts(0);
+    } catch (err: any) {
+      const attempts = failedAttempts + 1;
+      setFailedAttempts(attempts);
+      if (attempts >= 5) {
+        setIsLockedOut(true);
+        setPinError('ព្យាយាមច្រើនដងពេក សូមរង់ចាំបន្តិច ហើយព្យាយាមម្ដងទៀត។');
+        setTimeout(() => {
+          setIsLockedOut(false);
+          setFailedAttempts(0);
+          setPinError('');
+        }, 60000); // 1 minute lockout
+      } else {
+        setPinError('PIN មិនត្រឹមត្រូវ');
+      }
+    } finally {
+      setIsPinLoading(false);
     }
   };
 
