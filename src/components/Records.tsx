@@ -541,7 +541,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     </div>
                   )}
                   <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
-                     <Wallet className="w-6 h-6 text-blue-500" />
+                                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-7 h-7">
+                       <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#FACC15" stroke="#EAB308" strokeWidth="0.5"/>
+                     </svg>
                   </div>
                   <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
                     {period.name}
