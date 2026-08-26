@@ -200,7 +200,7 @@ export default function InstallPrompt() {
                   <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="text-white font-bold text-lg text-center font-battambang">
-                  ដំឡើងកម្មវិធី "វត្តស្នាយដួច"
+                  ដំឡើងកម្មវិធី "គ្រប់គ្រងទិន្នន័យ(វត្តស្នាយដួច)"
                 </h3>
                 <p className="text-blue-100 text-xs sm:text-sm text-center mt-1 font-battambang">
                   ដើម្បីងាយស្រួលប្រើប្រាស់ សូមដំឡើងលើទូរស័ព្ទ
