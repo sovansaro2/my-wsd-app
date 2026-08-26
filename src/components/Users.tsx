@@ -7,7 +7,6 @@ interface UserProfile {
   id: string;
   email: string;
   full_name: string | null;
-  phone_number: string | null;
   role: 'admin' | 'user';
   avatar_url: string | null;
   created_at: string;
@@ -95,8 +94,7 @@ export default function Users({ onBack }: UsersProps) {
 
   const filteredUsers = users.filter(user => 
     (user.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (user.email?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (user.phone_number?.toLowerCase() || '').includes(searchQuery.toLowerCase())
+    (user.email?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {

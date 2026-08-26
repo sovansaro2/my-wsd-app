@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Router } from 'express';
 import { supabaseAdmin} from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
@@ -8,7 +9,7 @@ const router = Router();
 router.get('/', requireAuth, requireAdmin, async (req, res) => {
   const { data, error } = await supabaseAdmin
     .from('profiles')
-    .select('id, email, full_name, phone_number, role, avatar_url, created_at')
+    .select('id, email, full_name, role, avatar_url, created_at')
     .order('created_at', { ascending: false });
     
   if (error) return res.status(400).json({ detail: error.message });
@@ -26,7 +27,7 @@ router.put('/:id/role', requireAuth, requireAdmin, async (req, res) => {
     .from('profiles')
     .update({ role })
     .eq('id', req.params.id)
-    .select('id, email, full_name, phone_number, role, avatar_url, created_at')
+    .select('id, email, full_name, role, avatar_url, created_at')
     .single();
     
   if (error) return res.status(400).json({ detail: error.message });
@@ -52,7 +53,7 @@ router.put('/:id/reset-password', requireAuth, requireAdmin, async (req, res) =>
 
 // GET /api/profiles/me
 router.get('/me', requireAuth, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('profiles').select('id, email, full_name, phone_number, role, avatar_url, created_at').eq('id', req.user!.id).maybeSingle();
+  const { data, error } = await supabaseAdmin.from('profiles').select('id, email, full_name, role, avatar_url, created_at').eq('id', req.user!.id).maybeSingle();
   if (error) return res.status(400).json({ detail: error.message });
   
   if (!data) {
@@ -60,7 +61,6 @@ router.get('/me', requireAuth, async (req, res) => {
       id: req.user!.id,
       email: req.user!.email,
       full_name: req.user!.user_metadata?.full_name || '',
-      phone_number: req.user!.user_metadata?.phone_number || '',
       role: req.user!.role || 'user',
       avatar_url: null,
       has_balance_pin: !!req.user!.user_metadata?.balance_pin_hash
@@ -87,7 +87,7 @@ router.put('/me', requireAuth, async (req, res) => {
   const { data, error } = await supabaseAdmin
     .from('profiles')
     .upsert({ id: req.user!.id, email: req.user!.email, ...updates })
-    .select('id, email, full_name, phone_number, role, avatar_url, created_at')
+    .select('id, email, full_name, role, avatar_url, created_at')
     .single();
 
   if (error) return res.status(400).json({ detail: error.message });
@@ -111,7 +111,7 @@ router.post('/me/verify-pin', requireAuth, async (req, res) => {
   const currentHash = req.user!.user_metadata?.balance_pin_hash;
   if (!currentHash) return res.status(400).json({ detail: 'PIN is not configured' });
   
-  const crypto = require('crypto');
+  
   const hashedPin = crypto.createHash('sha256').update(req.user!.id + ':' + pin).digest('hex');
   
   if (hashedPin === currentHash) {
@@ -125,7 +125,7 @@ router.post('/me/verify-pin', requireAuth, async (req, res) => {
 router.put('/me/balance-pin', requireAuth, async (req, res) => {
   const { current_pin, new_pin } = req.body;
   
-  const crypto = require('crypto');
+  
   const currentHash = req.user!.user_metadata?.balance_pin_hash;
   
   // Verify current PIN if it exists
@@ -166,7 +166,7 @@ router.put('/me/reset-balance-pin', requireAuth, async (req, res) => {
   });
   if (signInError) return res.status(400).json({ detail: 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ' });
   
-  const crypto = require('crypto');
+  
   const hashedNewPin = crypto.createHash('sha256').update(req.user!.id + ':' + new_pin).digest('hex');
   
   const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(req.user!.id, {

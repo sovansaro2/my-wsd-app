@@ -15,7 +15,6 @@ router.post('/signup', async (req, res) => {
       options: {
         data: {
           full_name: data.full_name,
-          phone_number: data.phone_number,
           role: 'user'
         }
       }

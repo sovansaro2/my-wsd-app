@@ -46,7 +46,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         onLogin((data.user?.role) || 'user');
       } else {
         // Sign Up Flow
-        await api.signup(fakeEmail, password, username.trim(), '');
+        await api.signup(fakeEmail, password, username.trim());
         setSuccess('បង្កើតគណនីបានជោគជ័យ! លោកអ្នកអាចចូលគណនីបានហើយ។');
         setIsLogin(true);
         setPassword('');
