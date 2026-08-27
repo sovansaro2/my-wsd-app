@@ -9,7 +9,7 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ message = 'កំពុងដំណើរការ...', className }: LoadingScreenProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center bg-[#FAFAFA] text-zinc-900 space-y-4", className || "h-screen")}>
+    <div className={cn("flex flex-col items-center justify-center bg-[#FAFAFA] dark:bg-slate-900 text-zinc-900 dark:text-white space-y-4", className || "h-screen")}>
       <div className="text-3xl">
         <Dots className="w-12 h-4 text-amber-600" />
       </div>

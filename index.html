@@ -35,9 +35,58 @@
     <meta property="og:description" content="កម្មវិធីគ្រប់គ្រងទិន្នន័យវត្តស្នាយដួច" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+  
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #FAFAFA;
+      }
+      #initial-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        font-family: system-ui, -apple-system, sans-serif;
+        background-color: #FAFAFA;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background-color: #0F172A; }
+        #initial-loader { background-color: #0F172A; }
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(217, 119, 6, 0.2);
+        border-top-color: #D97706;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 16px;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      .loading-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #A1A1AA;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="initial-loader">
+        <div class="spinner"></div>
+        <div class="loading-text">កំពុងដំណើរការ...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
