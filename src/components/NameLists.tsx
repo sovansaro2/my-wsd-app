@@ -841,7 +841,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             )}
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
                               <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                {selectedCategory?.name !== 'លុយជាងដក' && (
+                                {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
                                     className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"

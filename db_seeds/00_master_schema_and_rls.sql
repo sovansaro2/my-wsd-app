@@ -5,9 +5,19 @@
 -- 1. Profiles Table
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY, -- Links to auth.users
+  user_code TEXT,
+  family_name TEXT,
+  given_name TEXT,
   full_name TEXT,
+  gender TEXT,
+  date_of_birth TEXT,
+  address TEXT,
+  email TEXT,
+  phone_number TEXT,
   role TEXT DEFAULT 'user',
   avatar_url TEXT,
+  password_hash TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

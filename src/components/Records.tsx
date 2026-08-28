@@ -771,6 +771,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
             
             <div className="flex items-center gap-2 shrink-0 pl-2">
+              {userRole === 'admin' && (
               <button 
                 onClick={handleDownload}
                 disabled={isDownloading || isLoading || records.length === 0}
@@ -779,6 +780,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               >
                 {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               </button>
+              )}
 
               {userRole === 'admin' && (
                 <button 
@@ -898,6 +900,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight break-words">
                                     {record.description}
                                   </span>
+                                  {userRole === 'admin' ? (
                                   <button 
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -908,6 +911,11 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   >
                                     <Star className="w-4 h-4" fill={record.is_high_level ? "currentColor" : "none"} />
                                   </button>
+                                ) : record.is_high_level ? (
+                                  <div className="shrink-0 p-1 text-orange-500 bg-orange-50 dark:bg-orange-500/10 rounded-full" title="ថវិកាកម្រិតខ្ពស់">
+                                    <Star className="w-4 h-4" fill="currentColor" />
+                                  </div>
+                                ) : null}
                                 </div>
                                 <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">{formatDate(record.record_date)}</span>
                                 {record.note && (
@@ -924,6 +932,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                               </span>
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
+                              {userRole === 'admin' && (
                               <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => openEditRecordModal(record)}
@@ -942,6 +951,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   </button>
                                 )}
                               </div>
+                              )}
                             </td>
                           </tr>
                         ))}
