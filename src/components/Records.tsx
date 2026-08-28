@@ -557,13 +557,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
 
                   <div>
-                    <h4 className="font-normal text-gray-900 dark:text-white text-[15px] leading-snug line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang">
+                    <h4 className="font-normal text-gray-900 dark:text-white text-[15px] leading-normal  group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang">
                       {period.name}
                     </h4>
                     {period.date_range_text && (
                       <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400 mt-1.5">
                         <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
-                        <span className="truncate font-battambang">{period.date_range_text}</span>
+                        <span className=" font-battambang">{period.date_range_text}</span>
                       </div>
                     )}
                   </div>
@@ -820,18 +820,18 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium truncate">{t('records_prev_balance')}</p>
+              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium ">{t('records_prev_balance')}</p>
             </div>
-            <p className="text-base sm:text-lg  text-gray-800 dark:text-slate-200 truncate">{formatCurrency(previousBalance)}</p>
+            <p className="text-base sm:text-lg  text-gray-800 dark:text-slate-200 ">{formatCurrency(previousBalance)}</p>
           </div>
           
           {/* Current Balance */}
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium truncate">{t('records_current_balance')}</p>
+              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium ">{t('records_current_balance')}</p>
             </div>
-            <p className="text-base sm:text-lg  text-orange-600 dark:text-orange-400 truncate">{formatCurrency(currentBalance)}</p>
+            <p className="text-base sm:text-lg  text-orange-600 dark:text-orange-400 ">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
         </div>
@@ -907,7 +907,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
                                 <div className="flex items-start justify-between gap-2">
-                                  <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-tight break-words font-battambang">
+                                  <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-normal break-words font-battambang">
                                     {record.description}
                                   </span>
                                   {userRole === 'admin' ? (
@@ -929,7 +929,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                 </div>
                                 <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1 font-battambang">{formatDate(record.record_date)}</span>
                                 {record.note && (
-                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 line-clamp-1 font-battambang">
+                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5  font-battambang">
                                     <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
                                     {record.note}
                                   </span>
@@ -1441,13 +1441,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                              backgroundRepeat: 'no-repeat'
                            }}
                          />
-                         <span className="text-[11px] font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
-                         <span className="text-[11px] font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
+                         <span className="text-[11px] font-moul text-orange-900 leading-normal mb-[2px]">វត្តវារីបាការាម</span>
+                         <span className="text-[11px] font-moul text-orange-900 leading-normal">(ស្នាយដួច)</span>
                       </div>
 
                       {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
-                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-normal " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                           <span className="text-orange-500 text-xl ">៙ ❖ ៚</span>
@@ -1458,13 +1458,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
                     {/* Content */}
                     <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
-                      <p className="text-[17px] font-battambang leading-snug mb-2 mt-4 text-orange-900">
+                      <p className="text-[17px] font-battambang leading-normal mb-2 mt-4 text-orange-900">
                         អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
                       </p>
                       
                       <div className="px-6 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px] max-w-[700px] flex justify-center">
                         <h3 
-                          className="text-indigo-900 leading-tight pb-1 whitespace-nowrap" 
+                          className="text-indigo-900 leading-normal pb-1 whitespace-nowrap" 
                           style={{ 
                             fontFamily: '"Khmer OS Kulen", Koulen, cursive',
                             fontSize: certificateRecord.description.length > 40 ? '22px' : certificateRecord.description.length > 30 ? '26px' : certificateRecord.description.length > 20 ? '32px' : '40px'
@@ -1474,7 +1474,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         </h3>
                       </div>
                       
-                      <p className="text-[16px] font-battambang leading-snug max-w-[650px] mx-auto text-gray-700">
+                      <p className="text-[16px] font-battambang leading-normal max-w-[650px] mx-auto text-gray-700">
                         ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className=" text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
                         {certificateRecord.note ? (
                           <span> ផ្នែក <span className=" text-indigo-800">"{certificateRecord.note}"</span></span>
@@ -1485,7 +1485,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       </p>
 
                       {/* Blessing */}
-                      <p className="text-[14px] font-battambang italic leading-snug max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
+                      <p className="text-[14px] font-battambang italic leading-normal max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
                         សូមបួងសួងដល់គុណព្រះរតនត្រ័យ និងវត្ថុស័ក្តិសិទ្ធិក្នុងលោក សូមជួយប្រោះព្រំសព្ទសាធុការពរជ័យ បវរសួស្ដី សិរីមង្គល វិបុលសុខ មហាប្រសើរ ជូនដល់ម្ចាស់ទាន ព្រមទាំងក្រុមគ្រួសារ សូមប្រកបដោយពុទ្ធពរទាំង ៤ ប្រការគឺ អាយុ វណ្ណៈ សុខៈ និងពលៈ កុំបីឃ្លៀងឃ្លាតឡើយ។
                       </p>
                     </div>
@@ -1553,7 +1553,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
             <div>
               <p className="text-emerald-800 dark:text-emerald-300  text-[15px]">ជោគជ័យ!</p>
-              <p className="text-emerald-600/80 dark:text-emerald-400/80 text-[13px] font-medium leading-snug">បានរក្សាទុករបាយការណ៍។ សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល។</p>
+              <p className="text-emerald-600/80 dark:text-emerald-400/80 text-[13px] font-medium leading-normal">បានរក្សាទុករបាយការណ៍។ សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល។</p>
             </div>
           </motion.div>
         )}

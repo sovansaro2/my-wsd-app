@@ -288,8 +288,8 @@ export default function Dashboard() {
                     {index + 1}
                   </span>
                   <div className="min-w-0">
-                    <span className="font-normal text-[15px] text-gray-900 dark:text-white block truncate leading-tight font-battambang">{donor.name}</span>
-                    <span className="text-xs text-gray-500 dark:text-slate-400 block mt-0.5 truncate font-battambang">
+                    <span className="font-normal text-[15px] text-gray-900 dark:text-white block  leading-normal font-battambang">{donor.name}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 block mt-0.5  font-battambang">
                       {donor.category_name}
                     </span>
                   </div>

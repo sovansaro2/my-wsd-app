@@ -83,7 +83,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] p-4 font-battambang">
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100/50">
         <div className="mb-8 text-center">
-          <h2 className="mb-2 font-title text-2xl sm:text-3xl text-zinc-900" style={{ fontFamily: 'Koulen, cursive' }}>កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច</h2>
+          <h2 className="mb-2 font-title text-[18px] min-[375px]:text-[20px] sm:text-2xl md:text-3xl text-zinc-900 whitespace-nowrap tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្វាយដួច</h2>
           <h3 className="text-zinc-400 text-sm font-battambang">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ</h3>
         </div>
         

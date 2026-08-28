@@ -124,7 +124,7 @@ export default function InstallPrompt() {
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-3 overflow-hidden text-indigo-600">
                   <Globe className="w-8 h-8" />
                 </div>
-                <h3 className="text-white  text-lg text-center font-battambang leading-tight">
+                <h3 className="text-white  text-lg text-center font-battambang leading-normal">
                   សូមបើកជាមួយ Browser ក្រៅ
                 </h3>
                 <p className="text-indigo-100 text-[13px] text-center mt-2 font-battambang">
@@ -254,7 +254,7 @@ export default function InstallPrompt() {
                 <h4 className=" text-gray-900 dark:text-white text-sm mb-0.5 font-battambang">
                   {t('install_title') || 'ដំឡើងកម្មវិធី'}
                 </h4>
-                <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight font-battambang">
+                <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-normal font-battambang">
                   {t('install_desc') || 'ទាញយកកម្មវិធីនេះដាក់លើអេក្រង់ទូរស័ព្ទរបស់អ្នក ដើម្បីងាយស្រួលប្រើប្រាស់។'}
                 </p>
               </div>

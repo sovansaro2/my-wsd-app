@@ -140,7 +140,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-1">
                   <div className="flex flex-col flex-1 min-w-0 w-full">
-                    <h3 className="font-medium text-sm sm:text-[15px] text-gray-900 dark:text-white truncate font-battambang" title={cert.title}>
+                    <h3 className="font-medium text-sm sm:text-[15px] text-gray-900 dark:text-white  font-battambang" title={cert.title}>
                       {cert.title}
                     </h3>
                     <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">

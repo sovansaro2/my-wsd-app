@@ -150,10 +150,10 @@ export default function Users({ onBack }: UsersProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[17px] font-normal text-gray-900 dark:text-white truncate font-title ">
+                  <div className="text-[17px] font-normal text-gray-900 dark:text-white  font-title ">
                     {user.full_name || t('users_no_name')}
                   </div>
-                  <div className="text-[13px] text-gray-500 dark:text-slate-400 truncate">
+                  <div className="text-[13px] text-gray-500 dark:text-slate-400 ">
                     {user.email}
                   </div>
                   <div className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5">

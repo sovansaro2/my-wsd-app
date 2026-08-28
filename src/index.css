@@ -1,21 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;500;700;900&family=Koulen&family=Moul&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Khmer OS Battambang', 'Battambang', 'Roboto', system-ui, sans-serif;
-  --font-battambang: 'Khmer OS Battambang', 'Battambang', system-ui, sans-serif;
-  --font-khmer: 'Khmer OS Battambang', 'Battambang', system-ui, sans-serif;
+  --font-sans: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', 'Roboto', system-ui, sans-serif;
+  --font-battambang: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
+  --font-khmer: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
   --font-roboto: 'Roboto', system-ui, sans-serif;
-  --font-title: 'Koulen', 'Khmer OS Battambang', 'Battambang', cursive;
-  --font-moul: 'Moul', 'Khmer OS Battambang', 'Battambang', cursive;
+  --font-title: 'Koulen', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
+  --font-moul: 'Moul', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
 }
 
 @layer base {
   body {
     @apply text-slate-900 bg-white dark:bg-slate-900 dark:text-slate-50 transition-colors duration-200;
-    font-family: 'Khmer OS Battambang', 'Battambang', 'Roboto', system-ui, sans-serif;
+    font-family: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Roboto', system-ui, sans-serif;
+    line-height: 1.6;
   }
   
   html[lang="en"],
@@ -24,6 +24,12 @@
   .lang-en body {
     font-family: 'Roboto', 'Khmer OS Battambang', 'Battambang', system-ui, sans-serif;
     font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .font-title, .font-moul {
+    line-height: 1.7 !important;
+    padding-top: 0.1em;
   }
 
   /* Force Khmer OS Battambang font for names, lists, records, and custom Khmer content with clean non-bold weight (កុំប្រើអក្សរឌិត) */
@@ -34,10 +40,11 @@
   .lang-en .font-battambang,
   .lang-en .font-khmer,
   [data-font="khmer"] {
-    font-family: 'Khmer OS Battambang', 'Battambang', system-ui, sans-serif !important;
+    font-family: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif !important;
     font-weight: 400 !important;
     letter-spacing: normal !important;
     word-spacing: normal !important;
+    line-height: 1.65 !important;
   }
 
   /* Hide scrollbar globally */

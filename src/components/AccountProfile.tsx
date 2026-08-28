@@ -335,7 +335,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[20px] sm:text-[22px] font-normal text-gray-900 dark:text-white truncate font-title ">
+                  <h3 className="text-[20px] sm:text-[22px] font-normal text-gray-900 dark:text-white  font-title ">
                     {fullName || 'No Name'}
                   </h3>
                   <p className="text-[13px] font-medium text-gray-500 dark:text-slate-400 mt-0.5">
@@ -499,7 +499,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white truncate font-title  leading-normal">
+            <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white  font-title  leading-normal">
               {fullName || 'វត្តស្វាយដួច'}
             </h2>
             <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5">

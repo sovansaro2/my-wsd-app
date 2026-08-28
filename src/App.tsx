@@ -146,7 +146,7 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-20 pt-16">
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className="text-white  text-base sm:text-lg md:text-xl font-normal pt-0.5 truncate select-none font-title">
+        <h1 className="text-white  text-base sm:text-lg md:text-xl font-normal pt-0.5  select-none font-title">
           {t('app_title')}
         </h1>
         <div className="relative shrink-0">
@@ -202,7 +202,7 @@ export default function App() {
                         <div className="flex items-start gap-3.5">
                           <div className={`mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0 ${notif.type === 'income' ? 'bg-emerald-500' : notif.type === 'expense' ? 'bg-rose-500' : 'bg-blue-500'} shadow-sm`} />
                           <div className="flex-1">
-                            <p className="text-[14px]  text-gray-900 dark:text-white font-battambang leading-tight mb-1">{notif.title}</p>
+                            <p className="text-[14px]  text-gray-900 dark:text-white font-battambang leading-normal mb-1">{notif.title}</p>
                             <p className="text-[13px] text-gray-600 dark:text-slate-400 font-battambang leading-relaxed">{notif.message}</p>
                             <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-2.5 flex items-center gap-1.5">
                               {new Date(notif.created_at).toLocaleDateString('km-KH')} {new Date(notif.created_at).toLocaleTimeString('km-KH', {hour: '2-digit', minute:'2-digit'})}
@@ -388,7 +388,7 @@ export default function App() {
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <Home className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
+            <Home className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
           </button>
           
           <button
@@ -400,7 +400,7 @@ export default function App() {
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <CircleDollarSign className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
+            <CircleDollarSign className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
           </button>
 
           <button
@@ -412,7 +412,7 @@ export default function App() {
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <List className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
+            <List className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
           </button>
 
           <button
@@ -424,7 +424,7 @@ export default function App() {
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <FileText className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
+            <FileText className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
           </button>
           
           <button
@@ -436,7 +436,7 @@ export default function App() {
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <User className={`h-6 w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
+            <User className={`h-6 w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
           </button>
         </div>
       </nav>

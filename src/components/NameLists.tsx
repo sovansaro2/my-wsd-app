@@ -483,8 +483,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <span className="text-2xl">🏗️</span>
                   </div>
                   <div>
-                    <h4 className="text-lg sm:text-xl font-normal text-white mb-1 line-clamp-1 font-battambang">{roofCat.name}</h4>
-                    <p className="text-orange-50 text-sm opacity-90 line-clamp-1 font-battambang">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
+                    <h4 className="text-lg sm:text-xl font-normal text-white mb-1  font-battambang">{roofCat.name}</h4>
+                    <p className="text-orange-50 text-sm opacity-90  font-battambang">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
                   </div>
                 </div>
               </button>
@@ -528,7 +528,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <path d="M40 45 L60 45" stroke="#9A3412" strokeWidth="2" />
                       </svg>
                     </div>
-                    <h4 className="font-normal text-amber-900 dark:text-amber-400 text-center text-sm sm:text-[15px] leading-snug line-clamp-2 font-battambang">
+                    <h4 className="font-normal text-amber-900 dark:text-amber-400 text-center text-sm sm:text-[15px] leading-normal  font-battambang">
                       {cat.name}
                     </h4>
                   </button>
@@ -560,7 +560,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                    <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
                      {getCategoryIcon(cat.name)}
                    </div>
-                   <h4 className="font-normal text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug line-clamp-2 font-battambang">
+                   <h4 className="font-normal text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-normal  font-battambang">
                      {cat.name}
                    </h4>
                  </button>
@@ -689,7 +689,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </button>
-            <h2 className="text-xl  text-gray-900 dark:text-white truncate flex-1 leading-tight font-battambang">
+            <h2 className="text-xl  text-gray-900 dark:text-white  flex-1 leading-normal font-battambang">
               {selectedCategory?.name}
             </h2>
             
@@ -807,7 +807,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
-                                <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-tight font-battambang">
+                                <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-normal font-battambang">
                                   {record.name}
                                 </span>
                                 {record.note && (
@@ -1257,13 +1257,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <div className="relative z-30 flex flex-col items-center mt-2 mb-0 space-y-1 text-center">
                           <div className="flex items-center justify-center space-x-3 mb-1">
                             <svg width="24" height="12" viewBox="0 0 30 15" fill="none"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
-                            <h2 className="text-[38px] text-[#991b1b] font-normal leading-none  drop-shadow-sm" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
+                            <h2 className="text-[38px] text-[#991b1b] font-normal leading-normal  drop-shadow-sm" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive', textShadow: '2px 2px 0px rgba(212, 175, 55, 0.4)' }}>
                               បុណ្យកឋិនទានសាមគ្គី
                             </h2>
                             <svg width="24" height="12" viewBox="0 0 30 15" fill="none" className="transform scale-x-[-1]"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
                           </div>
                           
-                          <h3 className="text-[22px] text-[#1e3a8a] font-moul leading-tight mt-1">
+                          <h3 className="text-[22px] text-[#1e3a8a] font-moul leading-normal mt-1">
                             វត្តវារីបាការាម (ស្នាយដួច)
                           </h3>
                           
@@ -1386,13 +1386,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                              backgroundRepeat: 'no-repeat'
                            }}
                          />
-                         <span className="text-xs font-moul text-orange-900 leading-tight mb-[2px]">វត្តវារីបាការាម</span>
-                         <span className="text-xs font-moul text-orange-900 leading-tight">(ស្នាយដួច)</span>
+                         <span className="text-xs font-moul text-orange-900 leading-normal mb-[2px]">វត្តវារីបាការាម</span>
+                         <span className="text-xs font-moul text-orange-900 leading-normal">(ស្នាយដួច)</span>
                       </div>
 
                       {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
-                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-normal " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                           <span className="text-orange-500 text-xl ">៙ ❖ ៚</span>
@@ -1403,13 +1403,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                     {/* Content */}
                     <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
-                      <p className="text-[17px] font-battambang leading-snug mb-2 mt-4 text-orange-900">
+                      <p className="text-[17px] font-battambang leading-normal mb-2 mt-4 text-orange-900">
                         អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
                       </p>
                       
                       <div className="px-6 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px] max-w-[700px] flex justify-center">
                         <h3 
-                          className="text-indigo-900 leading-tight pb-1 whitespace-nowrap" 
+                          className="text-indigo-900 leading-normal pb-1 whitespace-nowrap" 
                           style={{ 
                             fontFamily: '"Khmer OS Kulen", Koulen, cursive',
                             fontSize: certificateRecord.name.length > 40 ? '22px' : certificateRecord.name.length > 30 ? '26px' : certificateRecord.name.length > 20 ? '32px' : '40px'
@@ -1419,7 +1419,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </h3>
                       </div>
                       
-                      <p className="text-[16px] font-battambang leading-snug max-w-[650px] mx-auto text-gray-700">
+                      <p className="text-[16px] font-battambang leading-normal max-w-[650px] mx-auto text-gray-700">
                         ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className=" text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
                         {selectedCategory?.name && (
                           <span> ផ្នែក <span className=" text-indigo-800">"{selectedCategory.name}"</span></span>
@@ -1428,7 +1428,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       </p>
 
                       {/* Blessing */}
-                      <p className="text-[14px] font-battambang italic leading-snug max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
+                      <p className="text-[14px] font-battambang italic leading-normal max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
                         សូមបួងសួងដល់គុណព្រះរតនត្រ័យ និងវត្ថុស័ក្តិសិទ្ធិក្នុងលោក សូមជួយប្រោះព្រំសព្ទសាធុការពរជ័យ បវរសួស្ដី សិរីមង្គល វិបុលសុខ មហាប្រសើរ ជូនដល់ម្ចាស់ទាន ព្រមទាំងក្រុមគ្រួសារ សូមប្រកបដោយពុទ្ធពរទាំង ៤ ប្រការគឺ អាយុ វណ្ណៈ សុខៈ និងពលៈ កុំបីឃ្លៀងឃ្លាតឡើយ។
                       </p>
                     </div>
