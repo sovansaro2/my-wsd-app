@@ -80,11 +80,11 @@ export default function Certificates({ onBack }: CertificatesProps) {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-battambang">លិខិតថ្លែងអំណរគុណ</h1>
+            <h1 className="text-xl  text-gray-900 dark:text-white font-title">{t('cert_title')}</h1>
           </div>
           
           <div className="text-xs text-gray-500 dark:text-slate-400 font-medium">
-            សរុប {certificates.length}
+            {t('cert_total', { count: certificates.length })}
           </div>
         </div>
         
@@ -95,7 +95,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ស្វែងរកឈ្មោះ..."
+            placeholder={t('cert_search_ph')}
             className="w-full bg-gray-100/80 dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 rounded-xl pl-9 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-battambang transition-colors"
           />
           {searchQuery && (
@@ -115,7 +115,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
             <div className="w-16 h-16 bg-zinc-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-zinc-300 dark:text-slate-600" />
             </div>
-            <p className="text-sm font-medium">{searchQuery ? 'រកមិនឃើញលិខិតដែលស្វែងរកទេ' : 'មិនទាន់មានលិខិតថ្លែងអំណរគុណទេ'}</p>
+            <p className="text-sm font-medium">{searchQuery ? t('cert_not_found') : t('cert_empty')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -140,7 +140,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-1">
                   <div className="flex flex-col flex-1 min-w-0 w-full">
-                    <h3 className="font-semibold text-sm sm:text-[15px] text-gray-900 dark:text-white truncate font-battambang" title={cert.title}>
+                    <h3 className="font-medium text-sm sm:text-[15px] text-gray-900 dark:text-white truncate font-battambang" title={cert.title}>
                       {cert.title}
                     </h3>
                     <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">
@@ -184,7 +184,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
               <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-6 h-6 text-rose-600 dark:text-rose-400" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 font-battambang">លុបលិខិតថ្លែងអំណរគុណ?</h3>
+              <h3 className="text-lg  text-gray-900 dark:text-white mb-2 font-battambang">លុបលិខិតថ្លែងអំណរគុណ?</h3>
               <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed font-battambang">
                 តើអ្នកពិតជាចង់លុបលិខិតនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
               </p>
@@ -199,7 +199,7 @@ export default function Certificates({ onBack }: CertificatesProps) {
               <div className="w-[1px] bg-gray-100 dark:border-slate-800" />
               <button
                 onClick={() => handleDelete(certToDelete)}
-                className="flex-1 px-4 py-3.5 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors font-battambang"
+                className="flex-1 px-4 py-3.5 text-sm  text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors font-battambang"
               >
                 លុប
               </button>

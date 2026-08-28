@@ -124,7 +124,7 @@ export default function InstallPrompt() {
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-3 overflow-hidden text-indigo-600">
                   <Globe className="w-8 h-8" />
                 </div>
-                <h3 className="text-white font-bold text-lg text-center font-battambang leading-tight">
+                <h3 className="text-white  text-lg text-center font-battambang leading-tight">
                   សូមបើកជាមួយ Browser ក្រៅ
                 </h3>
                 <p className="text-indigo-100 text-[13px] text-center mt-2 font-battambang">
@@ -135,11 +135,11 @@ export default function InstallPrompt() {
               <div className="p-6">
                 <ul className="space-y-4 font-battambang">
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">1</div>
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">1</div>
                     <p>ចុចសញ្ញាចុចបី <MoreHorizontal className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded" /> ឬ <strong>Share</strong> <Share className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded p-0.5" /> នៅជ្រុងអេក្រង់</p>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">2</div>
+                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">2</div>
                     <p>ជ្រើសរើសយក <strong>Open in Safari</strong> <ExternalLink className="w-4 h-4 inline-block mx-0.5 text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 rounded p-0.5" /> (iOS) ឬ <strong>Open in Chrome</strong> (Android)</p>
                   </li>
                 </ul>
@@ -147,7 +147,7 @@ export default function InstallPrompt() {
                 <div className="mt-6 flex flex-col gap-3">
                   <button 
                     onClick={handleCopyLink}
-                    className={`w-full py-3 px-4 flex items-center justify-center gap-2 font-bold rounded-xl transition-colors font-battambang ${
+                    className={`w-full py-3 px-4 flex items-center justify-center gap-2  rounded-xl transition-colors font-battambang ${
                       copied 
                         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
                         : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400'
@@ -165,7 +165,7 @@ export default function InstallPrompt() {
                   </button>
                   <button 
                     onClick={handleClose}
-                    className="w-full py-3 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-white font-bold rounded-xl transition-colors font-battambang"
+                    className="w-full py-3 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-white  rounded-xl transition-colors font-battambang"
                   >
                     យល់ព្រម
                   </button>
@@ -199,7 +199,7 @@ export default function InstallPrompt() {
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-3 overflow-hidden">
                   <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="text-white font-bold text-lg text-center font-battambang">
+                <h3 className="text-white  text-lg text-center font-battambang">
                   ដំឡើងកម្មវិធី "គ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច"
                 </h3>
                 <p className="text-blue-100 text-xs sm:text-sm text-center mt-1 font-battambang">
@@ -210,26 +210,26 @@ export default function InstallPrompt() {
               <div className="p-6">
                 <ul className="space-y-4 font-battambang">
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">1</div>
+                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">1</div>
                     <p>ចុចសញ្ញាចុចបី <MoreHorizontal className="w-4 h-4 inline-block mx-0.5 text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded" /> នៅជ្រុងខាងស្តាំក្រោម</p>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">2</div>
+                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">2</div>
                     <p>ចុចលើប៊ូតុង <strong>Share</strong> <Share className="w-4 h-4 inline-block mx-0.5 text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded p-0.5" /></p>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">3</div>
+                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">3</div>
                     <p>អូសចុះក្រោមបន្តិច ឬចុចលើ <strong>View More</strong> <ChevronDown className="w-4 h-4 inline-block mx-0.5 text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded p-0.5" /></p>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">4</div>
+                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 mt-0.5  text-xs">4</div>
                     <p>ជ្រើសរើស <strong>Add to Home Screen</strong> <PlusSquare className="w-4 h-4 inline-block mx-0.5 text-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded p-0.5" /> រួចចុច <strong>Add</strong></p>
                   </li>
                 </ul>
 
                 <button 
                   onClick={handleClose}
-                  className="w-full mt-6 py-3 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-white font-bold rounded-xl transition-colors font-battambang"
+                  className="w-full mt-6 py-3 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-white  rounded-xl transition-colors font-battambang"
                 >
                   យល់ព្រម
                 </button>
@@ -251,7 +251,7 @@ export default function InstallPrompt() {
               </div>
               
               <div className="flex-1">
-                <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-0.5 font-battambang">
+                <h4 className=" text-gray-900 dark:text-white text-sm mb-0.5 font-battambang">
                   {t('install_title') || 'ដំឡើងកម្មវិធី'}
                 </h4>
                 <p className="text-[12px] text-gray-500 dark:text-slate-400 leading-tight font-battambang">
@@ -262,7 +262,7 @@ export default function InstallPrompt() {
               <div className="flex flex-col gap-2 shrink-0">
                 <button
                   onClick={handleInstallClick}
-                  className="bg-blue-600 text-white text-[13px] font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors font-battambang"
+                  className="bg-blue-600 text-white text-[13px]  px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors font-battambang"
                 >
                   {t('install_btn') || 'ដំឡើងឥឡូវនេះ'}
                 </button>

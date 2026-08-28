@@ -13,7 +13,7 @@ export function LoadingScreen({ message = 'កំពុងដំណើរកា�
       <div className="text-3xl">
         <Dots className="w-12 h-4 text-amber-600" />
       </div>
-      <p className="text-sm font-semibold font-battambang tracking-widest text-zinc-400 uppercase animate-pulse">
+      <p className="text-sm font-medium font-battambang st text-zinc-400 uppercase animate-pulse">
         {message}
       </p>
     </div>

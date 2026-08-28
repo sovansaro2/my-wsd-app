@@ -9,18 +9,32 @@ router.post('/signup', async (req, res) => {
   try {
     const data = SignupSchema.parse(req.body);
     
-    const { data: authData, error: signUpError } = await supabaseAdmin.auth.signUp({
+    // Try using admin.createUser if service role key is available to bypass email confirmation
+    const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
-      options: {
-        data: {
-          full_name: data.full_name,
-          role: 'user'
-        }
+      email_confirm: true,
+      user_metadata: {
+        full_name: data.full_name,
+        role: 'user'
       }
     });
 
-    if (signUpError) { throw signUpError; }
+    if (signUpError) {
+      // Fallback to normal signUp if admin API fails (e.g. no service role key)
+      const { data: fallbackData, error: fallbackError } = await supabaseAdmin.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.full_name,
+            role: 'user'
+          }
+        }
+      });
+      if (fallbackError) throw fallbackError;
+      return res.json({ success: true, user: fallbackData.user });
+    }
     
     res.json({ success: true, user: authData.user });
   } catch (e: any) {

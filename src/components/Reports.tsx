@@ -49,11 +49,11 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     return <FileIcon className="w-8 h-8 text-gray-500" />;
   };
 
-  if (isLoading) return <div className="p-8 text-center text-gray-500">កំពុងផ្ទុក...</div>;
+  if (isLoading) return <div className="p-8 text-center text-gray-500">{t('common_loading')}</div>;
 
   return (
     <div className="p-4 space-y-4">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white font-moul">របាយការណ៍ដែលបានរក្សាទុក</h2>
+      <h2 className="text-xl  text-gray-900 dark:text-white font-title">{t('reports_saved_title')}</h2>
       
       <div className="relative">
         {userRole !== 'admin' && (
@@ -66,7 +66,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         <div className={userRole !== 'admin' ? 'opacity-50 pointer-events-none select-none filter grayscale-[30%]' : ''}>
           {reports.length === 0 ? (
             <div className="text-center py-12 text-gray-500 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
-              មិនមានរបាយការណ៍ទេ
+              {t('reports_empty')}
             </div>
           ) : (
             <div className="space-y-3">
@@ -74,7 +74,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 <div key={report.id} className="flex items-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
                   {getIcon(report.type)}
                   <div className="ml-4 flex-1">
-                    <h3 className="font-bold text-gray-900 dark:text-white">{report.title}</h3>
+                    <h3 className="font-normal text-[15px] text-gray-900 dark:text-white font-battambang">{report.title}</h3>
                     <p className="text-xs text-gray-500">{new Date(report.date).toLocaleString('en-GB')}</p>
                   </div>
                   <div className="flex space-x-2">
@@ -113,13 +113,13 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-4">
                   <AlertTriangle className="w-8 h-8 text-orange-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 font-battambang">មិនមានសិទ្ធិអនុញ្ញាត</h3>
+                <h3 className="text-xl  text-gray-900 dark:text-white mb-2 font-battambang">មិនមានសិទ្ធិអនុញ្ញាត</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6 font-battambang leading-relaxed">
                   ទំព័រនេះសម្រាប់តែអ្នកគ្រប់គ្រងតែប៉ុណ្ណោះ។
                 </p>
                 <button
                   onClick={() => setShowAccessDenied(false)}
-                  className="w-full py-3 px-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 font-battambang"
+                  className="w-full py-3 px-4 rounded-xl  text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 font-battambang"
                 >
                   យល់ព្រម
                 </button>
@@ -150,20 +150,20 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
                   <AlertTriangle className="w-6 h-6 text-red-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">បញ្ជាក់ការលុប</h3>
+                <h3 className="text-xl  text-gray-900 dark:text-white mb-2">បញ្ជាក់ការលុប</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
                   តើអ្នកពិតជាចង់លុបរបាយការណ៍នេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
                 </p>
                 <div className="flex w-full space-x-3">
                   <button
                     onClick={() => setReportToDelete(null)}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                    className="flex-1 py-3 px-4 rounded-xl  text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                   >
                     បោះបង់
                   </button>
                   <button
                     onClick={confirmDelete}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
+                    className="flex-1 py-3 px-4 rounded-xl  text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
                   >
                     លុប
                   </button>

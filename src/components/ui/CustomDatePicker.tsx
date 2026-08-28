@@ -65,9 +65,9 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
           onClick={() => handleSelectDate(i)}
           className={`h-8 w-8 rounded-full flex items-center justify-center text-sm transition-all
             ${isSelected 
-              ? 'bg-[#1d70b8] text-white font-bold shadow-md scale-110 z-10' 
+              ? 'bg-[#1d70b8] text-white  shadow-md scale-110 z-10' 
               : isToday 
-                ? 'bg-blue-50 text-[#1d70b8] font-bold border border-blue-200' 
+                ? 'bg-blue-50 text-[#1d70b8]  border border-blue-200' 
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:scale-110'
             }`}
         >
@@ -89,7 +89,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
             setViewDate(new Date(y, viewMonth, 1));
             setMode('date');
           }}
-          className={`py-2 px-2 rounded-lg text-[13px] text-center transition-colors ${viewYear === y ? 'bg-[#1d70b8] text-white font-bold shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
+          className={`py-2 px-2 rounded-lg text-[13px] text-center transition-colors ${viewYear === y ? 'bg-[#1d70b8] text-white  shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
         >
           {y}
         </button>
@@ -131,7 +131,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
               <button 
                 type="button" 
                 onClick={() => setMode(mode === 'year' ? 'date' : 'year')}
-                className="font-bold text-[14px] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700 px-3 py-1 rounded-lg transition-colors focus:outline-none"
+                className=" text-[14px] text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700 px-3 py-1 rounded-lg transition-colors focus:outline-none"
               >
                 {MONTHS[viewMonth]} {viewYear}
               </button>
@@ -144,7 +144,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
               <div className="p-3">
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {DAYS.map(d => (
-                    <div key={d} className="h-6 flex items-center justify-center text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+                    <div key={d} className="h-6 flex items-center justify-center text-[10px]  text-gray-400 dark:text-slate-500 uppercase r">
                       {d}
                     </div>
                   ))}
@@ -165,7 +165,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
                     onChange('');
                     setIsOpen(false);
                 }}
-                className="px-3 py-1.5 text-[13px] font-semibold text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors focus:outline-none"
+                className="px-3 py-1.5 text-[13px] font-medium text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors focus:outline-none"
               >
                 Clear
               </button>
@@ -180,7 +180,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
                     onChange(`${y}-${m}-${d}`);
                     setIsOpen(false);
                 }}
-                className="px-3 py-1.5 text-[13px] font-bold text-[#1d70b8] hover:text-[#16568d] transition-colors focus:outline-none"
+                className="px-3 py-1.5 text-[13px]  text-[#1d70b8] hover:text-[#16568d] transition-colors focus:outline-none"
               >
                 Today
               </button>

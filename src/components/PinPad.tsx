@@ -43,7 +43,7 @@ export default function PinPad({ title, subtitle, error, onComplete, onCancel, o
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-sm mx-auto relative">
       <div className="text-center mb-8 relative w-full flex flex-col items-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 font-battambang">{title}</h2>
+        <h2 className="text-2xl  text-gray-900 dark:text-white mb-2 font-battambang">{title}</h2>
         {onForgotPin && (
           <button 
             onClick={onForgotPin}

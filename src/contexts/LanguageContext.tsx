@@ -10,15 +10,43 @@ interface LanguageContextType {
 
 const translations = {
   km: {
+    app_title: 'កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច',
     nav_home: 'ទំព័រដើម',
     nav_finance: 'ចំណូល-ចំណាយ',
     nav_list: 'បញ្ជីផ្សេងៗ',
+    nav_reports: 'របាយការណ៍',
     nav_account: 'គណនី',
     
+    common_back: 'ត្រឡប់ក្រោយ',
+    common_loading: 'កំពុងផ្ទុក...',
+    common_saving: 'កំពុងរក្សាទុក...',
+    common_no_data: 'មិនទាន់មានទិន្នន័យនៅឡើយទេ',
+    common_show: 'បង្ហាញ',
+    common_hide: 'លាក់',
+    common_search: 'ស្វែងរក...',
+
+    profile_account_menu: 'គណនី',
+    profile_security_menu: 'ពាក្យសម្ងាត់ និងសុវត្ថិភាព',
+    profile_security_modal_title: 'ពាក្យសម្ងាត់ និងសុវត្ថិភាព',
+    profile_change_password_title: 'ពាក្យសម្ងាត់',
+    profile_change_password_desc: 'ផ្លាស់ប្ដូរពាក្យសម្ងាត់គណនី',
+    profile_pin_balance_title: 'PIN មើលទឹកប្រាក់',
+    profile_pin_balance_set: 'បានកំណត់រួចរាល់',
+    profile_pin_balance_unset: 'មិនទាន់បានកំណត់',
+    profile_settings_heading: 'ការកំណត់:',
     profile_change_lang: 'ផ្លាស់ប្ដូរភាសា',
-    profile_change_theme: 'ផ្លាស់ប្ដូរស្តាយ',
+    profile_change_theme: 'ផ្លាស់ប្ដូរស្បែក',
+    profile_theme_modal_title: 'ផ្លាស់ប្ដូរស្បែក',
+    profile_theme_light_label: 'ភ្លឺ (Light Mode)',
+    profile_theme_dark_label: 'ងងឹត (Dark Mode)',
+    profile_mgmt_heading: 'ការគ្រប់គ្រង:',
+    profile_certificates: 'លិខិតផ្សេងៗ',
+    profile_users: 'គ្រប់គ្រងអ្នកប្រើប្រាស់',
     profile_about: 'អំពីកម្មវិធី',
-    profile_logout: 'ចាកចេញពីកម្មវិធី',
+    profile_logout: 'ចាកចេញពីគណនី',
+
+    theme_dark: 'ងងឹត',
+    theme_light: 'ភ្លឺ',
     
     about_purpose: 'គោលបំណង',
     about_purpose_desc: 'កម្មវិធីនេះបង្កើតឡើងដើម្បីគ្រប់គ្រងប្រព័ន្ធទិន្នន័យចំណូល ចំណាយ និងបញ្ជីឈ្មោះសប្បុរសជនផ្សេងៗរបស់វត្តស្នាយដួច។',
@@ -40,8 +68,12 @@ const translations = {
     dashboard_expense: 'ចំណាយ',
     dashboard_pie_title: 'សមាមាត្រហិរញ្ញវត្ថុ',
     dashboard_amount: 'ចំនួន',
+    dashboard_high_donors: 'សប្បុរសជនថវិកាកម្រិតខ្ពស់',
+    dashboard_donors_count: '{count} នាក់',
 
     records_title: 'ចំណូល-ចំណាយ',
+    records_total_periods: 'សរុប {count} កាលបរិច្ឆេទ',
+    records_btn_add_new: 'បន្ថែមថ្មី',
     records_add_new: 'បន្ថែមចំណូល-ចំណាយ',
     records_prev_balance: 'បច្ច័យនៅសល់ពីមុន',
     records_current_balance: 'នៅសល់ជាក់ស្តែង',
@@ -63,6 +95,13 @@ const translations = {
     records_note_ph: 'មិនចាំបាច់ក៏បាន',
     records_save: 'រក្សាទុកទិន្នន័យ',
 
+    lists_main_title: 'បញ្ជីផ្សេងៗ',
+    lists_category_roof: 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ',
+    lists_category_kathina: 'បុណ្យកឋិន',
+    lists_category_general: 'បញ្ជីទូទៅ',
+    lists_status_active: 'កំពុងប្រតិបត្តិការ',
+    lists_status_completed: 'បានបញ្ចប់',
+    lists_no_lists: 'មិនទាន់មានបញ្ជីនៅឡើយទេ',
     list_title: 'បញ្ជីឈ្មោះ',
     list_add_new: 'បន្ថែមទិន្នន័យ',
     list_search: 'ស្វែងរកឈ្មោះ ឬទីកន្លែង...',
@@ -87,6 +126,28 @@ const translations = {
     list_alert_error: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ',
     list_alert_del_error: 'មានបញ្ហាក្នុងការលុបទិន្នន័យ',
 
+    reports_saved_title: 'របាយការណ៍ដែលបានរក្សាទុក',
+    reports_empty: 'មិនទាន់មានរបាយការណ៍ដែលបានរក្សាទុកទេ',
+
+    cert_title: 'លិខិតថ្លែងអំណរគុណ',
+    cert_total: 'សរុប {count}',
+    cert_search_ph: 'ស្វែងរកឈ្មោះ...',
+    cert_not_found: 'រកមិនឃើញលិខិតដែលស្វែងរកទេ',
+    cert_empty: 'មិនទាន់មានលិខិតថ្លែងអំណរគុណទេ',
+
+    users_title: 'គ្រប់គ្រងអ្នកប្រើប្រាស់',
+    users_subtitle: 'គ្រប់គ្រងសិទ្ធិ និងគណនី',
+    users_search_ph: 'ស្វែងរកឈ្មោះ អ៊ីមែល ឬលេខទូរស័ព្ទ...',
+    users_no_name: 'គ្មានឈ្មោះ',
+    users_registered_at: 'បានចុះឈ្មោះ:',
+    users_role_admin: 'អ្នកគ្រប់គ្រង',
+    users_role_user: 'អ្នកប្រើប្រាស់',
+    users_btn_reset_pwd: 'ប្ដូរពាក្យសម្ងាត់',
+    users_reset_pwd_title: 'ប្ដូរពាក្យសម្ងាត់ថ្មី',
+    users_new_pwd_ph: 'បញ្ចូលពាក្យសម្ងាត់ថ្មី (យ៉ាងហោច ៦ ខ្ទង់)',
+    users_btn_save_pwd: 'ផ្លាស់ប្ដូរពាក្យសម្ងាត់',
+    users_confirm_role_change: 'តើអ្នកពិតជាចង់ប្តូរសិទ្ធិអ្នកប្រើប្រាស់នេះទៅជា {role} មែនទេ?',
+
     profile_title: 'ប្រវត្តិរូប',
     profile_view_edit: 'មើលប្រវត្តិរូប និងកែប្រែ',
     profile_settings: 'ការគ្រប់គ្រង',
@@ -110,15 +171,43 @@ const translations = {
     install_btn: 'ទាញយក'
   },
   en: {
+    app_title: 'Wat Snay Duoc Data Management',
     nav_home: 'Home',
     nav_finance: 'Finances',
     nav_list: 'Other Lists',
+    nav_reports: 'Reports',
     nav_account: 'Account',
     
+    common_back: 'Back',
+    common_loading: 'Loading...',
+    common_saving: 'Saving...',
+    common_no_data: 'No data available yet',
+    common_show: 'Show',
+    common_hide: 'Hide',
+    common_search: 'Search...',
+
+    profile_account_menu: 'Account',
+    profile_security_menu: 'Password & Security',
+    profile_security_modal_title: 'Password & Security',
+    profile_change_password_title: 'Password',
+    profile_change_password_desc: 'Change account password',
+    profile_pin_balance_title: 'Balance View PIN',
+    profile_pin_balance_set: 'Already configured',
+    profile_pin_balance_unset: 'Not configured yet',
+    profile_settings_heading: 'Settings:',
     profile_change_lang: 'Change Language',
     profile_change_theme: 'Change Theme',
+    profile_theme_modal_title: 'Change Theme',
+    profile_theme_light_label: 'Light Mode',
+    profile_theme_dark_label: 'Dark Mode',
+    profile_mgmt_heading: 'Management:',
+    profile_certificates: 'Certificates & Documents',
+    profile_users: 'User Management',
     profile_about: 'About App',
     profile_logout: 'Logout',
+
+    theme_dark: 'Dark',
+    theme_light: 'Light',
     
     about_purpose: 'Purpose',
     about_purpose_desc: 'This application is built to manage the database of income, expenses, and various donor lists for Wat Snay Duoc.',
@@ -140,8 +229,12 @@ const translations = {
     dashboard_expense: 'Expense',
     dashboard_pie_title: 'Financial Proportion',
     dashboard_amount: 'Amount',
+    dashboard_high_donors: 'High-Tier Donors',
+    dashboard_donors_count: '{count} Donors',
 
     records_title: 'Finances',
+    records_total_periods: 'Total {count} Periods',
+    records_btn_add_new: 'Add New',
     records_add_new: 'Add New Record',
     records_prev_balance: 'Previous Balance',
     records_current_balance: 'Actual Balance',
@@ -163,6 +256,13 @@ const translations = {
     records_note_ph: 'Optional',
     records_save: 'Save Data',
 
+    lists_main_title: 'Other Lists',
+    lists_category_roof: 'Temple Roof Construction',
+    lists_category_kathina: 'Kathina Ceremony',
+    lists_category_general: 'General Lists',
+    lists_status_active: 'In Progress',
+    lists_status_completed: 'Completed',
+    lists_no_lists: 'No lists available yet',
     list_title: 'Name List',
     list_add_new: 'Add Data',
     list_search: 'Search names or places...',
@@ -186,6 +286,28 @@ const translations = {
     list_alert_delete: 'Are you sure you want to delete this record?',
     list_alert_error: 'Error saving data',
     list_alert_del_error: 'Error deleting data',
+
+    reports_saved_title: 'Saved Reports',
+    reports_empty: 'No saved reports yet',
+
+    cert_title: 'Certificates of Appreciation',
+    cert_total: 'Total {count}',
+    cert_search_ph: 'Search name...',
+    cert_not_found: 'No matching certificates found',
+    cert_empty: 'No certificates available yet',
+
+    users_title: 'User Management',
+    users_subtitle: 'Manage roles and accounts',
+    users_search_ph: 'Search name, email, or phone...',
+    users_no_name: 'No Name',
+    users_registered_at: 'Registered:',
+    users_role_admin: 'Admin',
+    users_role_user: 'User',
+    users_btn_reset_pwd: 'Reset Password',
+    users_reset_pwd_title: 'Reset User Password',
+    users_new_pwd_ph: 'Enter new password (min 6 chars)',
+    users_btn_save_pwd: 'Update Password',
+    users_confirm_role_change: 'Are you sure you want to change this user role to {role}?',
 
     profile_title: 'Profile',
     profile_view_edit: 'View and edit profile',
@@ -222,6 +344,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       setLanguageState(savedLang);
     }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    if (language === 'en') {
+      document.documentElement.classList.add('lang-en');
+      document.documentElement.classList.remove('lang-km');
+    } else {
+      document.documentElement.classList.add('lang-km');
+      document.documentElement.classList.remove('lang-en');
+    }
+  }, [language]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

@@ -192,108 +192,111 @@ export default function Dashboard() {
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-24 overflow-y-auto font-battambang transition-colors duration-200">
       
       
-      <div className="max-w-3xl mx-auto w-full px-4 space-y-8 mt-6">
+      <div className="max-w-xl mx-auto w-full px-4 pt-4 pb-6 space-y-5">
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-xl text-sm">
+        <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20">
           {error}
         </div>
       )}
 
-      {/* KPI Cards */}
-      <section>
-        <div className="flex justify-between items-end mb-3">
-           <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200">{t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}</h3>
+      {/* Main Financial Overview Card */}
+      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm p-4 sm:p-5">
+        <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-slate-800">
+          <div>
+            <span className="text-xs font-medium text-gray-500 dark:text-slate-400 ">
+              {t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}
+            </span>
+            <h2 className="text-sm  text-gray-800 dark:text-slate-200 mt-0.5">
+              {t('dashboard_actual_balance')}
+            </h2>
+          </div>
+          <button 
+            onClick={handleToggleVisibility} 
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+            title={isAmountVisible ? (language === 'en' ? 'Hide balance' : 'លាក់ទឹកប្រាក់') : (language === 'en' ? 'Show balance' : 'បង្ហាញទឹកប្រាក់')}
+          >
+            {isAmountVisible ? (
+              <>
+                <EyeOff className="w-3.5 h-3.5" />
+                <span>{t('common_hide')}</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-3.5 h-3.5" />
+                <span>{t('common_show')}</span>
+              </>
+            )}
+          </button>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-900 p-5 rounded-2xl shadow-lg flex flex-col justify-center col-span-2 relative overflow-hidden mb-1">
-            <div className="absolute -right-2 -bottom-6 opacity-10">
-              <Wallet className="w-28 h-28 text-white" />
+
+        {/* Master Balance */}
+        <div className="py-4">
+          <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white ">
+            {isAmountVisible ? `៛ ${balance.toLocaleString()}` : '៛ •••••••'}
+          </p>
+        </div>
+
+        {/* Income vs Expense Split */}
+        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>{t('dashboard_total_income')}</span>
             </div>
-            <div className="flex justify-between items-center relative z-10 mb-1">
-              <p className="text-slate-400 text-[12px] font-medium">{t('dashboard_actual_balance')}</p>
-              <button onClick={handleToggleVisibility} className="text-slate-400 hover:text-white transition-colors">
-                {isAmountVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-3xl font-bold text-white relative z-10">
-              {isAmountVisible ? `៛ ${balance.toLocaleString()}` : '៛ ***'}
+            <p className="text-base sm:text-lg  text-emerald-600 dark:text-emerald-400">
+              {isAmountVisible ? `+ ៛ ${totalIncome.toLocaleString()}` : '៛ ••••'}
             </p>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-emerald-600" />
-                </div>
-                <p className="text-xs text-slate-500 font-semibold">{t('dashboard_total_income')}</p>
-              </div>
-              <button onClick={handleToggleVisibility} className="text-slate-400 hover:text-emerald-500 transition-colors">
-                {isAmountVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 mb-1">
+              <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+              <span>{t('dashboard_total_expense')}</span>
             </div>
-            <p className="text-[17px] font-bold text-slate-900 dark:text-white">
-              {isAmountVisible ? `៛ ${totalIncome.toLocaleString()}` : '៛ ***'}
-            </p>
-          </div>
-          
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/20 flex items-center justify-center">
-                  <TrendingDown className="w-4 h-4 text-rose-600" />
-                </div>
-                <p className="text-xs text-slate-500 font-semibold">{t('dashboard_total_expense')}</p>
-              </div>
-              <button onClick={handleToggleVisibility} className="text-slate-400 hover:text-rose-500 transition-colors">
-                {isAmountVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-[17px] font-bold text-slate-900 dark:text-white">
-              {isAmountVisible ? `៛ ${totalExpense.toLocaleString()}` : '៛ ***'}
+            <p className="text-base sm:text-lg  text-rose-600 dark:text-rose-400">
+              {isAmountVisible ? `- ៛ ${totalExpense.toLocaleString()}` : '៛ ••••'}
             </p>
           </div>
         </div>
       </section>
 
       {/* 100k+ Donors Section */}
-      <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] dark:shadow-none border border-gray-100 dark:border-slate-800 transition-colors mt-8 overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-blue-50/50 dark:bg-blue-500/10">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 rounded-lg">
-              <Award className="w-5 h-5" />
+      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-lg">
+              <Award className="w-4 h-4" />
             </div>
-            <h3 className="text-md font-bold text-gray-800 dark:text-slate-200">ថវិកាកម្រិតខ្ពស់</h3>
+            <h3 className="text-sm  text-gray-900 dark:text-white">{t('dashboard_high_donors')}</h3>
           </div>
-          <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
-            {hundredKDonors.length} រូប
+          <span className="text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+            {t('dashboard_donors_count', { count: hundredKDonors.length })}
           </span>
         </div>
         
-        <div className="divide-y divide-gray-50 dark:divide-slate-800/50">
+        <div className="divide-y divide-gray-100 dark:divide-slate-800">
           {hundredKDonors.length === 0 ? (
-            <div className="p-8 text-center text-gray-400 dark:text-slate-500 text-sm">
-              មិនទាន់មានទិន្នន័យនៅឡើយទេ
+            <div className="py-10 text-center text-gray-400 dark:text-slate-500 text-sm">
+              {t('common_no_data')}
             </div>
           ) : (
             hundredKDonors.map((donor, index) => (
-              <div key={index} className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <div key={donor.id || index} className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <span className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-xs font-medium bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-300">
                     {index + 1}
                   </span>
-                  <div>
-                    <span className="font-bold text-gray-900 dark:text-white text-left block leading-tight">{donor.name}</span>
-                    <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                  <div className="min-w-0">
+                    <span className="font-normal text-[15px] text-gray-900 dark:text-white block truncate leading-tight font-battambang">{donor.name}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 block mt-0.5 truncate font-battambang">
                       {donor.category_name}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {isAmountVisible ? `៛ ${donor.amount.toLocaleString()}` : '៛ ***'}
+                <div className="shrink-0 text-right">
+                  <span className=" text-sm sm:text-base text-emerald-600 dark:text-emerald-400">
+                    {isAmountVisible ? `៛ ${donor.amount.toLocaleString()}` : '៛ ••••'}
                   </span>
                 </div>
               </div>
@@ -325,7 +328,7 @@ export default function Dashboard() {
                   <div className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center">
                     <LockIcon className="w-5 h-5 text-orange-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">សុវត្ថិភាពទឹកប្រាក់</h3>
+                  <h3 className="text-lg  text-gray-900 dark:text-white">សុវត្ថិភាពទឹកប្រាក់</h3>
                 </div>
                 <button onClick={() => setShowSetupPrompt(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
                   <X className="w-5 h-5" />
@@ -334,13 +337,13 @@ export default function Dashboard() {
               
               <div className="text-sm text-gray-500 dark:text-slate-400 mb-6 font-battambang leading-relaxed">
                 <p className="mb-2">ដើម្បីមើលទឹកប្រាក់បាន លោកអ្នកត្រូវកំណត់ PIN សុវត្ថិភាព ៤ ខ្ទង់ជាមុនសិន។</p>
-                <p>សូមចូលទៅកាន់៖ <br/><span className="font-bold text-gray-700 dark:text-gray-300">គណនី {'>'} ការកំណត់ {'>'} សុវត្ថិភាព PIN</span></p>
+                <p>សូមចូលទៅកាន់៖ <br/><span className=" text-gray-700 dark:text-gray-300">គណនី {'>'} ការកំណត់ {'>'} សុវត្ថិភាព PIN</span></p>
               </div>
               
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowSetupPrompt(false)}
-                  className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  className="flex-1 py-3 px-4 rounded-xl  text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   បិទ
                 </button>

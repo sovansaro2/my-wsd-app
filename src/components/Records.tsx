@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2, Landmark } from 'lucide-react';
+import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2, Landmark, Folder, CalendarDays, ChevronRight } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -509,55 +509,70 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   if (!selectedPeriod) {
     return (
       <>
-            <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
-        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-3xl mx-auto w-full flex items-center justify-between">
-             <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t('records_title')}</h2>
-             {userRole === 'admin' && (
-               <button 
-                 onClick={openAddSeilModal}
-                 className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
-               >
-                 <Plus className="w-6 h-6" />
-               </button>
-             )}
+      <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang relative">
+        {/* Header */}
+        <div className="bg-white dark:bg-slate-950 px-4 pt-4 pb-3 border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
+          <div className="max-w-xl mx-auto w-full flex items-center justify-between">
+            <div>
+              <h1 className="text-xl  text-gray-900 dark:text-white ">{t('records_title')}</h1>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{t('records_total_periods', { count: periods.length })}</p>
+            </div>
+            {userRole === 'admin' && (
+              <button 
+                onClick={openAddSeilModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded-xl transition-colors shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t('records_btn_add_new')}</span>
+              </button>
+            )}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <div className="max-w-xl mx-auto">
+            <div className="grid grid-cols-2 gap-3">
               {periods.map(period => (
-                <button 
+                <div 
                   key={period.id}
                   onClick={() => setSelectedPeriod(period)}
-                  className="relative flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-none transition-transform active:scale-95 hover:border-blue-200 dark:hover:border-blue-900 group"
+                  className="relative flex flex-col justify-between p-3.5 sm:p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm hover:shadow hover:border-sky-300 dark:hover:border-sky-700/60 transition-all cursor-pointer group text-left"
                 >
-                  {userRole === 'admin' && (
-                    <div 
-                      onClick={(e) => openEditSeilModal(period, e)}
-                      className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-colors"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                  <div className="w-12 h-12 bg-gray-50 dark:bg-slate-800 group-hover:bg-gray-100 dark:group-hover:bg-slate-700 rounded-full flex items-center justify-center mb-3 transition-colors">
-                                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-7 h-7">
-                       <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="#FACC15" stroke="#EAB308" strokeWidth="0.5"/>
-                     </svg>
+                  <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <Folder className="w-5 h-5 text-amber-500 fill-amber-500/20 shrink-0 mt-0.5" />
+
+                    {userRole === 'admin' && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditSeilModal(period, e);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        title="កែប្រែ"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
-                  <h4 className="font-bold text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug line-clamp-2">
-                    {period.name}
-                  </h4>
-                  {period.date_range_text && (
-                    <p className="text-xs sm:text-[13px] text-gray-500 dark:text-slate-400 mt-1 text-center">
-                      {period.date_range_text}
-                    </p>
-                  )}
-                </button>
+
+                  <div>
+                    <h4 className="font-normal text-gray-900 dark:text-white text-[15px] leading-snug line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang">
+                      {period.name}
+                    </h4>
+                    {period.date_range_text && (
+                      <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400 mt-1.5">
+                        <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
+                        <span className="truncate font-battambang">{period.date_range_text}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               ))}
+
               {periods.length === 0 && (
-                <div className="col-span-full py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
-                   មិនទាន់មានទិន្នន័យនៅឡើយទេ
+                <div className="col-span-full py-16 text-center text-gray-400 dark:text-slate-500 text-sm">
+                  មិនទាន់មានទិន្នន័យនៅឡើយទេ
                 </div>
               )}
             </div>
@@ -583,7 +598,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
               >
                 <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">បន្ថែមបញ្ជីចំណូល-ចំណាយថ្មី</h3>
+                  <h3 className="text-lg  text-gray-900 dark:text-white">បន្ថែមបញ្ជីចំណូល-ចំណាយថ្មី</h3>
                   <button
                     onClick={() => setIsSeilModalOpen(false)}
                     className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -633,7 +648,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <button
                       type="submit"
                       disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70"
                     >
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -668,7 +683,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
               >
                 <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">កែប្រែបញ្ជី</h3>
+                  <h3 className="text-lg  text-gray-900 dark:text-white">កែប្រែបញ្ជី</h3>
                   <button
                     onClick={() => setIsEditSeilModalOpen(false)}
                     className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -715,7 +730,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <button
                       type="submit"
                       disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl font-bold text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70"
                     >
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -748,38 +763,32 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const currentBalance = previousBalance + totalIncome - totalExpense;
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang">
       {/* Detail Header */}
-      <div className="bg-white dark:bg-slate-900 px-4 py-5 border-b border-gray-200 dark:border-slate-800 relative z-10 shadow-none dark:shadow-none sticky top-0">
-        <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
+      <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 relative z-10 sticky top-0">
+        <div className="max-w-xl mx-auto w-full flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <button 
-                onClick={() => setSelectedPeriod(null)}
-                className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full transition-colors shrink-0"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </button>
-              <div className="min-w-0">
-                <h2 className="text-[20px] sm:text-[22px] leading-tight font-bold text-gray-900 dark:text-white tracking-tight truncate">{selectedPeriod?.name}</h2>
-                {selectedPeriod?.date_range_text && (
-                   <p className="text-[13px] text-gray-500 dark:text-slate-400 mt-0.5 truncate">{selectedPeriod.date_range_text}</p>
-                )}
-              </div>
-            </div>
+            <button 
+              onClick={() => setSelectedPeriod(null)}
+              className="p-2 -ml-2 flex items-center justify-center text-gray-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 transition-colors shrink-0"
+              aria-label="Back"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
             
-            <div className="flex items-center gap-2 shrink-0 pl-2">
+            <div className="flex items-center gap-2 shrink-0">
               {userRole === 'admin' && (
-              <button 
-                onClick={handleDownload}
-                disabled={isDownloading || isLoading || records.length === 0}
-                className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors focus:outline-none disabled:opacity-50"
-                title="ទាញយកជារូបភាព"
-              >
-                {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              </button>
+                <button 
+                  onClick={handleDownload}
+                  disabled={isDownloading || isLoading || records.length === 0}
+                  className="p-2 text-gray-600 dark:text-slate-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors focus:outline-none disabled:opacity-40"
+                  title="ទាញយកជារូបភាព"
+                  aria-label="Download"
+                >
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                </button>
               )}
 
               {userRole === 'admin' && (
@@ -795,33 +804,34 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     setIsHighLevel(false);
                     setIsAddModalOpen(true);
                   }}
-                  className="w-10 h-10 flex items-center justify-center bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors shadow-sm focus:outline-none"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-medium transition-colors shadow-sm focus:outline-none"
                   title={t('records_add_new')}
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-4 h-4" />
+                  <span>{t('records_btn_add_new')}</span>
                 </button>
               )}
             </div>
           </div>
 
-        {/* Summary Dashboard */}
-        <div className="grid grid-cols-2 gap-3 mt-4 max-w-3xl mx-auto">
+        {/* Summary Overview */}
+        <div className="grid grid-cols-2 gap-2.5 mt-2">
           {/* Previous Balance */}
-          <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-[18px] p-3.5 sm:p-4 flex flex-col justify-center border border-emerald-100 dark:border-emerald-500/20">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <ArrowDownCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" strokeWidth={2.5} />
-              <p className="text-emerald-700 dark:text-emerald-400 text-[13px] font-semibold line-clamp-1">{t('records_prev_balance')}</p>
+          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium truncate">{t('records_prev_balance')}</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-400 truncate">{formatCurrency(previousBalance)}</p>
+            <p className="text-base sm:text-lg  text-gray-800 dark:text-slate-200 truncate">{formatCurrency(previousBalance)}</p>
           </div>
           
           {/* Current Balance */}
-          <div className="bg-orange-50 dark:bg-orange-500/10 rounded-[18px] p-3.5 sm:p-4 flex flex-col justify-center border border-orange-100 dark:border-orange-500/20">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <ArrowUpCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" strokeWidth={2.5} />
-              <p className="text-orange-700 dark:text-orange-400 text-[13px] font-semibold line-clamp-1">{t('records_current_balance')}</p>
+          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+              <p className="text-gray-500 dark:text-slate-400 text-xs font-medium truncate">{t('records_current_balance')}</p>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400 truncate">{formatCurrency(currentBalance)}</p>
+            <p className="text-base sm:text-lg  text-orange-600 dark:text-orange-400 truncate">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
         </div>
@@ -829,33 +839,33 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
 
       {/* Tabs */}
-      <div className="flex p-4 gap-2 max-w-3xl mx-auto w-full">
+      <div className="flex px-4 pt-3 pb-1 gap-2 max-w-xl mx-auto w-full">
         <button 
           onClick={() => setActiveTab('income')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all ${
             activeTab === 'income' 
-              ? 'bg-white dark:bg-slate-900 text-emerald-600 border border-gray-200 dark:border-slate-700/60 shadow-none dark:shadow-none' 
-              : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
+              ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 border border-gray-200/80 dark:border-slate-800 shadow-sm' 
+              : 'bg-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700'
           }`}
         >
-          <ArrowDownCircle className={`w-4 h-4 sm:w-[18px] sm:h-[18px] ${activeTab === 'income' ? 'text-green-600' : ''}`} />
-          {t('records_total_income')} ({formatCurrency(totalIncome)})
+          <ArrowDownCircle className={`w-4 h-4 ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : ''}`} />
+          <span>{t('records_total_income')} ({formatCurrency(totalIncome)})</span>
         </button>
         <button 
           onClick={() => setActiveTab('expense')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all ${
             activeTab === 'expense' 
-              ? 'bg-white dark:bg-slate-900 text-rose-600 border border-gray-200 dark:border-slate-700/60 shadow-none dark:shadow-none' 
-              : 'bg-transparent text-zinc-400 dark:text-slate-500 hover:text-zinc-600'
+              ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 border border-gray-200/80 dark:border-slate-800 shadow-sm' 
+              : 'bg-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700'
           }`}
         >
-          <ArrowUpCircle className={`w-4 h-4 sm:w-[18px] sm:h-[18px] ${activeTab === 'expense' ? 'text-rose-600' : ''}`} />
-          {t('records_total_expense')} ({formatCurrency(totalExpense)})
+          <ArrowUpCircle className={`w-4 h-4 ${activeTab === 'expense' ? 'text-rose-600 dark:text-rose-400' : ''}`} />
+          <span>{t('records_total_expense')} ({formatCurrency(totalExpense)})</span>
         </button>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 max-w-3xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-4 py-3 max-w-xl mx-auto w-full">
         <div className="space-y-3 bg-[#FAFAFA] dark:bg-slate-950 p-4 -m-4 sm:p-6 sm:-m-6 rounded-xl">
           <div className="hidden" />
           <>
@@ -876,7 +886,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] font-bold">
+                        <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] ">
                           <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
                           <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">{activeTab === 'income' ? 'ឈ្មោះ' : 'បរិយាយ'}</th>
                           <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
@@ -890,14 +900,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                             className="odd:bg-white even:bg-slate-50/80 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors group"
                           >
                             <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle border border-gray-200 dark:border-slate-700">
-                              <span className="text-[12px] font-semibold text-gray-500 dark:text-slate-400 inline-block">
+                              <span className="text-[12px] font-medium text-gray-500 dark:text-slate-400 inline-block">
                                 {index + 1}
                               </span>
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
                               <div className="flex flex-col justify-center">
                                 <div className="flex items-start justify-between gap-2">
-                                  <span className="font-bold text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-tight break-words">
+                                  <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-tight break-words font-battambang">
                                     {record.description}
                                   </span>
                                   {userRole === 'admin' ? (
@@ -917,9 +927,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   </div>
                                 ) : null}
                                 </div>
-                                <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">{formatDate(record.record_date)}</span>
+                                <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1 font-battambang">{formatDate(record.record_date)}</span>
                                 {record.note && (
-                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 line-clamp-1">
+                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 line-clamp-1 font-battambang">
                                     <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
                                     {record.note}
                                   </span>
@@ -927,7 +937,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                               </div>
                             </td>
                             <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
-                              <span className={`font-bold text-[14px] sm:text-[15px] whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                              <span className={` text-[14px] sm:text-[15px] whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                                 {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
                               </span>
                             </td>
@@ -971,62 +981,62 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="text-center mb-8 border-b-2 border-gray-800 pb-6">
             <h1 className="text-3xl mb-2 text-gray-900" style={{ fontFamily: 'Koulen, "Khmer OS Kulen", sans-serif' }}>វត្តវារីបាការាម (ស្នាយដួច)</h1>
             <h2 className="text-3xl font-moul mb-3 text-orange-600">របាយការណ៍បច្ច័យ</h2>
-            <p className="text-xl font-bold">{selectedPeriod?.name} {selectedPeriod?.date_range_text ? `(${selectedPeriod.date_range_text})` : ''}</p>
+            <p className="text-xl ">{selectedPeriod?.name} {selectedPeriod?.date_range_text ? `(${selectedPeriod.date_range_text})` : ''}</p>
           </div>
 
           {/* Previous Balance */}
           <div className="flex justify-between items-center bg-gray-100 p-4 rounded-xl mb-8">
-            <span className="font-bold text-xl">បច្ច័យសល់ពីសីលមុន៖</span>
-            <span className="font-bold text-xl">{formatCurrency(previousBalance)}</span>
+            <span className=" text-xl">បច្ច័យសល់ពីសីលមុន៖</span>
+            <span className=" text-xl">{formatCurrency(previousBalance)}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-8 mb-8">
             {/* Income Section */}
             <div className="flex flex-col">
-              <h3 className="font-bold text-lg text-emerald-700 border-b-2 border-emerald-200 pb-2 mb-4">ប្រភពចំណូលបញ្ចី (+)</h3>
+              <h3 className=" text-lg text-emerald-700 border-b-2 border-emerald-200 pb-2 mb-4">ប្រភពចំណូលបញ្ចី (+)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {incomeRecords.length > 0 ? incomeRecords.map(r => (
                   <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-200 pb-2">
                     <span className="pr-4">{r.description}</span>
-                    <span className="text-emerald-700 font-semibold whitespace-nowrap">{formatCurrency(r.amount)}</span>
+                    <span className="text-emerald-700 font-medium whitespace-nowrap">{formatCurrency(r.amount)}</span>
                   </div>
                 )) : <div className="text-gray-400 italic">មិនមានទិន្នន័យចំណូល</div>}
               </div>
               <div className="flex justify-between items-center pt-3 border-t-2 border-emerald-200 bg-emerald-50 p-3 rounded-lg mt-auto">
-                <span className="font-bold text-emerald-900">សរុបចំណូល៖</span>
-                <span className="font-bold text-emerald-700 text-lg">{formatCurrency(totalIncome)}</span>
+                <span className=" text-emerald-900">សរុបចំណូល៖</span>
+                <span className=" text-emerald-700 text-lg">{formatCurrency(totalIncome)}</span>
               </div>
             </div>
 
             {/* Expense Section */}
             <div className="flex flex-col">
-              <h3 className="font-bold text-lg text-rose-700 border-b-2 border-rose-200 pb-2 mb-4">ប្រភពចំណាយបញ្ចី (-)</h3>
+              <h3 className=" text-lg text-rose-700 border-b-2 border-rose-200 pb-2 mb-4">ប្រភពចំណាយបញ្ចី (-)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
                 {expenseRecords.length > 0 ? expenseRecords.map(r => (
                   <div key={r.id} className="flex justify-between text-[15px] border-b border-gray-200 pb-2">
                     <span className="pr-4">{r.description}</span>
-                    <span className="text-rose-700 font-semibold whitespace-nowrap">{formatCurrency(r.amount)}</span>
+                    <span className="text-rose-700 font-medium whitespace-nowrap">{formatCurrency(r.amount)}</span>
                   </div>
                 )) : <div className="text-gray-400 italic">មិនមានទិន្នន័យចំណាយ</div>}
               </div>
               <div className="flex justify-between items-center pt-3 border-t-2 border-rose-200 bg-rose-50 p-3 rounded-lg mt-auto">
-                <span className="font-bold text-rose-900">សរុបចំណាយ៖</span>
-                <span className="font-bold text-rose-700 text-lg">{formatCurrency(totalExpense)}</span>
+                <span className=" text-rose-900">សរុបចំណាយ៖</span>
+                <span className=" text-rose-700 text-lg">{formatCurrency(totalExpense)}</span>
               </div>
             </div>
           </div>
 
           {/* Current Balance */}
           <div className="flex justify-between items-center bg-orange-50 border-2 border-orange-500 p-6 rounded-2xl">
-            <span className="font-bold text-2xl text-orange-900">បច្ច័យសល់ជាក់ស្ដែង៖</span>
-            <span className="font-bold text-3xl text-orange-600">{formatCurrency(currentBalance)}</span>
+            <span className=" text-2xl text-orange-900">បច្ច័យសល់ជាក់ស្ដែង៖</span>
+            <span className=" text-3xl text-orange-600">{formatCurrency(currentBalance)}</span>
           </div>
           
           {/* Footer Signature Area */}
           <div className="mt-16 flex justify-end px-12 text-center text-gray-900">
             <div className="flex flex-col items-center">
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
-              <p className="mb-2 font-bold text-lg">អ្នកកាន់បញ្ជី</p>
+              <p className="mb-2  text-lg">អ្នកកាន់បញ្ជី</p>
               <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
                 <div 
                   className="w-full h-full"
@@ -1065,7 +1075,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               className="fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl overflow-hidden max-w-lg mx-auto pb-safe flex flex-col max-h-[90vh]"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-800">
-                <h3 className="text-[17px] font-bold text-gray-900 dark:text-white">{t('records_add_new_title')}</h3>
+                <h3 className="text-[17px]  text-gray-900 dark:text-white">{t('records_add_new_title')}</h3>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:bg-slate-800 rounded-full transition-colors focus:outline-none"
@@ -1082,7 +1092,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <button
                       type="button"
                       onClick={() => setNewRecordType('income')}
-                      className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
+                      className={`flex-1 py-2.5 text-sm  rounded-xl transition-all ${
                         newRecordType === 'income'
                           ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-none dark:shadow-none'
                           : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
@@ -1093,7 +1103,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <button
                       type="button"
                       onClick={() => setNewRecordType('expense')}
-                      className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${
+                      className={`flex-1 py-2.5 text-sm  rounded-xl transition-all ${
                         newRecordType === 'expense'
                           ? 'bg-white dark:bg-slate-900 text-rose-500 shadow-none dark:shadow-none'
                           : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300'
@@ -1104,7 +1114,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                       {newRecordType === 'income' ? (t('records_description_income') || 'ឈ្មោះសប្បុរសជន') : (t('records_description_expense') || 'បរិយាយ (មុខទំនិញ)')}
                     </label>
                     <input
@@ -1118,7 +1128,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_amount')}</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_amount')}</label>
                     <input
                       type="text"
                       required
@@ -1134,7 +1144,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_date')}</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_date')}</label>
                       <input
                         type="date"
                         required
@@ -1144,7 +1154,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_note')}</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_note')}</label>
                       <input
                         type="text"
                         value={newNote}
@@ -1166,7 +1176,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           onChange={(e) => setIsHighLevel(e.target.checked)}
                           className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="isHighLevel" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                        <label htmlFor="isHighLevel" className="flex items-center gap-2 text-[14px] font-battambang  text-orange-800 dark:text-orange-300 select-none cursor-pointer">
                           <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
                         </label>
                       </div>
@@ -1179,7 +1189,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           onChange={(e) => setAddToRoofFund(e.target.checked)}
                           className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="addToRoofFund" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-blue-800 dark:text-blue-300 select-none cursor-pointer">
+                        <label htmlFor="addToRoofFund" className="flex items-center gap-2 text-[14px] font-battambang  text-blue-800 dark:text-blue-300 select-none cursor-pointer">
                           <Landmark className="w-4 h-4 text-blue-500" /> បន្ថែមចូលបញ្ជីកសាងដំបូលព្រះវិហារ
                         </label>
                       </div>
@@ -1191,7 +1201,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm sm:text-[15px] font-bold text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                      <h4 className="text-sm sm:text-[15px]  text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
                       <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1208,7 +1218,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 dark:bg-orange-600 text-white font-bold text-[15px] shadow-none dark:shadow-none hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
+                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 dark:bg-orange-600 text-white  text-[15px] shadow-none dark:shadow-none hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
                   >
                     {isSaving ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1242,7 +1252,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800">
-                <h3 className="text-xl font-battambang font-bold text-gray-900 dark:text-white">កែប្រែទិន្នន័យ</h3>
+                <h3 className="text-xl font-battambang  text-gray-900 dark:text-white">កែប្រែទិន្នន័យ</h3>
                 <button 
                   onClick={() => setIsEditRecordModalOpen(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -1254,7 +1264,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <div className="overflow-y-auto flex-1">
                 <form id="editRecordForm" onSubmit={handleUpdateRecord} className="p-6 space-y-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                       {newRecordType === 'income' ? (t('records_description_income') || 'ឈ្មោះសប្បុរសជន') : (t('records_description_expense') || 'បរិយាយ (មុខទំនិញ)')}
                     </label>
                     <input
@@ -1268,9 +1278,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_amount')}</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_amount')}</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 dark:text-slate-500">៛</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2  text-gray-400 dark:text-slate-500">៛</span>
                       <input
                         type="text"
                         required
@@ -1280,14 +1290,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           setNewAmount(val ? parseInt(val).toLocaleString() : '');
                         }}
                         placeholder={t('records_amount_ph')}
-                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all font-bold placeholder:font-normal placeholder:text-gray-400"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all  placeholder:font-normal placeholder:text-gray-400"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_date')}</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_date')}</label>
                       <div className="relative">
                         <input
                           type="date"
@@ -1299,7 +1309,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">{t('records_note')}</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('records_note')}</label>
                       <input
                         type="text"
                         value={newNote}
@@ -1320,7 +1330,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           onChange={(e) => setIsHighLevel(e.target.checked)}
                           className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="editIsHighLevel" className="flex items-center gap-2 text-[14px] font-battambang font-bold text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                        <label htmlFor="editIsHighLevel" className="flex items-center gap-2 text-[14px] font-battambang  text-orange-800 dark:text-orange-300 select-none cursor-pointer">
                           <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
                         </label>
                       </div>
@@ -1342,7 +1352,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   type="button"
                   onClick={() => handleDeleteRecord(editingRecord.id)}
                   disabled={isSaving}
-                  className={`px-6 py-3.5 rounded-2xl font-battambang font-bold text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
+                  className={`px-6 py-3.5 rounded-2xl font-battambang  text-[15px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${
                     isConfirmingDelete 
                       ? 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-600' 
                       : 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 focus:ring-red-500'
@@ -1354,7 +1364,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   type="submit"
                   form="editRecordForm"
                   disabled={isSaving}
-                  className="flex-1 px-6 py-3.5 rounded-2xl font-battambang font-bold text-[15px] transition-all bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 shadow-xl shadow-gray-900/20 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3.5 rounded-2xl font-battambang  text-[15px] transition-all bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 shadow-xl shadow-gray-900/20 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSaving ? (
                     <div>
@@ -1386,7 +1396,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               className="bg-gray-100 rounded-2xl sm:rounded-3xl w-full max-w-4xl flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sm:rounded-t-3xl rounded-t-2xl shrink-0 z-10 relative">
-                <h2 className="text-[16px] font-bold text-gray-900 font-battambang">លិខិតថ្លែងអំណរគុណ</h2>
+                <h2 className="text-[16px]  text-gray-900 font-battambang">លិខិតថ្លែងអំណរគុណ</h2>
                 <button
                   onClick={() => setCertificateRecord(null)}
                   className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
@@ -1437,10 +1447,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
                       {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
-                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight tracking-wide" style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
+                        <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-tight " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
-                          <span className="text-orange-500 text-xl font-bold">៙ ❖ ៚</span>
+                          <span className="text-orange-500 text-xl ">៙ ❖ ៚</span>
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                         </div>
                       </div>
@@ -1465,11 +1475,11 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       </div>
                       
                       <p className="text-[16px] font-battambang leading-snug max-w-[650px] mx-auto text-gray-700">
-                        ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className="font-bold text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
+                        ដែលបានចូលរួមបរិច្ចាគបច្ច័យចំនួន <span className=" text-orange-700 text-xl mx-1">{formatCurrency(certificateRecord.amount)}</span> 
                         {certificateRecord.note ? (
-                          <span> ផ្នែក <span className="font-bold text-indigo-800">"{certificateRecord.note}"</span></span>
+                          <span> ផ្នែក <span className=" text-indigo-800">"{certificateRecord.note}"</span></span>
                         ) : (
-                          <span> ផ្នែក <span className="font-bold text-indigo-800">"ចំណូល"</span></span>
+                          <span> ផ្នែក <span className=" text-indigo-800">"ចំណូល"</span></span>
                         )}
                         <br/>ដើម្បីចូលរួមកសាងទីអារាម និងទ្រទ្រង់វិស័យព្រះពុទ្ធសាសនា។
                       </p>
@@ -1486,7 +1496,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         <p className="text-[15px] font-medium text-gray-800 font-battambang">{getKhmerDate()}</p>
                       </div>
                       <div className="text-center flex flex-col items-center">
-                        <p className="text-[15px] text-gray-800 font-battambang font-bold mb-1">ព្រះចៅអធិការស្ដីទី</p>
+                        <p className="text-[15px] text-gray-800 font-battambang  mb-1">ព្រះចៅអធិការស្ដីទី</p>
                         <div className="h-[60px] w-[140px] flex items-center justify-center opacity-95 mix-blend-multiply border-b border-gray-200 border-dotted pb-1">
                           <div 
                             className="w-full h-full"
@@ -1542,7 +1552,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <p className="text-emerald-800 dark:text-emerald-300 font-bold text-[15px]">ជោគជ័យ!</p>
+              <p className="text-emerald-800 dark:text-emerald-300  text-[15px]">ជោគជ័យ!</p>
               <p className="text-emerald-600/80 dark:text-emerald-400/80 text-[13px] font-medium leading-snug">បានរក្សាទុករបាយការណ៍។ សូមចូលទៅកាន់ផ្ទាំងរបាយការណ៍ដើម្បីមើល។</p>
             </div>
           </motion.div>

@@ -271,7 +271,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   if (isLoading) {
     return (
       <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 min-h-full">
-        <h2 className="mb-6 text-xl font-bold text-zinc-900 tracking-tight">{t('nav_account')}</h2>
+        <h2 className="mb-6 text-xl  text-zinc-900 ">{t('nav_account')}</h2>
         <div className="flex justify-center items-center h-48 bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
           <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
         </div>
@@ -295,13 +295,13 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Profile</h2>
+          <h2 className="text-lg  text-gray-900 dark:text-white">Profile</h2>
           
           {actualRole === 'admin' && onViewModeChange && (
             <div className="ml-auto">
               <button
                 onClick={() => onViewModeChange(userRole === 'admin' ? 'user' : 'admin')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-xs  text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
               >
                 <UserCircle2 className="w-3.5 h-3.5" />
                 {userRole === 'admin' ? 'ប្តូរទៅ User' : 'ប្តូរទៅ Admin'}
@@ -335,10 +335,10 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[18px] font-bold text-gray-900 dark:text-white uppercase truncate">
+                  <h3 className="text-[20px] sm:text-[22px] font-normal text-gray-900 dark:text-white truncate font-title ">
                     {fullName || 'No Name'}
                   </h3>
-                  <p className="text-[13px] font-medium text-gray-500 dark:text-slate-400 mt-1">
+                  <p className="text-[13px] font-medium text-gray-500 dark:text-slate-400 mt-0.5">
                     My ID: {userCode || 'WSD-0810'}
                   </p>
                 </div>
@@ -352,12 +352,12 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 </div>
               )}
               
-              <h4 className="text-[16px] font-bold text-gray-900 dark:text-white mb-6">Personal Details</h4>
+              <h4 className="text-[16px]  text-gray-900 dark:text-white mb-6">Personal Details</h4>
               
               <div className="space-y-4">
                 {/* Family Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Family Name</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Family Name</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={familyName}
                       onChange={(e) => setFamilyName(e.target.value)}
@@ -369,7 +369,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Given Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Given Name</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Given Name</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={givenName}
                       onChange={(e) => setGivenName(e.target.value)}
@@ -381,7 +381,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Date of Birth */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Date of Birth</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Date of Birth</label>
                   <div className="w-full relative">
                     <CustomDatePicker disabled={!isEditable} value={dateOfBirth} onChange={setDateOfBirth} placeholder="ថ្ងៃ/ខែ/ឆ្នាំ" 
                     />
@@ -390,7 +390,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Gender */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Gender</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Gender</label>
                   <div className="w-full relative">
                     <select disabled={!isEditable} value={gender === 'Female' || gender === 'ស្រី' ? 'Female' : 'Male'}
                       onChange={(e) => setGender(e.target.value)}
@@ -407,7 +407,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Address (ទីលំនៅ) */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Address</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Address</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={address}
                       onChange={(e) => setAddress(e.target.value)}
@@ -419,7 +419,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Email */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Email</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Email</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="email" value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -431,7 +431,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Phone Number */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px] font-bold text-gray-400 dark:text-slate-400">Phone Number</label>
+                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Phone Number</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="tel" value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
@@ -447,7 +447,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                   <button 
                     type="button" 
                     onClick={(e) => { e.preventDefault(); setIsEditable(true); }}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full font-bold text-[13px] tracking-wide shadow-sm transition-colors flex items-center justify-center min-w-[120px]"
+                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full  text-[13px]  shadow-sm transition-colors flex items-center justify-center min-w-[120px]"
                   >
                     កែប្រែ
                   </button>
@@ -455,7 +455,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                   <button 
                     type="submit" 
                     disabled={isSaving}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full font-bold text-[14px] shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px]"
+                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full  text-[14px] shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px]"
                   >
                     {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកប្រវត្តិរូប'}
                   </button>
@@ -499,10 +499,10 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white truncate font-battambang">
+            <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white truncate font-title  leading-normal">
               {fullName || 'វត្តស្វាយដួច'}
             </h2>
-            <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-1">
+            <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5">
               My ID: {userCode || 'WSD-0810'}
             </p>
           </div>
@@ -523,7 +523,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               <div className="flex items-center gap-3.5">
                 <User className="w-5 h-5 text-gray-700 dark:text-slate-200" />
                 <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                  គណនី
+                  {t('profile_account_menu')}
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
@@ -537,7 +537,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               <div className="flex items-center gap-3.5">
                 <ShieldCheck className="w-5 h-5 text-gray-700 dark:text-slate-200" />
                 <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                  ពាក្យសម្ងាត់ និងសុវត្ថិភាព
+                  {t('profile_security_menu')}
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
@@ -549,8 +549,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
           {/* SECTION 2: ការកំណត់: */}
           <div className="px-6 pt-2 pb-1">
-            <span className="text-[13.5px] font-bold text-[#1d70b8] dark:text-blue-400 font-battambang">
-              ការកំណត់:
+            <span className="text-[13.5px]  text-[#1d70b8] dark:text-blue-400 font-battambang">
+              {t('profile_settings_heading')}
             </span>
           </div>
 
@@ -562,11 +562,11 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center gap-3.5">
               <Globe className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                ផ្លាស់ប្ដូរភាសា
+                {t('profile_change_lang')}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-400 dark:text-slate-500">
+              <span className="text-xs font-medium text-gray-400 dark:text-slate-500">
                 {language === 'km' ? 'ភាសាខ្មែរ' : 'English'}
               </span>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -581,12 +581,12 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center gap-3.5">
               <Palette className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                ផ្លាស់ប្ដូរស្បែក
+                {t('profile_change_theme')}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-400 dark:text-slate-500">
-                {currentTheme === 'dark' ? 'ងងឹត' : 'ភ្លឺ'}
+              <span className="text-xs font-medium text-gray-400 dark:text-slate-500">
+                {currentTheme === 'dark' ? t('theme_dark') : t('theme_light')}
               </span>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
             </div>
@@ -597,8 +597,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
           {/* SECTION 3: ការគ្រប់គ្រង: */}
           <div className="px-6 pt-2 pb-1">
-            <span className="text-[13.5px] font-bold text-[#1d70b8] dark:text-blue-400 font-battambang">
-              ការគ្រប់គ្រង:
+            <span className="text-[13.5px]  text-[#1d70b8] dark:text-blue-400 font-battambang">
+              {t('profile_mgmt_heading')}
             </span>
           </div>
 
@@ -610,7 +610,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center gap-3.5">
               <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                លិខិតផ្សេងៗ
+                {t('profile_certificates')}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -624,7 +624,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center gap-3.5">
               <Users className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                គ្រប់គ្រងអ្នកប្រើប្រាស់
+                {t('profile_users')}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -642,7 +642,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center gap-3.5">
               <Info className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                អំពីកម្មវិធី
+                {t('profile_about')}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -655,8 +655,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           >
             <div className="flex items-center gap-3.5">
               <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <span className="text-[15px] font-bold text-red-600 dark:text-red-400 font-battambang">
-                ចាកចេញពីគណនី
+              <span className="text-[15px]  text-red-600 dark:text-red-400 font-battambang">
+                {t('profile_logout')}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-red-400 group-hover:text-red-600 transition-colors" />
@@ -684,7 +684,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">ពាក្យសម្ងាត់ និងសុវត្ថិភាព</h3>
+                <h3 className="text-lg  text-gray-900 dark:text-white">{t('profile_security_modal_title')}</h3>
               </div>
               <button 
                 onClick={() => setShowSecurityModal(false)}
@@ -709,8 +709,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 <div className="flex items-center gap-3">
                   <KeyRound className="w-5 h-5 text-gray-600 dark:text-slate-300" />
                   <div>
-                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">ពាក្យសម្ងាត់</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">ផ្លាស់ប្ដូរពាក្យសម្ងាត់គណនី</p>
+                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">{t('profile_change_password_title')}</h4>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{t('profile_change_password_desc')}</p>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -735,9 +735,9 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 <div className="flex items-center gap-3">
                   <LockIcon className="w-5 h-5 text-gray-600 dark:text-slate-300" />
                   <div>
-                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">PIN មើលទឹកប្រាក់</h4>
+                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">{t('profile_pin_balance_title')}</h4>
                     <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                      {hasBalancePin ? 'បានកំណត់រួចរាល់' : 'មិនទាន់បានកំណត់'}
+                      {hasBalancePin ? t('profile_pin_balance_set') : t('profile_pin_balance_unset')}
                     </p>
                   </div>
                 </div>
@@ -769,7 +769,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             className="bg-white dark:bg-slate-900 rounded-2xl max-w-[300px] w-full p-4 shadow-xl border border-gray-100 dark:border-slate-800 relative font-battambang"
           >
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100 dark:border-slate-800">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">ផ្លាស់ប្ដូរស្បែក</h3>
+              <h3 className="text-[15px] font-medium text-gray-900 dark:text-white">{t('profile_theme_modal_title')}</h3>
               <button 
                 onClick={() => setIsThemeModalOpen(false)}
                 className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -785,7 +785,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               >
                 <div className="flex items-center gap-2.5">
                   <Sun className={`w-4 h-4 ${currentTheme === 'light' ? 'text-[#1d70b8]' : 'text-amber-500'}`} />
-                  <span className="text-sm font-medium">Light Mode (ភ្លឺ)</span>
+                  <span className="text-sm font-medium">{t('profile_theme_light_label')}</span>
                 </div>
                 {currentTheme === 'light' && (
                   <div className="w-2 h-2 rounded-full bg-[#1d70b8]"></div>
@@ -798,7 +798,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               >
                 <div className="flex items-center gap-2.5">
                   <Moon className={`w-4 h-4 ${currentTheme === 'dark' ? 'text-[#1d70b8]' : 'text-indigo-400'}`} />
-                  <span className="text-sm font-medium">Dark Mode (ងងឹត)</span>
+                  <span className="text-sm font-medium">{t('profile_theme_dark_label')}</span>
                 </div>
                 {currentTheme === 'dark' && (
                   <div className="w-2 h-2 rounded-full bg-[#1d70b8]"></div>
@@ -831,7 +831,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4 flex-shrink-0">
                 <Info className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
               </div>
-              <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច</h3>
+              <h3 className=" text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច</h3>
               <p className="text-gray-500 dark:text-slate-400 text-sm mb-6 flex-shrink-0">{t('about_version')} 1.1.0</p>
               
               <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-4 w-full text-left space-y-3 mb-6 flex-shrink-0">
@@ -842,7 +842,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 <div className="h-px bg-gray-200 w-full"></div>
                 <div>
                   <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
-                  <p className="text-[14px] font-bold text-indigo-600">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                  <p className="text-[14px]  text-indigo-600">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
                 </div>
                 <div className="h-px bg-gray-200 w-full"></div>
                 <div>
@@ -860,7 +860,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
               <button
                 onClick={() => setIsAboutModalOpen(false)}
-                className="w-full py-3.5 px-4 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-2xl font-bold text-[15px] hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0"
+                className="w-full py-3.5 px-4 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-2xl  text-[15px] hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0"
               >
                 {t('about_close')}
               </button>
@@ -932,7 +932,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-t-3xl sm:rounded-3xl w-full max-w-md mx-auto max-h-[90vh] flex flex-col shadow-2xl"
           >
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
-              <h3 className="font-bold text-[17px] text-gray-900 dark:text-white">ផ្លាស់ប្ដូរពាក្យសម្ងាត់</h3>
+              <h3 className=" text-[17px] text-gray-900 dark:text-white">ផ្លាស់ប្ដូរពាក្យសម្ងាត់</h3>
               <button 
                 onClick={() => setShowPasswordModal(false)}
                 className="p-2 -mr-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
@@ -974,7 +974,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               <button
                 onClick={handlePasswordChange}
                 disabled={isPasswordLoading || !password || !confirmPassword}
-                className="w-full mt-6 py-3.5 px-4 bg-indigo-600 text-white rounded-2xl font-bold text-[15px] hover:bg-indigo-700 active:bg-indigo-800 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full mt-6 py-3.5 px-4 bg-indigo-600 text-white rounded-2xl  text-[15px] hover:bg-indigo-700 active:bg-indigo-800 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isPasswordLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកការផ្លាស់ប្ដូរ'}
               </button>

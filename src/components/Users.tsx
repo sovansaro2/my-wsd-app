@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { UserCog, Shield, User as UserIcon, Search, Loader2, ArrowLeft, KeyRound, X, CheckCircle2 } from 'lucide-react';
+import { UserCog, Shield, User as UserIcon, Loader2, ArrowLeft, KeyRound, X, CheckCircle2 } from 'lucide-react';
 import { api } from '../lib/apiClient';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface UserProfile {
   id: string;
@@ -17,9 +18,9 @@ interface UsersProps {
 }
 
 export default function Users({ onBack }: UsersProps) {
+  const { t, language } = useLanguage();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Password Reset State
@@ -45,7 +46,8 @@ export default function Users({ onBack }: UsersProps) {
   };
 
   const handleRoleChange = async (userId: string, newRole: 'admin' | 'user') => {
-    if (!window.confirm(`តើអ្នកពិតជាចង់ប្តូរសិទ្ធិអ្នកប្រើប្រាស់នេះទៅជា ${newRole === 'admin' ? 'អ្នកគ្រប់គ្រង' : 'អ្នកប្រើប្រាស់ធម្មតា'} មែនទេ?`)) {
+    const roleName = newRole === 'admin' ? t('users_role_admin') : t('users_role_user');
+    if (!window.confirm(t('users_confirm_role_change', { role: roleName }))) {
       return;
     }
     
@@ -55,7 +57,7 @@ export default function Users({ onBack }: UsersProps) {
       setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
     } catch (err) {
       console.error('Error updating role:', err);
-      alert('មានបញ្ហាក្នុងការប្តូរសិទ្ធិអ្នកប្រើប្រាស់');
+      alert(language === 'en' ? 'Error updating user role' : 'មានបញ្ហាក្នុងការប្តូរសិទ្ធិអ្នកប្រើប្រាស់');
     } finally {
       setUpdatingId(null);
     }
@@ -64,7 +66,7 @@ export default function Users({ onBack }: UsersProps) {
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resettingUser || newPassword.length < 6) {
-      setResetError('ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៦ តួអក្សរ');
+      setResetError(language === 'en' ? 'Password must be at least 6 characters' : 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៦ តួអក្សរ');
       return;
     }
     
@@ -73,12 +75,12 @@ export default function Users({ onBack }: UsersProps) {
     
     try {
       await api.resetUserPassword(resettingUser.id, newPassword);
-      setResetSuccess('បានប្ដូរពាក្យសម្ងាត់ដោយជោគជ័យ!');
+      setResetSuccess(language === 'en' ? 'Password updated successfully!' : 'បានប្ដូរពាក្យសម្ងាត់ដោយជោគជ័យ!');
       setTimeout(() => {
         closeResetModal();
       }, 2000);
     } catch (err: any) {
-      setResetError(err.message || 'មានបញ្ហាក្នុងការប្តូរពាក្យសម្ងាត់');
+      setResetError(err.message || (language === 'en' ? 'Failed to reset password' : 'មានបញ្ហាក្នុងការប្តូរពាក្យសម្ងាត់'));
     } finally {
       setIsResetting(false);
     }
@@ -92,11 +94,6 @@ export default function Users({ onBack }: UsersProps) {
     setResetSuccess(null);
   };
 
-  const filteredUsers = users.filter(user => 
-    (user.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (user.email?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-  );
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -106,124 +103,107 @@ export default function Users({ onBack }: UsersProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 animate-in fade-in duration-300">
+    <div className="max-w-4xl mx-auto p-4 animate-in fade-in duration-300 pb-20">
       {onBack && (
         <button 
           onClick={onBack}
-          className="mb-6 flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="mb-4 flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium text-sm"
         >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          ត្រឡប់ក្រោយ
+          <ArrowLeft className="w-4 h-4 mr-1.5" />
+          {t('common_back')}
         </button>
       )}
       
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-orange-100 dark:bg-orange-500/20 text-orange-600 rounded-2xl">
+      <div className="flex items-center gap-3.5 mb-6">
+        <div className="p-3 bg-orange-100 dark:bg-orange-500/20 text-orange-600 rounded-2xl shrink-0">
           <UserCog className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-2xl font-battambang font-bold text-gray-900 dark:text-white">គ្រប់គ្រងអ្នកប្រើប្រាស់</h2>
-          <p className="text-sm text-gray-500 dark:text-slate-400">គ្រប់គ្រងសិទ្ធិ និងគណនី</p>
+          <h2 className="text-xl  font-title text-gray-900 dark:text-white uppercase ">{t('users_title')}</h2>
+          <p className="text-xs text-gray-500 dark:text-slate-400">{t('users_subtitle')}</p>
         </div>
       </div>
 
-      <div className="mb-6 relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
-        </div>
-        <input
-          type="text"
-          placeholder="ស្វែងរកឈ្មោះ អុីមែល ឬលេខទូរស័ព្ទ..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-slate-700 rounded-xl leading-5 bg-white dark:bg-slate-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-battambang transition-colors text-gray-900 dark:text-white"
-        />
-      </div>
-
-      {/* Mobile-friendly User List */}
+      {/* User List */}
       <div className="grid grid-cols-1 gap-4">
-        <>
-          {filteredUsers.length === 0 ? (
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-gray-500 dark:text-slate-400 font-battambang shadow-sm border border-gray-100 dark:border-slate-700">
-              មិនមានទិន្នន័យ
-            </div>
-          ) : (
-            filteredUsers.map((user) => (
-              <motion.div 
-                key={user.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col gap-4"
-              >
-                {/* Top: Info */}
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0 overflow-hidden">
-                    {user.avatar_url ? (
-                      <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-orange-600 dark:text-orange-400 font-bold text-xl">
-                        {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?')}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[15px] font-bold text-gray-900 dark:text-white truncate">
-                      {user.full_name || 'គ្មានឈ្មោះ'}
-                    </div>
-                    <div className="text-[13px] text-gray-500 dark:text-slate-400 truncate">
-                      {user.email}
-                    </div>
-                    <div className="text-[12px] text-gray-400 dark:text-slate-500 mt-0.5">
-                      បានចុះឈ្មោះ: {new Date(user.created_at).toLocaleDateString('km-KH')}
-                    </div>
-                  </div>
-                  <div>
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium font-battambang ${
-                      user.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
-                        : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                    }`}>
-                      {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
-                      <span className="hidden sm:inline">{user.role === 'admin' ? 'អ្នកគ្រប់គ្រង' : 'អ្នកប្រើប្រាស់'}</span>
-                      <span className="sm:hidden">{user.role === 'admin' ? 'Admin' : 'User'}</span>
+        {users.length === 0 ? (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-gray-500 dark:text-slate-400 font-battambang shadow-sm border border-gray-100 dark:border-slate-700">
+            {t('common_no_data')}
+          </div>
+        ) : (
+          users.map((user) => (
+            <motion.div 
+              key={user.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col gap-4"
+            >
+              {/* Top: Info */}
+              <div className="flex items-center gap-3.5">
+                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-orange-100 dark:ring-orange-900/40">
+                  {user.avatar_url ? (
+                    <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-orange-600 dark:text-orange-400  text-xl">
+                      {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?')}
                     </span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[17px] font-normal text-gray-900 dark:text-white truncate font-title ">
+                    {user.full_name || t('users_no_name')}
+                  </div>
+                  <div className="text-[13px] text-gray-500 dark:text-slate-400 truncate">
+                    {user.email}
+                  </div>
+                  <div className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5">
+                    {t('users_registered_at')} {new Date(user.created_at).toLocaleDateString(language === 'km' ? 'km-KH' : 'en-GB')}
                   </div>
                 </div>
+                <div>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium font-battambang ${
+                    user.role === 'admin' 
+                      ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
+                      : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                  }`}>
+                    {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
+                    <span>{user.role === 'admin' ? t('users_role_admin') : t('users_role_user')}</span>
+                  </span>
+                </div>
+              </div>
 
-                {/* Bottom: Actions */}
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700/50">
-                  <div className="flex-1 mr-4">
-                    {updatingId === user.id ? (
-                      <div className="py-2.5 flex items-center gap-2 text-sm text-orange-500 font-battambang">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        កំពុងរក្សាទុក...
-                      </div>
-                    ) : (
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleRoleChange(user.id, e.target.value as 'admin' | 'user')}
-                        disabled={updatingId === user.id}
-                        className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-sm rounded-xl focus:ring-orange-500 focus:border-orange-500 block w-full max-w-[200px] p-2.5 font-battambang disabled:opacity-50"
-                      >
-                        <option value="user">អ្នកប្រើប្រាស់</option>
-                        <option value="admin">អ្នកគ្រប់គ្រង</option>
-                      </select>
-                    )}
-                  </div>
-                  
-                  <button
-                    onClick={() => setResettingUser(user)}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 dark:text-orange-400 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 rounded-xl transition-colors font-battambang whitespace-nowrap"
-                  >
-                    <KeyRound className="w-4 h-4" />
-                    ប្ដូរពាក្យសម្ងាត់
-                  </button>
+              {/* Bottom: Actions */}
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700/60 gap-3">
+                <div className="flex-1 max-w-[150px] sm:max-w-[180px]">
+                  {updatingId === user.id ? (
+                    <div className="py-2 flex items-center gap-2 text-xs text-orange-500 font-battambang">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      {t('common_saving')}
+                    </div>
+                  ) : (
+                    <select
+                      value={user.role}
+                      onChange={(e) => handleRoleChange(user.id, e.target.value as 'admin' | 'user')}
+                      disabled={updatingId === user.id}
+                      className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-xs sm:text-sm rounded-xl focus:ring-orange-500 focus:border-orange-500 block w-full p-2 font-battambang disabled:opacity-50 font-medium"
+                    >
+                      <option value="user">{t('users_role_user')}</option>
+                      <option value="admin">{t('users_role_admin')}</option>
+                    </select>
+                  )}
                 </div>
-              </motion.div>
-            ))
-          )}
-        </>
+                
+                <button
+                  onClick={() => setResettingUser(user)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 dark:text-orange-400 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 rounded-xl transition-colors font-battambang whitespace-nowrap"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  {t('users_btn_reset_pwd')}
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
       
       {/* Password Reset Modal */}
@@ -241,8 +221,8 @@ export default function Users({ onBack }: UsersProps) {
                   <div className="p-2 bg-orange-100 dark:bg-orange-500/20 text-orange-600 rounded-xl">
                     <KeyRound className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold font-battambang text-gray-900 dark:text-white">
-                    ប្ដូរពាក្យសម្ងាត់ថ្មី
+                  <h3 className="text-xl  font-title text-gray-900 dark:text-white">
+                    {t('users_reset_pwd_title')}
                   </h3>
                 </div>
                 <button
@@ -256,12 +236,12 @@ export default function Users({ onBack }: UsersProps) {
 
               <div className="p-6">
                 <div className="mb-6 flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
-                  <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200">
+                  <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center  text-gray-700 dark:text-gray-200">
                     {resettingUser.full_name ? resettingUser.full_name.charAt(0).toUpperCase() : '?'}
                   </div>
                   <div>
                     <div className="font-medium text-gray-900 dark:text-white">
-                      {resettingUser.full_name || 'គ្មានឈ្មោះ'}
+                      {resettingUser.full_name || t('users_no_name')}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       {resettingUser.email}
@@ -274,8 +254,8 @@ export default function Users({ onBack }: UsersProps) {
                     <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mb-4">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                      ជោគជ័យ!
+                    <h4 className="text-lg  text-gray-900 dark:text-white mb-2">
+                      {language === 'en' ? 'Success!' : 'ជោគជ័យ!'}
                     </h4>
                     <p className="text-gray-500 dark:text-gray-400 font-battambang">
                       {resetSuccess}
@@ -291,7 +271,7 @@ export default function Users({ onBack }: UsersProps) {
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-battambang">
-                        ពាក្យសម្ងាត់ថ្មី (យ៉ាងហោច ៦ ខ្ទង់)
+                        {t('users_new_pwd_ph')}
                       </label>
                       <input
                         type="text"
@@ -299,7 +279,7 @@ export default function Users({ onBack }: UsersProps) {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-shadow font-battambang"
-                        placeholder="បញ្ចូលពាក្យសម្ងាត់ថ្មី"
+                        placeholder={t('users_new_pwd_ph')}
                       />
                     </div>
 
@@ -310,7 +290,7 @@ export default function Users({ onBack }: UsersProps) {
                         disabled={isResetting}
                         className="flex-1 px-4 py-3 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-battambang disabled:opacity-50"
                       >
-                        បោះបង់
+                        {t('list_cancel')}
                       </button>
                       <button
                         type="submit"
@@ -320,10 +300,10 @@ export default function Users({ onBack }: UsersProps) {
                         {isResetting ? (
                           <div>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            កំពុងរក្សាទុក...
+                            {t('common_saving')}
                           </div>
                         ) : (
-                          'រក្សាទុក'
+                          t('list_save')
                         )}
                       </button>
                     </div>

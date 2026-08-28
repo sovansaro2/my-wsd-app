@@ -34,6 +34,23 @@ export default function App() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
 
+  // Tab Toast Feedback State
+  const [tabToast, setTabToast] = useState<{ title: string; icon: any } | null>(null);
+
+  const switchTab = (tab: Tab, titleKey: string, iconComponent: any) => {
+    setActiveTab(tab);
+    setTabToast({ title: t(titleKey), icon: iconComponent });
+  };
+
+  useEffect(() => {
+    if (tabToast) {
+      const timer = setTimeout(() => {
+        setTabToast(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [tabToast]);
+
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -129,8 +146,8 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-20 pt-16">
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className="text-white tracking-wide text-base sm:text-lg md:text-xl font-normal pt-0.5 truncate select-none" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>
-          កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច
+        <h1 className="text-white  text-base sm:text-lg md:text-xl font-normal pt-0.5 truncate select-none font-title">
+          {t('app_title')}
         </h1>
         <div className="relative shrink-0">
           <button 
@@ -139,7 +156,7 @@ export default function App() {
           >
             <Bell className="w-6 h-6" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-orange-500 dark:border-slate-950 px-1">
+              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px]  text-white border border-orange-500 dark:border-slate-950 px-1">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -165,7 +182,7 @@ export default function App() {
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[80vh] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/5">
-                <h3 className="font-battambang font-bold text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
+                <h3 className="font-battambang  text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
                 <button 
                   onClick={() => setShowNotifications(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
@@ -185,7 +202,7 @@ export default function App() {
                         <div className="flex items-start gap-3.5">
                           <div className={`mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0 ${notif.type === 'income' ? 'bg-emerald-500' : notif.type === 'expense' ? 'bg-rose-500' : 'bg-blue-500'} shadow-sm`} />
                           <div className="flex-1">
-                            <p className="text-[14px] font-bold text-gray-900 dark:text-white font-battambang leading-tight mb-1">{notif.title}</p>
+                            <p className="text-[14px]  text-gray-900 dark:text-white font-battambang leading-tight mb-1">{notif.title}</p>
                             <p className="text-[13px] text-gray-600 dark:text-slate-400 font-battambang leading-relaxed">{notif.message}</p>
                             <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-2.5 flex items-center gap-1.5">
                               {new Date(notif.created_at).toLocaleDateString('km-KH')} {new Date(notif.created_at).toLocaleTimeString('km-KH', {hour: '2-digit', minute:'2-digit'})}
@@ -239,7 +256,7 @@ export default function App() {
                   }`}>
                     <Bell className="w-5 h-5" />
                   </div>
-                  <h3 className="font-battambang font-bold text-gray-900 dark:text-white text-lg">
+                  <h3 className="font-battambang  text-gray-900 dark:text-white text-lg">
                     {selectedNotification.title}
                   </h3>
                 </div>
@@ -265,7 +282,7 @@ export default function App() {
                 <div className="mt-8 flex gap-3">
                   <button
                     onClick={() => setSelectedNotification(null)}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                    className="flex-1 py-3 px-4 rounded-xl  text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                   >
                     បិទ
                   </button>
@@ -275,7 +292,7 @@ export default function App() {
                       setShowNotifications(false);
                       setSelectedNotification(null);
                     }}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
+                    className="flex-1 py-3 px-4 rounded-xl  text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
                   >
                     ទៅកាន់ទំព័រ
                   </button>
@@ -336,47 +353,90 @@ export default function App() {
       {/* Create Post Modal */}
       
 
+      {/* Floating Tab Notification Toast */}
+      <AnimatePresence>
+        {tabToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+            className="fixed bottom-[4.25rem] left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/95 text-white dark:text-slate-900 rounded-full shadow-md backdrop-blur-md border border-white/10 dark:border-slate-700 pointer-events-auto"
+          >
+            <tabToast.icon className="w-4 h-4 text-sky-400 dark:text-sky-600 shrink-0" />
+            <span className="text-xs font-normal font-battambang whitespace-nowrap">{tabToast.title}</span>
+            <button 
+              onClick={() => setTabToast(null)}
+              className="ml-0.5 p-0.5 rounded-full hover:bg-white/20 dark:hover:bg-slate-200 text-gray-400 hover:text-white dark:hover:text-slate-900 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 px-2 py-1.5 pb-safe z-50 transition-colors duration-200 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
-        <div className="flex justify-around items-center max-w-lg mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_12px_rgba(0,0,0,0.03)] pb-safe">
+        <div className="h-[60px] flex items-center justify-around max-w-md mx-auto px-3">
           <button
-            onClick={() => setActiveTab('home')}
-            className={`flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[3.75rem] transition-all ${activeTab === 'home' ? 'text-sky-600 dark:text-sky-400 font-semibold' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            onClick={() => switchTab('home', 'nav_home', Home)}
+            aria-label={t('nav_home')}
+            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+              activeTab === 'home' 
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
           >
-            <Home className={`h-5 w-5 transition-transform ${activeTab === 'home' ? 'scale-105 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            <span className="text-[11px] font-battambang">{t('nav_home')}</span>
+            <Home className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
           </button>
           
           <button
-            onClick={() => setActiveTab('records')}
-            className={`flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[3.75rem] transition-all ${activeTab === 'records' ? 'text-sky-600 dark:text-sky-400 font-semibold' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            onClick={() => switchTab('records', 'nav_finance', CircleDollarSign)}
+            aria-label={t('nav_finance')}
+            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+              activeTab === 'records' 
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
           >
-            <CircleDollarSign className={`h-5 w-5 transition-transform ${activeTab === 'records' ? 'scale-105 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            <span className="text-[11px] font-battambang">{t('nav_finance')}</span>
+            <CircleDollarSign className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
           </button>
 
           <button
-            onClick={() => setActiveTab('categories')}
-            className={`flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[3.75rem] transition-all ${activeTab === 'categories' ? 'text-sky-600 dark:text-sky-400 font-semibold' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            onClick={() => switchTab('categories', 'nav_list', List)}
+            aria-label={t('nav_list')}
+            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+              activeTab === 'categories' 
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
           >
-            <List className={`h-5 w-5 transition-transform ${activeTab === 'categories' ? 'scale-105 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            <span className="text-[11px] font-battambang">{t('nav_list')}</span>
+            <List className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
           </button>
 
           <button
-            onClick={() => setActiveTab('reports')}
-            className={`flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[3.75rem] transition-all ${activeTab === 'reports' ? 'text-sky-600 dark:text-sky-400 font-semibold' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            onClick={() => switchTab('reports', 'nav_reports', FileText)}
+            aria-label={t('nav_reports')}
+            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+              activeTab === 'reports' 
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
           >
-            <FileText className={`h-5 w-5 transition-transform ${activeTab === 'reports' ? 'scale-105 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            <span className="text-[11px] font-battambang">របាយការណ៍</span>
+            <FileText className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
           </button>
           
           <button
-            onClick={() => setActiveTab('account')}
-            className={`flex flex-col items-center justify-center gap-1 py-1 px-3 min-w-[3.75rem] transition-all ${['account', 'users', 'certificates'].includes(activeTab) ? 'text-sky-600 dark:text-sky-400 font-semibold' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400'}`}
+            onClick={() => switchTab('account', 'nav_account', User)}
+            aria-label={t('nav_account')}
+            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+              ['account', 'users', 'certificates'].includes(activeTab) 
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
           >
-            <User className={`h-5 w-5 transition-transform ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-105 stroke-[2.25]' : 'stroke-[1.75]'}`} />
-            <span className="text-[11px] font-battambang">{t('nav_account')}</span>
+            <User className={`h-6 w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2.25]' : 'stroke-[1.75]'}`} />
           </button>
         </div>
       </nav>
