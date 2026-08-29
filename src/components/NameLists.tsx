@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { toPng } from 'html-to-image';
 import { saveCertificate } from '../lib/certificateUtils';
 import { getImageDataUrl } from '../lib/utils';
+import { jsPDF } from "jspdf";
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -66,6 +67,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [isDownloading, setIsDownloading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
   
   // Form state
   const [name, setName] = useState('');
@@ -391,17 +393,50 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     }
   };
 
-  const filteredRecords = records.filter(record => 
-    record.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (record.note && record.note.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (record.metadata?.trai_liang && record.metadata.trai_liang.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (record.metadata?.others && record.metadata.others.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  
+  const handlePrintDownload = async () => {
+    if (!printRef.current) return;
+    setIsDownloading(true);
+    try {
+      const dataUrl = await toPng(printRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        style: { opacity: '1', transform: 'none' },
+        cacheBust: true,
+        backgroundColor: '#ffffff'
+      });
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        await saveCertificate({
+          title: selectedCategory?.name || 'បញ្ជីឈ្មោះ',
+          type: 'image/png',
+          blob: blob
+        });
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      } catch (e) {
+        const link = document.createElement('a');
+        link.download = `${selectedCategory?.name || 'បញ្ជីឈ្មោះ'}.png`;
+        link.href = dataUrl;
+        link.click();
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to generate image', err);
+      alert('មានបញ្ហាក្នុងការទាញយក');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const filteredRecords = records;
 
   const totalAmount = records.reduce((sum, record) => sum + record.amount, 0);
   const closedLists = ['បញ្ជីឈ្មោះបុណ្យផ្កា', 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ', 'ទិញកម្រាលព្រំ (វគ្គ១)'];
   const isListClosed = closedLists.includes(selectedCategory?.name || '');
   const isKathina = selectedCategory?.name?.includes('កឋិន');
+  const hasAnyNote = filteredRecords.some(r => r.note || r.metadata?.trai_liang || r.metadata?.others);
 
 
   const getCategoryIcon = (name: string) => {
@@ -695,11 +730,11 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setShowSearchInput(!showSearchInput)}
-                className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 ${showSearchInput ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400' : 'bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800'}`}
-                title={t('list_search')}
+                onClick={handlePrintDownload}
+                className="flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800"
+                title="ទាញយកបញ្ជី"
               >
-                <Search className="w-5 h-5" />
+                {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
               </button>
               {userRole === 'admin' && !isListClosed && (
                 <button 
@@ -712,20 +747,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               )}
             </div>
           </div>
-          {/* Search */}
-          {showSearchInput && (
-            <div className="relative mt-2">
-              <input
-                type="text"
-                placeholder={t('list_search')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white placeholder-gray-400 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-[15px] shadow-sm"
-              />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
-          )}
         </div>
       </div>
 
@@ -1504,6 +1525,67 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           </motion.div>
         )}
       </>
+
+      {/* Print Section (Hidden on screen) */}
+      <div ref={printRef} className="print-section absolute top-0 left-0 w-[559px] bg-white p-8 opacity-0 pointer-events-none -z-50">
+        <div className="text-center font-moul mb-6">
+          <h1 className="text-xl">វត្តវារីបាការាម(ហៅស្នាយដួច)</h1>
+          <h2 className="text-base mt-2">ភូមិពន្សាំង ឃុំជើងគួន ស្រុកសំរោង ខេត្តតាកែវ</h2>
+          <h3 className="text-lg mt-6">
+            {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)' 
+              ? 'បញ្ជីឈ្មោះសប្បុរសជនចូលរួមទិញកម្រាលព្រំ វគ្គ២'
+              : selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)'
+              ? 'បញ្ជីឈ្មោះសប្បុរសជនចូលរួមទិញកម្រាលព្រំ វគ្គ១'
+              : selectedCategory?.name}
+          </h3>
+        </div>
+
+        <table className="w-full border-collapse text-sm mb-8 font-battambang">
+          <thead>
+            <tr className="border-b-2 border-black font-moul text-[13px]">
+              <th className="py-2 px-2 text-left border border-black w-12 text-center">ល.រ</th>
+              <th className="py-2 px-4 text-left border border-black">ឈ្មោះសប្បុរសជន</th>
+              {isKathina && (
+                <>
+                  <th className="py-2 px-3 text-center border border-black">ត្រៃ/លៀង</th>
+                  <th className="py-2 px-3 text-center border border-black">ផ្សេងៗ</th>
+                </>
+              )}
+              <th className="py-2 px-4 text-right border border-black">បច្ច័យ</th>
+              {hasAnyNote && <th className="py-2 px-4 text-left border border-black">កំណត់សម្គាល់</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRecords.map((r, i) => (
+              <tr key={r.id} className="border-b border-black/50 text-[13px]">
+                <td className="py-2 px-2 border border-black text-center">{toKhmerNum(i + 1)}</td>
+                <td className="py-2 px-4 border border-black">{r.name}</td>
+                {isKathina && (
+                  <>
+                    <td className="py-2 px-3 text-center border border-black">{r.metadata?.trai_liang || (r.note?.includes('ត្រៃ') || r.note?.includes('លៀង') ? r.note : '')}</td>
+                    <td className="py-2 px-3 text-center border border-black">{r.metadata?.others || (r.note && !r.note.includes('ត្រៃ') && !r.note.includes('លៀង') ? r.note : '')}</td>
+                  </>
+                )}
+                <td className="py-2 px-4 text-right border border-black font-semibold whitespace-nowrap">
+                  {r.amount ? `៛ ${r.amount.toLocaleString()}` : ''}
+                </td>
+                {hasAnyNote && <td className="py-2 px-4 border border-black text-xs">{(!isKathina) ? (r.note || '') : ''}</td>}
+              </tr>
+            ))}
+            <tr className="border-b-2 border-black font-moul text-[13px]">
+              <td colSpan={isKathina ? 4 : 2} className="py-2 px-4 text-right border border-black">សរុបរួម៖</td>
+              <td className="py-2 px-4 text-right border border-black font-bold text-[15px] whitespace-nowrap">
+                ៛ {filteredRecords.reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
+              </td>
+              {hasAnyNote && <td className="py-2 px-4 border border-black"></td>}
+            </tr>
+          </tbody>
+        </table>
+
+        <div className="text-right text-sm font-battambang mt-10">
+          <p>ថ្ងៃខែឆ្នាំទាញយក៖ {getKhmerDate()}</p>
+        </div>
+      </div>
     </div>
   );
 }
