@@ -13,5 +13,22 @@ export const supabaseAdmin = createClient(config.SUPABASE_URL, keyToUse, {
   auth: { autoRefreshToken: false, persistSession: false }
 });
 
-// We are no longer using getAuthClient to insert/update data. We use supabaseAdmin
-// after verifying the role with requireAdmin.
+export const getAuthClient = (token: string) => {
+  return createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  });
+};
+
+export const getClient = (req: Request) => {
+  if (config.SUPABASE_SERVICE_ROLE_KEY) {
+    return supabaseAdmin;
+  }
+  const token = req.headers.authorization?.split(' ')[1] || '';
+  return getAuthClient(token);
+};
+

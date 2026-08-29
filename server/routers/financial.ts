@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../database';
+import { supabaseAdmin, getClient } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
@@ -12,14 +12,14 @@ router.get('/seil-periods', async (req, res) => {
 });
 
 router.post('/seil-periods', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('seil_periods').insert([req.body]).select();
+  const { data, error } = await getClient(req).from('seil_periods').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.put('/seil-periods/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('seil_periods').update(req.body).eq('id', req.params.id).select();
+  const { data, error } = await getClient(req).from('seil_periods').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
@@ -37,11 +37,11 @@ router.get('/financial-records', async (req, res) => {
 
 router.post('/financial-records', requireAuth, requireAdmin, async (req, res) => {
   const { notify_public, seil_name, ...recordBody } = req.body;
-  let { data, error } = await supabaseAdmin.from('financial_records').insert([recordBody]).select();
+  let { data, error } = await getClient(req).from('financial_records').insert([recordBody]).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_high_level')))) {
     delete recordBody.is_high_level;
-    const retry = await supabaseAdmin.from('financial_records').insert([recordBody]).select();
+    const retry = await getClient(req).from('financial_records').insert([recordBody]).select();
     data = retry.data;
     error = retry.error;
   }
@@ -68,16 +68,16 @@ router.post('/financial-records', requireAuth, requireAdmin, async (req, res) =>
 
 router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
   let recordBody = { ...req.body };
-  let { data, error } = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+  let { data, error } = await getClient(req).from('financial_records').update(recordBody).eq('id', req.params.id).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_high_level')))) {
     delete (recordBody as any).is_high_level;
     if (Object.keys(recordBody).length === 0) {
-      const existing = await supabaseAdmin.from('financial_records').select('*').eq('id', req.params.id);
+      const existing = await getClient(req).from('financial_records').select('*').eq('id', req.params.id);
       data = existing.data;
       error = existing.error;
     } else {
-      const retry = await supabaseAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+      const retry = await getClient(req).from('financial_records').update(recordBody).eq('id', req.params.id).select();
       data = retry.data;
       error = retry.error;
     }
@@ -89,7 +89,7 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
 });
 
 router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('financial_records').delete().eq('id', req.params.id).select();
+  const { data, error } = await getClient(req).from('financial_records').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json({ success: true });
