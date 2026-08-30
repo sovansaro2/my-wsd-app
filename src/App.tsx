@@ -22,7 +22,7 @@ type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_f
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [actualRole, setActualRole] = useState<Role>(null);
   const [userRole, setUserRole] = useState<Role>(null);
@@ -126,10 +126,14 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-24 pt-16">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-24 pt-16 overflow-x-hidden w-full max-w-full">
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className="text-white text-lg sm:text-xl md:text-2xl font-normal pt-0.5 select-none font-title">
+        <h1 className={`text-white select-none pt-0.5 ${
+          language === 'en'
+            ? 'font-rajdhani font-semibold text-lg sm:text-xl md:text-2xl tracking-wider'
+            : 'font-title font-normal text-lg sm:text-xl md:text-2xl tracking-normal'
+        }`}>
           {t('app_title')}
         </h1>
         <div className="relative shrink-0">

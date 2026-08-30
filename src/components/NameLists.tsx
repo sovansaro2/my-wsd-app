@@ -711,7 +711,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative">
+    <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative overflow-x-hidden w-full">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
         <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
           {/* Detail View Header */}
@@ -1527,7 +1527,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       </>
 
       {/* Print Section (Hidden on screen) */}
-      <div ref={printRef} className="print-section absolute top-0 left-0 w-[559px] bg-white p-8 opacity-0 pointer-events-none -z-50">
+      <div ref={printRef} className="print-section fixed -left-[9999px] top-0 w-[559px] bg-white p-8 opacity-0 pointer-events-none -z-50">
         <div className="text-center font-moul mb-6">
           <h1 className="text-xl">វត្តវារីបាការាម(ហៅស្នាយដួច)</h1>
           <h2 className="text-base mt-2">ភូមិពន្សាំង ឃុំជើងគួន ស្រុកសំរោង ខេត្តតាកែវ</h2>

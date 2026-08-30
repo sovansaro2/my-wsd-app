@@ -171,7 +171,7 @@ const translations = {
     install_btn: 'ទាញយក'
   },
   en: {
-    app_title: 'Wat Snay Duoc Data Management',
+    app_title: 'WSD DATA MANAGEMENT',
     nav_home: 'Home',
     nav_finance: 'Finances',
     nav_list: 'Other Lists',
