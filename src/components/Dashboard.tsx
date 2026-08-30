@@ -3,6 +3,7 @@ import { api } from '../lib/apiClient';
 
 import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award, Lock as LockIcon, Settings } from 'lucide-react';
 import PinPad from './PinPad';
+import ImageSlider from './ImageSlider';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -193,6 +194,9 @@ export default function Dashboard() {
       
       
       <div className="max-w-xl mx-auto w-full px-4 pt-4 pb-6 space-y-5">
+
+      {/* Auto Slide Banner */}
+      <ImageSlider />
 
       {error && (
         <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20">
