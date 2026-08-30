@@ -64,7 +64,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
       const errorMsg = err instanceof Error ? err.message : 'មានបញ្ហាបច្ចេកទេស សូមព្យាយាមម្តងទៀត។';
       if (errorMsg.includes('already registered') || errorMsg.includes('already exists')) {
         setError('ឈ្មោះនេះមានអ្នកប្រើប្រាស់រួចហើយ សូមជ្រើសរើសឈ្មោះផ្សេង។');
-      } else if (errorMsg.includes('Invalid login credentials') || errorMsg.includes('អុីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ')) {
+      } else if (errorMsg.includes('Invalid login credentials') || errorMsg.includes('អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ')) {
         setError('ឈ្មោះ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ។');
       } else {
         setError(errorMsg);
@@ -105,7 +105,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-              ឈ្មោះអ្នកប្រើប្រាស់ ឬ អុីមែល
+              ឈ្មោះអ្នកប្រើប្រាស់ ឬ អ៊ីមែល
             </label>
             <input
               type="text"
@@ -113,7 +113,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-2xl border border-gray-200/60 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all text-[15px] font-battambang"
-              placeholder="បញ្ចូលឈ្មោះ ឬ អុីមែលរបស់អ្នក"
+              placeholder="បញ្ចូលឈ្មោះ ឬ អ៊ីមែលរបស់អ្នក"
             />
           </div>
           
