@@ -143,10 +143,10 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-20 pt-16">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-24 pt-16">
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className="text-white  text-base sm:text-lg md:text-xl font-normal pt-0.5  select-none font-title">
+        <h1 className="text-white text-lg sm:text-xl md:text-2xl font-normal pt-0.5 select-none font-title">
           {t('app_title')}
         </h1>
         <div className="relative shrink-0">
@@ -377,66 +377,111 @@ export default function App() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_12px_rgba(0,0,0,0.03)] pb-safe">
-        <div className="h-[60px] flex items-center justify-around max-w-md mx-auto px-3">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
             onClick={() => switchTab('home', 'nav_home', Home)}
             aria-label={t('nav_home')}
-            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'home' 
-                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                ? 'text-orange-600 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <Home className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
+            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
+              activeTab === 'home' 
+                ? 'bg-orange-50 dark:bg-orange-950/60' 
+                : ''
+            }`}>
+              <Home className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[11px] sm:text-xs font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-bold' : 'font-normal'}`}>
+              {t('nav_home')}
+            </span>
           </button>
           
           <button
             onClick={() => switchTab('records', 'nav_finance', CircleDollarSign)}
             aria-label={t('nav_finance')}
-            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'records' 
-                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                ? 'text-orange-600 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <CircleDollarSign className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
+            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
+              activeTab === 'records' 
+                ? 'bg-orange-50 dark:bg-orange-950/60' 
+                : ''
+            }`}>
+              <CircleDollarSign className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[11px] sm:text-xs font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-bold' : 'font-normal'}`}>
+              {t('nav_finance')}
+            </span>
           </button>
 
           <button
             onClick={() => switchTab('categories', 'nav_list', List)}
             aria-label={t('nav_list')}
-            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'categories' 
-                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                ? 'text-orange-600 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <List className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
+            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
+              activeTab === 'categories' 
+                ? 'bg-orange-50 dark:bg-orange-950/60' 
+                : ''
+            }`}>
+              <List className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[11px] sm:text-xs font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-bold' : 'font-normal'}`}>
+              {t('nav_list')}
+            </span>
           </button>
 
           <button
             onClick={() => switchTab('reports', 'nav_reports', FileText)}
             aria-label={t('nav_reports')}
-            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'reports' 
-                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                ? 'text-orange-600 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <FileText className={`h-6 w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
+            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
+              activeTab === 'reports' 
+                ? 'bg-orange-50 dark:bg-orange-950/60' 
+                : ''
+            }`}>
+              <FileText className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[11px] sm:text-xs font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'reports' ? 'font-bold' : 'font-normal'}`}>
+              {t('nav_reports')}
+            </span>
           </button>
           
           <button
             onClick={() => switchTab('account', 'nav_account', User)}
             aria-label={t('nav_account')}
-            className={`flex items-center justify-center w-12 h-10 rounded-2xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               ['account', 'users', 'certificates'].includes(activeTab) 
-                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50' 
+                ? 'text-orange-600 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <User className={`h-6 w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2]' : 'stroke-[1.5]'}`} />
+            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
+              ['account', 'users', 'certificates'].includes(activeTab) 
+                ? 'bg-orange-50 dark:bg-orange-950/60' 
+                : ''
+            }`}>
+              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[11px] sm:text-xs font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates'].includes(activeTab) ? 'font-bold' : 'font-normal'}`}>
+              {t('nav_account')}
+            </span>
           </button>
         </div>
       </nav>

@@ -5,5 +5,8 @@ coverage/
 .DS_Store
 *.log
 .env*
-.package-lock.json
+package-lock.json
+*.lock
+yarn.lock
+pnpm-lock.yaml
 !.env.example
