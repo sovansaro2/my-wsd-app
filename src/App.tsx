@@ -34,23 +34,6 @@ export default function App() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
 
-  // Tab Toast Feedback State
-  const [tabToast, setTabToast] = useState<{ title: string; icon: any } | null>(null);
-
-  const switchTab = (tab: Tab, titleKey: string, iconComponent: any) => {
-    setActiveTab(tab);
-    setTabToast({ title: t(titleKey), icon: iconComponent });
-  };
-
-  useEffect(() => {
-    if (tabToast) {
-      const timer = setTimeout(() => {
-        setTabToast(null);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [tabToast]);
-
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -353,34 +336,11 @@ export default function App() {
       {/* Create Post Modal */}
       
 
-      {/* Floating Tab Notification Toast */}
-      <AnimatePresence>
-        {tabToast && (
-          <motion.div 
-            initial={{ opacity: 0, y: 12, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.96 }}
-            transition={{ duration: 0.15 }}
-            className="fixed bottom-[4.25rem] left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/95 text-white dark:text-slate-900 rounded-full shadow-md backdrop-blur-md border border-white/10 dark:border-slate-700 pointer-events-auto"
-          >
-            <tabToast.icon className="w-4 h-4 text-sky-400 dark:text-sky-600 shrink-0" />
-            <span className="text-xs font-normal font-battambang whitespace-nowrap">{tabToast.title}</span>
-            <button 
-              onClick={() => setTabToast(null)}
-              className="ml-0.5 p-0.5 rounded-full hover:bg-white/20 dark:hover:bg-slate-200 text-gray-400 hover:text-white dark:hover:text-slate-900 transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
-            onClick={() => switchTab('home', 'nav_home', Home)}
+            onClick={() => setActiveTab('home')}
             aria-label={t('nav_home')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'home' 
@@ -401,7 +361,7 @@ export default function App() {
           </button>
           
           <button
-            onClick={() => switchTab('records', 'nav_finance', CircleDollarSign)}
+            onClick={() => setActiveTab('records')}
             aria-label={t('nav_finance')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'records' 
@@ -422,7 +382,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => switchTab('categories', 'nav_list', List)}
+            onClick={() => setActiveTab('categories')}
             aria-label={t('nav_list')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'categories' 
@@ -443,7 +403,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => switchTab('reports', 'nav_reports', FileText)}
+            onClick={() => setActiveTab('reports')}
             aria-label={t('nav_reports')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               activeTab === 'reports' 
@@ -464,7 +424,7 @@ export default function App() {
           </button>
           
           <button
-            onClick={() => switchTab('account', 'nav_account', User)}
+            onClick={() => setActiveTab('account')}
             aria-label={t('nav_account')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
               ['account', 'users', 'certificates'].includes(activeTab) 
