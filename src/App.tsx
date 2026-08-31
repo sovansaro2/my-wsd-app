@@ -326,7 +326,7 @@ export default function App() {
             )}
             
             {activeTab === 'certificates' && (
-              <Certificates onBack={() => setActiveTab('account')} />
+              <Certificates userRole={userRole} onBack={() => setActiveTab('account')} />
             )}
 
             {/* Admin Management Views */}

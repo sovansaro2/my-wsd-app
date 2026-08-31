@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Download, Trash2, Loader2, Search, X, ArrowLeft, FileText } from 'lucide-react';
+import { Download, Trash2, Loader2, Search, X, ArrowLeft, FileText, Eye } from 'lucide-react';
 import { getCertificates, deleteCertificate, SavedCertificate, shareOrDownloadCertificate } from '../lib/certificateUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface CertificatesProps {
   onBack?: () => void;
+  userRole?: string;
 }
 
-export default function Certificates({ onBack }: CertificatesProps) {
+export default function Certificates({ onBack, userRole = 'user' }: CertificatesProps) {
   const { t } = useLanguage();
   const [certificates, setCertificates] = useState<SavedCertificate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [certToDelete, setCertToDelete] = useState<string | null>(null);
+  const [previewCert, setPreviewCert] = useState<SavedCertificate | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     loadCertificates();
@@ -125,45 +129,67 @@ export default function Certificates({ onBack }: CertificatesProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 border border-gray-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-2.5"
+                className="bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 border border-gray-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-2.5 hover:border-blue-200 dark:hover:border-slate-700 transition-colors"
               >
-                {/* Image Preview */}
+                {/* Image Preview / Click to view */}
                 {cert.blob && (
-                  <div className="w-full aspect-[1.414] bg-gray-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700/80 relative">
+                  <div 
+                    onClick={() => setPreviewCert(cert)}
+                    className="w-full aspect-[1.414] bg-gray-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700/80 relative cursor-pointer group"
+                    title={t('cert_btn_view')}
+                  >
                     <img 
                       src={URL.createObjectURL(cert.blob)} 
                       alt={cert.title} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white rounded-full p-2 backdrop-blur-sm shadow-md">
+                        <Eye className="w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-1">
-                  <div className="flex flex-col flex-1 min-w-0 w-full">
-                    <h3 className="font-medium text-sm sm:text-[15px] text-gray-900 dark:text-white  font-battambang" title={cert.title}>
-                      {cert.title}
-                    </h3>
-                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">
-                      {formatDate(cert.date)}
-                    </p>
-                  </div>
+                <div className="flex flex-col flex-1 min-w-0 w-full">
+                  <h3 className="font-medium text-sm sm:text-[15px] text-gray-900 dark:text-white font-battambang line-clamp-2" title={cert.title}>
+                    {cert.title}
+                  </h3>
+                  <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-1">
+                    {formatDate(cert.date)}
+                  </p>
+                </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
-                    <button
-                      onClick={() => handleDownload(cert)}
-                      className="p-1.5 sm:p-2 text-gray-700 dark:text-slate-200 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                      title="ទាញយក"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setCertToDelete(cert.id)}
-                      className="p-1.5 sm:p-2 text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-lg transition-colors"
-                      title="លុប"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-gray-100 dark:border-slate-800/80">
+                  {/* View Button */}
+                  <button
+                    onClick={() => setPreviewCert(cert)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-xl transition-colors font-battambang active:scale-95"
+                    title={t('cert_btn_view')}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>{t('cert_btn_view')}</span>
+                  </button>
+
+                  {/* Admin Only Actions (Download & Delete) */}
+                  {isAdmin && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleDownload(cert)}
+                        className="p-1.5 sm:p-2 text-gray-700 dark:text-slate-200 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors active:scale-95"
+                        title={t('cert_btn_download')}
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setCertToDelete(cert.id)}
+                        className="p-1.5 sm:p-2 text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-xl transition-colors active:scale-95"
+                        title={t('cert_btn_delete')}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -171,42 +197,106 @@ export default function Certificates({ onBack }: CertificatesProps) {
         )}
       </div>
 
-      {/* Delete Confirmation */}
-      {certToDelete && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm overflow-hidden shadow-xl border border-gray-100 dark:border-slate-800"
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewCert && previewCert.blob && (
+          <div 
+            onClick={() => setPreviewCert(null)}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-black/80 backdrop-blur-md"
           >
-            <div className="p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mx-auto mb-4">
-                <Trash2 className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-900 dark:text-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+            >
+              {/* Modal Top Bar */}
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm flex-shrink-0">
+                <div className="min-w-0 flex-1 pr-3">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang truncate" title={previewCert.title}>
+                    {previewCert.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                    {formatDate(previewCert.date)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDownload(previewCert)}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-sm font-battambang active:scale-95"
+                      title={t('cert_btn_download')}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{t('cert_btn_download')}</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setPreviewCert(null)}
+                    className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-              <h3 className="text-lg  text-gray-900 dark:text-white mb-2 font-battambang">លុបលិខិតថ្លែងអំណរគុណ?</h3>
-              <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed font-battambang">
-                តើអ្នកពិតជាចង់លុបលិខិតនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
-              </p>
-            </div>
-            <div className="flex border-t border-gray-100 dark:border-slate-800">
-              <button
-                onClick={() => setCertToDelete(null)}
-                className="flex-1 px-4 py-3.5 text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-battambang"
-              >
-                បោះបង់
-              </button>
-              <div className="w-[1px] bg-gray-100 dark:border-slate-800" />
-              <button
-                onClick={() => handleDelete(certToDelete)}
-                className="flex-1 px-4 py-3.5 text-sm  text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors font-battambang"
-              >
-                លុប
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+
+              {/* Modal Image Body */}
+              <div className="p-3 sm:p-6 overflow-auto flex items-center justify-center bg-gray-50/70 dark:bg-slate-950/60 min-h-[250px] max-h-[calc(90vh-70px)]">
+                <img
+                  src={URL.createObjectURL(previewCert.blob)}
+                  alt={previewCert.title}
+                  className="w-auto h-auto max-h-[72vh] max-w-full object-contain rounded-xl shadow-lg border border-gray-200/80 dark:border-slate-800"
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation */}
+      <AnimatePresence>
+        {certToDelete && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm overflow-hidden shadow-xl border border-gray-100 dark:border-slate-800"
+            >
+              <div className="p-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+                </div>
+                <h3 className="text-lg text-gray-900 dark:text-white mb-2 font-battambang">
+                  {t('cert_delete_confirm_title')}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-slate-400 leading-relaxed font-battambang">
+                  {t('cert_delete_confirm_desc')}
+                </p>
+              </div>
+              <div className="flex border-t border-gray-100 dark:border-slate-800">
+                <button
+                  onClick={() => setCertToDelete(null)}
+                  className="flex-1 px-4 py-3.5 text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-battambang"
+                >
+                  {t('list_cancel')}
+                </button>
+                <div className="w-[1px] bg-gray-100 dark:border-slate-800" />
+                <button
+                  onClick={() => handleDelete(certToDelete)}
+                  className="flex-1 px-4 py-3.5 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors font-battambang"
+                >
+                  {t('cert_btn_delete')}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
