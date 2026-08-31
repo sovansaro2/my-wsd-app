@@ -512,7 +512,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang relative">
         {/* Header */}
         <div className="bg-white dark:bg-slate-950 px-4 pt-4 pb-3 border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-xl mx-auto w-full flex items-center justify-between">
+          <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
             <div>
               <h1 className="text-xl  text-gray-900 dark:text-white ">{t('records_title')}</h1>
               <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{t('records_total_periods', { count: periods.length })}</p>
@@ -531,8 +531,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="max-w-xl mx-auto">
-            <div className="grid grid-cols-2 gap-3">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {periods.map(period => (
                 <div 
                   key={period.id}
@@ -766,7 +766,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang">
       {/* Detail Header */}
       <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 relative z-10 sticky top-0">
-        <div className="max-w-xl mx-auto w-full flex flex-col gap-2">
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => setSelectedPeriod(null)}
@@ -839,7 +839,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
 
       {/* Tabs */}
-      <div className="flex px-4 pt-3 pb-1 gap-2 max-w-xl mx-auto w-full">
+      <div className="flex px-4 pt-3 pb-1 gap-2 max-w-6xl mx-auto w-full">
         <button 
           onClick={() => setActiveTab('income')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all ${
@@ -865,7 +865,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 max-w-xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-4 py-3 max-w-6xl mx-auto w-full">
         <div className="space-y-3 bg-[#FAFAFA] dark:bg-slate-950 p-4 -m-4 sm:p-6 sm:-m-6 rounded-xl">
           <div className="hidden" />
           <>

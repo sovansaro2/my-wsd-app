@@ -190,13 +190,9 @@ export default function Dashboard() {
   const seilCount = seils.length > 0 ? seils.length : 0;
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-24 overflow-y-auto font-battambang transition-colors duration-200">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-20 overflow-y-auto font-battambang transition-colors duration-200">
       
-      
-      <div className="max-w-xl mx-auto w-full px-4 pt-4 pb-6 space-y-5">
-
-      {/* Auto Slide Banner */}
-      <ImageSlider />
+      <div className="max-w-6xl mx-auto w-full px-2 sm:px-4 pt-2 pb-6 space-y-6">
 
       {error && (
         <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20">
@@ -204,66 +200,78 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Main Financial Overview Card */}
-      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm p-4 sm:p-5">
-        <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 dark:border-slate-800">
-          <div>
-            <span className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400">
-              {t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}
-            </span>
-            <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
-              {t('dashboard_actual_balance')}
-            </h2>
-          </div>
-          <button 
-            onClick={handleToggleVisibility} 
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
-            title={isAmountVisible ? (language === 'en' ? 'Hide balance' : 'លាក់ទឹកប្រាក់') : (language === 'en' ? 'Show balance' : 'បង្ហាញទឹកប្រាក់')}
-          >
-            {isAmountVisible ? (
-              <>
-                <EyeOff className="w-4 h-4" />
-                <span>{t('common_hide')}</span>
-              </>
-            ) : (
-              <>
-                <Eye className="w-4 h-4" />
-                <span>{t('common_show')}</span>
-              </>
-            )}
-          </button>
+      {/* Top Banner & Balance Overview Responsive Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Auto Slide Banner */}
+        <div className="lg:col-span-7 flex flex-col">
+          <ImageSlider />
         </div>
 
-        {/* Master Balance */}
-        <div className="py-4">
-          <p className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-            {isAmountVisible ? `៛ ${balance.toLocaleString()}` : '៛ •••••••'}
-          </p>
-        </div>
+        {/* Main Financial Overview Card */}
+        <div className="lg:col-span-5 flex flex-col">
+          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm p-4 sm:p-5 h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 dark:border-slate-800">
+                <div>
+                  <span className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400">
+                    {t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}
+                  </span>
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
+                    {t('dashboard_actual_balance')}
+                  </h2>
+                </div>
+                <button 
+                  onClick={handleToggleVisibility} 
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+                  title={isAmountVisible ? (language === 'en' ? 'Hide balance' : 'លាក់ទឹកប្រាក់') : (language === 'en' ? 'Show balance' : 'បង្ហាញទឹកប្រាក់')}
+                >
+                  {isAmountVisible ? (
+                    <>
+                      <EyeOff className="w-4 h-4" />
+                      <span>{t('common_hide')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4" />
+                      <span>{t('common_show')}</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
-        {/* Income vs Expense Split */}
-        <div className="grid grid-cols-2 gap-3 pt-3.5 border-t border-gray-100 dark:border-slate-800">
-          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
-            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-              <span className="truncate">{t('dashboard_total_income')}</span>
+              {/* Master Balance */}
+              <div className="py-4 lg:py-6">
+                <p className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                  {isAmountVisible ? `៛ ${balance.toLocaleString()}` : '៛ •••••••'}
+                </p>
+              </div>
             </div>
-            <p className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              {isAmountVisible ? `+ ៛ ${totalIncome.toLocaleString()}` : '៛ ••••'}
-            </p>
-          </div>
 
-          <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
-            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
-              <span className="truncate">{t('dashboard_total_expense')}</span>
+            {/* Income vs Expense Split */}
+            <div className="grid grid-cols-2 gap-3 pt-3.5 border-t border-gray-100 dark:border-slate-800">
+              <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                  <span className="truncate">{t('dashboard_total_income')}</span>
+                </div>
+                <p className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  {isAmountVisible ? `+ ៛ ${totalIncome.toLocaleString()}` : '៛ ••••'}
+                </p>
+              </div>
+
+              <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
+                  <span className="truncate">{t('dashboard_total_expense')}</span>
+                </div>
+                <p className="text-base sm:text-lg font-bold text-rose-600 dark:text-rose-400">
+                  {isAmountVisible ? `- ៛ ${totalExpense.toLocaleString()}` : '៛ ••••'}
+                </p>
+              </div>
             </div>
-            <p className="text-base sm:text-lg font-bold text-rose-600 dark:text-rose-400">
-              {isAmountVisible ? `- ៛ ${totalExpense.toLocaleString()}` : '៛ ••••'}
-            </p>
-          </div>
+          </section>
         </div>
-      </section>
+      </div>
 
       {/* 100k+ Donors Section */}
       <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -279,14 +287,17 @@ export default function Dashboard() {
           </span>
         </div>
         
-        <div className="divide-y divide-gray-100 dark:divide-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0">
           {hundredKDonors.length === 0 ? (
-            <div className="py-10 text-center text-gray-400 dark:text-slate-500 text-sm sm:text-base">
+            <div className="col-span-full py-10 text-center text-gray-400 dark:text-slate-500 text-sm sm:text-base">
               {t('common_no_data')}
             </div>
           ) : (
             hundredKDonors.map((donor, index) => (
-              <div key={donor.id || index} className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors">
+              <div 
+                key={donor.id || index} 
+                className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors border-b border-gray-100 dark:border-slate-800 md:border-r md:border-b-0"
+              >
                 <div className="flex items-center gap-3 min-w-0 pr-2">
                   <span className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-xs font-semibold bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-300">
                     {index + 1}

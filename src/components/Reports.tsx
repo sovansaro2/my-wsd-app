@@ -52,8 +52,8 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
   if (isLoading) return <div className="p-8 text-center text-gray-500">{t('common_loading')}</div>;
 
   return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-xl  text-gray-900 dark:text-white font-title">{t('reports_saved_title')}</h2>
+    <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-4">
+      <h2 className="text-xl text-gray-900 dark:text-white font-title">{t('reports_saved_title')}</h2>
       
       <div className="relative">
         {userRole !== 'admin' && (
@@ -69,20 +69,22 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               {t('reports_empty')}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {reports.map(report => (
-                <div key={report.id} className="flex items-center p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800">
-                  {getIcon(report.type)}
-                  <div className="ml-4 flex-1">
-                    <h3 className="font-normal text-[15px] text-gray-900 dark:text-white font-battambang">{report.title}</h3>
-                    <p className="text-xs text-gray-500">{new Date(report.date).toLocaleString('en-GB')}</p>
+                <div key={report.id} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 hover:border-orange-200 dark:hover:border-slate-700 transition-colors">
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-2">
+                    <div className="shrink-0">{getIcon(report.type)}</div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-normal text-[15px] text-gray-900 dark:text-white font-battambang truncate">{report.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{new Date(report.date).toLocaleString('en-GB')}</p>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <button onClick={() => handleDownload(report)} className="p-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100">
-                      <Download className="w-5 h-5" />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button onClick={() => handleDownload(report)} className="p-2 text-orange-500 bg-orange-50 dark:bg-orange-950/40 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/60 transition-colors" title="Download">
+                      <Download className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setReportToDelete(report.id)} className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100">
-                      <Trash2 className="w-5 h-5" />
+                    <button onClick={() => setReportToDelete(report.id)} className="p-2 text-red-500 bg-red-50 dark:bg-red-950/40 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors" title="Delete">
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

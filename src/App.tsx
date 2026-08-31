@@ -1,7 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Home, List, CircleDollarSign, User, FileText, Bell, X } from 'lucide-react';
-
-
+import { 
+  Home, 
+  List, 
+  CircleDollarSign, 
+  User, 
+  FileText, 
+  Bell, 
+  X, 
+  Award, 
+  Users as UsersIcon, 
+  LogOut, 
+  Globe, 
+  Sun, 
+  Moon,
+  Shield,
+  Layers,
+  ChevronRight
+} from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './components/ui/LoadingScreen';
@@ -17,16 +32,19 @@ import Users from './components/Users';
 import InstallPrompt from './components/InstallPrompt';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
+import { useTheme } from './contexts/ThemeContext';
 
 type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
-  const { t, language } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [actualRole, setActualRole] = useState<Role>(null);
   const [userRole, setUserRole] = useState<Role>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   
   // Notifications State
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -59,6 +77,7 @@ export default function App() {
   const fetchUserRole = async () => {
     try {
       const data = await api.getMe();
+      setCurrentUser(data);
       const role = data?.role as Role || 'user';
       setActualRole(role);
       setUserRole(role);
@@ -109,7 +128,16 @@ export default function App() {
     localStorage.removeItem('access_token');
     setActualRole(null);
     setUserRole(null);
+    setCurrentUser(null);
     setActiveTab('home');
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'km' ? 'en' : 'km');
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   if (isInitializing) {
@@ -125,10 +153,200 @@ export default function App() {
     );
   }
 
+  // Sidebar navigation items
+  const navItems = [
+    { id: 'home' as Tab, label: t('nav_home'), icon: Home },
+    { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
+    { id: 'categories' as Tab, label: t('nav_list'), icon: List },
+    { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
+    { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
+    ...(actualRole === 'admin' ? [{ id: 'users' as Tab, label: t('profile_users'), icon: UsersIcon }] : []),
+    { id: 'account' as Tab, label: t('nav_account'), icon: User },
+  ];
+
+  const getActiveTabTitle = () => {
+    switch (activeTab) {
+      case 'home': return t('nav_home');
+      case 'records': return t('nav_finance');
+      case 'categories': return t('nav_list');
+      case 'reports': return t('nav_reports');
+      case 'certificates': return t('profile_certificates');
+      case 'users': return t('profile_users');
+      case 'account': return t('nav_account');
+      default: return t('app_title');
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 pb-24 pt-16 overflow-x-hidden w-full max-w-full">
-      {/* Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
+      
+      {/* ========================================================================= */}
+      {/* DESKTOP SIDEBAR (Visible on md and larger screens) */}
+      {/* ========================================================================= */}
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
+        {/* Brand Header */}
+        <div className="h-16 px-5 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-orange-500 dark:bg-slate-900 text-white">
+          <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-sm shrink-0">
+            <Layers className="w-5 h-5 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-white font-title text-base lg:text-lg leading-tight truncate">
+              {language === 'en' ? 'WSD Management' : 'វត្តស្នាយដួច'}
+            </h1>
+            <p className="text-[11px] text-orange-100 dark:text-slate-400 font-battambang truncate">
+              {language === 'en' ? 'Data Management System' : 'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ'}
+            </p>
+          </div>
+        </div>
+
+        {/* View Mode Switcher for Admins */}
+        {actualRole === 'admin' && (
+          <div className="px-4 pt-3 pb-1">
+            <div className="bg-gray-100 dark:bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-gray-200/60 dark:border-slate-700/50">
+              <button
+                onClick={() => setUserRole('admin')}
+                className={`flex-1 py-1.5 px-2 text-xs rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 font-battambang ${
+                  userRole === 'admin'
+                    ? 'bg-white dark:bg-slate-700 text-orange-600 dark:text-orange-400 shadow-sm font-semibold'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Admin</span>
+              </button>
+              <button
+                onClick={() => setUserRole('user')}
+                className={`flex-1 py-1.5 px-2 text-xs rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 font-battambang ${
+                  userRole === 'user'
+                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-semibold'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>User</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Links */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[14px] font-medium transition-all font-battambang group ${
+                  isActive
+                    ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 font-semibold shadow-xs'
+                    : 'text-gray-600 dark:text-slate-300 hover:bg-gray-100/80 dark:hover:bg-slate-800/60 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-1.5 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-orange-500 text-white shadow-xs'
+                      : 'text-gray-500 dark:text-slate-400 group-hover:text-gray-700 dark:group-hover:text-slate-200'
+                  }`}>
+                    <Icon className="w-4 h-4 stroke-[2]" />
+                  </div>
+                  <span className="truncate">{item.label}</span>
+                </div>
+                {isActive && (
+                  <ChevronRight className="w-4 h-4 text-orange-500 shrink-0" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quick Language & Theme Controls */}
+        <div className="px-4 py-2 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
+            title={t('profile_change_lang')}
+          >
+            <Globe className="w-3.5 h-3.5 text-orange-500" />
+            <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
+          </button>
+
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+          </button>
+        </div>
+
+        {/* User Profile Card & Logout */}
+        <div className="p-3 border-t border-gray-100 dark:border-slate-800/80 bg-gray-50/50 dark:bg-slate-900/40">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/60 border border-gray-200/60 dark:border-slate-700/50">
+            <div 
+              onClick={() => setActiveTab('account')} 
+              className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer pr-1"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs">
+                {currentUser?.full_name ? currentUser.full_name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-gray-900 dark:text-white truncate font-battambang">
+                  {currentUser?.full_name || 'គណនីរបស់ខ្ញុំ'}
+                </p>
+                <p className="text-[10px] text-gray-500 dark:text-slate-400 capitalize truncate">
+                  {userRole === 'admin' ? 'Administrator' : 'Member'}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+              title={t('profile_logout')}
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ========================================================================= */}
+      {/* DESKTOP TOP NAVBAR (Visible on md and larger screens) */}
+      {/* ========================================================================= */}
+      <header className="hidden md:flex fixed top-0 right-0 left-64 lg:left-72 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 z-30 px-6 items-center justify-between transition-colors duration-200 shadow-xs">
+        <div className="flex items-center gap-2">
+          <h2 className="text-base lg:text-lg font-bold text-gray-900 dark:text-white font-battambang">
+            {getActiveTabTitle()}
+          </h2>
+          <span className="text-xs text-gray-400 dark:text-slate-500 font-battambang">
+            • {t('app_title')}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Notifications Button */}
+          <button 
+            onClick={handleOpenNotifications}
+            className="relative p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            title="ការជូនដំណឹង"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white font-bold px-1">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* ========================================================================= */}
+      {/* MOBILE TOP NAVBAR (Visible ONLY on mobile screens < md) */}
+      {/* ========================================================================= */}
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className={`text-white select-none pt-0.5 ${
           language === 'en'
             ? 'font-rajdhani font-semibold text-lg sm:text-xl md:text-2xl tracking-wider'
@@ -143,7 +361,7 @@ export default function App() {
           >
             <Bell className="w-6 h-6" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px]  text-white border border-orange-500 dark:border-slate-950 px-1">
+              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white border border-orange-500 dark:border-slate-950 px-1">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -152,24 +370,24 @@ export default function App() {
       </header>
 
       {/* Notifications Slide-over Drawer */}
-      <>
+      <AnimatePresence>
         {showNotifications && (
           <div>
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[60] backdrop-blur-sm"
+              exit={{ opacity: 0 }}
               onClick={() => setShowNotifications(false)}
+              className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[60] backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: -20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[80vh] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/5">
-                <h3 className="font-battambang  text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
+                <h3 className="font-battambang text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
                 <button 
                   onClick={() => setShowNotifications(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
@@ -177,30 +395,35 @@ export default function App() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
               <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-slate-900/20">
                 <div className="divide-y divide-gray-100 dark:divide-white/5">
                   {notifications.length > 0 ? (
-                    notifications.map(notif => (
+                    notifications.map((notif: any) => (
                       <div 
                         key={notif.id}
                         onClick={() => handleNotificationClick(notif)}
                         className="p-4 hover:bg-orange-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer bg-white dark:bg-transparent"
                       >
-                        <div className="flex items-start gap-3.5">
-                          <div className={`mt-1 w-2.5 h-2.5 rounded-full flex-shrink-0 ${notif.type === 'income' ? 'bg-emerald-500' : notif.type === 'expense' ? 'bg-rose-500' : 'bg-blue-500'} shadow-sm`} />
-                          <div className="flex-1">
-                            <p className="text-[14px]  text-gray-900 dark:text-white font-battambang leading-normal mb-1">{notif.title}</p>
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-orange-100 text-orange-600 dark:bg-orange-950/60 dark:text-orange-400 rounded-xl shrink-0 mt-0.5">
+                            <Bell className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[14px] text-gray-900 dark:text-white font-battambang leading-normal mb-1">{notif.title}</p>
                             <p className="text-[13px] text-gray-600 dark:text-slate-400 font-battambang leading-relaxed">{notif.message}</p>
                             <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-2.5 flex items-center gap-1.5">
-                              {new Date(notif.created_at).toLocaleDateString('km-KH')} {new Date(notif.created_at).toLocaleTimeString('km-KH', {hour: '2-digit', minute:'2-digit'})}
+                              <span>{new Date(notif.created_at).toLocaleDateString('km-KH')}</span>
+                              <span>•</span>
+                              <span>{new Date(notif.created_at).toLocaleTimeString('km-KH', {hour: '2-digit', minute:'2-digit'})}</span>
                             </p>
                           </div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="p-10 flex flex-col items-center justify-center text-center">
-                      <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <div className="py-12 px-4 text-center">
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 mx-auto">
                         <Bell className="w-8 h-8 text-gray-400 dark:text-slate-500" />
                       </div>
                       <p className="text-gray-500 dark:text-slate-400 text-[14px] font-battambang">មិនមានការជូនដំណឹងថ្មីទេ</p>
@@ -211,23 +434,23 @@ export default function App() {
             </motion.div>
           </div>
         )}
-      </>
+      </AnimatePresence>
 
-      {/* Notification Detail Modal */}
-      <>
+      {/* Notification Detail Dialog Modal */}
+      <AnimatePresence>
         {selectedNotification && (
           <div>
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="fixed inset-0 bg-black/60 z-[80] backdrop-blur-sm"
+              exit={{ opacity: 0 }}
               onClick={() => setSelectedNotification(null)}
+              className="fixed inset-0 bg-black/60 z-[80] backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-white dark:bg-slate-900 z-[90] shadow-2xl rounded-3xl overflow-hidden flex flex-col"
             >
               <div className={`p-6 pb-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between ${
@@ -236,14 +459,14 @@ export default function App() {
                 'bg-blue-50 dark:bg-blue-900/20'
               }`}>
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  <div className={`p-2 rounded-xl ${
                     selectedNotification.type === 'income' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 
                     selectedNotification.type === 'expense' ? 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400' : 
                     'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
                   }`}>
                     <Bell className="w-5 h-5" />
                   </div>
-                  <h3 className="font-battambang  text-gray-900 dark:text-white text-lg">
+                  <h3 className="font-battambang text-gray-900 dark:text-white text-lg">
                     {selectedNotification.title}
                   </h3>
                 </div>
@@ -269,7 +492,7 @@ export default function App() {
                 <div className="mt-8 flex gap-3">
                   <button
                     onClick={() => setSelectedNotification(null)}
-                    className="flex-1 py-3 px-4 rounded-xl  text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                    className="flex-1 py-3 px-4 rounded-xl text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                   >
                     បិទ
                   </button>
@@ -279,7 +502,7 @@ export default function App() {
                       setShowNotifications(false);
                       setSelectedNotification(null);
                     }}
-                    className="flex-1 py-3 px-4 rounded-xl  text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
+                    className="flex-1 py-3 px-4 rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
                   >
                     ទៅកាន់ទំព័រ
                   </button>
@@ -288,30 +511,32 @@ export default function App() {
             </motion.div>
           </div>
         )}
-      </>
+      </AnimatePresence>
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-lg mx-auto">
-        <>
+      {/* ========================================================================= */}
+      {/* MAIN CONTENT CONTAINER (Responsive on both Desktop and Mobile) */}
+      {/* ========================================================================= */}
+      <div className="flex-1 flex flex-col min-w-0 md:pl-64 lg:pl-72 pt-16 md:pt-16 pb-24 md:pb-8 transition-all duration-200">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-2 md:py-4">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
             className="h-full"
           >
             {activeTab === 'home' && <Dashboard />}
             {activeTab === 'records' && (
               <RecordsComponent 
                 userRole={userRole} 
-                />
+              />
             )}
             {activeTab === 'reports' && <Reports userRole={userRole} />}
             {activeTab === 'categories' && (
               <NameLists 
                 userRole={userRole}
-                />
+              />
             )}
             {activeTab === 'account' && (
               <AccountProfile
@@ -319,7 +544,6 @@ export default function App() {
                 actualRole={actualRole}
                 onViewModeChange={(mode) => setUserRole(mode)}
                 onLogout={handleLogout}
-                
                 onManageUsers={() => setActiveTab('users')}
                 onCertificates={() => setActiveTab('certificates')}
               />
@@ -334,14 +558,13 @@ export default function App() {
               <Users onBack={() => setActiveTab('account')} />
             )}
           </motion.div>
-        </>
-      </main>
+        </main>
+      </div>
 
-      {/* Create Post Modal */}
-      
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      {/* ========================================================================= */}
+      {/* MOBILE BOTTOM NAVIGATION (Visible ONLY on mobile screens < md) */}
+      {/* ========================================================================= */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
             onClick={() => setActiveTab('home')}

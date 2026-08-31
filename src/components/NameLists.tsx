@@ -480,7 +480,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       <>
             <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
         <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-3xl mx-auto w-full flex items-center justify-between">
+          <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
             <h2 className="text-2xl font-normal text-gray-900 dark:text-white font-battambang  leading-normal">{t('lists_main_title')}</h2>
             {userRole === 'admin' && (
               <button 
@@ -492,7 +492,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             )}
           </div>
         </div>
-        <div className="px-4 py-6 max-w-3xl mx-auto w-full">
+        <div className="px-4 py-6 max-w-6xl mx-auto w-full">
           {roofCat && (
             <div className="mb-8">
               <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
@@ -532,7 +532,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                 {t('lists_category_kathina')}
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {kathinaCats.map(cat => (
                   <button 
                     key={cat.id}
@@ -577,7 +577,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                {t('lists_category_general')}
              </h3>
-             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                {generalCats.map(cat => (
                  <button 
                    key={cat.id}
@@ -713,7 +713,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative overflow-x-hidden w-full">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-        <div className="max-w-3xl mx-auto w-full flex flex-col gap-4">
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-4">
           {/* Detail View Header */}
           <div className="flex items-center gap-3">
             <button 
@@ -757,7 +757,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <LoadingScreen className="h-64 bg-transparent" />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-3xl mx-auto w-full space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
           {/* Header Row: Date & Total */}
           <div className="flex items-center justify-between mb-4 px-1 border-b border-gray-200 dark:border-slate-700/60 pb-3">
             <div className="text-[13px] font-medium text-zinc-500 dark:text-slate-400 uppercase st">

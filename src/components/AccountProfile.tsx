@@ -972,10 +972,10 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
   // --- MAIN ACCOUNT VIEW ---
   return (
-    <div className="p-2 sm:p-6 max-w-xl mx-auto pb-24 font-battambang bg-white dark:bg-slate-950 transition-colors duration-200 min-h-full">
+    <div className="p-2 sm:p-6 max-w-4xl mx-auto pb-20 font-battambang bg-white dark:bg-slate-950 transition-colors duration-200 min-h-full">
       
       {/* Main Account Card Container */}
-      <div className="bg-white dark:bg-slate-900 rounded-[28px] overflow-hidden transition-all">
+      <div className="bg-white dark:bg-slate-900 rounded-[28px] overflow-hidden transition-all border border-gray-100 dark:border-slate-800 shadow-sm">
         
         {/* Top Header */}
         <div className="p-6 sm:p-8 flex items-center gap-5 sm:gap-6">
