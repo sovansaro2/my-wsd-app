@@ -122,6 +122,14 @@ router.put('/me', requireAuth, async (req, res) => {
     delete updates.password;
   }
 
+  if (updates.email && updates.email.trim() !== '' && updates.email !== req.user!.email) {
+    const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(req.user!.id, {
+      email: updates.email.trim(),
+      email_confirm: true
+    });
+    if (authError) return res.status(400).json({ detail: authError.message });
+  }
+
   // Persist user_code in auth metadata as well
   if (updates.user_code) {
     try {

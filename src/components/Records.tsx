@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { ChevronDown, Pencil, Star, ArrowUpCircle, ArrowDownCircle, Wallet, Plus, X, Check, Download, Loader2, Calendar, Bell, Award, Share2, Landmark, Folder, CalendarDays, ChevronRight } from 'lucide-react';
+import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, Folder, CalendarDays } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';

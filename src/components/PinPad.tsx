@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Delete } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface PinPadProps {
   title: string;
@@ -13,6 +14,7 @@ interface PinPadProps {
 }
 
 export default function PinPad({ title, subtitle, error, onComplete, onCancel, onForgotPin, isLoading }: PinPadProps) {
+  const { language } = useLanguage();
   const [pin, setPin] = useState('');
   const [shake, setShake] = useState(false);
 
@@ -49,7 +51,7 @@ export default function PinPad({ title, subtitle, error, onComplete, onCancel, o
             onClick={onForgotPin}
             className="absolute top-4 right-4 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline font-battambang"
           >
-            ភ្លេច PIN?
+            {language === 'km' ? 'ភ្លេច PIN?' : 'Forgot PIN?'}
           </button>
         )}
         <p className="text-sm text-gray-500 dark:text-slate-400 font-battambang">{subtitle}</p>
@@ -94,7 +96,7 @@ export default function PinPad({ title, subtitle, error, onComplete, onCancel, o
             disabled={isLoading}
             className="w-16 h-16 rounded-full flex items-center justify-center text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mx-auto font-battambang"
           >
-            បោះបង់
+            {language === 'km' ? 'បោះបង់' : 'Cancel'}
           </button>
         ) : (
           <div />

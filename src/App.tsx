@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Plus, Settings, Home, List, CircleDollarSign, User, FileText, Bell, X } from 'lucide-react';
+import { Home, List, CircleDollarSign, User, FileText, Bell, X } from 'lucide-react';
 
 
 
@@ -359,7 +359,7 @@ export default function App() {
             }`}>
               <Home className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-bold' : 'font-normal'}`}>
+            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
               {t('nav_home')}
             </span>
           </button>
@@ -380,7 +380,7 @@ export default function App() {
             }`}>
               <CircleDollarSign className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-bold' : 'font-normal'}`}>
+            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
               {t('nav_finance')}
             </span>
           </button>
@@ -401,7 +401,7 @@ export default function App() {
             }`}>
               <List className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-bold' : 'font-normal'}`}>
+            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
               {t('nav_list')}
             </span>
           </button>
@@ -422,7 +422,7 @@ export default function App() {
             }`}>
               <FileText className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'reports' ? 'font-bold' : 'font-normal'}`}>
+            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
               {t('nav_reports')}
             </span>
           </button>
@@ -443,7 +443,7 @@ export default function App() {
             }`}>
               <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates'].includes(activeTab) ? 'font-bold' : 'font-normal'}`}>
+            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
               {t('nav_account')}
             </span>
           </button>

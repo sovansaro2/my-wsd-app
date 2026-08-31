@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Settings, Camera, Pencil, Calendar, UserCircle2, Lock as LockIcon, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Wallet, Globe, Palette, Info, X, Crown, Copy, ShieldCheck, Check, User, Users, Sun, Moon } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send } from 'lucide-react';
 import PinPad from './PinPad';
 import CustomDatePicker from './ui/CustomDatePicker';
 import { api } from '../lib/apiClient';
@@ -27,8 +27,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
-  const [originalFullName, setOriginalFullName] = useState('');
-    const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
 
   const [familyName, setFamilyName] = useState('');
@@ -56,25 +55,37 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [isUploading, setIsUploading] = useState(false);
   const [isEditingView, setIsEditingView] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { theme: currentTheme, setTheme: setCurrentTheme } = useTheme();
   
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showSecurityModal, setShowSecurityModal] = useState(false);
+  const [isSecurityView, setIsSecurityView] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [newEmailInput, setNewEmailInput] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [newPhoneInput, setNewPhoneInput] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [isPhoneLoading, setIsPhoneLoading] = useState(false);
+
+  const [showAdminContactModal, setShowAdminContactModal] = useState(false);
+  const [isAdminContactCopied, setIsAdminContactCopied] = useState(false);
+
   const handlePasswordChange = async () => {
     if (password.length < 6) {
-      setPasswordError('ពាក្យសម្ងាត់ត្រូវមានយ៉ាងហោចណាស់ ៦ តួអក្សរ');
+      setPasswordError(t('sec_modal_pwd_err_len'));
       return;
     }
     if (password !== confirmPassword) {
-      setPasswordError('ពាក្យសម្ងាត់មិនដូចគ្នា');
+      setPasswordError(t('sec_modal_pwd_err_match'));
       return;
     }
     
@@ -85,30 +96,59 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
       setShowPasswordModal(false);
       setPassword('');
       setConfirmPassword('');
-      setMessage({ type: 'success', text: 'បានផ្លាស់ប្ដូរពាក្យសម្ងាត់ដោយជោគជ័យ' });
+      setMessage({ type: 'success', text: t('sec_modal_pwd_success') });
     } catch (err: any) {
-      setPasswordError(err.message || 'មានបញ្ហាក្នុងការផ្លាស់ប្ដូរពាក្យសម្ងាត់');
+      setPasswordError(err.message || t('sec_modal_pwd_err_fail'));
     } finally {
       setIsPasswordLoading(false);
     }
   };
 
+  const handleEmailChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmailInput || !newEmailInput.includes('@')) {
+      setEmailError(t('sec_modal_email_err_invalid'));
+      return;
+    }
+    try {
+      setIsEmailLoading(true);
+      setEmailError('');
+      await api.updateProfile({ email: newEmailInput.trim() });
+      setEmail(newEmailInput.trim());
+      setShowEmailModal(false);
+      setMessage({ type: 'success', text: t('sec_modal_email_success') });
+    } catch (err: any) {
+      setEmailError(err.message || t('sec_modal_email_err_fail'));
+    } finally {
+      setIsEmailLoading(false);
+    }
+  };
+
+  const handlePhoneChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPhoneInput.trim()) {
+      setPhoneError(t('sec_modal_phone_err_req'));
+      return;
+    }
+    try {
+      setIsPhoneLoading(true);
+      setPhoneError('');
+      await api.updateProfile({ phone_number: newPhoneInput.trim() });
+      setPhoneNumber(newPhoneInput.trim());
+      setShowPhoneModal(false);
+      setMessage({ type: 'success', text: t('sec_modal_phone_success') });
+    } catch (err: any) {
+      setPhoneError(err.message || t('sec_modal_phone_err_fail'));
+    } finally {
+      setIsPhoneLoading(false);
+    }
+  };
+
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const settingsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setIsSettingsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   
@@ -121,7 +161,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
         setCurrentPin(pin);
         setPinSetupStep('enter_new');
       } catch (err: any) {
-        setPinSetupError(err.message || 'PIN បច្ចុប្បន្នមិនត្រឹមត្រូវ');
+        setPinSetupError(err.message || t('sec_modal_pin_err_incorrect'));
       } finally {
         setIsPinSettingLoading(false);
       }
@@ -130,7 +170,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
       setPinSetupStep('confirm_new');
     } else if (pinSetupStep === 'confirm_new') {
       if (pin !== tempNewPin) {
-        setPinSetupError('PIN មិនដូចគ្នា');
+        setPinSetupError(t('sec_modal_pin_err_match'));
         setPinSetupStep('enter_new');
         setTempNewPin('');
         return;
@@ -150,11 +190,11 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
         
         setHasBalancePin(true);
         setShowPinSetup(false);
-        setMessage({ type: 'success', text: 'បានកំណត់ PIN ដោយជោគជ័យ' });
+        setMessage({ type: 'success', text: t('sec_modal_pin_success') });
         setAuthPassword('');
         setCurrentPin('');
       } catch (err: any) {
-        setPinSetupError(err.message || 'មានបញ្ហាក្នុងការកំណត់ PIN');
+        setPinSetupError(err.message || t('sec_modal_pin_err_fail'));
       } finally {
         setIsPinSettingLoading(false);
       }
@@ -173,7 +213,6 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
       setUserKey(profile.id);
       
       setFullName(profile.full_name || '');
-      setOriginalFullName(profile.full_name || '');
       setFamilyName(profile.family_name || '');
       setGivenName(profile.given_name || '');
       setGender(profile.gender || 'Male');
@@ -241,10 +280,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
       if (res) {
         if (res.full_name) {
           setFullName(res.full_name);
-          setOriginalFullName(res.full_name);
         } else if (combinedFullName) {
           setFullName(combinedFullName);
-          setOriginalFullName(combinedFullName);
         }
         if (res.family_name !== undefined) setFamilyName(res.family_name || '');
         if (res.given_name !== undefined) setGivenName(res.given_name || '');
@@ -295,16 +332,16 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h2 className="text-lg  text-gray-900 dark:text-white">Profile</h2>
+          <h2 className="text-lg text-gray-900 dark:text-white font-battambang">{t('profile_title')}</h2>
           
           {actualRole === 'admin' && onViewModeChange && (
             <div className="ml-auto">
               <button
                 onClick={() => onViewModeChange(userRole === 'admin' ? 'user' : 'admin')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-xs  text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-xs text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors font-battambang"
               >
                 <UserCircle2 className="w-3.5 h-3.5" />
-                {userRole === 'admin' ? 'ប្តូរទៅ User' : 'ប្តូរទៅ Admin'}
+                {userRole === 'admin' ? (language === 'km' ? 'ប្តូរទៅ User' : 'Switch to User') : (language === 'km' ? 'ប្តូរទៅ Admin' : 'Switch to Admin')}
               </button>
             </div>
           )}
@@ -352,52 +389,52 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                 </div>
               )}
               
-              <h4 className="text-[16px]  text-gray-900 dark:text-white mb-6">Personal Details</h4>
+              <h4 className="text-[16px] text-gray-900 dark:text-white mb-6 font-battambang">{t('profile_personal_details')}</h4>
               
               <div className="space-y-4">
                 {/* Family Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Family Name</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_family_name')}</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={familyName}
                       onChange={(e) => setFamilyName(e.target.value)}
-                      placeholder="គោត្តនាម"
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed"
+                      placeholder={t('profile_family_name_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
 
                 {/* Given Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Given Name</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_given_name')}</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={givenName}
                       onChange={(e) => setGivenName(e.target.value)}
-                      placeholder="នាម"
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed"
+                      placeholder={t('profile_given_name_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
 
                 {/* Date of Birth */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Date of Birth</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_dob')}</label>
                   <div className="w-full relative">
-                    <CustomDatePicker disabled={!isEditable} value={dateOfBirth} onChange={setDateOfBirth} placeholder="ថ្ងៃ/ខែ/ឆ្នាំ" 
+                    <CustomDatePicker disabled={!isEditable} value={dateOfBirth} onChange={setDateOfBirth} placeholder={t('profile_dob_ph')} 
                     />
                   </div>
                 </div>
 
                 {/* Gender */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Gender</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_gender')}</label>
                   <div className="w-full relative">
                     <select disabled={!isEditable} value={gender === 'Female' || gender === 'ស្រី' ? 'Female' : 'Male'}
                       onChange={(e) => setGender(e.target.value)}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white focus:border-[#1d70b8] outline-none transition-colors appearance-none cursor-pointer disabled:cursor-not-allowed"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white focus:border-[#1d70b8] outline-none transition-colors appearance-none cursor-pointer disabled:cursor-not-allowed font-battambang"
                     >
-                      <option value="Male" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">ប្រុស</option>
-                      <option value="Female" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">ស្រី</option>
+                      <option value="Male" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">{t('profile_gender_male')}</option>
+                      <option value="Female" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">{t('profile_gender_female')}</option>
                     </select>
                     <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -407,36 +444,36 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
                 {/* Address (ទីលំនៅ) */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Address</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_address')}</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="text" value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      placeholder="ទីលំនៅ"
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed"
+                      placeholder={t('profile_address_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
 
                 {/* Email */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Email</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_email')}</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="email" value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="អ៊ីម៉ែល"
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed"
+                      placeholder={t('profile_email_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-sans"
                     />
                   </div>
                 </div>
 
                 {/* Phone Number */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
-                  <label className="text-[13px]  text-gray-400 dark:text-slate-400">Phone Number</label>
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_phone')}</label>
                   <div className="w-full">
                     <input disabled={!isEditable} type="tel" value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="លេខទូរស័ព្ទ"
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed"
+                      placeholder={t('profile_phone_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-sans"
                     />
                   </div>
                 </div>
@@ -447,23 +484,488 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                   <button 
                     type="button" 
                     onClick={(e) => { e.preventDefault(); setIsEditable(true); }}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full  text-[13px]  shadow-sm transition-colors flex items-center justify-center min-w-[120px]"
+                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full text-[13.5px] font-medium shadow-sm transition-colors flex items-center justify-center min-w-[120px] font-battambang active:scale-[0.98]"
                   >
-                    កែប្រែ
+                    {t('profile_btn_edit')}
                   </button>
                 ) : (
                   <button 
                     type="submit" 
                     disabled={isSaving}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full  text-[14px] shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px]"
+                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full text-[14px] font-medium shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px] font-battambang active:scale-[0.98]"
                   >
-                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកប្រវត្តិរូប'}
+                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : t('profile_btn_save')}
                   </button>
                 )}
               </div>
             </form>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // --- PASSWORD & SECURITY VIEW ---
+  if (isSecurityView) {
+    return (
+      <div className="flex flex-col h-full bg-[#f4f6f8] dark:bg-slate-950 transition-colors duration-200 font-sans pb-12 overflow-y-auto min-h-full">
+        {/* Sticky Top Header */}
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm sticky top-0 z-10 w-full">
+          <button 
+            onClick={() => {
+              setIsSecurityView(false);
+              setMessage(null);
+            }}
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors focus:outline-none"
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white font-battambang">{t('sec_title')}</h2>
+        </div>
+
+        {/* Center Content Card */}
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto my-auto flex flex-col justify-center">
+          {message && (
+            <div className={`mb-4 rounded-xl p-3.5 text-sm font-medium border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800' : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800'}`}>
+              {message.text}
+            </div>
+          )}
+
+          {/* Main Card Styled Exactly Like the Uploaded Image */}
+          <div className="bg-white dark:bg-slate-900 rounded-[28px] shadow-xs border border-gray-100 dark:border-slate-800 p-6 sm:p-8 w-full">
+            
+            <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
+              {t('sec_title')}
+            </h3>
+            
+            <hr className="border-gray-200 dark:border-slate-800 mb-5" />
+
+            {/* Section 1: Password */}
+            <div className="py-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_pwd_label')}</span>
+                <button
+                  onClick={() => {
+                    setPassword('');
+                    setConfirmPassword('');
+                    setPasswordError('');
+                    setShowPasswordModal(true);
+                  }}
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                >
+                  {t('sec_change_btn')}
+                </button>
+              </div>
+              <p className="text-[13.5px] text-gray-600 dark:text-slate-400 mt-1.5 leading-relaxed font-battambang">
+                {t('sec_pwd_desc')}
+              </p>
+            </div>
+
+            <hr className="border-gray-200 dark:border-slate-800 my-4" />
+
+            {/* Section 2: PIN */}
+            <div className="py-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_pin_label')}</span>
+                <button
+                  onClick={() => {
+                    if (hasBalancePin) {
+                      setPinSetupStep('verify_current');
+                    } else {
+                      setPinSetupStep('enter_new');
+                    }
+                    setTempNewPin('');
+                    setCurrentPin('');
+                    setPinSetupError('');
+                    setShowPinSetup(true);
+                  }}
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                >
+                  {t('sec_change_btn')}
+                </button>
+              </div>
+              <p className="text-[13.5px] text-gray-600 dark:text-slate-400 mt-1.5 leading-relaxed font-battambang">
+                {t('sec_pin_desc')}
+              </p>
+            </div>
+
+            <hr className="border-gray-200 dark:border-slate-800 my-4" />
+
+            {/* Section 3: Email */}
+            <div className="py-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_email_label')}</span>
+                <button
+                  onClick={() => {
+                    setNewEmailInput(email || 'sovansaro2025@gmail.com');
+                    setEmailError('');
+                    setShowEmailModal(true);
+                  }}
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                >
+                  {t('sec_change_btn')}
+                </button>
+              </div>
+              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-sans break-all">
+                {email || 'sovansaro2025@gmail.com'}
+              </p>
+            </div>
+
+            <hr className="border-gray-200 dark:border-slate-800 my-4" />
+
+            {/* Section 4: Phone Number */}
+            <div className="py-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-red-500 font-bold text-sm leading-none">*</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_phone_label')}</span>
+                <button
+                  onClick={() => {
+                    setNewPhoneInput(phoneNumber || '016 759 264');
+                    setPhoneError('');
+                    setShowPhoneModal(true);
+                  }}
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                >
+                  {t('sec_change_cap_btn')}
+                </button>
+              </div>
+              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-sans">
+                {phoneNumber || '016 759 264'}
+              </p>
+
+              {/* Contact: admin */}
+              <div className="mt-5 text-[13.5px] text-gray-600 dark:text-slate-400 flex items-center gap-1.5">
+                <span className="font-battambang">{t('sec_contact_label')}</span>
+                <button
+                  type="button"
+                  onClick={() => setShowAdminContactModal(true)}
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 hover:underline font-normal cursor-pointer focus:outline-none"
+                >
+                  admin
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* PIN Setup Modal */}
+        {showPinSetup && (
+          <div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setShowPinSetup(false);
+                setPinSetupStep('enter_new');
+                setTempNewPin('');
+                setCurrentPin('');
+                setPinSetupError('');
+              }}
+              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-[101] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl pt-8 pb-10 px-4 font-battambang"
+            >
+              <PinPad
+                title={pinSetupStep === 'verify_current' ? t('sec_modal_pin_verify_title') : pinSetupStep === 'enter_new' ? t('sec_modal_pin_new_title') : t('sec_modal_pin_confirm_title')}
+                subtitle={pinSetupStep === 'verify_current' ? t('sec_modal_pin_verify_sub') : pinSetupStep === 'enter_new' ? t('sec_modal_pin_new_sub') : t('sec_modal_pin_confirm_sub')}
+                error={pinSetupError}
+                onComplete={handlePinSetupComplete}
+                onCancel={() => {
+                  setShowPinSetup(false);
+                  setPinSetupStep('enter_new');
+                  setTempNewPin('');
+                  setCurrentPin('');
+                  setPinSetupError('');
+                }}
+                isLoading={isPinSettingLoading}
+              />
+            </motion.div>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        <AnimatePresence>
+        {showPasswordModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPasswordModal(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-t-3xl sm:rounded-3xl w-full max-w-md mx-auto max-h-[90vh] flex flex-col shadow-2xl font-battambang"
+            >
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <KeyRound className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-[17px] font-semibold text-gray-900 dark:text-white">{t('sec_modal_pwd_title')}</h3>
+                </div>
+                <button 
+                  onClick={() => setShowPasswordModal(false)}
+                  className="p-2 -mr-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-4 sm:p-6 overflow-y-auto">
+                {passwordError && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-800">
+                    {passwordError}
+                  </div>
+                )}
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">{t('sec_modal_pwd_new')}</label>
+                    <input
+                      type="password"
+                      value={password}
+                      placeholder={t('sec_modal_pwd_new_ph')}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">{t('sec_modal_pwd_confirm')}</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      placeholder={t('sec_modal_pwd_confirm_ph')}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handlePasswordChange}
+                  disabled={isPasswordLoading || !password || !confirmPassword}
+                  className="w-full mt-6 py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[15px] font-medium active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {isPasswordLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('sec_modal_pwd_save')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        </AnimatePresence>
+
+        {/* Change Email Modal */}
+        <AnimatePresence>
+        {showEmailModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowEmailModal(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-t-3xl sm:rounded-3xl w-full max-w-md mx-auto max-h-[90vh] flex flex-col shadow-2xl font-battambang"
+            >
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-[17px] font-semibold text-gray-900 dark:text-white">{t('sec_modal_email_title')}</h3>
+                </div>
+                <button 
+                  onClick={() => setShowEmailModal(false)}
+                  className="p-2 -mr-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleEmailChange} className="p-4 sm:p-6 overflow-y-auto">
+                {emailError && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-800">
+                    {emailError}
+                  </div>
+                )}
+                
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">{t('sec_modal_email_label')}</label>
+                  <input
+                    type="email"
+                    value={newEmailInput}
+                    placeholder={t('sec_modal_email_ph')}
+                    required
+                    onChange={(e) => setNewEmailInput(e.target.value)}
+                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isEmailLoading || !newEmailInput.trim()}
+                  className="w-full mt-6 py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[15px] font-medium active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {isEmailLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('sec_modal_email_save')}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+        </AnimatePresence>
+
+        {/* Change Phone Modal */}
+        <AnimatePresence>
+        {showPhoneModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPhoneModal(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-t-3xl sm:rounded-3xl w-full max-w-md mx-auto max-h-[90vh] flex flex-col shadow-2xl font-battambang"
+            >
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <Phone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-[17px] font-semibold text-gray-900 dark:text-white">{t('sec_modal_phone_title')}</h3>
+                </div>
+                <button 
+                  onClick={() => setShowPhoneModal(false)}
+                  className="p-2 -mr-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handlePhoneChange} className="p-4 sm:p-6 overflow-y-auto">
+                {phoneError && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-800">
+                    {phoneError}
+                  </div>
+                )}
+                
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">{t('sec_modal_phone_label')}</label>
+                  <input
+                    type="tel"
+                    value={newPhoneInput}
+                    placeholder={t('sec_modal_phone_ph')}
+                    required
+                    onChange={(e) => setNewPhoneInput(e.target.value)}
+                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isPhoneLoading || !newPhoneInput.trim()}
+                  className="w-full mt-6 py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[15px] font-medium active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {isPhoneLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('sec_modal_phone_save')}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+        </AnimatePresence>
+
+        {/* Contact Admin Modal */}
+        <AnimatePresence>
+        {showAdminContactModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAdminContactModal(false)}
+            className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm font-battambang"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 dark:border-slate-800 relative"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('sec_modal_admin_title')}</h3>
+                <button 
+                  onClick={() => setShowAdminContactModal(false)}
+                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="bg-blue-50/70 dark:bg-slate-800/80 rounded-2xl p-4 border border-blue-100 dark:border-slate-700/60 mb-5">
+                <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">{t('sec_modal_admin_tg')}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-[15px] text-blue-600 dark:text-blue-400 font-sans select-all">
+                    @wsd-data-management-admin
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText('@wsd-data-management-admin');
+                      setIsAdminContactCopied(true);
+                      setTimeout(() => setIsAdminContactCopied(false), 2000);
+                    }}
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-200 hover:bg-gray-100 shadow-xs border border-gray-200 dark:border-slate-600 transition-colors"
+                    title={isAdminContactCopied ? t('sec_modal_admin_copied') : t('sec_modal_admin_copy')}
+                  >
+                    {isAdminContactCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-500 dark:text-slate-300" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <a
+                  href="https://t.me/wsd_data_management_admin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-[14px] font-medium transition-colors shadow-sm"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>{t('sec_modal_admin_open_tg')}</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAdminContactModal(false)}
+                  className="w-full py-2.5 px-4 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded-2xl text-[14px] hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  {t('sec_modal_admin_close')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        </AnimatePresence>
       </div>
     );
   }
@@ -531,7 +1033,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
             {/* ពាក្យសម្ងាត់ និងសុវត្ថិភាព */}
             <button
-              onClick={() => setShowSecurityModal(true)}
+              onClick={() => setIsSecurityView(true)}
               className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
             >
               <div className="flex items-center gap-3.5">
@@ -664,93 +1166,6 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
         </div>
       </div>
 
-      {/* Security Options Modal */}
-      <AnimatePresence>
-      {showSecurityModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setShowSecurityModal(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
-        >
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 15 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 15 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border border-gray-100 dark:border-slate-800 font-battambang"
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-                <h3 className="text-lg  text-gray-900 dark:text-white">{t('profile_security_modal_title')}</h3>
-              </div>
-              <button 
-                onClick={() => setShowSecurityModal(false)}
-                className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-2.5">
-              {/* Option 1: Change Password */}
-              <button
-                onClick={() => {
-                  setShowSecurityModal(false);
-                  setPassword('');
-                  setConfirmPassword('');
-                  setPasswordError('');
-                  setShowPasswordModal(true);
-                }}
-                className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-left group"
-              >
-                <div className="flex items-center gap-3">
-                  <KeyRound className="w-5 h-5 text-gray-600 dark:text-slate-300" />
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">{t('profile_change_password_title')}</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{t('profile_change_password_desc')}</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </button>
-
-              {/* Option 2: PIN Balance */}
-              <button
-                onClick={() => {
-                  setShowSecurityModal(false);
-                  if (hasBalancePin) {
-                    setPinSetupStep('verify_current');
-                  } else {
-                    setPinSetupStep('enter_new');
-                  }
-                  setTempNewPin('');
-                  setCurrentPin('');
-                  setPinSetupError('');
-                  setShowPinSetup(true);
-                }}
-                className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-left group"
-              >
-                <div className="flex items-center gap-3">
-                  <LockIcon className="w-5 h-5 text-gray-600 dark:text-slate-300" />
-                  <div>
-                    <h4 className="font-medium text-sm text-gray-900 dark:text-white">{t('profile_pin_balance_title')}</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                      {hasBalancePin ? t('profile_pin_balance_set') : t('profile_pin_balance_unset')}
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-
-      {/* About App Modal */}
-
       {/* Theme Modal */}
       <AnimatePresence>
       {isThemeModalOpen && (
@@ -869,120 +1284,6 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
         </motion.div>
       )}
       </>
-
-
-      <>
-        {showPinSetup && (
-          <div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => {
-                setShowPinSetup(false);
-                setPinSetupStep('enter_new');
-                setTempNewPin('');
-                setCurrentPin('');
-                setPinSetupError('');
-              }}
-              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 z-[101] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl pt-8 pb-10 px-4"
-            >
-              <PinPad
-                title={pinSetupStep === 'verify_current' ? 'បញ្ជាក់ PIN ចាស់' : pinSetupStep === 'enter_new' ? 'កំណត់ PIN ថ្មី' : 'បញ្ជាក់ PIN ថ្មី'}
-                subtitle={pinSetupStep === 'verify_current' ? 'សូមបញ្ចូល PIN ចាស់របស់អ្នក' : pinSetupStep === 'enter_new' ? 'សូមបញ្ចូល PIN ថ្មី ៤ ខ្ទង់' : 'សូមបញ្ចូល PIN ថ្មីម្ដងទៀត ដើម្បីបញ្ជាក់'}
-                error={pinSetupError}
-                onComplete={handlePinSetupComplete}
-                onCancel={() => {
-                  setShowPinSetup(false);
-                  setPinSetupStep('enter_new');
-                  setTempNewPin('');
-                  setCurrentPin('');
-                  setPinSetupError('');
-                }}
-                isLoading={isPinSettingLoading}
-              />
-            </motion.div>
-          </div>
-        )}
-      </>
-
-      {/* Change Password Modal */}
-      <AnimatePresence>
-      {showPasswordModal && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setShowPasswordModal(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
-        >
-          <motion.div 
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-t-3xl sm:rounded-3xl w-full max-w-md mx-auto max-h-[90vh] flex flex-col shadow-2xl"
-          >
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
-              <h3 className=" text-[17px] text-gray-900 dark:text-white">ផ្លាស់ប្ដូរពាក្យសម្ងាត់</h3>
-              <button 
-                onClick={() => setShowPasswordModal(false)}
-                className="p-2 -mr-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors focus:outline-none"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-4 sm:p-6 overflow-y-auto">
-              {passwordError && (
-                <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
-                  {passwordError}
-                </div>
-              )}
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">ពាក្យសម្ងាត់ថ្មី</label>
-                  <input
-                    type="password"
-                    value={password}
-                    placeholder="បញ្ចូលពាក្យសម្ងាត់ថ្មី"
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">បញ្ជាក់ពាក្យសម្ងាត់ថ្មី</label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    placeholder="បញ្ចូលពាក្យសម្ងាត់ថ្មីម្ដងទៀត"
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  />
-                </div>
-              </div>
-              
-              <button
-                onClick={handlePasswordChange}
-                disabled={isPasswordLoading || !password || !confirmPassword}
-                className="w-full mt-6 py-3.5 px-4 bg-indigo-600 text-white rounded-2xl  text-[15px] hover:bg-indigo-700 active:bg-indigo-800 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isPasswordLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'រក្សាទុកការផ្លាស់ប្ដូរ'}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
     </div>
   );
 }

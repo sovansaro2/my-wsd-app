@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Search, Plus, Pencil, Star, Edit2, Trash2, Loader2, ChevronDown, FileText, X, Check, Bell, Award, Download, Share2, Flower, Wallet, Hammer, Coins, Map as MapIcon, Users } from 'lucide-react';
+import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';

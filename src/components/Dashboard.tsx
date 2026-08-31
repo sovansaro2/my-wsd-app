@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { TrendingUp, TrendingDown, DollarSign, Wallet, Eye, EyeOff, X, Key, Award, Lock as LockIcon, Settings } from 'lucide-react';
+import { Eye, EyeOff, X, Award, Lock as LockIcon } from 'lucide-react';
 import PinPad from './PinPad';
 import ImageSlider from './ImageSlider';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -376,8 +376,8 @@ export default function Dashboard() {
               className="fixed bottom-0 left-0 right-0 z-[101] bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl pt-8 pb-10 px-4"
             >
               <PinPad
-                title="បញ្ជាក់ PIN"
-                subtitle="សូមបញ្ចូល PIN ៤ ខ្ទង់របស់អ្នកដើម្បីមើលទឹកប្រាក់"
+                title={t('dashboard_verify_pin_title')}
+                subtitle={t('dashboard_verify_pin_sub')}
                 error={pinError}
                 onComplete={handlePinSubmit}
                 onCancel={() => setShowPinPad(false)}

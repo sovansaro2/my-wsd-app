@@ -11,6 +11,7 @@
   --font-roboto: 'Rajdhani', system-ui, sans-serif;
   --font-title: 'Koulen', 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
   --font-moul: 'Moul', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
+  --shadow-xs: 0 0 5px 0 rgba(0, 0, 0, 0.22), 0 0 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 @layer base {
@@ -72,6 +73,9 @@
 }
 
 @layer utilities {
+  .shadow-xs {
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.16);
+  }
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }

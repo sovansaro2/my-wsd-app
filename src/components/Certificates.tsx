@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, Trash2, Loader2, Image as ImageIcon, Search, X, ArrowLeft, FileText } from 'lucide-react';
+import { Download, Trash2, Loader2, Search, X, ArrowLeft, FileText } from 'lucide-react';
 import { getCertificates, deleteCertificate, SavedCertificate, shareOrDownloadCertificate } from '../lib/certificateUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';

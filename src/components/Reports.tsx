@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, X, AlertTriangle } from 'lucide-react';
+import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, AlertTriangle } from 'lucide-react';
 import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../lib/reportUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';

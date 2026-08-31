@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, X, Share, MoreHorizontal, PlusSquare, ChevronDown, Copy, Check, ExternalLink, Globe } from 'lucide-react';
+import { X, Share, MoreHorizontal, PlusSquare, ChevronDown, Copy, Check, ExternalLink, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function InstallPrompt() {
