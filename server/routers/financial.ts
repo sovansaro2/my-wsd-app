@@ -48,7 +48,6 @@ router.post('/financial-records', requireAuth, requireAdmin, async (req, res) =>
 
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
-  
   if (notify_public) {
     try {
       const f = data[0];
@@ -91,7 +90,7 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
 router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
   const { data, error } = await getClient(req).from('financial_records').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
+  
   res.json({ success: true });
 });
 

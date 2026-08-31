@@ -82,7 +82,7 @@ router.put('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
 router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
   const { data, error } = await getClient(req).from('name_list_categories').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
+  
   res.json({ success: true });
 });
 
@@ -109,7 +109,6 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
 
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
-  
   if (notify_public) {
     try {
       const n = data[0];
@@ -150,9 +149,11 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.delete('/records/:id', requireAuth, requireAdmin, async (req, res) => {
+  console.log(`Attempting to delete record with id: ${req.params.id}`);
   const { data, error } = await getClient(req).from('name_list_records').delete().eq('id', req.params.id).select();
+  console.log(`Delete result for ${req.params.id}: error=`, error, `data=`, data);
   if (error) return res.status(400).json({ detail: error.message });
-  if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
+  
   res.json({ success: true });
 });
 

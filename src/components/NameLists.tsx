@@ -729,13 +729,15 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </h2>
             
             <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrintDownload}
-                className="flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800"
-                title="ទាញយកបញ្ជី"
-              >
-                {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-              </button>
+              {userRole === 'admin' && (
+                <button
+                  onClick={handlePrintDownload}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800"
+                  title="ទាញយកបញ្ជី"
+                >
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                </button>
+              )}
               {userRole === 'admin' && !isListClosed && (
                 <button 
                   onClick={openAddModal}
