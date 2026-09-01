@@ -753,9 +753,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <LoadingScreen className="h-64 bg-transparent" />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto px-1.5 sm:px-6 py-2 sm:py-6 max-w-6xl mx-auto w-full space-y-3">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-6xl mx-auto w-full space-y-3">
           {/* Header Row: Date & Total */}
-          <div className="flex items-center justify-between mb-3 px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
+          <div className="flex items-center justify-between mb-3 px-2 sm:px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
             <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
               {selectedCategory?.description ? (
                 <>{t('list_date')}៖ <span className="text-zinc-900 dark:text-white font-medium">{selectedCategory.description}</span></>
@@ -792,19 +792,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse table-auto">
                     <thead>
-                      <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[13px] sm:text-[14px] font-battambang font-medium">
-                        <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-10 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
-                        <th className="px-2.5 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap border-r border-gray-200 dark:border-slate-700 min-w-[130px]">ឈ្មោះសប្បុរសជន</th>
+                      <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[12px] sm:text-[14px] font-battambang font-medium">
+                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-8 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
+                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 whitespace-nowrap w-full">ឈ្មោះសប្បុរសជន</th>
                         {isKathina && (
                           <>
-                            <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-16 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
-                            <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-14 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-12 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-12 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
                           </>
                         )}
                         {!isKathina && (
-                          <th className="px-2.5 sm:px-4 py-2.5 sm:py-3 w-20 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
+                          <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-16 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
                         )}
-                        <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-20 sm:w-24 text-center whitespace-nowrap min-w-[85px] sm:min-w-[95px]">សកម្មភាព</th>
+                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-[76px] sm:w-[100px] text-center whitespace-nowrap">សកម្មភាព</th>
                       </tr>
                     </thead>
                     <tbody className="font-battambang">
@@ -819,47 +819,47 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             key={record.id}
                             className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-orange-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
-                            <td className="px-2 sm:px-3 py-2 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                              <span className="text-[12.5px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
+                            <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                              <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-2.5 sm:px-4 py-2 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800">
+                            <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800 whitespace-nowrap">
                               <div className="flex flex-col justify-center">
-                                <span className="font-normal text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-snug font-battambang">
+                                <span className="font-normal text-[13.5px] sm:text-[15px] text-gray-900 dark:text-white leading-snug font-battambang">
                                   {record.name}
                                 </span>
                                 {record.note && (
-                                  <span className="text-[11.5px] sm:text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 font-battambang">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
-                                    {record.note}
+                                  <span className="text-[11px] sm:text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 font-battambang">
+                                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
+                                    <span className="line-clamp-1">{record.note}</span>
                                   </span>
                                 )}
                               </div>
                             </td>
                             {isKathina && (
                               <>
-                                <td className="px-2 sm:px-3 py-2 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[13px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
+                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
                                     {record.metadata?.trai_liang || '-'}
                                   </span>
                                 </td>
-                                <td className="px-2 sm:px-3 py-2 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[13px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
+                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
                                     {record.metadata?.others || (record.amount > 0 ? formatCurrency(record.amount) : '-')}
                                   </span>
                                 </td>
                               </>
                             )}
                             {!isKathina && (
-                              <td className="px-2.5 sm:px-4 py-2 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
-                                <span className="text-[13.5px] sm:text-[15px] font-medium text-orange-600 dark:text-orange-400 whitespace-nowrap font-battambang">
+                              <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
+                                <span className="text-[13px] sm:text-[15px] font-medium text-orange-600 dark:text-orange-400 whitespace-nowrap font-battambang">
                                   {formatCurrency(record.amount)}
                                 </span>
                               </td>
                             )}
-                            <td className="px-1.5 sm:px-3 py-2 sm:py-2.5 align-middle text-center min-w-[85px] sm:min-w-[95px]">
-                              <div className="flex items-center justify-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <td className="px-0.5 sm:px-3 py-1.5 sm:py-2.5 align-middle text-center w-[76px] sm:w-[100px]">
+                              <div className="flex items-center justify-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
