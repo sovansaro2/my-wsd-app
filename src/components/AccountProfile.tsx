@@ -56,7 +56,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [isEditingView, setIsEditingView] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
+  const [isSettingView, setIsSettingView] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { theme: currentTheme, setTheme: setCurrentTheme } = useTheme();
   
@@ -958,6 +958,205 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
     );
   }
 
+  // --- SETTING VIEW ---
+  if (isSettingView) {
+    return (
+      <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
+        {/* Sticky Top Header */}
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
+          <button 
+            onClick={() => setIsSettingView(false)}
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors focus:outline-none"
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white font-battambang">{t('profile_setting_menu')}</h2>
+        </div>
+
+        {/* Center Content Card */}
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto my-auto flex flex-col justify-center">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-6 sm:p-8 w-full font-battambang">
+            {/* Header / Title */}
+            <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
+              Setting
+            </h3>
+
+            <hr className="border-gray-200 dark:border-slate-800 mb-5" />
+
+            <div className="space-y-5">
+              {/* SECTION 1: Language */}
+              <div className="space-y-2.5">
+                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_lang_heading')}
+                </h4>
+
+                {/* Khmer */}
+                <div className="pl-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                      {t('profile_setting_lang_km')}
+                    </span>
+                    {language === 'km' ? (
+                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => setLanguage('km')}
+                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                      >
+                        {t('profile_setting_btn_use')}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                    {t('profile_setting_lang_km_desc')}
+                  </p>
+                </div>
+
+                {/* English */}
+                <div className="pl-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                      {t('profile_setting_lang_en')}
+                    </span>
+                    {language === 'en' ? (
+                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => setLanguage('en')}
+                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                      >
+                        {t('profile_setting_btn_use')}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                    {t('profile_setting_lang_en_desc')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION 2: Theme */}
+              <div className="space-y-2.5">
+                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_theme_heading')}
+                </h4>
+
+                {/* Dark mode */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_theme_dark')}
+                  </span>
+                  {currentTheme === 'dark' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => setCurrentTheme('dark')}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+
+                {/* Light mode */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_theme_light')}
+                  </span>
+                  {currentTheme === 'light' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => setCurrentTheme('light')}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION 3: Role */}
+              <div className="space-y-2.5">
+                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_role_heading')}
+                </h4>
+
+                {/* Admin */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_role_admin')}
+                  </span>
+                  {userRole === 'admin' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        if (actualRole === 'admin' && onViewModeChange) {
+                          onViewModeChange('admin');
+                        }
+                      }}
+                      disabled={actualRole !== 'admin'}
+                      className={`text-[14.5px] font-battambang ${
+                        actualRole === 'admin' 
+                          ? 'text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline cursor-pointer' 
+                          : 'text-gray-400 dark:text-slate-600 cursor-not-allowed'
+                      }`}
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+
+                {/* User */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_role_user')}
+                  </span>
+                  {userRole === 'user' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        if (onViewModeChange) {
+                          onViewModeChange('user');
+                        }
+                      }}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-gray-200 dark:border-slate-800 mt-6" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // --- MAIN ACCOUNT VIEW ---
   return (
     <div className="w-full max-w-3xl mx-auto pb-16 font-battambang transition-colors duration-200">
@@ -1035,7 +1234,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
             {/* ការកំណត់ (Setting) */}
             <button
-              onClick={() => setIsSettingModalOpen(true)}
+              onClick={() => setIsSettingView(true)}
               className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
             >
               <div className="flex items-center gap-3.5">
@@ -1119,211 +1318,6 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           </button>
         </div>
       </div>
-
-      {/* Unified Setting Modal */}
-      <AnimatePresence>
-      {isSettingModalOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setIsSettingModalOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
-        >
-          <motion.div 
-            initial={{ scale: 0.95, opacity: 0, y: 10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 10 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 sm:p-6 border border-gray-200/80 dark:border-slate-800 relative font-battambang"
-          >
-            {/* Header */}
-            <div className="relative pb-3 text-center">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white font-battambang tracking-wide">
-                {t('profile_setting_modal_title')}
-              </h3>
-              <button 
-                onClick={() => setIsSettingModalOpen(false)}
-                className="absolute right-0 top-0 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full mb-4" />
-
-            <div className="space-y-4">
-              {/* SECTION 1: Language */}
-              <div className="space-y-2.5">
-                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                  {t('profile_setting_lang_heading')}
-                </h4>
-
-                {/* Khmer */}
-                <div className="pl-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                      {t('profile_setting_lang_km')}
-                    </span>
-                    {language === 'km' ? (
-                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                      </span>
-                    ) : (
-                      <button 
-                        onClick={() => setLanguage('km')}
-                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                      >
-                        {t('profile_setting_btn_use')}
-                      </button>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
-                    {t('profile_setting_lang_km_desc')}
-                  </p>
-                </div>
-
-                {/* English */}
-                <div className="pl-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                      {t('profile_setting_lang_en')}
-                    </span>
-                    {language === 'en' ? (
-                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                      </span>
-                    ) : (
-                      <button 
-                        onClick={() => setLanguage('en')}
-                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                      >
-                        {t('profile_setting_btn_use')}
-                      </button>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
-                    {t('profile_setting_lang_en_desc')}
-                  </p>
-                </div>
-              </div>
-
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
-
-              {/* SECTION 2: Theme */}
-              <div className="space-y-2.5">
-                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                  {t('profile_setting_theme_heading')}
-                </h4>
-
-                {/* Dark mode */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                    {t('profile_setting_theme_dark')}
-                  </span>
-                  {currentTheme === 'dark' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => setCurrentTheme('dark')}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
-                </div>
-
-                {/* Light mode */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                    {t('profile_setting_theme_light')}
-                  </span>
-                  {currentTheme === 'light' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => setCurrentTheme('light')}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
-
-              {/* SECTION 3: Role */}
-              <div className="space-y-2.5">
-                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                  {t('profile_setting_role_heading')}
-                </h4>
-
-                {/* Admin */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                    {t('profile_setting_role_admin')}
-                  </span>
-                  {userRole === 'admin' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        if (actualRole === 'admin' && onViewModeChange) {
-                          onViewModeChange('admin');
-                        }
-                      }}
-                      disabled={actualRole !== 'admin'}
-                      className={`text-[14.5px] font-battambang ${
-                        actualRole === 'admin' 
-                          ? 'text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline cursor-pointer' 
-                          : 'text-gray-400 dark:text-slate-600 cursor-not-allowed'
-                      }`}
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
-                </div>
-
-                {/* User */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                    {t('profile_setting_role_user')}
-                  </span>
-                  {userRole === 'user' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        if (onViewModeChange) {
-                          onViewModeChange('user');
-                        }
-                      }}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom line */}
-            <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full mt-4" />
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
 
       <>
       {isAboutModalOpen && (
