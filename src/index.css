@@ -4,12 +4,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
-  --font-battambang: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
-  --font-khmer: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', 'Rajdhani', system-ui, sans-serif;
+  --font-sans: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
+  --font-battambang: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
+  --font-khmer: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
   --font-rajdhani: 'Rajdhani', system-ui, sans-serif;
   --font-roboto: 'Rajdhani', system-ui, sans-serif;
-  --font-title: 'Koulen', 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
+  --font-title: 'Koulen', 'Rajdhani', 'Battambang', 'Khmer OS Battambang', 'Suwannaphum', sans-serif;
   --font-moul: 'Moul', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', sans-serif;
   --shadow-xs: 0 0 5px 0 rgba(0, 0, 0, 0.22), 0 0 2px 0 rgba(0, 0, 0, 0.15);
 }
@@ -55,11 +55,11 @@
     font-family: 'Rajdhani', system-ui, sans-serif !important;
   }
 
-  /* Support for Khmer & English hybrid with Rajdhani for English letters */
+  /* Support for Khmer & English hybrid with Rajdhani for English and Battambang for Khmer */
   .font-battambang,
   .font-khmer,
   [data-font="khmer"] {
-    font-family: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif !important;
+    font-family: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif !important;
   }
 
   /* Hide scrollbar globally */

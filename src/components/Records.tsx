@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, Folder, CalendarDays } from 'lucide-react';
+import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, CalendarDays } from 'lucide-react';
+import { IOSFolder } from './ui/IOSFolder';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -537,33 +538,38 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 <div 
                   key={period.id}
                   onClick={() => setSelectedPeriod(period)}
-                  className="relative flex flex-col justify-between p-3.5 sm:p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm hover:shadow hover:border-sky-300 dark:hover:border-sky-700/60 transition-all cursor-pointer group text-left"
+                  className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 cursor-pointer group text-center"
                 >
-                  <div className="flex items-start justify-between gap-2 mb-2.5">
-                    <Folder className="w-5 h-5 text-amber-500 fill-amber-500/20 shrink-0 mt-0.5" />
+                  {userRole === 'admin' && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditSeilModal(period, e);
+                      }}
+                      className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors z-10"
+                      title="កែប្រែ"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                  )}
 
-                    {userRole === 'admin' && (
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditSeilModal(period, e);
-                        }}
-                        className="p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                        title="កែប្រែ"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                  {/* Main iOS Folder Graphic */}
+                  <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
+                    <IOSFolder 
+                      className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
+                      variant="blue" 
+                    />
                   </div>
 
-                  <div>
-                    <h4 className="font-normal text-gray-900 dark:text-white text-[15px] leading-normal  group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang">
+                  {/* Title and Date Below Folder */}
+                  <div className="w-full mt-2 flex flex-col items-center min-w-0">
+                    <h4 className="w-full font-normal text-gray-900 dark:text-white text-sm sm:text-[15px] leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang text-center truncate whitespace-nowrap" title={period.name}>
                       {period.name}
                     </h4>
                     {period.date_range_text && (
-                      <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400 mt-1.5">
+                      <div className="w-full flex items-center justify-center gap-1 text-[11px] sm:text-xs text-gray-500 dark:text-slate-400 mt-1.5 min-w-0">
                         <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
-                        <span className=" font-battambang">{period.date_range_text}</span>
+                        <span className="font-battambang truncate whitespace-nowrap">{period.date_range_text}</span>
                       </div>
                     )}
                   </div>
@@ -865,8 +871,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 max-w-6xl mx-auto w-full">
-        <div className="space-y-3 bg-[#FAFAFA] dark:bg-slate-950 p-4 -m-4 sm:p-6 sm:-m-6 rounded-xl">
+      <div className="flex-1 overflow-y-auto px-1.5 sm:px-6 py-2 sm:py-6 max-w-6xl mx-auto w-full">
+        <div className="space-y-3 bg-transparent p-0">
           <div className="hidden" />
           <>
             <motion.div
@@ -878,36 +884,36 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               className="space-y-2"
             >
               {(activeTab === 'income' ? incomeRecords : expenseRecords).length === 0 ? (
-                <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm">
+                <div className="text-center py-12 text-zinc-400 dark:text-slate-500 text-sm font-battambang">
                   {activeTab === 'income' ? t('records_empty_income') : t('records_empty_expense')}
                 </div>
               ) : (
-                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-none overflow-hidden mt-2">
+                <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mt-1">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse table-auto">
                       <thead>
-                        <tr className="bg-gray-100 dark:bg-slate-800 border-b-2 border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-[12px] sm:text-[13px] ">
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-8 sm:w-12 text-center whitespace-nowrap border border-gray-300 dark:border-slate-700">ល.រ</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap border border-gray-300 dark:border-slate-700">{activeTab === 'income' ? 'ឈ្មោះ' : 'បរិយាយ'}</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 whitespace-nowrap text-right border border-gray-300 dark:border-slate-700">ថវិកា</th>
-                          <th className="px-2 sm:px-4 py-2 sm:py-3.5 w-16 sm:w-24 text-right whitespace-nowrap border border-gray-300 dark:border-slate-700">សកម្មភាព</th>
+                        <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[13px] sm:text-[14px] font-battambang font-medium">
+                          <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-10 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
+                          <th className="px-2.5 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap border-r border-gray-200 dark:border-slate-700 min-w-[130px]">{activeTab === 'income' ? 'ឈ្មោះ' : 'បរិយាយ'}</th>
+                          <th className="px-2.5 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700 w-20 sm:w-28">ថវិកា</th>
+                          <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-20 sm:w-24 text-center whitespace-nowrap min-w-[85px] sm:min-w-[95px]">សកម្មភាព</th>
                         </tr>
                       </thead>
-                      <tbody >
+                      <tbody className="font-battambang">
                         {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
                           <tr
                             key={record.id}
-                            className="odd:bg-white even:bg-slate-50/80 dark:odd:bg-slate-900 dark:even:bg-slate-800/50 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors group"
+                            className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-orange-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 text-center align-middle border border-gray-200 dark:border-slate-700">
-                              <span className="text-[12px] font-medium text-gray-500 dark:text-slate-400 inline-block">
+                            <td className="px-2 sm:px-3 py-2 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                              <span className="text-[12.5px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle border border-gray-200 dark:border-slate-700">
+                            <td className="px-2.5 sm:px-4 py-2 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800">
                               <div className="flex flex-col justify-center">
                                 <div className="flex items-start justify-between gap-2">
-                                  <span className="font-normal text-[15px] text-gray-900 dark:text-white leading-normal break-words font-battambang">
+                                  <span className="font-normal text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-snug break-words font-battambang">
                                     {record.description}
                                   </span>
                                   {userRole === 'admin' ? (
@@ -927,26 +933,26 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                   </div>
                                 ) : null}
                                 </div>
-                                <span className="text-[11px] text-gray-500 dark:text-slate-400 mt-1 font-battambang">{formatDate(record.record_date)}</span>
+                                <span className="text-[11.5px] text-gray-500 dark:text-slate-400 mt-0.5 font-battambang">{formatDate(record.record_date)}</span>
                                 {record.note && (
-                                  <span className="text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5  font-battambang">
-                                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
+                                  <span className="text-[11.5px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 font-battambang">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
                                     {record.note}
                                   </span>
                                 )}
                               </div>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
-                              <span className={` text-[14px] sm:text-[15px] whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                            <td className="px-2.5 sm:px-4 py-2 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
+                              <span className={`text-[13.5px] sm:text-[15px] font-medium whitespace-nowrap ${activeTab === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                                 {activeTab === 'income' ? '+' : '-'}{formatCurrency(record.amount)}
                               </span>
                             </td>
-                            <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border border-gray-200 dark:border-slate-700">
+                            <td className="px-1.5 sm:px-3 py-2 sm:py-2.5 align-middle text-center min-w-[85px] sm:min-w-[95px]">
                               {userRole === 'admin' && (
-                              <div className="flex items-center justify-end gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center justify-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => openEditRecordModal(record)}
-                                  className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
+                                  className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
                                   title="កែប្រែ"
                                 >
                                   <Pencil className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
@@ -954,7 +960,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                 {activeTab === 'income' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
-                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none"
+                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
                                     title="ប័ណ្ណអនុមោទនា"
                                   >
                                     <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
