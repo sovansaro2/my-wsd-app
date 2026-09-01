@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings } from 'lucide-react';
 import PinPad from './PinPad';
 import CustomDatePicker from './ui/CustomDatePicker';
 import { api } from '../lib/apiClient';
@@ -56,7 +56,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [isEditingView, setIsEditingView] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { theme: currentTheme, setTheme: setCurrentTheme } = useTheme();
   
@@ -320,8 +320,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   // --- EDIT PROFILE VIEW ---
   if (isEditingView) {
     return (
-      <div className="flex flex-col h-full bg-[#f4f6f8] dark:bg-slate-950 transition-colors duration-200 font-sans pb-10 overflow-y-auto">
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm sticky top-0 z-10 w-full">
+      <div className="flex flex-col h-full bg-transparent font-sans pb-10 overflow-y-auto">
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
           <button 
             onClick={() => {
               setIsEditingView(false);
@@ -333,22 +333,10 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h2 className="text-lg text-gray-900 dark:text-white font-battambang">{t('profile_title')}</h2>
-          
-          {actualRole === 'admin' && onViewModeChange && (
-            <div className="ml-auto">
-              <button
-                onClick={() => onViewModeChange(userRole === 'admin' ? 'user' : 'admin')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-xs text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors font-battambang"
-              >
-                <UserCircle2 className="w-3.5 h-3.5" />
-                {userRole === 'admin' ? (language === 'km' ? 'ប្តូរទៅ User' : 'Switch to User') : (language === 'km' ? 'ប្តូរទៅ Admin' : 'Switch to Admin')}
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="p-4 sm:p-6 w-full max-w-2xl mx-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.06)] border border-gray-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 overflow-hidden">
             {/* Header with Avatar and Name */}
             <div className="p-6 sm:p-8 border-b border-gray-200/80 dark:border-slate-800/80">
               <div className="flex items-center space-x-6">
@@ -508,9 +496,9 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   // --- PASSWORD & SECURITY VIEW ---
   if (isSecurityView) {
     return (
-      <div className="flex flex-col h-full bg-[#f4f6f8] dark:bg-slate-950 transition-colors duration-200 font-sans pb-12 overflow-y-auto min-h-full">
+      <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
         {/* Sticky Top Header */}
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm sticky top-0 z-10 w-full">
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
           <button 
             onClick={() => {
               setIsSecurityView(false);
@@ -532,8 +520,8 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             </div>
           )}
 
-          {/* Main Card Styled Exactly Like the Uploaded Image */}
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] shadow-xs border border-gray-100 dark:border-slate-800 p-6 sm:p-8 w-full">
+          {/* Main Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-6 sm:p-8 w-full">
             
             <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
               {t('sec_title')}
@@ -972,14 +960,14 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
   // --- MAIN ACCOUNT VIEW ---
   return (
-    <div className="p-2 sm:p-6 max-w-4xl mx-auto pb-20 font-battambang bg-white dark:bg-slate-950 transition-colors duration-200 min-h-full">
+    <div className="w-full max-w-3xl mx-auto pb-16 font-battambang transition-colors duration-200">
       
       {/* Main Account Card Container */}
-      <div className="bg-white dark:bg-slate-900 rounded-[28px] overflow-hidden transition-all border border-gray-100 dark:border-slate-800 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all border border-gray-200/80 dark:border-slate-800">
         
         {/* Top Header */}
         <div className="p-6 sm:p-8 flex items-center gap-5 sm:gap-6">
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden shadow-sm flex-shrink-0 bg-slate-100 dark:bg-slate-800">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
             ) : (
@@ -1015,7 +1003,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
         {/* Menu Items */}
         <div className="py-1">
-          {/* SECTION 1: គណនី & ពាក្យសម្ងាត់ និងសុវត្ថិភាព */}
+          {/* SECTION 1: គណនី & ពាក្យសម្ងាត់ និងសុវត្ថិភាព & ការកំណត់ */}
           <div>
             {/* គណនី */}
             <button
@@ -1044,60 +1032,26 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
             </button>
+
+            {/* ការកំណត់ (Setting) */}
+            <button
+              onClick={() => setIsSettingModalOpen(true)}
+              className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+            >
+              <div className="flex items-center gap-3.5">
+                <Settings className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                  {t('profile_setting_menu')}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
+            </button>
           </div>
 
           {/* Separator */}
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
-          {/* SECTION 2: ការកំណត់: */}
-          <div className="px-6 pt-2 pb-1">
-            <span className="text-[13.5px]  text-[#1d70b8] dark:text-blue-400 font-battambang">
-              {t('profile_settings_heading')}
-            </span>
-          </div>
-
-          {/* ផ្លាស់ប្ដូរភាសា */}
-          <button
-            onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
-            className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-          >
-            <div className="flex items-center gap-3.5">
-              <Globe className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-              <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {t('profile_change_lang')}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-400 dark:text-slate-500">
-                {language === 'km' ? 'ភាសាខ្មែរ' : 'English'}
-              </span>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-            </div>
-          </button>
-
-          {/* ផ្លាស់ប្ដូរស្បែក */}
-          <button
-            onClick={() => setIsThemeModalOpen(true)}
-            className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-          >
-            <div className="flex items-center gap-3.5">
-              <Palette className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-              <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {t('profile_change_theme')}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-400 dark:text-slate-500">
-                {currentTheme === 'dark' ? t('theme_dark') : t('theme_light')}
-              </span>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-            </div>
-          </button>
-
-          {/* Separator */}
-          <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
-
-          {/* SECTION 3: ការគ្រប់គ្រង: */}
+          {/* SECTION 2: ការគ្រប់គ្រង: */}
           <div className="px-6 pt-2 pb-1">
             <span className="text-[13.5px]  text-[#1d70b8] dark:text-blue-400 font-battambang">
               {t('profile_mgmt_heading')}
@@ -1135,7 +1089,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
           {/* Separator */}
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
-          {/* SECTION 4: អំពីកម្មវិធី & ចាកចេញ */}
+          {/* SECTION 3: អំពីកម្មវិធី & ចាកចេញ */}
           {/* អំពីកម្មវិធី */}
           <button
             onClick={() => setIsAboutModalOpen(true)}
@@ -1166,14 +1120,14 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
         </div>
       </div>
 
-      {/* Theme Modal */}
+      {/* Unified Setting Modal */}
       <AnimatePresence>
-      {isThemeModalOpen && (
+      {isSettingModalOpen && (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={() => setIsThemeModalOpen(false)}
+          onClick={() => setIsSettingModalOpen(false)}
           className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
         >
           <motion.div 
@@ -1181,45 +1135,191 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 10 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-2xl max-w-[300px] w-full p-4 shadow-xl border border-gray-100 dark:border-slate-800 relative font-battambang"
+            className="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 sm:p-6 border border-gray-200/80 dark:border-slate-800 relative font-battambang"
           >
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100 dark:border-slate-800">
-              <h3 className="text-[15px] font-medium text-gray-900 dark:text-white">{t('profile_theme_modal_title')}</h3>
+            {/* Header */}
+            <div className="relative pb-3 text-center">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white font-battambang tracking-wide">
+                {t('profile_setting_modal_title')}
+              </h3>
               <button 
-                onClick={() => setIsThemeModalOpen(false)}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                onClick={() => setIsSettingModalOpen(false)}
+                className="absolute right-0 top-0 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-2">
-              <button 
-                onClick={() => { setCurrentTheme('light'); setIsThemeModalOpen(false); }}
-                className={`w-full flex justify-between items-center px-3 py-2.5 rounded-xl border text-left transition-all ${currentTheme === 'light' ? 'border-[#1d70b8] bg-blue-50/50 dark:bg-blue-950/20 text-[#1d70b8] dark:text-blue-400' : 'border-gray-200/80 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/60 text-gray-700 dark:text-slate-200'}`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Sun className={`w-4 h-4 ${currentTheme === 'light' ? 'text-[#1d70b8]' : 'text-amber-500'}`} />
-                  <span className="text-sm font-medium">{t('profile_theme_light_label')}</span>
+            <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full mb-4" />
+
+            <div className="space-y-4">
+              {/* SECTION 1: Language */}
+              <div className="space-y-2.5">
+                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_lang_heading')}
+                </h4>
+
+                {/* Khmer */}
+                <div className="pl-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                      {t('profile_setting_lang_km')}
+                    </span>
+                    {language === 'km' ? (
+                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => setLanguage('km')}
+                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                      >
+                        {t('profile_setting_btn_use')}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                    {t('profile_setting_lang_km_desc')}
+                  </p>
                 </div>
-                {currentTheme === 'light' && (
-                  <div className="w-2 h-2 rounded-full bg-[#1d70b8]"></div>
-                )}
-              </button>
-              
-              <button 
-                onClick={() => { setCurrentTheme('dark'); setIsThemeModalOpen(false); }}
-                className={`w-full flex justify-between items-center px-3 py-2.5 rounded-xl border text-left transition-all ${currentTheme === 'dark' ? 'border-[#1d70b8] bg-blue-50/50 dark:bg-blue-950/20 text-[#1d70b8] dark:text-blue-400' : 'border-gray-200/80 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/60 text-gray-700 dark:text-slate-200'}`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Moon className={`w-4 h-4 ${currentTheme === 'dark' ? 'text-[#1d70b8]' : 'text-indigo-400'}`} />
-                  <span className="text-sm font-medium">{t('profile_theme_dark_label')}</span>
+
+                {/* English */}
+                <div className="pl-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                      {t('profile_setting_lang_en')}
+                    </span>
+                    {language === 'en' ? (
+                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                      </span>
+                    ) : (
+                      <button 
+                        onClick={() => setLanguage('en')}
+                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                      >
+                        {t('profile_setting_btn_use')}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                    {t('profile_setting_lang_en_desc')}
+                  </p>
                 </div>
-                {currentTheme === 'dark' && (
-                  <div className="w-2 h-2 rounded-full bg-[#1d70b8]"></div>
-                )}
-              </button>
+              </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION 2: Theme */}
+              <div className="space-y-2.5">
+                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_theme_heading')}
+                </h4>
+
+                {/* Dark mode */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_theme_dark')}
+                  </span>
+                  {currentTheme === 'dark' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => setCurrentTheme('dark')}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+
+                {/* Light mode */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_theme_light')}
+                  </span>
+                  {currentTheme === 'light' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => setCurrentTheme('light')}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION 3: Role */}
+              <div className="space-y-2.5">
+                <h4 className="text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_role_heading')}
+                </h4>
+
+                {/* Admin */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_role_admin')}
+                  </span>
+                  {userRole === 'admin' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        if (actualRole === 'admin' && onViewModeChange) {
+                          onViewModeChange('admin');
+                        }
+                      }}
+                      disabled={actualRole !== 'admin'}
+                      className={`text-[14.5px] font-battambang ${
+                        actualRole === 'admin' 
+                          ? 'text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline cursor-pointer' 
+                          : 'text-gray-400 dark:text-slate-600 cursor-not-allowed'
+                      }`}
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+
+                {/* User */}
+                <div className="pl-3 flex items-center gap-2">
+                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                    {t('profile_setting_role_user')}
+                  </span>
+                  {userRole === 'user' ? (
+                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
+                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        if (onViewModeChange) {
+                          onViewModeChange('user');
+                        }
+                      }}
+                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
+                    >
+                      {t('profile_setting_btn_use')}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
+
+            {/* Bottom line */}
+            <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full mt-4" />
           </motion.div>
         </motion.div>
       )}
@@ -1240,7 +1340,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 transition-colors duration-200 dark:bg-slate-900 rounded-3xl w-full max-w-sm max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-sm max-h-[90vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center overflow-y-auto">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4 flex-shrink-0">

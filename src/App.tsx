@@ -13,9 +13,7 @@ import {
   Globe, 
   Sun, 
   Moon,
-  Shield,
-  Layers,
-  ChevronRight
+  Shield
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -185,10 +183,12 @@ export default function App() {
       {/* ========================================================================= */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
         {/* Brand Header */}
-        <div className="h-16 px-5 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-orange-500 dark:bg-slate-900 text-white">
-          <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-sm shrink-0">
-            <Layers className="w-5 h-5 text-white" />
-          </div>
+        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-orange-500 dark:bg-slate-900 text-white">
+          <img 
+            src="/logo.png" 
+            alt="WSD Logo" 
+            className="w-12 h-12 object-contain shrink-0 drop-shadow-sm"
+          />
           <div className="min-w-0 flex-1">
             <h1 className="text-white font-title text-base lg:text-lg leading-tight truncate">
               {language === 'en' ? 'WSD Management' : 'វត្តស្នាយដួច'}
@@ -199,38 +199,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* View Mode Switcher for Admins */}
-        {actualRole === 'admin' && (
-          <div className="px-4 pt-3 pb-1">
-            <div className="bg-gray-100 dark:bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-gray-200/60 dark:border-slate-700/50">
-              <button
-                onClick={() => setUserRole('admin')}
-                className={`flex-1 py-1.5 px-2 text-xs rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 font-battambang ${
-                  userRole === 'admin'
-                    ? 'bg-white dark:bg-slate-700 text-orange-600 dark:text-orange-400 shadow-sm font-semibold'
-                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin</span>
-              </button>
-              <button
-                onClick={() => setUserRole('user')}
-                className={`flex-1 py-1.5 px-2 text-xs rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 font-battambang ${
-                  userRole === 'user'
-                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm font-semibold'
-                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>User</span>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Navigation Links */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+        <div className="flex-1 overflow-y-auto py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -238,73 +208,44 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[14px] font-medium transition-all font-battambang group ${
+                className={`w-full flex items-center px-4 py-3.5 text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 ${
                   isActive
-                    ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 font-semibold shadow-xs'
-                    : 'text-gray-600 dark:text-slate-300 hover:bg-gray-100/80 dark:hover:bg-slate-800/60 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-gray-100 dark:bg-slate-800 border-blue-600 dark:border-blue-500 text-gray-900 dark:text-white'
+                    : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`p-1.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-orange-500 text-white shadow-xs'
-                      : 'text-gray-500 dark:text-slate-400 group-hover:text-gray-700 dark:group-hover:text-slate-200'
-                  }`}>
-                    <Icon className="w-4 h-4 stroke-[2]" />
-                  </div>
-                  <span className="truncate">{item.label}</span>
-                </div>
-                {isActive && (
-                  <ChevronRight className="w-4 h-4 text-orange-500 shrink-0" />
-                )}
+                <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
+                  isActive ? 'text-gray-700 dark:text-slate-200' : 'text-gray-500 dark:text-slate-400'
+                }`} />
+                <span className="truncate">{item.label}</span>
               </button>
             );
           })}
         </div>
 
         {/* Quick Language & Theme Controls */}
-        <div className="px-4 py-2 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+        <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
             title={t('profile_change_lang')}
           >
-            <Globe className="w-3.5 h-3.5 text-orange-500" />
+            <Globe className="w-4 h-4 text-orange-500" />
             <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
           </button>
 
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-            title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
-          </button>
-        </div>
-
-        {/* User Profile Card & Logout */}
-        <div className="p-3 border-t border-gray-100 dark:border-slate-800/80 bg-gray-50/50 dark:bg-slate-900/40">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/60 border border-gray-200/60 dark:border-slate-700/50">
-            <div 
-              onClick={() => setActiveTab('account')} 
-              className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer pr-1"
+          <div className="flex items-center gap-1">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs">
-                {currentUser?.full_name ? currentUser.full_name.charAt(0).toUpperCase() : 'U'}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-gray-900 dark:text-white truncate font-battambang">
-                  {currentUser?.full_name || 'គណនីរបស់ខ្ញុំ'}
-                </p>
-                <p className="text-[10px] text-gray-500 dark:text-slate-400 capitalize truncate">
-                  {userRole === 'admin' ? 'Administrator' : 'Member'}
-                </p>
-              </div>
-            </div>
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            </button>
 
             <button
               onClick={handleLogout}
-              className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+              className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
               title={t('profile_logout')}
             >
               <LogOut className="w-4 h-4" />
