@@ -4,9 +4,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
-  --font-battambang: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
-  --font-khmer: 'Rajdhani', 'Battambang', 'Suwannaphum', 'Khmer OS Battambang', 'Hanuman', system-ui, sans-serif;
+  --font-sans: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
+  --font-battambang: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
+  --font-khmer: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif;
   --font-rajdhani: 'Rajdhani', system-ui, sans-serif;
   --font-roboto: 'Rajdhani', system-ui, sans-serif;
   --font-title: 'Koulen', 'Rajdhani', 'Battambang', 'Khmer OS Battambang', 'Suwannaphum', sans-serif;
@@ -59,7 +59,7 @@
   .font-battambang,
   .font-khmer,
   [data-font="khmer"] {
-    font-family: 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', 'Rajdhani', system-ui, sans-serif !important;
+    font-family: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', 'Hanuman', system-ui, sans-serif !important;
   }
 
   /* Hide scrollbar globally */
