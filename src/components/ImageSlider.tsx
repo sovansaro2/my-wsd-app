@@ -65,35 +65,38 @@ export default function ImageSlider() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, scale: 1.02 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="absolute inset-0 w-full h-full"
-        >
-          <img
-            src={SLIDE_IMAGES[currentIndex].src}
-            alt={SLIDE_IMAGES[currentIndex].alt}
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              // Try uppercase / lowercase fallback
-              const target = e.currentTarget;
-              const currentSrc = target.src;
-              if (currentSrc.endsWith('.jpg')) {
-                target.src = currentSrc.replace(/\.jpg$/, '.JPG');
-              } else if (currentSrc.endsWith('.JPG')) {
-                target.src = currentSrc.replace(/\.JPG$/, '.jpg');
-              }
-            }}
-            className="w-full h-full object-cover object-center"
-          />
-          {/* Subtle gradient overlay at the bottom for dot visibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
-        </motion.div>
-      </AnimatePresence>
+      {/* Render all images to ensure they are preloaded and cached */}
+      {SLIDE_IMAGES.map((image, idx) => {
+        const isActive = currentIndex === idx;
+        return (
+          <div
+            key={image.id}
+            className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+              isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0 pointer-events-none'
+            }`}
+          >
+            <img
+              src={image.src}
+              alt={image.alt}
+              referrerPolicy="no-referrer"
+              loading={idx === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              onError={(e) => {
+                const target = e.currentTarget;
+                const currentSrc = target.src;
+                if (currentSrc.endsWith('.jpg')) {
+                  target.src = currentSrc.replace(/\.jpg$/, '.JPG');
+                } else if (currentSrc.endsWith('.JPG')) {
+                  target.src = currentSrc.replace(/\.JPG$/, '.jpg');
+                }
+              }}
+              className="w-full h-full object-cover object-center"
+            />
+            {/* Subtle gradient overlay at the bottom for dot visibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
+          </div>
+        );
+      })}
 
       {/* Prev / Next Navigation Arrows */}
       <button
