@@ -65,7 +65,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<NameRecord | null>(null);
   const [certificateRecord, setCertificateRecord] = useState<NameRecord | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadingType, setDownloadingType] = useState<string | null>(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -286,7 +286,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
   const handleDownloadCertificate = async () => {
     if (!certificateRef.current || !certificateRecord) return;
-    setIsDownloading(true);
+    setDownloadingType('image');
     try {
       const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
@@ -339,13 +339,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     } catch (err) {
       console.error('Error downloading certificate', err);
     } finally {
-      setIsDownloading(false);
+      setDownloadingType(null);
     }
   };
 
+  
   const handleShareCertificate = async () => {
     if (!certificateRef.current || !certificateRecord) return;
-    setIsDownloading(true);
+    setDownloadingType('share');
     try {
       const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
@@ -367,22 +368,20 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         width: 794,
         height: 559,
         pixelRatio: 3,
-        
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
           margin: '0',
-          
         }
       });
       
       const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`, { type: 'image/png' });
+      const fileObj = new File([blob], `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`, { type: 'image/png' });
       
       if (navigator.share) {
         await navigator.share({
           title: 'អនុមោទនាប័ត្រ',
-          files: [file]
+          files: [fileObj]
         });
       } else {
         alert('មុខងារចែករំលែកមិនដំណើរការលើកម្មវិធីរុករកនេះទេ។');
@@ -390,14 +389,62 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     } catch (err) {
       console.error('Error sharing certificate', err);
     } finally {
-      setIsDownloading(false);
+      setDownloadingType(null);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!certificateRef.current || !certificateRecord) return;
+    setDownloadingType('pdf');
+    try {
+      const images = Array.from(certificateRef.current.querySelectorAll('img')) as HTMLImageElement[];
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      );
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      const dataUrl = await toPng(certificateRef.current, { 
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: 559,
+        pixelRatio: 3,
+        style: {
+          transform: "scale(1)",
+          transformOrigin: "top left",
+          margin: '0',
+        }
+      });
+      
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [794, 559]
+      });
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 794, 559);
+      pdf.save(`អនុមោទនាប័ត្រ_${certificateRecord.name}.pdf`);
+      
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+    } catch (err) {
+      console.error('Error generating PDF', err);
+    } finally {
+      setDownloadingType(null);
     }
   };
 
   
   const handlePrintDownload = async () => {
     if (!printRef.current) return;
-    setIsDownloading(true);
+    setDownloadingType('print');
     try {
       const dataUrl = await toPng(printRef.current, {
         quality: 1,
@@ -427,7 +474,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       console.error('Failed to generate image', err);
       alert('មានបញ្ហាក្នុងការទាញយក');
     } finally {
-      setIsDownloading(false);
+      setDownloadingType(null);
     }
   };
 
@@ -479,7 +526,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       <>
             <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
         <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
             <h2 className="text-2xl font-normal text-gray-900 dark:text-white font-battambang  leading-normal">{t('lists_main_title')}</h2>
             {userRole === 'admin' && (
               <button 
@@ -491,7 +538,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             )}
           </div>
         </div>
-        <div className="px-4 py-6 max-w-6xl mx-auto w-full">
+        <div className="px-4 py-6 max-w-7xl mx-auto w-full">
           {roofCat && (
             <div className="mb-8">
               <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
@@ -709,7 +756,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative overflow-x-hidden w-full">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-4">
+        <div className="max-w-7xl mx-auto w-full flex flex-col gap-4">
           {/* Detail View Header */}
           <div className="flex items-center gap-3">
             <button 
@@ -725,15 +772,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </h2>
             
             <div className="flex items-center gap-2">
-              {userRole === 'admin' && (
-                <button
-                  onClick={handlePrintDownload}
-                  className="flex items-center justify-center w-10 h-10 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0 bg-transparent text-orange-500 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-slate-800"
-                  title="ទាញយកបញ្ជី"
-                >
-                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-                </button>
-              )}
               {userRole === 'admin' && !isListClosed && (
                 <button 
                   onClick={openAddModal}
@@ -753,7 +791,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <LoadingScreen className="h-64 bg-transparent" />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-6xl mx-auto w-full space-y-3">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-7xl mx-auto w-full space-y-3">
           {/* Header Row: Date & Total */}
           <div className="flex items-center justify-between mb-3 px-2 sm:px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
             <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
@@ -797,8 +835,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 whitespace-nowrap w-full">ឈ្មោះសប្បុរសជន</th>
                         {isKathina && (
                           <>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-12 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-12 sm:w-24 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[100px] sm:w-auto text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-20 sm:min-w-[180px] sm:w-auto text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
                           </>
                         )}
                         {!isKathina && (
@@ -840,12 +878,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             {isKathina && (
                               <>
                                 <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
+                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang whitespace-nowrap">
                                     {record.metadata?.trai_liang || '-'}
                                   </span>
                                 </td>
-                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
+                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800 max-w-[200px] sm:max-w-none">
+                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang block sm:inline-block sm:whitespace-nowrap truncate sm:overflow-visible">
                                     {record.metadata?.others || (record.amount > 0 ? formatCurrency(record.amount) : '-')}
                                   </span>
                                 </td>
@@ -1256,10 +1294,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <img 
                           src="/tevoda.png" 
                           alt="ទេវតា" 
-                          className="absolute top-[45px] left-[55px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transform scale-x-[-1]"
+                          className="absolute top-[35px] left-[85px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] transform scale-x-[-1]"
                           onError={(e) => { 
                             e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='130' viewBox='0 0 80 130'%3E%3Crect width='80' height='130' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3Etevoda.png%3C/text%3E%3C/svg%3E";
-                            e.currentTarget.className = "absolute top-[45px] left-[55px] w-[80px] h-[130px] object-contain z-20 opacity-60 transform scale-x-[-1]";
+                            e.currentTarget.className = "absolute top-[35px] left-[85px] w-[80px] h-[130px] object-contain z-20 opacity-60 transform scale-x-[-1]";
                           }}
                         />
 
@@ -1267,12 +1305,42 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <img 
                           src="/tevoda.png" 
                           alt="ទេវតា" 
-                          className="absolute top-[45px] right-[55px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+                          className="absolute top-[35px] right-[85px] w-[80px] h-[130px] object-contain z-20 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
                           onError={(e) => { 
                             e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='130' viewBox='0 0 80 130'%3E%3Crect width='80' height='130' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3Etevoda.png%3C/text%3E%3C/svg%3E";
-                            e.currentTarget.className = "absolute top-[45px] right-[55px] w-[80px] h-[130px] object-contain z-20 opacity-60";
+                            e.currentTarget.className = "absolute top-[35px] right-[85px] w-[80px] h-[130px] object-contain z-20 opacity-60";
                           }}
                         />
+
+                        {/* Tray Left */}
+                        <div className="absolute top-[75px] left-[155px] w-[75px] h-[105px] z-20">
+                          <img 
+                            src="/Tray.png" 
+                            alt="ត្រៃលៀង" 
+                            className="w-full h-full object-contain transform scale-x-[-1]"
+                            style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 95%)', maskImage: 'linear-gradient(to bottom, black 70%, transparent 95%)' }}
+                            onError={(e) => { 
+                              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='105' viewBox='0 0 75 105'%3E%3Crect width='75' height='105' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3ETray.png%3C/text%3E%3C/svg%3E";
+                              e.currentTarget.className = "w-full h-full object-contain transform scale-x-[-1] opacity-60";
+                            }}
+                          />
+                          
+                        </div>
+
+                        {/* Tray Right */}
+                        <div className="absolute top-[75px] right-[155px] w-[75px] h-[105px] z-20">
+                          <img 
+                            src="/Tray.png" 
+                            alt="ត្រៃលៀង" 
+                            className="w-full h-full object-contain"
+                            style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 95%)', maskImage: 'linear-gradient(to bottom, black 70%, transparent 95%)' }}
+                            onError={(e) => { 
+                              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='105' viewBox='0 0 75 105'%3E%3Crect width='75' height='105' fill='none' rx='8' stroke='%23d4af37' stroke-width='2' stroke-dasharray='4'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3EUpload%3C/text%3E%3Ctext x='50%25' y='58%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='11' fill='%23d4af37'%3ETray.png%3C/text%3E%3C/svg%3E";
+                              e.currentTarget.className = "w-full h-full object-contain opacity-60";
+                            }}
+                          />
+                          
+                        </div>
 
                         {/* Top Section */}
                         <div className="relative z-30 flex flex-col items-center mt-2 mb-0 space-y-1 text-center">
@@ -1302,7 +1370,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                         {/* Center Section - Name */}
                         <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-1 w-full px-2">
-                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-3 px-4 flex flex-col items-center justify-center shadow-[0_8px_30px_rgba(153,27,27,0.12)] relative min-h-[120px]">
+                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-3 px-4 flex flex-col items-center justify-center relative min-h-[120px]">
                             {/* Small Inner Box Corner Ornaments */}
                             <svg className="absolute top-1.5 left-1.5 w-6 h-6 opacity-70" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute top-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
@@ -1310,7 +1378,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             <svg className="absolute bottom-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1] scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
 
                             {/* Top label */}
-                            <div className="absolute -top-[14px] bg-[#991b1b] px-6 py-[2px] rounded-full border-2 border-[#d4af37] shadow-sm flex items-center justify-center">
+                            <div className="absolute -top-[14px] bg-[#991b1b] px-6 py-[2px] rounded-full border-2 border-[#d4af37] flex items-center justify-center">
                               <span className="text-[#fdfaf0] font-battambang text-[14px]  ">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
@@ -1328,17 +1396,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             </div>
                             
                             {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others) && (
-                              <div className="flex justify-center items-center gap-6 font-battambang mt-0">
+                              <div className="flex justify-center items-center gap-3 font-battambang mt-1 mb-1">
                                 {certificateRecord.metadata?.trai_liang && (
-                                  <div className="bg-[#fdfaf0] px-5 py-1.5 rounded border border-[#d4af37] shadow-sm">
-                                    <span className="text-gray-600 mr-2 text-[15px]">ត្រៃ/លៀង៖</span>
-                                    <span className=" text-[#991b1b] text-[16px]">{certificateRecord.metadata.trai_liang}</span>
+                                  <div className="bg-[#fdfaf0] px-3 py-0.5 rounded border border-[#d4af37] shadow-sm">
+                                    <span className="text-[#991b1b] text-[14px] leading-tight">{certificateRecord.metadata.trai_liang}</span>
                                   </div>
                                 )}
                                 {certificateRecord.metadata?.others && (
-                                  <div className="bg-[#fdfaf0] px-5 py-1.5 rounded border border-[#d4af37] shadow-sm">
-                                    <span className="text-gray-500 mr-2 text-[15px]">ផ្សេងៗ៖</span>
-                                    <span className=" text-[#991b1b] text-[16px]">{certificateRecord.metadata.others}</span>
+                                  <div className="bg-[#fdfaf0] px-3 py-0.5 rounded border border-[#d4af37] shadow-sm">
+                                    <span className="text-gray-500 mr-1.5 text-[13px] leading-tight">ផ្សេងៗ៖</span>
+                                    <span className="text-[#991b1b] text-[14px] leading-tight">{certificateRecord.metadata.others}</span>
                                   </div>
                                 )}
                               </div>
@@ -1358,17 +1425,17 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </div>
 
                         {/* Bottom Section - Event & Contact */}
-                        <div className="relative z-30 flex justify-between items-end pb-0 px-8">
-                          <div className="text-left font-battambang">
-                            <h4 className="text-[#991b1b]  mb-1 text-[16px]">កម្មវិធីបុណ្យ</h4>
-                            <p className="text-gray-800 text-[14px] leading-[1.6] font-medium">
+                        <div className="relative z-30 flex justify-between items-end pb-0 px-8 font-battambang">
+                          <div className="text-left">
+                            <h4 className="text-[#991b1b] mb-2 text-[14px] font-moul">កម្មវិធីបុណ្យ</h4>
+                            <p className="text-gray-800 text-[14px] leading-[1.6]" style={{ fontFamily: '"Khmer OS Battambang", Battambang, sans-serif' }}>
                               ថ្ងៃសៅរ៍-អាទិត្យ ៥-៦រោច ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០<br/>
-                              ត្រូវនឹងថ្ងៃទី៣១ ខែវិច្ឆិកា ឆ្នាំ២០២៦
+                              ត្រូវនឹងថ្ងៃទី៣១ ខែតុលា និងថ្ងៃទី០១ ខែវិច្ឆិកា ឆ្នាំ២០២៦
                             </p>
                           </div>
-                          <div className="text-right font-battambang">
-                            <h4 className="text-[#991b1b]  mb-1 text-[16px]">ទំនាក់ទំនង</h4>
-                            <p className="text-gray-800 text-[14px] leading-[1.6]   text-right">
+                          <div className="text-right">
+                            <h4 className="text-[#991b1b] mb-2 text-[14px] font-moul">ទំនាក់ទំនង</h4>
+                            <p className="text-gray-800 text-[14px] leading-[1.6] text-right" style={{ fontFamily: '"Khmer OS Battambang", Battambang, sans-serif' }}>
                               016 759 264<br/>
                               016 407 774
                             </p>
@@ -1481,28 +1548,42 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   </div>
                 </div>
               {/* Action Buttons */}
-              <div className="p-4 sm:p-6 bg-white border-t border-gray-200 shrink-0 flex gap-3 z-10 relative shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
+              <div className="p-4 sm:p-6 bg-white border-t border-gray-200 shrink-0 flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 z-10 relative shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
                 <button
                   onClick={handleShareCertificate}
-                  disabled={isDownloading}
-                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl  text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-2 focus:outline-none"
+                  disabled={downloadingType !== null}
+                  className="flex-1 py-3 px-2 sm:px-4 bg-gray-100 text-gray-700 rounded-xl text-[13px] sm:text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70"
                 >
-                  <Share2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-                  <span>ចែករំលែក</span>
+                  {downloadingType === 'share' ? (
+                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
+                  ) : (
+                    <Share2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                  )}
+                  <span className="whitespace-nowrap">ចែករំលែក</span>
+                </button>
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={downloadingType !== null}
+                  className="flex-1 py-3 px-2 sm:px-4 bg-gray-100 text-gray-700 rounded-xl text-[13px] sm:text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70"
+                >
+                  {downloadingType === 'pdf' ? (
+                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                  )}
+                  <span className="whitespace-nowrap">ជា PDF</span>
                 </button>
                 <button
                   onClick={handleDownloadCertificate}
-                  disabled={isDownloading}
-                  className="flex-[2] py-3 px-4 bg-orange-500 text-white rounded-xl  text-[14px] hover:bg-orange-600 shadow-none shadow-orange-500/20 transition-all flex items-center justify-center gap-2 focus:outline-none disabled:opacity-70"
+                  disabled={downloadingType !== null}
+                  className="flex-[2] sm:flex-1 py-3 px-2 sm:px-4 bg-orange-500 text-white rounded-xl text-[13px] sm:text-[14px] hover:bg-orange-600 shadow-none shadow-orange-500/20 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70 w-full sm:w-auto"
                 >
-                  {isDownloading ? (
+                  {downloadingType === 'image' ? (
                     <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
                   ) : (
-                    <>
-                      <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-                      <span>ទាញយករូបភាព</span>
-                    </>
+                    <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                   )}
+                  <span className="whitespace-nowrap">ជារូបភាព</span>
                 </button>
               </div>
             </motion.div>
