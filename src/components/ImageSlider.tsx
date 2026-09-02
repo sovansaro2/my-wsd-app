@@ -26,12 +26,12 @@ export default function ImageSlider() {
     setCurrentIndex((prev) => (prev - 1 + SLIDE_IMAGES.length) % SLIDE_IMAGES.length);
   }, []);
 
-  // 3-second auto slide interval
+  // 5-second auto slide interval
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
       nextSlide();
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isPaused, nextSlide]);
