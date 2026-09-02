@@ -22,6 +22,7 @@ export default function Users({ onBack }: UsersProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'list' | 'advanced'>('list');
 
   // Password Reset State
   const [resettingUser, setResettingUser] = useState<UserProfile | null>(null);
@@ -115,13 +116,43 @@ export default function Users({ onBack }: UsersProps) {
       )}
       
       <div className="flex items-center gap-3.5 mb-6">
-        <div className="p-3 bg-orange-100 dark:bg-orange-500/20 text-orange-600 rounded-2xl shrink-0">
-          <UserCog className="w-6 h-6" />
+        <div className="text-orange-500 shrink-0">
+          <UserCog className="w-7 h-7 sm:w-8 sm:h-8" />
         </div>
         <div>
           <h2 className="text-xl  font-title text-gray-900 dark:text-white uppercase ">{t('users_title')}</h2>
           <p className="text-xs text-gray-500 dark:text-slate-400">{t('users_subtitle')}</p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-6 mb-6 border-b border-gray-200 dark:border-slate-800">
+        <button
+          onClick={() => setActiveTab('list')}
+          className={`pb-3 text-sm font-medium transition-colors font-battambang relative ${
+            activeTab === 'list' 
+              ? 'text-orange-600 dark:text-orange-400' 
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+          }`}
+        >
+          User List
+          {activeTab === 'list' && (
+            <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-t-full" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('advanced')}
+          className={`pb-3 text-sm font-medium transition-colors font-battambang relative ${
+            activeTab === 'advanced' 
+              ? 'text-orange-600 dark:text-orange-400' 
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+          }`}
+        >
+          Advances
+          {activeTab === 'advanced' && (
+            <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-t-full" />
+          )}
+        </button>
       </div>
 
       {/* User List */}
@@ -140,11 +171,11 @@ export default function Users({ onBack }: UsersProps) {
             >
               {/* Top: Info */}
               <div className="flex items-center gap-3.5">
-                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-orange-100 dark:ring-orange-900/40">
+                <div className="h-12 w-12 rounded-full border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
                   {user.avatar_url ? (
                     <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-orange-600 dark:text-orange-400  text-xl">
+                    <span className="text-gray-500 dark:text-gray-400 font-medium text-xl">
                       {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?')}
                     </span>
                   )}
@@ -161,46 +192,48 @@ export default function Users({ onBack }: UsersProps) {
                   </div>
                 </div>
                 <div>
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium font-battambang ${
+                  <span className={`inline-flex items-center gap-1.5 text-[12px] font-medium font-battambang ${
                     user.role === 'admin' 
-                      ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
-                      : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                      ? 'text-purple-600 dark:text-purple-400' 
+                      : 'text-green-600 dark:text-green-400'
                   }`}>
-                    {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
+                    {user.role === 'admin' ? <Shield className="w-3.5 h-3.5" /> : <UserIcon className="w-3.5 h-3.5" />}
                     <span>{user.role === 'admin' ? t('users_role_admin') : t('users_role_user')}</span>
                   </span>
                 </div>
               </div>
 
-              {/* Bottom: Actions */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700/60 gap-3">
-                <div className="flex-1 max-w-[150px] sm:max-w-[180px]">
-                  {updatingId === user.id ? (
-                    <div className="py-2 flex items-center gap-2 text-xs text-orange-500 font-battambang">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      {t('common_saving')}
-                    </div>
-                  ) : (
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value as 'admin' | 'user')}
-                      disabled={updatingId === user.id}
-                      className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-xs sm:text-sm rounded-xl focus:ring-orange-500 focus:border-orange-500 block w-full p-2 font-battambang disabled:opacity-50 font-medium"
-                    >
-                      <option value="user">{t('users_role_user')}</option>
-                      <option value="admin">{t('users_role_admin')}</option>
-                    </select>
-                  )}
+              {/* Bottom: Actions (Only in Advances Tab) */}
+              {activeTab === 'advanced' && (
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700/60 gap-3">
+                  <div className="flex-1 max-w-[150px] sm:max-w-[180px]">
+                    {updatingId === user.id ? (
+                      <div className="py-2 flex items-center gap-2 text-xs text-orange-500 font-battambang">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {t('common_saving')}
+                      </div>
+                    ) : (
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value as 'admin' | 'user')}
+                        disabled={updatingId === user.id}
+                        className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-xs sm:text-sm rounded-xl focus:ring-orange-500 focus:border-orange-500 block w-full p-2 font-battambang disabled:opacity-50 font-medium"
+                      >
+                        <option value="user">{t('users_role_user')}</option>
+                        <option value="admin">{t('users_role_admin')}</option>
+                      </select>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => setResettingUser(user)}
+                    className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 transition-colors font-battambang whitespace-nowrap"
+                  >
+                    <KeyRound className="w-4 h-4" />
+                    {t('users_btn_reset_pwd')}
+                  </button>
                 </div>
-                
-                <button
-                  onClick={() => setResettingUser(user)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 dark:text-orange-400 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 rounded-xl transition-colors font-battambang whitespace-nowrap"
-                >
-                  <KeyRound className="w-3.5 h-3.5" />
-                  {t('users_btn_reset_pwd')}
-                </button>
-              </div>
+              )}
             </motion.div>
           ))
         )}
