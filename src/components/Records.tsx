@@ -659,10 +659,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <div>
+                        <>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </div>
+                        </>
                       )}
                     </button>
                   </div>
@@ -741,10 +741,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <div>
+                        <>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </div>
+                        </>
                       )}
                     </button>
                   </div>

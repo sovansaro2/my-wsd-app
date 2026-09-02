@@ -688,10 +688,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       {isSavingCat ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <div>
+                        <>
                           <Check className="w-5 h-5 mr-2" />
                           រក្សាទុក
-                        </div>
+                        </>
                       )}
                     </button>
                   </div>
@@ -1498,10 +1498,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   {isDownloading ? (
                     <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
                   ) : (
-                    <div>
+                    <>
                       <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                       <span>ទាញយករូបភាព</span>
-                    </div>
+                    </>
                   )}
                 </button>
               </div>
