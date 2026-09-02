@@ -2,10 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2 } from 'lucide-react';
+import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
 import CustomDatePicker from './ui/CustomDatePicker';
 import { api } from '../lib/apiClient';
+import { systemLogger } from '../lib/logger';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -15,6 +17,8 @@ interface AccountProfileProps {
   actualRole?: 'admin' | 'user' | null;
   onViewModeChange?: (mode: 'admin' | 'user') => void;
   onLogout: () => void;
+  initialSystemLogsOpen?: boolean;
+  onClearInitialSystemLogsOpen?: () => void;
   
   onManageFinancials?: () => void;
   onManageNameLists?: () => void;
@@ -22,7 +26,18 @@ interface AccountProfileProps {
   onCertificates?: () => void;
 }
 
-export default function AccountProfile({ userRole, actualRole, onViewModeChange, onLogout, onManageFinancials, onManageNameLists, onManageUsers, onCertificates }: AccountProfileProps) {
+export default function AccountProfile({ 
+  userRole, 
+  actualRole, 
+  onViewModeChange, 
+  onLogout, 
+  initialSystemLogsOpen,
+  onClearInitialSystemLogsOpen,
+  onManageFinancials, 
+  onManageNameLists, 
+  onManageUsers, 
+  onCertificates 
+}: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
@@ -57,6 +72,14 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   const [isEditable, setIsEditable] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isSettingView, setIsSettingView] = useState(false);
+  const [isSystemLogsView, setIsSystemLogsView] = useState(false);
+
+  useEffect(() => {
+    if (initialSystemLogsOpen) {
+      setIsSystemLogsView(true);
+      onClearInitialSystemLogsOpen?.();
+    }
+  }, [initialSystemLogsOpen, onClearInitialSystemLogsOpen]);
   const [isCopied, setIsCopied] = useState(false);
   const { theme: currentTheme, setTheme: setCurrentTheme } = useTheme();
   
@@ -78,6 +101,7 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
 
   const [showAdminContactModal, setShowAdminContactModal] = useState(false);
   const [isAdminContactCopied, setIsAdminContactCopied] = useState(false);
+  const [clearStorageStatus, setClearStorageStatus] = useState<'idle' | 'confirm' | 'success'>('idle');
 
   const handlePasswordChange = async () => {
     if (password.length < 6) {
@@ -959,6 +983,12 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
   }
 
   // --- SETTING VIEW ---
+  
+  // --- SYSTEM LOGS VIEW ---
+  if (isSystemLogsView) {
+    return <SystemLogs onBack={() => setIsSystemLogsView(false)} />;
+  }
+
   if (isSettingView) {
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
@@ -1148,6 +1178,84 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
                   )}
                 </div>
               </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION 4: Clear App Storage / Space */}
+              <div className="space-y-2.5">
+                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang flex items-center gap-1.5">
+                  <HardDrive className="w-4 h-4" />
+                  <span>អង្គចងចាំកម្មវិធី (App Storage)</span>
+                </h4>
+
+                <div className="pl-3 space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                        ទំហំ System Logs & Cache
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-slate-400 font-mono">
+                        {systemLogger.getStorageUsage().formatted} ({systemLogger.getStorageUsage().logCount} កំណត់ត្រា)
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        if (clearStorageStatus === 'idle') {
+                          setClearStorageStatus('confirm');
+                          setTimeout(() => {
+                            setClearStorageStatus(prev => prev === 'confirm' ? 'idle' : prev);
+                          }, 3000);
+                          return;
+                        }
+                        
+                        systemLogger.clearLogs();
+                        // Clear transient non-auth cache safely
+                        try {
+                          const keysToKeep = ['access_token', 'theme', 'language', 'balance_visibility', 'last_read_notifications', 'cleared_notifications_at'];
+                          for (let i = localStorage.length - 1; i >= 0; i--) {
+                            const k = localStorage.key(i);
+                            if (k && !keysToKeep.includes(k) && !k.startsWith('pin_')) {
+                              localStorage.removeItem(k);
+                            }
+                          }
+                        } catch (e) {
+                          console.error(e);
+                        }
+                        
+                        setClearStorageStatus('success');
+                        setTimeout(() => setClearStorageStatus('idle'), 2000);
+                      }}
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors font-battambang self-start sm:self-auto ${
+                        clearStorageStatus === 'success' ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40' :
+                        clearStorageStatus === 'confirm' ? 'text-white bg-red-600 hover:bg-red-700' :
+                        'text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/40'
+                      }`}
+                    >
+                      {clearStorageStatus === 'success' ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>សម្អាតរួចរាល់</span>
+                        </>
+                      ) : clearStorageStatus === 'confirm' ? (
+                        <>
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>បញ្ជាក់ការសម្អាត?</span>
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>សម្អាត (Clear Storage)</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 leading-relaxed font-battambang">
+                    ការសម្អាតនេះនឹងលុបតែឯកសារ Logs និងទិន្នន័យបណ្ដោះអាសន្ន (Cache) ប៉ុណ្ណោះ ដោយមិនប៉ះពាល់ដល់គណនី ឬលេខសម្ងាត់ឡើយ។
+                  </p>
+                </div>
+              </div>
             </div>
 
             <hr className="border-gray-200 dark:border-slate-800 mt-6" />
@@ -1302,6 +1410,22 @@ export default function AccountProfile({ userRole, actualRole, onViewModeChange,
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
+
+                    {/* System Logs */}
+          {userRole === 'admin' && (
+            <button
+              onClick={() => setIsSystemLogsView(true)}
+              className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+            >
+              <div className="flex items-center gap-3.5">
+                <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                  {t('profile_syslog_menu')}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </button>
+          )}
 
           {/* ចាកចេញពីគណនី */}
           <button

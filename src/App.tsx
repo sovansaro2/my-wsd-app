@@ -13,10 +13,14 @@ import {
   Globe, 
   Sun, 
   Moon,
-  Shield
+  Trash2,
+  Shield,
+  AlertTriangle,
+  Terminal
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
+import { systemLogger } from './lib/logger';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
@@ -49,6 +53,29 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
+
+  
+  useEffect(() => {
+    const handleGlobalError = (event: ErrorEvent) => {
+      const msg = event.error?.message || event.message || '';
+      if (msg.includes('WebSocket') || msg.includes('vite') || msg.includes('ResizeObserver')) return;
+      systemLogger.error(msg, event.error?.stack);
+    };
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const msg = typeof event.reason === 'string' ? event.reason : (event.reason?.message || '');
+      if (msg.includes('WebSocket') || msg.includes('vite') || msg.includes('ResizeObserver')) return;
+      systemLogger.error('Unhandled Promise Rejection', event.reason?.stack || event.reason);
+    };
+
+    window.addEventListener('error', handleGlobalError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleGlobalError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -92,16 +119,25 @@ export default function App() {
   const fetchNotifications = async () => {
     try {
       const data = await api.getNotifications();
-      setNotifications(data);
+      const clearedAt = localStorage.getItem('cleared_notifications_at');
+      
+      const list = Array.isArray(data) ? data : [];
+      const activeNotifications = clearedAt 
+        ? list.filter((n: any) => new Date(n.created_at).getTime() > new Date(clearedAt).getTime())
+        : list;
+
+      setNotifications(activeNotifications);
       const lastRead = localStorage.getItem('last_read_notifications');
       
-      if (data.length > 0) {
+      if (activeNotifications.length > 0) {
         if (!lastRead) {
-          setUnreadCount(data.length);
+          setUnreadCount(activeNotifications.length);
         } else {
-          const unread = data.filter((n: any) => new Date(n.created_at).getTime() > new Date(lastRead).getTime());
+          const unread = activeNotifications.filter((n: any) => new Date(n.created_at).getTime() > new Date(lastRead).getTime());
           setUnreadCount(unread.length);
         }
+      } else {
+        setUnreadCount(0);
       }
     } catch (err: any) {
       if (err.message !== 'Failed to fetch') {
@@ -115,6 +151,24 @@ export default function App() {
     setUnreadCount(0);
     if (notifications.length > 0) {
       localStorage.setItem('last_read_notifications', notifications[0].created_at);
+    }
+  };
+
+  const handleClearAllNotifications = async () => {
+    try {
+      const now = new Date().toISOString();
+      localStorage.setItem('cleared_notifications_at', now);
+      localStorage.setItem('last_read_notifications', now);
+      setNotifications([]);
+      setUnreadCount(0);
+
+      await api.clearNotifications().catch((err: any) => {
+        console.warn('Backend clear notifications warning:', err);
+      });
+    } catch (error) {
+      console.error('Failed to clear notifications:', error);
+      setNotifications([]);
+      setUnreadCount(0);
     }
   };
 
@@ -268,6 +322,20 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Quick System Logs for Admin */}
+          {actualRole === 'admin' && (
+            <button
+              onClick={() => {
+                setActiveTab('account');
+                setOpenSystemLogsDirectly(true);
+              }}
+              className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center"
+              title="System Logs"
+            >
+              <Terminal className="w-5 h-5 text-gray-700 dark:text-slate-300" />
+            </button>
+          )}
+
           {/* Notifications Button */}
           <button 
             onClick={handleOpenNotifications}
@@ -295,7 +363,20 @@ export default function App() {
         }`}>
           {t('app_title')}
         </h1>
-        <div className="relative shrink-0">
+        <div className="relative shrink-0 flex items-center gap-1">
+          {actualRole === 'admin' && (
+            <button
+              onClick={() => {
+                setActiveTab('account');
+                setOpenSystemLogsDirectly(true);
+              }}
+              className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center"
+              title="System Logs"
+            >
+              <Terminal className="w-5 h-5 text-white" />
+            </button>
+          )}
+
           <button 
             onClick={handleOpenNotifications}
             className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors"
@@ -328,13 +409,31 @@ export default function App() {
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[80vh] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/5">
-                <h3 className="font-battambang text-lg text-gray-900 dark:text-white">ការជូនដំណឹង</h3>
-                <button 
-                  onClick={() => setShowNotifications(false)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <h3 className="font-battambang text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                  ការជូនដំណឹង
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full font-sans">
+                      {unreadCount}
+                    </span>
+                  )}
+                </h3>
+                <div className="flex items-center gap-1">
+                  {notifications.length > 0 && (
+                    <button 
+                      onClick={handleClearAllNotifications}
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 rounded-full transition-colors flex items-center justify-center mr-1"
+                      title="លុបទាំងអស់"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => setShowNotifications(false)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-slate-900/20">
@@ -485,6 +584,8 @@ export default function App() {
                 actualRole={actualRole}
                 onViewModeChange={(mode) => setUserRole(mode)}
                 onLogout={handleLogout}
+                initialSystemLogsOpen={openSystemLogsDirectly}
+                onClearInitialSystemLogsOpen={() => setOpenSystemLogsDirectly(false)}
                 onManageUsers={() => setActiveTab('users')}
                 onCertificates={() => setActiveTab('certificates')}
               />

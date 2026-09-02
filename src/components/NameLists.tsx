@@ -378,13 +378,28 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       const blob = await (await fetch(dataUrl)).blob();
       const fileObj = new File([blob], `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`, { type: 'image/png' });
       
-      if (navigator.share) {
-        await navigator.share({
-          title: 'អនុមោទនាប័ត្រ',
-          files: [fileObj]
-        });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
+        try {
+          await navigator.share({
+            title: 'អនុមោទនាប័ត្រ',
+            files: [fileObj]
+          });
+        } catch (shareErr: any) {
+          console.warn('Share failed, falling back to download:', shareErr);
+          // If the user cancelled, AbortError is thrown. We shouldn't download then.
+          if (shareErr.name !== 'AbortError') {
+             const link = document.createElement('a');
+             link.download = `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`;
+             link.href = dataUrl;
+             link.click();
+          }
+        }
       } else {
-        alert('មុខងារចែករំលែកមិនដំណើរការលើកម្មវិធីរុករកនេះទេ។');
+        // Fallback for browsers that don't support file sharing
+        const link = document.createElement('a');
+        link.download = `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`;
+        link.href = dataUrl;
+        link.click();
       }
     } catch (err) {
       console.error('Error sharing certificate', err);

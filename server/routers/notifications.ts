@@ -25,4 +25,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.delete('/', async (req, res) => {
+  try {
+    const { error } = await supabaseAdmin
+      .from('app_notifications')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+
+    if (error) {
+      // Fallback in case table doesn't exist
+      if (error.code === '42P01' || error.message?.includes('Could not find the table')) {
+        return res.json({ success: true, count: 0 });
+      }
+      return res.status(400).json({ detail: error.message });
+    }
+
+    res.json({ success: true, message: 'Notifications cleared' });
+  } catch (e: any) {
+    res.status(400).json({ detail: e.message });
+  }
+});
+
 export default router;

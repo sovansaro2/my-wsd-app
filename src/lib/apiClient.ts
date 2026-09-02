@@ -32,6 +32,7 @@ export const api = {
   getMe: () => apiFetch('/api/auth/me'),
 
   getNotifications: () => apiFetch('/api/notifications'),
+  clearNotifications: () => apiFetch('/api/notifications', { method: 'DELETE' }),
 
   // Financial
   getSeilPeriods: () => apiFetch('/api/seil-periods'),
