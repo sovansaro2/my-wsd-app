@@ -194,9 +194,8 @@ export default function InstallPrompt() {
                 <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
               </div>
 
-              <div className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>តម្រូវឲ្យដំឡើង App លើ Android</span>
+              <div className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400 text-xs font-semibold mb-1">
+                <span>ដំឡើងលើអេក្រង់ទូរស័ព្ទ</span>
               </div>
 
               <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug">
@@ -212,10 +211,10 @@ export default function InstallPrompt() {
               <button
                 onClick={handleInstallClick}
                 disabled={isInstalling}
-                className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[14px] font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
+                className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white rounded-xl text-[14px] font-medium transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
               >
-                <Download className="w-5 h-5" />
-                <span>{isInstalling ? 'កំពុងដំណើរការ...' : 'ដំឡើងកម្មវិធីឥឡូវនេះ (Install App)'}</span>
+                <Download className="w-4 h-4" />
+                <span>{isInstalling ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី (Install)'}</span>
               </button>
 
               {/* Instructions if already prompted or Chrome 3-dot */}

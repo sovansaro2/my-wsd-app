@@ -16,8 +16,10 @@ import { useFontSize } from '../contexts/FontSizeContext';
 
 
 interface AccountProfileProps {
-  userRole: 'admin' | 'user' | null;
+  userRole?: 'admin' | 'user' | null;
   actualRole?: 'admin' | 'user' | null;
+  currentUser?: any;
+  onUpdateCurrentUser?: (user: any) => void;
   onViewModeChange?: (mode: 'admin' | 'user') => void;
   onLogout: () => void;
   initialSystemLogsOpen?: boolean;
@@ -32,6 +34,8 @@ interface AccountProfileProps {
 export default function AccountProfile({ 
   userRole, 
   actualRole, 
+  currentUser,
+  onUpdateCurrentUser,
   onViewModeChange, 
   onLogout, 
   initialSystemLogsOpen,
@@ -43,24 +47,36 @@ export default function AccountProfile({
 }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const { fontSize, setFontSize } = useFontSize();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userKey, setUserKey] = useState<string | null>(null);
-  const [fullName, setFullName] = useState('');
+
+  // Instant local profile resolution so user never sees a blocking loading screen
+  const getInitialProfile = () => {
+    if (currentUser) return currentUser;
+    try {
+      const saved = localStorage.getItem('cached_user_profile');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+  const cachedProfile = getInitialProfile();
+
+  const [userId, setUserId] = useState<string | null>(cachedProfile?.id || null);
+  const [userKey, setUserKey] = useState<string | null>(cachedProfile?.id || null);
+  const [fullName, setFullName] = useState(cachedProfile?.full_name || '');
   const [password, setPassword] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState(cachedProfile?.avatar_url || '');
 
-  const [familyName, setFamilyName] = useState('');
-  const [givenName, setGivenName] = useState('');
-  const [gender, setGender] = useState('Male');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [address, setAddress] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [userCode, setUserCode] = useState('WSD-0810');
+  const [familyName, setFamilyName] = useState(cachedProfile?.family_name || '');
+  const [givenName, setGivenName] = useState(cachedProfile?.given_name || '');
+  const [gender, setGender] = useState(cachedProfile?.gender || 'Male');
+  const [dateOfBirth, setDateOfBirth] = useState(cachedProfile?.date_of_birth || '');
+  const [address, setAddress] = useState(cachedProfile?.address || '');
+  const [phoneNumber, setPhoneNumber] = useState(cachedProfile?.phone_number || '');
+  const [email, setEmail] = useState(cachedProfile?.email || '');
+  const [userCode, setUserCode] = useState(cachedProfile?.user_code || (cachedProfile?.id ? `WSD-${cachedProfile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
 
-  
   // PIN states
-  const [hasBalancePin, setHasBalancePin] = useState(false);
+  const [hasBalancePin, setHasBalancePin] = useState(!!cachedProfile?.has_balance_pin);
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [pinSetupStep, setPinSetupStep] = useState<'verify_current' | 'enter_new' | 'confirm_new' | 'forgot_pin_verify'>('enter_new');
   const [authPassword, setAuthPassword] = useState('');
@@ -69,7 +85,7 @@ export default function AccountProfile({
   const [pinSetupError, setPinSetupError] = useState('');
   const [isPinSettingLoading, setIsPinSettingLoading] = useState(false);
   
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isEditingView, setIsEditingView] = useState(false);
@@ -237,11 +253,9 @@ export default function AccountProfile({
 
 
   const fetchProfile = async () => {
-    setIsLoading(true);
     try {
       const profile = await api.getMe();
       if (!profile) return;
-      
       
       setUserId(profile.id);
       setUserKey(profile.id);
@@ -258,8 +272,13 @@ export default function AccountProfile({
 
       setHasBalancePin(!!profile.has_balance_pin);
       setAvatarUrl(profile.avatar_url || '');
+
+      try {
+        localStorage.setItem('cached_user_profile', JSON.stringify(profile));
+      } catch {}
+      onUpdateCurrentUser?.(profile);
     } catch (error) {
-      console.log('Could not fetch profile');
+      console.log('Could not fetch profile in background:', error);
     } finally {
       setIsLoading(false);
     }
@@ -339,18 +358,6 @@ export default function AccountProfile({
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="p-4 sm:p-6 md:max-w-3xl md:mx-auto pb-6 font-battambang bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 min-h-full">
-        <h2 className="mb-6 text-xl  text-zinc-900 ">{t('nav_account')}</h2>
-        <div className="flex justify-center items-center h-48 bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
-          <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
-        </div>
-      </div>
-    );
-  }
-
-  
   // --- EDIT PROFILE VIEW ---
   if (isEditingView) {
     return (
@@ -1631,21 +1638,35 @@ export default function AccountProfile({
           className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm font-battambang"
         >
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+            exit={{ scale: 0.95, opacity: 0, y: 15 }}
+            transition={{ type: "spring", duration: 0.45, bounce: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-md max-h-[92vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden shadow-2xl"
+            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden shadow-2xl"
           >
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between flex-shrink-0">
+              <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
+                {aboutModalTab === 'about' ? t('about_tab_info') : t('about_tab_introduced')}
+              </h3>
+              <button
+                onClick={() => setIsAboutModalOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             {/* Top Navigation Tabs */}
-            <div className="flex items-center border-b border-gray-100 dark:border-slate-800 w-full px-5 pt-3.5 flex-shrink-0">
+            <div className="flex border-b border-gray-100 dark:border-slate-800 w-full px-5 pt-2 flex-shrink-0">
               <button
                 onClick={() => setAboutModalTab('about')}
-                className={`flex-1 pb-3 text-center text-[14px] font-medium border-b-2 transition-colors ${
+                className={`flex-1 pb-3 text-center text-[14px] transition-colors border-b-2 ${
                   aboutModalTab === 'about'
                     ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium'
                 }`}
               >
                 {t('about_tab_info')}
@@ -1655,10 +1676,10 @@ export default function AccountProfile({
                   setAboutModalTab('introduced');
                   setIntroducedPlatformTab(isIOS ? 'ios' : 'android');
                 }}
-                className={`flex-1 pb-3 text-center text-[14px] font-medium border-b-2 transition-colors ${
+                className={`flex-1 pb-3 text-center text-[14px] transition-colors border-b-2 ${
                   aboutModalTab === 'introduced'
                     ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium'
                 }`}
               >
                 {t('about_tab_introduced')}
@@ -1666,24 +1687,24 @@ export default function AccountProfile({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 sm:p-6 flex flex-col overflow-y-auto">
+            <div className="p-5 sm:p-6 flex flex-col overflow-y-auto space-y-4">
               {aboutModalTab === 'about' ? (
                 /* About Tab Content */
                 <div className="flex flex-col items-center text-center">
-                  <div className="mb-3 flex items-center justify-center flex-shrink-0">
-                    <Info className="w-10 h-10 sm:w-12 sm:h-12 text-orange-500" />
+                  <div className="mb-2.5 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-10 h-10 text-orange-500" />
                   </div>
-                  <h3 className="text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                     កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច
                   </h3>
-                  <p className="text-gray-500 dark:text-slate-400 text-sm mb-5 flex-shrink-0">
+                  <p className="text-gray-500 dark:text-slate-400 text-xs mb-4 flex-shrink-0">
                     {t('about_version')} 1.2.0
                   </p>
                   
-                  <div className="w-full text-left space-y-3.5 mb-6 flex-shrink-0 border-y border-gray-100 dark:border-slate-800 py-4">
+                  <div className="w-full text-left space-y-3.5 flex-shrink-0 border-t border-gray-100 dark:border-slate-800 pt-4">
                     <div>
                       <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_purpose')}</p>
-                      <p className="text-[14px] text-gray-800 dark:text-slate-200 leading-relaxed">{t('about_purpose_desc')}</p>
+                      <p className="text-[13.5px] text-gray-800 dark:text-slate-200 leading-relaxed">{t('about_purpose_desc')}</p>
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
@@ -1692,45 +1713,45 @@ export default function AccountProfile({
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
-                      <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1.5">{t('about_tech')}</p>
+                      <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-2">{t('about_tech')}</p>
                       <div className="flex flex-wrap gap-1.5">
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">React</span>
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Tailwind CSS</span>
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">TypeScript</span>
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Vite</span>
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Supabase</span>
-                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">NodeJS</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">React</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">Tailwind CSS</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">TypeScript</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">Vite PWA</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">Supabase</span>
+                        <span className="text-[12px] text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2 py-0.5 rounded-md">Express</span>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                /* Introduced Tab Content */
+                /* Installation Guide Content */
                 <div className="space-y-4 text-left">
-                  {/* Platform Toggle */}
-                  <div className="flex items-center gap-2 pb-1">
+                  {/* Refined Segmented Control */}
+                  <div className="bg-gray-100 dark:bg-slate-800/70 p-1 rounded-xl flex gap-1">
                     <button
                       onClick={() => setIntroducedPlatformTab('android')}
-                      className={`flex-1 py-2 px-3 text-[13.5px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
+                      className={`flex-1 py-2 px-3 text-[13.5px] rounded-lg transition-all text-center flex items-center justify-center gap-2 ${
                         introducedPlatformTab === 'android'
-                          ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
-                          : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+                          ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-sm font-semibold'
+                          : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 font-medium'
                       }`}
                     >
-                      <Smartphone className="w-4 h-4" />
-                      <span>សម្រាប់ Android</span>
+                      <Smartphone className="w-4 h-4 text-orange-500" />
+                      <span>Android</span>
                     </button>
 
                     <button
                       onClick={() => setIntroducedPlatformTab('ios')}
-                      className={`flex-1 py-2 px-3 text-[13.5px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
+                      className={`flex-1 py-2 px-3 text-[13.5px] rounded-lg transition-all text-center flex items-center justify-center gap-2 ${
                         introducedPlatformTab === 'ios'
-                          ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
-                          : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+                          ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white shadow-sm font-semibold'
+                          : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 font-medium'
                       }`}
                     >
-                      <Share className="w-4 h-4" />
-                      <span>សម្រាប់ iOS (iPhone)</span>
+                      <Share className="w-4 h-4 text-blue-500" />
+                      <span>iOS (iPhone)</span>
                     </button>
                   </div>
 
@@ -1738,28 +1759,15 @@ export default function AccountProfile({
                     /* Android Section */
                     <div className="space-y-4">
                       {isInstalled ? (
-                        <div className="border border-emerald-500/80 rounded-xl p-3.5 flex items-center gap-3">
-                          <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                          <div>
-                            <h4 className="text-[14px] font-semibold text-emerald-700 dark:text-emerald-400">
-                              បានដំឡើងរួចរាល់ (Installed)
-                            </h4>
-                            <p className="text-[12px] text-gray-600 dark:text-slate-300 mt-0.5">
-                              កម្មវិធីកំពុងដំណើរការជា App ពេញលេញនៅលើទូរស័ព្ទដៃរបស់អ្នក។
-                            </p>
-                          </div>
+                        <div className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 py-1">
+                          <CheckCircle2 className="w-5 h-5 shrink-0" />
+                          <span className="text-[13.5px] font-medium">កម្មវិធីបានដំឡើងរួចរាល់នៅលើឧបករណ៍នេះ</span>
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          <div className="border border-orange-500/40 dark:border-orange-500/30 rounded-xl p-3.5">
-                            <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-orange-500" />
-                              តម្រូវឲ្យដំឡើងកម្មវិធីនៅលើ Android
-                            </h4>
-                            <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
-                              សូមដំឡើងកម្មវិធីវត្តស្នាយដួចនៅលើទូរស័ព្ទ Android របស់អ្នក ដើម្បីទទួលបានល្បឿនលឿន ងាយស្រួលបើកប្រើ និងដំណើរការពេញលេញ។
-                            </p>
-                          </div>
+                          <p className="text-[13.5px] text-gray-600 dark:text-slate-300 leading-relaxed">
+                            លោកអ្នកអាចដំឡើងកម្មវិធីវត្តស្នាយដួចលើទូរស័ព្ទ Android ដើម្បីបើកប្រើប្រាស់បានលឿន ងាយស្រួល និងរហ័សទាន់ចិត្ត។
+                          </p>
 
                           {/* Direct Install Button */}
                           <button
@@ -1772,79 +1780,78 @@ export default function AccountProfile({
                               }
                             }}
                             disabled={isInstallingPWA}
-                            className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[14px] font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
+                            className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white rounded-xl text-[14px] font-medium transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
                           >
-                            <Download className="w-5 h-5" />
-                            <span>{isInstallingPWA ? 'កំពុងដំណើរការ...' : 'ដំឡើងកម្មវិធីឥឡូវនេះ (Install App)'}</span>
+                            <Download className="w-4 h-4" />
+                            <span>{isInstallingPWA ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី (Install)'}</span>
                           </button>
                         </div>
                       )}
 
                       {/* Android Steps */}
                       <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
-                        <h5 className="text-[13px] font-semibold text-gray-800 dark:text-slate-200">
-                          វិធីដំឡើងតាម Chrome / Samsung Internet:
+                        <h5 className="text-[13px] font-semibold text-gray-900 dark:text-white">
+                          ជំហានដំឡើងតាម Chrome ឬ Samsung Internet:
                         </h5>
-                        <ol className="space-y-2 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
+                        <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
                           <li className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">1</span>
-                            <span>បើកកម្មវិធីតាម <strong>Google Chrome</strong> ឬ <strong>Samsung Internet</strong></span>
+                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">01</span>
+                            <span>បើកកម្មវិធីតាមរយៈ <strong>Google Chrome</strong> ឬ <strong>Samsung Internet</strong></span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">2</span>
-                            <span>ចុចសញ្ញាម៉ឺនុយចុចបី <MoreVertical className="w-3.5 h-3.5 inline text-orange-500 mx-0.5" /> នៅជ្រុងខាងស្តាំខាងលើ</span>
+                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">02</span>
+                            <span>ចុចលើសញ្ញាម៉ឺនុយជម្រើស <strong>(⋮)</strong> នៅជ្រុងខាងលើស្តាំ</span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">3</span>
-                            <span>ជ្រើសរើសយក <strong>"ដំឡើងកម្មវិធី (Install app)"</strong> ឬ <strong>"បន្ថែមទៅអេក្រង់ដើម"</strong></span>
+                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">03</span>
+                            <span>ជ្រើសរើសយក <strong>«ដំឡើងកម្មវិធី»</strong> ឬ <strong>«បន្ថែមទៅអេក្រង់ដើម»</strong></span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">4</span>
-                            <span>ចុច <strong>"ដំឡើង (Install)"</strong> ជាការស្រេច</span>
+                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">04</span>
+                            <span>ចុច <strong>«ដំឡើង»</strong> ដើម្បីបញ្ចប់ការដំឡើង</span>
                           </li>
                         </ol>
                       </div>
                     </div>
                   ) : (
                     /* iOS Section */
-                    <div className="space-y-3.5">
-                      <div className="border border-blue-500/40 dark:border-blue-500/30 rounded-xl p-3.5">
-                        <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                          <Share className="w-4 h-4 text-blue-500" />
-                          ការបន្ថែមទៅលើអេក្រង់ដើម (Add to Home Screen)
-                        </h4>
-                        <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
-                          សម្រាប់ប្រព័ន្ធ iOS (iPhone / iPad) សូមប្រើប្រាស់កម្មវិធីរុករក Safari ដើម្បីដំឡើងកម្មវិធីតាមជំហានខាងក្រោម៖
-                        </p>
+                    <div className="space-y-4">
+                      <p className="text-[13.5px] text-gray-600 dark:text-slate-300 leading-relaxed">
+                        សម្រាប់ទូរស័ព្ទ iPhone / iPad សូមបើកដំណើរការតាមរយៈកម្មវិធី <strong>Safari</strong> រួចអនុវត្តតាមជំហានខាងក្រោម៖
+                      </p>
+
+                      <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
+                        <h5 className="text-[13px] font-semibold text-gray-900 dark:text-white">
+                          ជំហានបន្ថែមទៅលើអេក្រង់ដើម (Add to Home Screen):
+                        </h5>
+                        <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
+                          <li className="flex items-start gap-2.5">
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">01</span>
+                            <span>បើកតំណភ្ជាប់ក្នុងកម្មវិធី <strong>Safari</strong></span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">02</span>
+                            <span>ចុចលើប៊ូតុង <strong>ចែករំលែក (Share)</strong> នៅរបារខាងក្រោម</span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">03</span>
+                            <span>អូសចុះក្រោម រួចជ្រើសរើស <strong>«Add to Home Screen»</strong></span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">04</span>
+                            <span>ចុច <strong>«Add»</strong> នៅជ្រុងខាងលើស្តាំជាការស្រេច</span>
+                          </li>
+                        </ol>
                       </div>
 
-                      <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
-                        <li className="flex items-start gap-2.5">
-                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">1</span>
-                          <span>បើកកម្មវិធីក្នុង <strong>Safari</strong> (បើកក្នុង FB/Telegram សូម Copy Link ទៅ Safari)</span>
-                        </li>
-                        <li className="flex items-start gap-2.5">
-                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">2</span>
-                          <span>ចុចលើប៊ូតុង <strong>ចែករំលែក (Share)</strong> <Share className="w-4 h-4 inline text-blue-500 mx-0.5" /> នៅរបារខាងក្រោម</span>
-                        </li>
-                        <li className="flex items-start gap-2.5">
-                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">3</span>
-                          <span>អូសចុះក្រោម រួចជ្រើសរើស <strong>"Add to Home Screen"</strong> <PlusSquare className="w-4 h-4 inline text-blue-500 mx-0.5" /></span>
-                        </li>
-                        <li className="flex items-start gap-2.5">
-                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">4</span>
-                          <span>ចុច <strong>"Add"</strong> នៅជ្រុងខាងស្តាំខាងលើ ជាការស្រេច</span>
-                        </li>
-                      </ol>
-
-                      <div className="border-t border-gray-100 dark:border-slate-800 pt-3">
+                      <div className="pt-1">
                         <button
                           onClick={() => {
                             navigator.clipboard.writeText(window.location.origin);
                             setIsPwaLinkCopied(true);
                             setTimeout(() => setIsPwaLinkCopied(false), 2000);
                           }}
-                          className="w-full py-2.5 px-4 border border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 text-gray-800 dark:text-slate-200 rounded-xl text-[13.5px] font-medium transition-colors flex items-center justify-center gap-2"
+                          className="w-full py-2.5 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200 rounded-xl text-[13.5px] font-medium transition-colors flex items-center justify-center gap-2"
                         >
                           {isPwaLinkCopied ? (
                             <>
@@ -1864,12 +1871,14 @@ export default function AccountProfile({
                 </div>
               )}
 
-              <button
-                onClick={() => setIsAboutModalOpen(false)}
-                className="w-full mt-4 py-3 px-4 border border-gray-300 dark:border-slate-700 text-gray-800 dark:text-slate-200 rounded-xl text-[15px] font-medium hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors focus:outline-none flex-shrink-0"
-              >
-                {t('about_close')}
-              </button>
+              <div className="pt-2">
+                <button
+                  onClick={() => setIsAboutModalOpen(false)}
+                  className="w-full py-2.5 px-4 bg-gray-100 dark:bg-slate-800/80 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-xl text-[14px] font-medium transition-colors"
+                >
+                  {t('about_close')}
+                </button>
+              </div>
             </div>
           </motion.div>
         </motion.div>

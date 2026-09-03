@@ -103,12 +103,18 @@ export default function App() {
     try {
       const data = await api.getMe();
       setCurrentUser(data);
+      if (data) {
+        try {
+          localStorage.setItem('cached_user_profile', JSON.stringify(data));
+        } catch {}
+      }
       const role = data?.role as Role || 'user';
       setActualRole(role);
       setUserRole(role);
     } catch (err) {
       console.log('Session expired or unauthorized');
       localStorage.removeItem('access_token'); // Token might be expired
+      localStorage.removeItem('cached_user_profile');
       setActualRole(null);
       setUserRole(null);
     } finally {
@@ -178,6 +184,7 @@ export default function App() {
 
   const handleLogout = async () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('cached_user_profile');
     setActualRole(null);
     setUserRole(null);
     setCurrentUser(null);
@@ -582,6 +589,8 @@ export default function App() {
             )}
             {activeTab === 'account' && (
               <AccountProfile
+                currentUser={currentUser}
+                onUpdateCurrentUser={setCurrentUser}
                 userRole={userRole}
                 actualRole={actualRole}
                 onViewModeChange={(mode) => setUserRole(mode)}

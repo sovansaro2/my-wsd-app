@@ -5,22 +5,36 @@ const API_BASE_URL = '';
 
 async function apiFetch(path: string, options: RequestInit = {}) {
   const token = localStorage.getItem('access_token');
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-  
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.detail || 'Request failed');
+  const controller = new AbortController();
+  const timeoutMs = 12000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      signal: options.signal || controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Request failed');
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new Error('សំណើមានរយៈពេលយូរពេក (Request timed out)');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
 }
 
 export const api = {
