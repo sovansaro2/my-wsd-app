@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/apiClient';
 
 import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, CalendarDays, Lock } from 'lucide-react';
@@ -49,6 +49,72 @@ interface RecordsProps {
   onAddRecord?: () => void;
 }
 
+interface PeriodCardProps {
+  period: SeilPeriod;
+  isAdmin: boolean;
+  onClick: (period: SeilPeriod) => void;
+  onEdit: (period: SeilPeriod, e: React.MouseEvent) => void;
+}
+
+// Memoized Period Card to prevent re-rendering when parent state changes
+const PeriodCard = React.memo(function PeriodCard({
+  period,
+  isAdmin,
+  onClick,
+  onEdit,
+}: PeriodCardProps) {
+  return (
+    <div 
+      onClick={() => onClick(period)}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 190px' }}
+      className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 cursor-pointer group text-center overflow-hidden"
+    >
+      {/* Full Card Lock Overlay with White Lock Icon */}
+      {!isAdmin && (
+        <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+            <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
+          </div>
+        </div>
+      )}
+
+      {isAdmin && (
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(period, e);
+          }}
+          className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors z-10"
+          title="កែប្រែ"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      {/* Main iOS Folder Graphic */}
+      <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
+        <IOSFolder 
+          className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
+          variant="blue" 
+        />
+      </div>
+
+      {/* Title and Date Below Folder */}
+      <div className="w-full mt-2 flex flex-col items-center min-w-0">
+        <h4 className="w-full font-normal text-gray-900 dark:text-white text-sm sm:text-[15px] leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang text-center truncate whitespace-nowrap" title={period.name}>
+          {period.name}
+        </h4>
+        {period.date_range_text && (
+          <div className="w-full flex items-center justify-center gap-1 text-[11px] sm:text-xs text-gray-500 dark:text-slate-400 mt-1.5 min-w-0">
+            <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
+            <span className="font-battambang truncate whitespace-nowrap">{period.date_range_text}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
 export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const { t, language } = useLanguage();
   const [periods, setPeriods] = useState<SeilPeriod[]>([]);
@@ -65,13 +131,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     }
   }, [userRole]);
 
-  const handlePeriodClick = (period: SeilPeriod) => {
+  const handlePeriodClick = useCallback((period: SeilPeriod) => {
     if (userRole !== 'admin') {
       setShowLockedModal(true);
       return;
     }
     setSelectedPeriod(period);
-  };
+  }, [userRole]);
 
   // Dynamic Image States
   const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
@@ -319,14 +385,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     setIsSeilModalOpen(true);
   };
 
-  const openEditSeilModal = (seil: SeilPeriod, e: React.MouseEvent) => {
+  const openEditSeilModal = useCallback((seil: SeilPeriod, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingSeil(seil);
     setSeilName(seil.name);
     setSeilDateRange(seil.date_range_text || '');
     setSeilPreviousBalance(seil.previous_balance ? seil.previous_balance.toString() : '');
     setIsEditSeilModalOpen(true);
-  };
+  }, []);
 
   const saveSeil = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -550,54 +616,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {periods.map(period => (
-                <div 
+                <PeriodCard
                   key={period.id}
-                  onClick={() => handlePeriodClick(period)}
-                  className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 cursor-pointer group text-center overflow-hidden"
-                >
-                  {/* Full Card Lock Overlay with White Lock Icon */}
-                  {userRole !== 'admin' && (
-                    <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
-                        <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
-                      </div>
-                    </div>
-                  )}
-
-                  {userRole === 'admin' && (
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openEditSeilModal(period, e);
-                      }}
-                      className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors z-10"
-                      title="កែប្រែ"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-
-                  {/* Main iOS Folder Graphic */}
-                  <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
-                    <IOSFolder 
-                      className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
-                      variant="blue" 
-                    />
-                  </div>
-
-                  {/* Title and Date Below Folder */}
-                  <div className="w-full mt-2 flex flex-col items-center min-w-0">
-                    <h4 className="w-full font-normal text-gray-900 dark:text-white text-sm sm:text-[15px] leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang text-center truncate whitespace-nowrap" title={period.name}>
-                      {period.name}
-                    </h4>
-                    {period.date_range_text && (
-                      <div className="w-full flex items-center justify-center gap-1 text-[11px] sm:text-xs text-gray-500 dark:text-slate-400 mt-1.5 min-w-0">
-                        <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
-                        <span className="font-battambang truncate whitespace-nowrap">{period.date_range_text}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  period={period}
+                  isAdmin={userRole === 'admin'}
+                  onClick={handlePeriodClick}
+                  onEdit={openEditSeilModal}
+                />
               ))}
 
               {periods.length === 0 && (

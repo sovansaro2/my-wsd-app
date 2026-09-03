@@ -7,14 +7,14 @@ export interface IOSFolderProps {
   hasPaper?: boolean;
 }
 
-export function IOSFolder({
+export const IOSFolder = React.memo(function IOSFolder({
   size,
   className = 'w-6 h-6',
   variant = 'blue',
   hasPaper = true,
 }: IOSFolderProps) {
-  // Generate unique IDs for SVG gradients to prevent collisions across multiple instances
-  const idPrefix = React.useId().replace(/:/g, '');
+  // Shared prefix per variant so the browser compiles and caches gradients/filters once
+  const idPrefix = `ios-fld-${variant}`;
 
   const colorThemes = {
     blue: {
@@ -207,6 +207,6 @@ export function IOSFolder({
       </g>
     </svg>
   );
-}
+});
 
 export default IOSFolder;

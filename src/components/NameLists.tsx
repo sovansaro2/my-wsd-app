@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../lib/apiClient';
 
 import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock } from 'lucide-react';
@@ -42,6 +42,76 @@ interface NameRecord {
   metadata?: any;
 }
 
+interface CategoryCardProps {
+  category: ListCategory;
+  isAdmin: boolean;
+  variant: 'blue' | 'amber';
+  onClick: (cat: ListCategory) => void;
+  onEdit: (cat: ListCategory, e: React.MouseEvent) => void;
+}
+
+// Memoized Category Card with lazy rendering
+const CategoryCard = React.memo(function CategoryCard({
+  category,
+  isAdmin,
+  variant,
+  onClick,
+  onEdit,
+}: CategoryCardProps) {
+  const isAmber = variant === 'amber';
+
+  return (
+    <button
+      onClick={() => onClick(category)}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 180px' }}
+      className={`relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border ${
+        isAmber 
+          ? 'border-amber-200/80 dark:border-amber-900/50 hover:border-amber-400 dark:hover:border-amber-600' 
+          : 'border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60'
+      } hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden`}
+    >
+      {/* Full Card Lock Overlay with White Lock Icon */}
+      {!isAdmin && (
+        <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+            <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
+          </div>
+        </div>
+      )}
+
+      {isAdmin && (
+        <div 
+          onClick={(e) => onEdit(category, e)}
+          className={`absolute top-2.5 right-2.5 p-1.5 ${
+            isAmber 
+              ? 'text-amber-600/60 hover:text-amber-600 hover:bg-amber-50' 
+              : 'text-gray-400 hover:text-orange-500 hover:bg-orange-50'
+          } dark:hover:bg-slate-800 rounded-full transition-colors z-10`}
+        >
+          <Pencil className="w-3.5 h-3.5" />
+        </div>
+      )}
+
+      <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
+        <IOSFolder 
+          className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
+          variant={variant} 
+        />
+      </div>
+
+      <div className="w-full mt-2 flex flex-col items-center min-w-0">
+        <h4 className={`w-full font-normal ${
+          isAmber
+            ? 'text-amber-900 dark:text-amber-400 group-hover:text-amber-600 dark:group-hover:text-amber-300'
+            : 'text-gray-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-white'
+        } text-center text-sm sm:text-[15px] leading-snug font-battambang truncate whitespace-nowrap`} title={category.name}>
+          {category.name}
+        </h4>
+      </div>
+    </button>
+  );
+});
+
 export default function NameLists({ userRole, onManageNameLists }: { userRole?: 'admin' | 'user' | null, onManageNameLists?: () => void }) {
   const { t, language } = useLanguage();
   const [categories, setCategories] = useState<ListCategory[]>([]);
@@ -59,13 +129,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     }
   }, [userRole]);
 
-  const handleCategoryClick = (cat: ListCategory) => {
+  const handleCategoryClick = useCallback((cat: ListCategory) => {
     if (userRole !== 'admin') {
       setShowLockedModal(true);
       return;
     }
     setSelectedCategory(cat);
-  };
+  }, [userRole]);
 
   // Modals state
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
@@ -121,13 +191,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setIsCatModalOpen(true);
   };
 
-  const openEditCatModal = (cat: ListCategory, e: React.MouseEvent) => {
+  const openEditCatModal = useCallback((cat: ListCategory, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingCategory(cat);
     setCatName(cat.name);
     setCatDesc(cat.description || '');
     setIsCatModalOpen(true);
-  };
+  }, []);
 
   const handleDeleteCategory = async () => {
     if (!editingCategory) return;
@@ -619,40 +689,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {kathinaCats.map(cat => (
-                  <button 
+                  <CategoryCard
                     key={cat.id}
-                    onClick={() => handleCategoryClick(cat)}
-                    className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-amber-200/80 dark:border-amber-900/50 hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden"
-                  >
-                    {/* Full Card Lock Overlay with White Lock Icon */}
-                    {userRole !== 'admin' && (
-                      <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
-                          <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
-                        </div>
-                      </div>
-                    )}
-
-                    {userRole === 'admin' && (
-                      <div 
-                        onClick={(e) => openEditCatModal(cat, e)}
-                        className="absolute top-2.5 right-2.5 p-1.5 text-amber-600/60 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-                    <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
-                      <IOSFolder 
-                        className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
-                        variant="amber" 
-                      />
-                    </div>
-                    <div className="w-full mt-2 flex flex-col items-center min-w-0">
-                      <h4 className="w-full font-normal text-amber-900 dark:text-amber-400 group-hover:text-amber-600 dark:group-hover:text-amber-300 text-center text-sm sm:text-[15px] leading-snug font-battambang truncate whitespace-nowrap" title={cat.name}>
-                        {cat.name}
-                      </h4>
-                    </div>
-                  </button>
+                    category={cat}
+                    isAdmin={userRole === 'admin'}
+                    variant="amber"
+                    onClick={handleCategoryClick}
+                    onEdit={openEditCatModal}
+                  />
                 ))}
               </div>
             </div>
@@ -665,40 +709,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
              </h3>
              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                {generalCats.map(cat => (
-                 <button 
+                 <CategoryCard
                    key={cat.id}
-                   onClick={() => handleCategoryClick(cat)}
-                   className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden"
-                 >
-                   {/* Full Card Lock Overlay with White Lock Icon */}
-                   {userRole !== 'admin' && (
-                     <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
-                       <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
-                         <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
-                       </div>
-                     </div>
-                   )}
-
-                   {userRole === 'admin' && (
-                    <div 
-                      onClick={(e) => openEditCatModal(cat, e)}
-                      className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                   <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
-                     <IOSFolder 
-                       className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
-                       variant="blue" 
-                     />
-                   </div>
-                   <div className="w-full mt-2 flex flex-col items-center min-w-0">
-                     <h4 className="w-full font-normal text-gray-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-white text-center text-sm sm:text-[15px] leading-snug font-battambang truncate whitespace-nowrap" title={cat.name}>
-                       {cat.name}
-                     </h4>
-                   </div>
-                 </button>
+                   category={cat}
+                   isAdmin={userRole === 'admin'}
+                   variant="blue"
+                   onClick={handleCategoryClick}
+                   onEdit={openEditCatModal}
+                 />
                ))}
                {generalCats.length === 0 && (
                  <div className="col-span-full py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
