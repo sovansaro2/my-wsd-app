@@ -4,51 +4,97 @@ import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
 
+const KNOWN_VILLAGES_OR_AREAS = new Set([
+  'ទ្រាលើ', 'ត្បាច', 'តាខូយ', 'ស្វាយពពារ', 'ក្បាលសំរោង', 'ត្រពាំងវិហារ'
+]);
+
+export function isHighTierIndividualDonor(name: string, categoryName?: string): boolean {
+  if (!name) return false;
+  const n = name.trim();
+
+  // 1. Non-donor keywords or withdrawals/loans
+  if (n === 'ខ្ចី' || n === 'មិនស្គាល់ឈ្មោះ') return false;
+  if (categoryName === 'លុយជាងដក') return false;
+  if (n.startsWith('ជាងអ៊ុំ')) return false;
+
+  // 2. Exclude groups (ឈ្មោះក្រុម)
+  if (n.includes('ក្រុម')) return false;
+
+  // 3. Exclude pagodas/temples (ឈ្មោះវត្ត)
+  if (n.includes('វត្ត')) return false;
+
+  // 4. Exclude villages / localities (ឈ្មោះភូមិ)
+  if (n.includes('ភូមិ') || n.includes('មេភូមិ') || n.includes('បរិស័ទភូមិ')) return false;
+  if (KNOWN_VILLAGES_OR_AREAS.has(n)) return false;
+
+  // 5. Exclude ceremonies or generic collective funds
+  if (n.startsWith('បច្ច័យ') || n.startsWith('បុណ្យ') || n.includes('ញាតិញោម')) return false;
+
+  return true;
+}
+
 // --- 100k+ Donors ---
 router.get('/donors-100k', async (req, res) => {
   try {
     const { data: categories, error: catError } = await supabaseAdmin.from('name_list_categories').select('id, name');
     if (catError) throw catError;
 
-    let result: any[] = [];
+    const catMap: Record<string, string> = {};
+    categories?.forEach(c => {
+      catMap[c.id] = c.name;
+    });
 
-    // 1. Fetch NameList records where is_100k_donor is true
+    const donorsMap = new Map<string, any>();
+
+    // 1. Fetch NameList records where amount >= 100,000 or is_100k_donor is true
     const { data: records, error: recError } = await supabaseAdmin
       .from('name_list_records')
       .select('*')
-      .eq('is_100k_donor', true);
+      .gte('amount', 100000);
       
     if (!recError && records) {
-      const catMap: Record<string, string> = {};
-      categories?.forEach(c => {
-        catMap[c.id] = c.name;
-      });
-
-      const nameListResults = records.map(r => ({
-        ...r,
-        category_name: catMap[r.category_id] || 'បញ្ជីផ្សេងៗ'
-      }));
-      result = [...result, ...nameListResults];
+      for (const r of records) {
+        const catName = catMap[r.category_id] || 'បញ្ជីផ្សេងៗ';
+        if (isHighTierIndividualDonor(r.name, catName)) {
+          const key = (r.name.trim() + '_' + r.amount).toLowerCase();
+          donorsMap.set(key, {
+            id: r.id,
+            name: r.name.trim(),
+            amount: Number(r.amount),
+            created_at: r.created_at,
+            category_name: catName,
+            note: r.note
+          });
+        }
+      }
     }
 
-    // 2. Fetch Financial records where is_high_level is true
+    // 2. Fetch Financial records (income only) where amount >= 100,000
     const { data: finRecords, error: finError } = await supabaseAdmin
       .from('financial_records')
       .select('*')
-      .eq('is_high_level', true);
+      .eq('type', 'income')
+      .gte('amount', 100000);
 
     if (!finError && finRecords) {
-      const finResults = finRecords.map(f => ({
-        id: f.id,
-        name: f.description,
-        amount: f.amount,
-        created_at: f.created_at,
-        category_name: f.type === 'income' ? 'ចំណូល' : 'ចំណាយ',
-        note: f.note
-      }));
-      result = [...result, ...finResults];
+      for (const f of finRecords) {
+        if (isHighTierIndividualDonor(f.description)) {
+          const key = (f.description.trim() + '_' + f.amount).toLowerCase();
+          if (!donorsMap.has(key)) {
+            donorsMap.set(key, {
+              id: f.id,
+              name: f.description.trim(),
+              amount: Number(f.amount),
+              created_at: f.created_at,
+              category_name: 'ចំណូលទូទៅ',
+              note: f.note
+            });
+          }
+        }
+      }
     }
 
+    const result = Array.from(donorsMap.values());
     // Sort by amount descending
     result.sort((a, b) => b.amount - a.amount);
 
@@ -98,6 +144,9 @@ router.get('/records', async (req, res) => {
 
 router.post('/records', requireAuth, requireAdmin, async (req, res) => {
   const { notify_public, category_name, ...recordBody } = req.body;
+  if (recordBody.is_100k_donor === undefined && recordBody.amount) {
+    recordBody.is_100k_donor = Number(recordBody.amount) >= 100000 && isHighTierIndividualDonor(recordBody.name, category_name);
+  }
   let { data, error } = await getClient(req).from('name_list_records').insert([recordBody]).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_100k_donor')))) {
@@ -128,6 +177,9 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
   let recordBody = { ...req.body };
+  if (recordBody.name && recordBody.amount !== undefined && recordBody.is_100k_donor === undefined) {
+    recordBody.is_100k_donor = Number(recordBody.amount) >= 100000 && isHighTierIndividualDonor(recordBody.name);
+  }
   let { data, error } = await getClient(req).from('name_list_records').update(recordBody).eq('id', req.params.id).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_100k_donor')))) {
@@ -149,9 +201,7 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.delete('/records/:id', requireAuth, requireAdmin, async (req, res) => {
-  console.log(`Attempting to delete record with id: ${req.params.id}`);
-  const { data, error } = await getClient(req).from('name_list_records').delete().eq('id', req.params.id).select();
-  console.log(`Delete result for ${req.params.id}: error=`, error, `data=`, data);
+  const { error } = await getClient(req).from('name_list_records').delete().eq('id', req.params.id);
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });

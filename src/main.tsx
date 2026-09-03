@@ -5,12 +5,15 @@ import { ErrorBoundary } from './ErrorBoundary.tsx';
 import './index.css';
 import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
+import { FontSizeProvider } from './contexts/FontSizeContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LanguageProvider>
       <ThemeProvider>
-        <ErrorBoundary><App /></ErrorBoundary>
+        <FontSizeProvider>
+          <ErrorBoundary><App /></ErrorBoundary>
+        </FontSizeProvider>
       </ThemeProvider>
     </LanguageProvider>
   </StrictMode>,

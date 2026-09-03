@@ -88,7 +88,7 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
 });
 
 router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await getClient(req).from('financial_records').delete().eq('id', req.params.id).select();
+  const { error } = await getClient(req).from('financial_records').delete().eq('id', req.params.id);
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });

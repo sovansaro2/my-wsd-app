@@ -11,6 +11,7 @@ import { api } from '../lib/apiClient';
 import { systemLogger } from '../lib/logger';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useFontSize } from '../contexts/FontSizeContext';
 
 
 interface AccountProfileProps {
@@ -40,6 +41,7 @@ export default function AccountProfile({
   onCertificates 
 }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
+  const { fontSize, setFontSize } = useFontSize();
   const [userId, setUserId] = useState<string | null>(null);
   const [userKey, setUserKey] = useState<string | null>(null);
   const [fullName, setFullName] = useState('');
@@ -1124,6 +1126,127 @@ export default function AccountProfile({
                     currentTheme === 'light' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
                   }`}>
                     {t('profile_setting_theme_light')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Separator */}
+              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+
+              {/* SECTION: Font Size */}
+              <div className="space-y-3">
+                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+                  {t('profile_setting_fontsize_heading')}
+                </h4>
+
+                {/* Small */}
+                <div 
+                  onClick={() => setFontSize('sm')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      fontSize === 'sm' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {fontSize === 'sm' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      fontSize === 'sm' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
+                      {t('profile_setting_fontsize_sm')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
+                    {t('profile_setting_fontsize_sm_desc')}
+                  </p>
+                </div>
+
+                {/* Default / Medium */}
+                <div 
+                  onClick={() => setFontSize('md')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      fontSize === 'md' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {fontSize === 'md' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      fontSize === 'md' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
+                      {t('profile_setting_fontsize_md')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
+                    {t('profile_setting_fontsize_md_desc')}
+                  </p>
+                </div>
+
+                {/* Large */}
+                <div 
+                  onClick={() => setFontSize('lg')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      fontSize === 'lg' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {fontSize === 'lg' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      fontSize === 'lg' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
+                      {t('profile_setting_fontsize_lg')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
+                    {t('profile_setting_fontsize_lg_desc')}
+                  </p>
+                </div>
+
+                {/* Extra Large */}
+                <div 
+                  onClick={() => setFontSize('xl')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      fontSize === 'xl' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {fontSize === 'xl' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      fontSize === 'xl' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
+                      {t('profile_setting_fontsize_xl')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
+                    {t('profile_setting_fontsize_xl_desc')}
+                  </p>
+                </div>
+
+                {/* Live sample preview line */}
+                <div className="pt-2 pl-3 border-t border-dashed border-gray-200 dark:border-slate-800">
+                  <span className="text-xs text-gray-400 dark:text-slate-500 font-battambang block">
+                    {t('profile_setting_fontsize_preview')}
                   </span>
                 </div>
               </div>

@@ -16,7 +16,7 @@
 
 @layer base {
   html {
-    font-size: 16px;
+    font-size: var(--app-font-size, 16px);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
@@ -30,7 +30,7 @@
   body {
     @apply text-slate-900 bg-white dark:bg-slate-900 dark:text-slate-50 transition-colors duration-200;
     font-family: 'Rajdhani', 'Khmer OS Battambang', 'Battambang', 'Suwannaphum', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.5;
     overflow-x: hidden;
     width: 100%;
@@ -89,6 +89,10 @@
 }
 
 @media print {
+  html {
+    zoom: 1 !important;
+    font-size: 16px !important;
+  }
   @page {
     size: A5 portrait;
     margin: 10mm;

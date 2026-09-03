@@ -359,13 +359,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     }
     
     try {
-      await api.deleteNameListRecord(id);
       setConfirmingRecordDeleteId(null);
-      
+      setRecords(prev => prev.filter(r => r.id !== id));
+      await api.deleteNameListRecord(id);
       if (selectedCategory) fetchRecords(selectedCategory.id);
     } catch (error) {
       console.error('Error deleting record:', error);
       alert(t('list_alert_del_error'));
+      if (selectedCategory) fetchRecords(selectedCategory.id);
     }
   };
 
