@@ -24,14 +24,21 @@ interface SeilPeriod {
 interface FinancialOverviewCardProps {
   className?: string;
   variant?: 'normal' | 'embedded';
+  userRole?: 'admin' | 'user' | null;
   onNavigateToSecurity?: () => void;
 }
 
 export default function FinancialOverviewCard({
   className = '',
   variant = 'normal',
+  userRole,
   onNavigateToSecurity
 }: FinancialOverviewCardProps) {
+  // If user role is provided and not admin, do not render or load data
+  if (userRole !== undefined && userRole !== 'admin') {
+    return null;
+  }
+
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [financials, setFinancials] = useState<FinancialRecord[]>([]);
@@ -176,7 +183,11 @@ export default function FinancialOverviewCard({
   return (
     <>
       <section
-        className={`bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-3 sm:p-4 flex flex-col justify-between font-battambang transition-colors ${className}`}
+        className={
+          variant === 'embedded'
+            ? `bg-white dark:bg-slate-900 w-full p-4 sm:p-5 flex flex-col justify-between font-battambang transition-colors ${className}`
+            : `bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 p-3.5 sm:p-4 flex flex-col justify-between font-battambang transition-colors ${className}`
+        }
       >
         <div>
           {/* Header Row */}

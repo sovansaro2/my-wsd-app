@@ -125,7 +125,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
   });
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden font-battambang">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden font-battambang -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200 dark:border-slate-800">
       {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between p-3.5 sm:p-4 border-b border-gray-200 dark:border-slate-800 shrink-0 gap-2 bg-white dark:bg-slate-900 z-10">
         <div className="flex items-center space-x-2.5">

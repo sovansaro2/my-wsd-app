@@ -190,12 +190,12 @@ export default function Dashboard() {
   const seilCount = seils.length > 0 ? seils.length : 0;
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 pb-20 overflow-y-auto font-battambang transition-colors duration-200">
+    <div className="flex flex-col h-full pb-20 overflow-y-auto font-battambang transition-colors duration-200">
       
-      <div className="max-w-6xl mx-auto w-full px-2 sm:px-4 pt-2 pb-6 space-y-6">
+      <div className="max-w-6xl mx-auto w-full px-0 sm:px-4 pt-1 sm:pt-2 pb-6 space-y-3 sm:space-y-6">
 
       {error && (
-        <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20">
+        <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20 shadow-2xs">
           {error}
         </div>
       )}
@@ -206,7 +206,7 @@ export default function Dashboard() {
       </div>
 
       {/* 100k+ Donors Section */}
-      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+      <section className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/70 dark:border-slate-800 shadow-2xs overflow-hidden">
         <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-lg">
@@ -217,7 +217,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <button 
               onClick={handleToggleVisibility} 
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
               title={isAmountVisible ? (language === 'en' ? 'Hide amount' : 'លាក់ចំនួន') : (language === 'en' ? 'Show amount' : 'បង្ហាញចំនួន')}
             >
               {isAmountVisible ? (

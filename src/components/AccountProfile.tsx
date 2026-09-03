@@ -347,7 +347,7 @@ export default function AccountProfile({
   if (isEditingView) {
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-10 overflow-y-auto">
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => {
               setIsEditingView(false);
@@ -361,10 +361,10 @@ export default function AccountProfile({
           <h2 className="text-lg text-gray-900 dark:text-white font-battambang">{t('profile_title')}</h2>
         </div>
 
-        <div className="p-4 sm:p-6 w-full max-w-2xl mx-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 overflow-hidden">
+        <div className="sm:p-6 w-full max-w-2xl mx-auto my-2 sm:my-0">
+          <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 overflow-hidden">
             {/* Header with Avatar and Name */}
-            <div className="p-6 sm:p-8 border-b border-gray-200/80 dark:border-slate-800/80">
+            <div className="p-5 sm:p-8 border-b border-gray-200/80 dark:border-slate-800/80">
               <div className="flex items-center space-x-6">
                 <div className="relative w-[88px] h-[88px] rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 flex-shrink-0 group">
                   {isUploading ? (
@@ -524,7 +524,7 @@ export default function AccountProfile({
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
         {/* Sticky Top Header */}
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => {
               setIsSecurityView(false);
@@ -539,15 +539,15 @@ export default function AccountProfile({
         </div>
 
         {/* Center Content Card */}
-        <div className="p-4 sm:p-6 w-full max-w-md mx-auto my-auto flex flex-col justify-center">
+        <div className="sm:p-6 w-full max-w-md mx-auto my-2 sm:my-auto flex flex-col justify-center">
           {message && (
-            <div className={`mb-4 rounded-xl p-3.5 text-sm font-medium border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800' : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800'}`}>
+            <div className={`mb-4 -mx-3.5 sm:mx-0 rounded-none sm:rounded-xl p-3.5 text-sm font-medium border-y sm:border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800' : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800'}`}>
               {message.text}
             </div>
           )}
 
           {/* Main Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-6 sm:p-8 w-full">
+          <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 p-5 sm:p-8">
             
             <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
               {t('sec_title')}
@@ -995,7 +995,7 @@ export default function AccountProfile({
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
         {/* Sticky Top Header */}
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 w-full">
+        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => setIsSettingView(false)}
             className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors focus:outline-none"
@@ -1007,8 +1007,8 @@ export default function AccountProfile({
         </div>
 
         {/* Center Content Card */}
-        <div className="p-4 sm:p-6 w-full max-w-md mx-auto my-auto flex flex-col justify-center">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-6 sm:p-8 w-full font-battambang">
+        <div className="sm:p-6 w-full max-w-md mx-auto my-2 sm:my-auto flex flex-col justify-center">
+          <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 p-5 sm:p-8 font-battambang">
             {/* Header / Title */}
             <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
               {t('profile_setting_modal_title')}
@@ -1259,15 +1259,17 @@ export default function AccountProfile({
   }
 
   // --- MAIN ACCOUNT VIEW ---
+  const isAdmin = userRole === 'admin';
+
   return (
-    <div className="w-full max-w-5xl mx-auto pb-16 font-battambang transition-colors duration-200">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div className={`w-full ${isAdmin ? 'max-w-5xl' : 'max-w-3xl'} mx-auto pb-16 font-battambang transition-colors duration-200`}>
+      <div className={isAdmin ? "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" : "w-full"}>
         {/* Left Column: Profile & Navigation Card */}
-        <div className="lg:col-span-7 xl:col-span-7">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all border border-gray-200/80 dark:border-slate-800">
+        <div className={isAdmin ? "lg:col-span-7 xl:col-span-7" : "w-full"}>
+          <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl overflow-hidden transition-all border-y sm:border border-gray-200/80 dark:border-slate-800">
             {/* Top Header */}
-            <div className="p-6 sm:p-8 flex items-center gap-5 sm:gap-6">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
+            <div className="p-5 sm:p-8 flex items-center gap-4 sm:gap-6">
+              <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -1298,12 +1300,17 @@ export default function AccountProfile({
               </div>
             </div>
 
-            {/* Mobile View: Financial Overview placed below Profile */}
-            <div className="block lg:hidden px-4 pb-3.5 sm:px-6 sm:pb-4">
-              <FinancialOverviewCard 
-                onNavigateToSecurity={() => setIsSecurityView(true)}
-              />
-            </div>
+            {/* Mobile View: Financial Overview placed below Profile (Admin only) - Full Width Edge-to-Edge */}
+            {isAdmin && (
+              <div className="block lg:hidden w-full border-t border-gray-100 dark:border-slate-800">
+                <FinancialOverviewCard 
+                  userRole={userRole}
+                  variant="embedded"
+                  className="rounded-none border-0 bg-gray-50/40 dark:bg-slate-800/30 px-4 py-3 sm:px-6 sm:py-4"
+                  onNavigateToSecurity={() => setIsSecurityView(true)}
+                />
+              </div>
+            )}
 
             {/* Top Separator Line */}
             <div className="h-[1px] bg-gray-200 dark:bg-slate-800 w-full" />
@@ -1444,12 +1451,15 @@ export default function AccountProfile({
       </div>
     </div>
 
-        {/* Desktop View: Financial Overview placed on the right of Profile */}
-        <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
-          <FinancialOverviewCard 
-            onNavigateToSecurity={() => setIsSecurityView(true)}
-          />
-        </div>
+        {/* Desktop View: Financial Overview placed on the right of Profile (Admin only) */}
+        {isAdmin && (
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
+            <FinancialOverviewCard 
+              userRole={userRole}
+              onNavigateToSecurity={() => setIsSecurityView(true)}
+            />
+          </div>
+        )}
       </div>
 
       <>

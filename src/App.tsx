@@ -557,7 +557,7 @@ export default function App() {
       {/* MAIN CONTENT CONTAINER (Responsive on both Desktop and Mobile) */}
       {/* ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0 md:pl-64 lg:pl-72 pt-16 md:pt-16 pb-24 md:pb-8 transition-all duration-200">
-        <main className="flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-2 md:py-4">
+        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-4`}>
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 8 }}
@@ -611,20 +611,16 @@ export default function App() {
           <button
             onClick={() => setActiveTab('home')}
             aria-label={t('nav_home')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-all relative ${
               activeTab === 'home' 
-                ? 'text-orange-600 dark:text-orange-400' 
+                ? 'text-orange-500 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
-              activeTab === 'home' 
-                ? 'bg-orange-50 dark:bg-orange-950/60' 
-                : ''
-            }`}>
-              <Home className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'home' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <Home className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'home' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-medium' : 'font-normal'}`}>
               {t('nav_home')}
             </span>
           </button>
@@ -632,20 +628,16 @@ export default function App() {
           <button
             onClick={() => setActiveTab('records')}
             aria-label={t('nav_finance')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'records' 
-                ? 'text-orange-600 dark:text-orange-400' 
+                ? 'text-orange-500 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
-              activeTab === 'records' 
-                ? 'bg-orange-50 dark:bg-orange-950/60' 
-                : ''
-            }`}>
-              <CircleDollarSign className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'records' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <CircleDollarSign className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'records' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-medium' : 'font-normal'}`}>
               {t('nav_finance')}
             </span>
           </button>
@@ -653,20 +645,16 @@ export default function App() {
           <button
             onClick={() => setActiveTab('categories')}
             aria-label={t('nav_list')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'categories' 
-                ? 'text-orange-600 dark:text-orange-400' 
+                ? 'text-orange-500 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
-              activeTab === 'categories' 
-                ? 'bg-orange-50 dark:bg-orange-950/60' 
-                : ''
-            }`}>
-              <List className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <List className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-medium' : 'font-normal'}`}>
               {t('nav_list')}
             </span>
           </button>
@@ -674,20 +662,16 @@ export default function App() {
           <button
             onClick={() => setActiveTab('reports')}
             aria-label={t('nav_reports')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'reports' 
-                ? 'text-orange-600 dark:text-orange-400' 
+                ? 'text-orange-500 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
-              activeTab === 'reports' 
-                ? 'bg-orange-50 dark:bg-orange-950/60' 
-                : ''
-            }`}>
-              <FileText className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <FileText className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'reports' ? 'font-medium' : 'font-normal'}`}>
               {t('nav_reports')}
             </span>
           </button>
@@ -695,20 +679,16 @@ export default function App() {
           <button
             onClick={() => setActiveTab('account')}
             aria-label={t('nav_account')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               ['account', 'users', 'certificates'].includes(activeTab) 
-                ? 'text-orange-600 dark:text-orange-400' 
+                ? 'text-orange-500 dark:text-orange-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className={`flex items-center justify-center w-11 h-8 rounded-xl transition-all ${
-              ['account', 'users', 'certificates'].includes(activeTab) 
-                ? 'bg-orange-50 dark:bg-orange-950/60' 
-                : ''
-            }`}>
-              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'scale-110 stroke-[2.2]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className="text-[12.5px] sm:text-[13.5px] font-battambang mt-0.5 whitespace-nowrap leading-tight font-normal">
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates'].includes(activeTab) ? 'font-medium' : 'font-normal'}`}>
               {t('nav_account')}
             </span>
           </button>
