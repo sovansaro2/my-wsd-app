@@ -566,7 +566,9 @@ export default function App() {
             transition={{ duration: 0.18 }}
             className="h-full"
           >
-            {activeTab === 'home' && <Dashboard />}
+            {activeTab === 'home' && (
+              <Dashboard onNavigateTab={(tab) => setActiveTab(tab)} />
+            )}
             {activeTab === 'records' && (
               <RecordsComponent 
                 userRole={userRole} 

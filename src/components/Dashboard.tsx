@@ -4,6 +4,7 @@ import { api } from '../lib/apiClient';
 import { Eye, EyeOff, X, Award, Lock as LockIcon } from 'lucide-react';
 import PinPad from './PinPad';
 import ImageSlider from './ImageSlider';
+import { ListSummaryCard } from './ListSummaryCard';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -31,13 +32,19 @@ interface HundredKDonor {
   category_name: string;
 }
 
+interface ListCategory {
+  id: string;
+  name: string;
+  description?: string;
+}
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 'records' | 'categories') => void }) {
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [financials, setFinancials] = useState<FinancialRecord[]>([]);
   const [seils, setSeils] = useState<SeilPeriod[]>([]);
+  const [categories, setCategories] = useState<ListCategory[]>([]);
   const [hundredKDonors, setHundredKDonors] = useState<HundredKDonor[]>([]);
   const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
   const [isAmountVisible, setIsAmountVisible] = useState(false);
@@ -135,15 +142,16 @@ export default function Dashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [seilData, finData, hundredKData] = await Promise.all([
+      const [seilData, finData, hundredKData, categoriesData] = await Promise.all([
         api.getSeilPeriods(),
         api.getFinancialRecords(''),
         api.get100kDonors(),
         api.getNameListCategories()
       ]);
-      setSeils(seilData);
-      setFinancials(finData);
+      setSeils(seilData || []);
+      setFinancials(finData || []);
       setHundredKDonors(hundredKData || []);
+      setCategories(categoriesData || []);
     } catch (err: any) {
       setError(err.message || 'Error loading dashboard');
     } finally {
@@ -203,6 +211,16 @@ export default function Dashboard() {
       {/* Top Banner */}
       <div className="w-full">
         <ImageSlider />
+      </div>
+
+      {/* List Status and Overview Section */}
+      <div className="w-full">
+        <ListSummaryCard 
+          seils={seils} 
+          categories={categories} 
+          language={language}
+          onNavigateTab={onNavigateTab}
+        />
       </div>
 
       {/* 100k+ Donors Section */}
