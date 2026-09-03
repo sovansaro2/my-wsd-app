@@ -235,7 +235,7 @@ export default function App() {
       {/* ========================================================================= */}
       {/* DESKTOP SIDEBAR (Visible on md and larger screens) */}
       {/* ========================================================================= */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[2px_0_12px_rgba(0,0,0,0.03)]">
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
         {/* Brand Header */}
         <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-orange-500 dark:bg-slate-900 text-white">
           <img 
@@ -311,7 +311,7 @@ export default function App() {
       {/* ========================================================================= */}
       {/* DESKTOP TOP NAVBAR (Visible on md and larger screens) */}
       {/* ========================================================================= */}
-      <header className="hidden md:flex fixed top-0 right-0 left-64 lg:left-72 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 z-30 px-6 items-center justify-between transition-colors duration-200 shadow-xs">
+      <header className="hidden md:flex fixed top-0 right-0 left-64 lg:left-72 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 z-30 px-6 items-center justify-between transition-colors duration-200 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]">
         <div className="flex items-center gap-2">
           <h2 className="text-base lg:text-lg font-bold text-gray-900 dark:text-white font-battambang">
             {getActiveTabTitle()}
@@ -355,7 +355,7 @@ export default function App() {
       {/* ========================================================================= */}
       {/* MOBILE TOP NAVBAR (Visible ONLY on mobile screens < md) */}
       {/* ========================================================================= */}
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-sm border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className={`text-white select-none pt-0.5 ${
           language === 'en'
             ? 'font-rajdhani font-semibold text-lg sm:text-xl md:text-2xl tracking-wider'
@@ -606,7 +606,7 @@ export default function App() {
       {/* ========================================================================= */}
       {/* MOBILE BOTTOM NAVIGATION (Visible ONLY on mobile screens < md) */}
       {/* ========================================================================= */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-2px_16px_rgba(0,0,0,0.04)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
             onClick={() => setActiveTab('home')}

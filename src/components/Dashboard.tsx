@@ -200,77 +200,9 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Top Banner & Balance Overview Responsive Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-        {/* Auto Slide Banner */}
-        <div className="lg:col-span-7 flex flex-col">
-          <ImageSlider />
-        </div>
-
-        {/* Main Financial Overview Card */}
-        <div className="lg:col-span-5 flex flex-col">
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-sm p-4 sm:p-5 h-full flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 dark:border-slate-800">
-                <div>
-                  <span className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400">
-                    {t('dashboard_total_report', { count: seilCount > 0 ? seilCount : '...' })}
-                  </span>
-                  <h2 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-slate-200 mt-0.5">
-                    {t('dashboard_actual_balance')}
-                  </h2>
-                </div>
-                <button 
-                  onClick={handleToggleVisibility} 
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
-                  title={isAmountVisible ? (language === 'en' ? 'Hide balance' : 'លាក់ទឹកប្រាក់') : (language === 'en' ? 'Show balance' : 'បង្ហាញទឹកប្រាក់')}
-                >
-                  {isAmountVisible ? (
-                    <>
-                      <EyeOff className="w-4 h-4" />
-                      <span>{t('common_hide')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-4 h-4" />
-                      <span>{t('common_show')}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Master Balance */}
-              <div className="py-4 lg:py-6">
-                <p className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                  {isAmountVisible ? `៛ ${balance.toLocaleString()}` : '៛ •••••••'}
-                </p>
-              </div>
-            </div>
-
-            {/* Income vs Expense Split */}
-            <div className="grid grid-cols-2 gap-3 pt-3.5 border-t border-gray-100 dark:border-slate-800">
-              <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
-                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-                  <span className="truncate">{t('dashboard_total_income')}</span>
-                </div>
-                <p className="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                  {isAmountVisible ? `+ ៛ ${totalIncome.toLocaleString()}` : '៛ ••••'}
-                </p>
-              </div>
-
-              <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3.5">
-                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
-                  <span className="truncate">{t('dashboard_total_expense')}</span>
-                </div>
-                <p className="text-base sm:text-lg font-bold text-rose-600 dark:text-rose-400">
-                  {isAmountVisible ? `- ៛ ${totalExpense.toLocaleString()}` : '៛ ••••'}
-                </p>
-              </div>
-            </div>
-          </section>
-        </div>
+      {/* Top Banner */}
+      <div className="w-full">
+        <ImageSlider />
       </div>
 
       {/* 100k+ Donors Section */}
@@ -282,9 +214,28 @@ export default function Dashboard() {
             </div>
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard_high_donors')}</h3>
           </div>
-          <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-full">
-            {t('dashboard_donors_count', { count: hundredKDonors.length })}
-          </span>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleToggleVisibility} 
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-slate-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+              title={isAmountVisible ? (language === 'en' ? 'Hide amount' : 'លាក់ចំនួន') : (language === 'en' ? 'Show amount' : 'បង្ហាញចំនួន')}
+            >
+              {isAmountVisible ? (
+                <>
+                  <EyeOff className="w-3.5 h-3.5" />
+                  <span>{t('common_hide')}</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{t('common_show')}</span>
+                </>
+              )}
+            </button>
+            <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+              {t('dashboard_donors_count', { count: hundredKDonors.length })}
+            </span>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0">

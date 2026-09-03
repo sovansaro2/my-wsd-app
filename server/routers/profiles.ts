@@ -48,6 +48,15 @@ router.put('/:id/role', requireAuth, requireAdmin, async (req, res) => {
     .single();
     
   if (error) return res.status(400).json({ detail: error.message });
+
+  try {
+    await supabaseAdmin.auth.admin.updateUserById(String(req.params.id), {
+      user_metadata: { role }
+    });
+  } catch (authErr) {
+    console.warn('Could not update user_metadata in auth:', authErr);
+  }
+
   res.json(data);
 });
 

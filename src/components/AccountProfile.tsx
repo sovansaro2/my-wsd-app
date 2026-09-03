@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2 } from 'lucide-react';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
+import FinancialOverviewCard from './FinancialOverviewCard';
 import CustomDatePicker from './ui/CustomDatePicker';
 import { api } from '../lib/apiClient';
 import { systemLogger } from '../lib/logger';
@@ -102,6 +103,7 @@ export default function AccountProfile({
   const [showAdminContactModal, setShowAdminContactModal] = useState(false);
   const [isAdminContactCopied, setIsAdminContactCopied] = useState(false);
   const [clearStorageStatus, setClearStorageStatus] = useState<'idle' | 'confirm' | 'success'>('idle');
+  const [storageUsage, setStorageUsage] = useState(systemLogger.getStorageUsage());
 
   const handlePasswordChange = async () => {
     if (password.length < 6) {
@@ -1009,7 +1011,7 @@ export default function AccountProfile({
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-6 sm:p-8 w-full font-battambang">
             {/* Header / Title */}
             <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
-              Setting
+              {t('profile_setting_modal_title')}
             </h3>
 
             <hr className="border-gray-200 dark:border-slate-800 mb-5" />
@@ -1182,80 +1184,71 @@ export default function AccountProfile({
               {/* Separator */}
               <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
 
-              {/* SECTION 4: Clear App Storage / Space */}
-              <div className="space-y-2.5">
-                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang flex items-center gap-1.5">
-                  <HardDrive className="w-4 h-4" />
-                  <span>អង្គចងចាំកម្មវិធី (App Storage)</span>
-                </h4>
+              {/* SECTION 4: Clear App Storage / Space - Only for Admin */}
+              {userRole === 'admin' && (
+                <div className="space-y-2.5">
+                  <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+                    {t('profile_setting_storage_heading')}
+                  </h4>
 
-                <div className="pl-3 space-y-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <div className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                        ទំហំ System Logs & Cache
+                  <div className="pl-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                          {t('profile_setting_storage_label')}
+                        </span>
+                        <span className="text-xs text-gray-400 dark:text-slate-500 font-mono">
+                          ({storageUsage.formatted})
+                        </span>
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-slate-400 font-mono">
-                        {systemLogger.getStorageUsage().formatted} ({systemLogger.getStorageUsage().logCount} កំណត់ត្រា)
-                      </div>
-                    </div>
 
-                    <button 
-                      onClick={() => {
-                        if (clearStorageStatus === 'idle') {
-                          setClearStorageStatus('confirm');
-                          setTimeout(() => {
-                            setClearStorageStatus(prev => prev === 'confirm' ? 'idle' : prev);
-                          }, 3000);
-                          return;
-                        }
-                        
-                        systemLogger.clearLogs();
-                        // Clear transient non-auth cache safely
-                        try {
-                          const keysToKeep = ['access_token', 'theme', 'language', 'balance_visibility', 'last_read_notifications', 'cleared_notifications_at'];
-                          for (let i = localStorage.length - 1; i >= 0; i--) {
-                            const k = localStorage.key(i);
-                            if (k && !keysToKeep.includes(k) && !k.startsWith('pin_')) {
-                              localStorage.removeItem(k);
-                            }
-                          }
-                        } catch (e) {
-                          console.error(e);
-                        }
-                        
-                        setClearStorageStatus('success');
-                        setTimeout(() => setClearStorageStatus('idle'), 2000);
-                      }}
-                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors font-battambang self-start sm:self-auto ${
-                        clearStorageStatus === 'success' ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40' :
-                        clearStorageStatus === 'confirm' ? 'text-white bg-red-600 hover:bg-red-700' :
-                        'text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/40'
-                      }`}
-                    >
                       {clearStorageStatus === 'success' ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" />
-                          <span>សម្អាតរួចរាល់</span>
-                        </>
+                        <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-emerald-600 dark:text-emerald-400 font-battambang">
+                          {t('profile_setting_storage_cleaned')} <Check className="w-4 h-4 stroke-[2.5]" />
+                        </span>
                       ) : clearStorageStatus === 'confirm' ? (
-                        <>
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>បញ្ជាក់ការសម្អាត?</span>
-                        </>
+                        <button 
+                          onClick={() => {
+                            systemLogger.clearLogs();
+                            try {
+                              const keysToKeep = ['access_token', 'theme', 'language', 'balance_visibility', 'last_read_notifications', 'cleared_notifications_at'];
+                              for (let i = localStorage.length - 1; i >= 0; i--) {
+                                const k = localStorage.key(i);
+                                if (k && !keysToKeep.includes(k) && !k.startsWith('pin_')) {
+                                  localStorage.removeItem(k);
+                                }
+                              }
+                            } catch (e) {
+                              console.error(e);
+                            }
+                            setStorageUsage(systemLogger.getStorageUsage());
+                            setClearStorageStatus('success');
+                            setTimeout(() => setClearStorageStatus('idle'), 2000);
+                          }}
+                          className="text-[14.5px] text-red-600 hover:text-red-700 dark:text-red-400 font-medium hover:underline font-battambang cursor-pointer"
+                        >
+                          {t('profile_setting_storage_confirm')}
+                        </button>
                       ) : (
-                        <>
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>សម្អាត (Clear Storage)</span>
-                        </>
+                        <button 
+                          onClick={() => {
+                            setClearStorageStatus('confirm');
+                            setTimeout(() => {
+                              setClearStorageStatus(prev => prev === 'confirm' ? 'idle' : prev);
+                            }, 3000);
+                          }}
+                          className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang cursor-pointer"
+                        >
+                          {t('profile_setting_storage_clean_btn')}
+                        </button>
                       )}
-                    </button>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 font-battambang leading-relaxed">
+                      {t('profile_setting_storage_desc')}
+                    </p>
                   </div>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 leading-relaxed font-battambang">
-                    ការសម្អាតនេះនឹងលុបតែឯកសារ Logs និងទិន្នន័យបណ្ដោះអាសន្ន (Cache) ប៉ុណ្ណោះ ដោយមិនប៉ះពាល់ដល់គណនី ឬលេខសម្ងាត់ឡើយ។
-                  </p>
                 </div>
-              </div>
+              )}
             </div>
 
             <hr className="border-gray-200 dark:border-slate-800 mt-6" />
@@ -1267,46 +1260,53 @@ export default function AccountProfile({
 
   // --- MAIN ACCOUNT VIEW ---
   return (
-    <div className="w-full max-w-3xl mx-auto pb-16 font-battambang transition-colors duration-200">
-      
-      {/* Main Account Card Container */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all border border-gray-200/80 dark:border-slate-800">
-        
-        {/* Top Header */}
-        <div className="p-6 sm:p-8 flex items-center gap-5 sm:gap-6">
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <img 
-                src="/logo.png" 
-                alt="Avatar" 
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
+    <div className="w-full max-w-5xl mx-auto pb-16 font-battambang transition-colors duration-200">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Profile & Navigation Card */}
+        <div className="lg:col-span-7 xl:col-span-7">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all border border-gray-200/80 dark:border-slate-800">
+            {/* Top Header */}
+            <div className="p-6 sm:p-8 flex items-center gap-5 sm:gap-6">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <img 
+                    src="/logo.png" 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                )}
+                
+                {/* Bottom translucent camera bar overlay */}
+                <label className="absolute bottom-0 inset-x-0 h-6 sm:h-7 bg-white/40 dark:bg-black/30 hover:bg-white/60 dark:hover:bg-black/50 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-colors border-t border-white/20">
+                  <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-800 dark:text-gray-200" />
+                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+                </label>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white  font-title  leading-normal">
+                  {fullName || 'វត្តស្វាយដួច'}
+                </h2>
+                <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5">
+                  My ID: {userCode || 'WSD-0810'}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile View: Financial Overview placed below Profile */}
+            <div className="block lg:hidden px-4 pb-3.5 sm:px-6 sm:pb-4">
+              <FinancialOverviewCard 
+                onNavigateToSecurity={() => setIsSecurityView(true)}
               />
-            )}
-            
-            {/* Bottom translucent camera bar overlay */}
-            <label className="absolute bottom-0 inset-x-0 h-6 sm:h-7 bg-white/40 dark:bg-black/30 hover:bg-white/60 dark:hover:bg-black/50 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-colors border-t border-white/20">
-              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-800 dark:text-gray-200" />
-              <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
-            </label>
-          </div>
+            </div>
 
-          <div className="flex-1 min-w-0">
-            <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white  font-title  leading-normal">
-              {fullName || 'វត្តស្វាយដួច'}
-            </h2>
-            <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5">
-              My ID: {userCode || 'WSD-0810'}
-            </p>
-          </div>
-        </div>
-
-        {/* Top Separator Line */}
-        <div className="h-[1px] bg-gray-200 dark:bg-slate-800 w-full" />
+            {/* Top Separator Line */}
+            <div className="h-[1px] bg-gray-200 dark:bg-slate-800 w-full" />
 
         {/* Menu Items */}
         <div className="py-1">
@@ -1440,6 +1440,15 @@ export default function AccountProfile({
             </div>
             <ChevronRight className="w-4 h-4 text-red-400 group-hover:text-red-600 transition-colors" />
           </button>
+        </div>
+      </div>
+    </div>
+
+        {/* Desktop View: Financial Overview placed on the right of Profile */}
+        <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
+          <FinancialOverviewCard 
+            onNavigateToSecurity={() => setIsSecurityView(true)}
+          />
         </div>
       </div>
 
