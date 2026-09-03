@@ -81,12 +81,15 @@ const translations = {
     profile_mgmt_heading: 'ការគ្រប់គ្រង:',
     profile_certificates: 'លិខិតផ្សេងៗ',
     profile_users: 'គ្រប់គ្រងអ្នកប្រើប្រាស់',
+    profile_introduced: 'ការណែនាំដំឡើង App',
     profile_about: 'អំពីកម្មវិធី',
     profile_logout: 'ចាកចេញពីគណនី',
 
     theme_dark: 'ងងឹត',
     theme_light: 'ភ្លឺ',
     
+    about_tab_info: 'ព័ត៌មានកម្មវិធី',
+    about_tab_introduced: 'ការណែនាំដំឡើង (Introduced)',
     about_purpose: 'គោលបំណង',
     about_purpose_desc: 'កម្មវិធីនេះបង្កើតឡើងដើម្បីគ្រប់គ្រងប្រព័ន្ធទិន្នន័យចំណូល ចំណាយ និងបញ្ជីឈ្មោះសប្បុរសជនផ្សេងៗរបស់វត្តស្នាយដួច។',
     about_dev: 'រៀបចំ និងអភិវឌ្ឍដោយ',
@@ -371,12 +374,15 @@ const translations = {
     profile_mgmt_heading: 'Management:',
     profile_certificates: 'Certificates & Documents',
     profile_users: 'User Management',
+    profile_introduced: 'Install Guide (Introduced)',
     profile_about: 'About App',
     profile_logout: 'Logout',
 
     theme_dark: 'Dark',
     theme_light: 'Light',
     
+    about_tab_info: 'About Info',
+    about_tab_introduced: 'Install Guide (Introduced)',
     about_purpose: 'Purpose',
     about_purpose_desc: 'This application is built to manage the database of income, expenses, and various donor lists for Wat Snay Duoc.',
     about_dev: 'Developed By',

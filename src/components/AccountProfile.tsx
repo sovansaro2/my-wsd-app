@@ -2,7 +2,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2 } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles } from 'lucide-react';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
 import FinancialOverviewCard from './FinancialOverviewCard';
@@ -74,6 +75,11 @@ export default function AccountProfile({
   const [isEditingView, setIsEditingView] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [aboutModalTab, setAboutModalTab] = useState<'about' | 'introduced'>('about');
+  const [introducedPlatformTab, setIntroducedPlatformTab] = useState<'android' | 'ios'>('android');
+  const { isInstallable, isInstalled, isIOS, isAndroid, install } = usePWAInstall();
+  const [isInstallingPWA, setIsInstallingPWA] = useState(false);
+  const [isPwaLinkCopied, setIsPwaLinkCopied] = useState(false);
   const [isSettingView, setIsSettingView] = useState(false);
   const [isSystemLogsView, setIsSystemLogsView] = useState(false);
 
@@ -1536,9 +1542,30 @@ export default function AccountProfile({
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
           {/* SECTION 3: អំពីកម្មវិធី & ចាកចេញ */}
+          {/* ការណែនាំដំឡើង App (Introduced) */}
+          <button
+            onClick={() => {
+              setAboutModalTab('introduced');
+              setIntroducedPlatformTab(isIOS ? 'ios' : 'android');
+              setIsAboutModalOpen(true);
+            }}
+            className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+          >
+            <div className="flex items-center gap-3.5">
+              <Smartphone className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+              <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                {t('profile_introduced')}
+              </span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+          </button>
+
           {/* អំពីកម្មវិធី */}
           <button
-            onClick={() => setIsAboutModalOpen(true)}
+            onClick={() => {
+              setAboutModalTab('about');
+              setIsAboutModalOpen(true);
+            }}
             className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
           >
             <div className="flex items-center gap-3.5">
@@ -1601,7 +1628,7 @@ export default function AccountProfile({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setIsAboutModalOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm font-battambang"
         >
           <motion.div 
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -1609,42 +1636,237 @@ export default function AccountProfile({
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-sm max-h-[90vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden"
+            className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-md max-h-[92vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden shadow-2xl"
           >
-            <div className="p-6 sm:p-8 flex flex-col items-center text-center overflow-y-auto">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4 flex-shrink-0">
-                <Info className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
-              </div>
-              <h3 className=" text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-sm mb-6 flex-shrink-0">{t('about_version')} 1.1.0</p>
-              
-              <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-4 w-full text-left space-y-3 mb-6 flex-shrink-0">
-                <div>
-                  <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_purpose')}</p>
-                  <p className="text-[14px] text-gray-800 dark:text-slate-200">{t('about_purpose_desc')}</p>
-                </div>
-                <div className="h-px bg-gray-200 w-full"></div>
-                <div>
-                  <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
-                  <p className="text-[14px]  text-indigo-600">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
-                </div>
-                <div className="h-px bg-gray-200 w-full"></div>
-                <div>
-                  <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_tech')}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    <span className="text-[11px] font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">React</span>
-                    <span className="text-[11px] font-medium bg-teal-100 text-teal-700 px-2 py-0.5 rounded-md">Tailwind CSS</span>
-                    <span className="text-[11px] font-medium bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md">TypeScript</span>
-                    <span className="text-[11px] font-medium bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">Vite</span>
-                    <span className="text-[11px] font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-md">Supabase</span>
-                    <span className="text-[11px] font-medium bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">NodeJS</span>
+            {/* Top Navigation Tabs */}
+            <div className="flex items-center border-b border-gray-100 dark:border-slate-800 w-full px-5 pt-3.5 flex-shrink-0">
+              <button
+                onClick={() => setAboutModalTab('about')}
+                className={`flex-1 pb-3 text-center text-[14px] font-medium border-b-2 transition-colors ${
+                  aboutModalTab === 'about'
+                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                {t('about_tab_info')}
+              </button>
+              <button
+                onClick={() => {
+                  setAboutModalTab('introduced');
+                  setIntroducedPlatformTab(isIOS ? 'ios' : 'android');
+                }}
+                className={`flex-1 pb-3 text-center text-[14px] font-medium border-b-2 transition-colors ${
+                  aboutModalTab === 'introduced'
+                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                {t('about_tab_introduced')}
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 flex flex-col overflow-y-auto">
+              {aboutModalTab === 'about' ? (
+                /* About Tab Content */
+                <div className="flex flex-col items-center text-center">
+                  <div className="mb-3 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-10 h-10 sm:w-12 sm:h-12 text-orange-500" />
+                  </div>
+                  <h3 className="text-xl text-gray-900 dark:text-white mb-1" style={{ fontFamily: "'Khmer OS Kulen', 'Koulen', cursive" }}>
+                    កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច
+                  </h3>
+                  <p className="text-gray-500 dark:text-slate-400 text-sm mb-5 flex-shrink-0">
+                    {t('about_version')} 1.2.0
+                  </p>
+                  
+                  <div className="w-full text-left space-y-3.5 mb-6 flex-shrink-0 border-y border-gray-100 dark:border-slate-800 py-4">
+                    <div>
+                      <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_purpose')}</p>
+                      <p className="text-[14px] text-gray-800 dark:text-slate-200 leading-relaxed">{t('about_purpose_desc')}</p>
+                    </div>
+                    <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
+                    <div>
+                      <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
+                      <p className="text-[14px] font-medium text-orange-600 dark:text-orange-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                    </div>
+                    <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
+                    <div>
+                      <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1.5">{t('about_tech')}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">React</span>
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Tailwind CSS</span>
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">TypeScript</span>
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Vite</span>
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">Supabase</span>
+                        <span className="text-[12px] text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-700 px-2.5 py-0.5 rounded-md">NodeJS</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* Introduced Tab Content */
+                <div className="space-y-4 text-left">
+                  {/* Platform Toggle */}
+                  <div className="flex items-center gap-2 pb-1">
+                    <button
+                      onClick={() => setIntroducedPlatformTab('android')}
+                      className={`flex-1 py-2 px-3 text-[13.5px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
+                        introducedPlatformTab === 'android'
+                          ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                          : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+                      }`}
+                    >
+                      <Smartphone className="w-4 h-4" />
+                      <span>សម្រាប់ Android</span>
+                    </button>
+
+                    <button
+                      onClick={() => setIntroducedPlatformTab('ios')}
+                      className={`flex-1 py-2 px-3 text-[13.5px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
+                        introducedPlatformTab === 'ios'
+                          ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                          : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+                      }`}
+                    >
+                      <Share className="w-4 h-4" />
+                      <span>សម្រាប់ iOS (iPhone)</span>
+                    </button>
+                  </div>
+
+                  {introducedPlatformTab === 'android' ? (
+                    /* Android Section */
+                    <div className="space-y-4">
+                      {isInstalled ? (
+                        <div className="border border-emerald-500/80 rounded-xl p-3.5 flex items-center gap-3">
+                          <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <div>
+                            <h4 className="text-[14px] font-semibold text-emerald-700 dark:text-emerald-400">
+                              បានដំឡើងរួចរាល់ (Installed)
+                            </h4>
+                            <p className="text-[12px] text-gray-600 dark:text-slate-300 mt-0.5">
+                              កម្មវិធីកំពុងដំណើរការជា App ពេញលេញនៅលើទូរស័ព្ទដៃរបស់អ្នក។
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="border border-orange-500/40 dark:border-orange-500/30 rounded-xl p-3.5">
+                            <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                              <Sparkles className="w-4 h-4 text-orange-500" />
+                              តម្រូវឲ្យដំឡើងកម្មវិធីនៅលើ Android
+                            </h4>
+                            <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
+                              សូមដំឡើងកម្មវិធីវត្តស្នាយដួចនៅលើទូរស័ព្ទ Android របស់អ្នក ដើម្បីទទួលបានល្បឿនលឿន ងាយស្រួលបើកប្រើ និងដំណើរការពេញលេញ។
+                            </p>
+                          </div>
+
+                          {/* Direct Install Button */}
+                          <button
+                            onClick={async () => {
+                              setIsInstallingPWA(true);
+                              try {
+                                await install();
+                              } finally {
+                                setIsInstallingPWA(false);
+                              }
+                            }}
+                            disabled={isInstallingPWA}
+                            className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[14px] font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
+                          >
+                            <Download className="w-5 h-5" />
+                            <span>{isInstallingPWA ? 'កំពុងដំណើរការ...' : 'ដំឡើងកម្មវិធីឥឡូវនេះ (Install App)'}</span>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Android Steps */}
+                      <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
+                        <h5 className="text-[13px] font-semibold text-gray-800 dark:text-slate-200">
+                          វិធីដំឡើងតាម Chrome / Samsung Internet:
+                        </h5>
+                        <ol className="space-y-2 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                            <span>បើកកម្មវិធីតាម <strong>Google Chrome</strong> ឬ <strong>Samsung Internet</strong></span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                            <span>ចុចសញ្ញាម៉ឺនុយចុចបី <MoreVertical className="w-3.5 h-3.5 inline text-orange-500 mx-0.5" /> នៅជ្រុងខាងស្តាំខាងលើ</span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                            <span>ជ្រើសរើសយក <strong>"ដំឡើងកម្មវិធី (Install app)"</strong> ឬ <strong>"បន្ថែមទៅអេក្រង់ដើម"</strong></span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">4</span>
+                            <span>ចុច <strong>"ដំឡើង (Install)"</strong> ជាការស្រេច</span>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                  ) : (
+                    /* iOS Section */
+                    <div className="space-y-3.5">
+                      <div className="border border-blue-500/40 dark:border-blue-500/30 rounded-xl p-3.5">
+                        <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                          <Share className="w-4 h-4 text-blue-500" />
+                          ការបន្ថែមទៅលើអេក្រង់ដើម (Add to Home Screen)
+                        </h4>
+                        <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
+                          សម្រាប់ប្រព័ន្ធ iOS (iPhone / iPad) សូមប្រើប្រាស់កម្មវិធីរុករក Safari ដើម្បីដំឡើងកម្មវិធីតាមជំហានខាងក្រោម៖
+                        </p>
+                      </div>
+
+                      <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
+                        <li className="flex items-start gap-2.5">
+                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                          <span>បើកកម្មវិធីក្នុង <strong>Safari</strong> (បើកក្នុង FB/Telegram សូម Copy Link ទៅ Safari)</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                          <span>ចុចលើប៊ូតុង <strong>ចែករំលែក (Share)</strong> <Share className="w-4 h-4 inline text-blue-500 mx-0.5" /> នៅរបារខាងក្រោម</span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                          <span>អូសចុះក្រោម រួចជ្រើសរើស <strong>"Add to Home Screen"</strong> <PlusSquare className="w-4 h-4 inline text-blue-500 mx-0.5" /></span>
+                        </li>
+                        <li className="flex items-start gap-2.5">
+                          <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">4</span>
+                          <span>ចុច <strong>"Add"</strong> នៅជ្រុងខាងស្តាំខាងលើ ជាការស្រេច</span>
+                        </li>
+                      </ol>
+
+                      <div className="border-t border-gray-100 dark:border-slate-800 pt-3">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(window.location.origin);
+                            setIsPwaLinkCopied(true);
+                            setTimeout(() => setIsPwaLinkCopied(false), 2000);
+                          }}
+                          className="w-full py-2.5 px-4 border border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 text-gray-800 dark:text-slate-200 rounded-xl text-[13.5px] font-medium transition-colors flex items-center justify-center gap-2"
+                        >
+                          {isPwaLinkCopied ? (
+                            <>
+                              <Check className="w-4 h-4 text-emerald-600" />
+                              <span className="text-emerald-600 dark:text-emerald-400">បានចម្លងតំណភ្ជាប់រួចរាល់!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-4 h-4 text-gray-600 dark:text-slate-400" />
+                              <span>ចម្លងតំណភ្ជាប់ (Copy Link ដើម្បីបើកក្នុង Safari)</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <button
                 onClick={() => setIsAboutModalOpen(false)}
-                className="w-full py-3.5 px-4 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-2xl  text-[15px] hover:bg-gray-200 transition-colors focus:outline-none flex-shrink-0"
+                className="w-full mt-4 py-3 px-4 border border-gray-300 dark:border-slate-700 text-gray-800 dark:text-slate-200 rounded-xl text-[15px] font-medium hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors focus:outline-none flex-shrink-0"
               >
                 {t('about_close')}
               </button>
