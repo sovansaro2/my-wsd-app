@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2 } from 'lucide-react';
+import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock } from 'lucide-react';
 import { IOSFolder } from './ui/IOSFolder';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -43,7 +43,7 @@ interface NameRecord {
 }
 
 export default function NameLists({ userRole, onManageNameLists }: { userRole?: 'admin' | 'user' | null, onManageNameLists?: () => void }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [categories, setCategories] = useState<ListCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ListCategory | null>(null);
   const [records, setRecords] = useState<NameRecord[]>([]);
@@ -51,6 +51,21 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showLockedModal, setShowLockedModal] = useState(false);
+
+  useEffect(() => {
+    if (userRole !== 'admin' && selectedCategory) {
+      setSelectedCategory(null);
+    }
+  }, [userRole]);
+
+  const handleCategoryClick = (cat: ListCategory) => {
+    if (userRole !== 'admin') {
+      setShowLockedModal(true);
+      return;
+    }
+    setSelectedCategory(cat);
+  };
 
   // Modals state
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
@@ -532,7 +547,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
 
 
-  if (!selectedCategory) {
+  if (!selectedCategory || userRole !== 'admin') {
     const roofCat = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
     const kathinaCats = categories.filter((c: any) => c.name.includes('កឋិន'));
     const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ' && !c.name.includes('កឋិន'));
@@ -561,9 +576,18 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 {t('lists_category_roof')}
               </h3>
               <button 
-                onClick={() => setSelectedCategory(roofCat)}
+                onClick={() => handleCategoryClick(roofCat)}
                 className="w-full text-left bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg shadow-orange-500/20 relative overflow-hidden transition-transform active:scale-95"
               >
+                {/* Full Card Lock Overlay with White Lock Icon */}
+                {userRole !== 'admin' && (
+                  <div className="absolute inset-0 z-30 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex items-center justify-center pointer-events-none transition-all">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+                      <Lock className="w-6 h-6 text-white drop-shadow-md" />
+                    </div>
+                  </div>
+                )}
+
                 {userRole === 'admin' && (
                   <div 
                     onClick={(e) => openEditCatModal(roofCat, e)}
@@ -597,9 +621,18 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 {kathinaCats.map(cat => (
                   <button 
                     key={cat.id}
-                    onClick={() => setSelectedCategory(cat)}
-                    className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-amber-200/80 dark:border-amber-900/50 hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-md transition-all duration-200 active:scale-95 group text-center"
+                    onClick={() => handleCategoryClick(cat)}
+                    className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-amber-200/80 dark:border-amber-900/50 hover:border-amber-400 dark:hover:border-amber-600 hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden"
                   >
+                    {/* Full Card Lock Overlay with White Lock Icon */}
+                    {userRole !== 'admin' && (
+                      <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
+                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+                          <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
+                        </div>
+                      </div>
+                    )}
+
                     {userRole === 'admin' && (
                       <div 
                         onClick={(e) => openEditCatModal(cat, e)}
@@ -634,9 +667,18 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                {generalCats.map(cat => (
                  <button 
                    key={cat.id}
-                   onClick={() => setSelectedCategory(cat)}
-                   className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 active:scale-95 group text-center"
+                   onClick={() => handleCategoryClick(cat)}
+                   className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden"
                  >
+                   {/* Full Card Lock Overlay with White Lock Icon */}
+                   {userRole !== 'admin' && (
+                     <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
+                       <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+                         <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
+                       </div>
+                     </div>
+                   )}
+
                    {userRole === 'admin' && (
                     <div 
                       onClick={(e) => openEditCatModal(cat, e)}
@@ -763,6 +805,45 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           </div>
         )}
       </>
+
+      {/* Locked / Access Denied Modal */}
+      {showLockedModal && (
+        <div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLockedModal(false)}
+            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6 border border-gray-100 dark:border-slate-800"
+          >
+            <div className="flex flex-col items-center text-center font-battambang">
+              <div className="flex items-center justify-center mb-3.5 text-gray-700 dark:text-slate-300">
+                <Lock className="w-10 h-10" strokeWidth={1.75} />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                {language === 'en' ? 'List Locked' : 'បញ្ជីនេះត្រូវបានចាក់សោ'}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">
+                {language === 'en'
+                  ? 'Regular users cannot open or view this list. Access permission is restricted to Administrator only.'
+                  : 'អ្នកប្រើប្រាស់ទូទៅមិនអាចបើកមើលទិន្នន័យបញ្ជីនេះបានទេ។ សិទ្ធិបើកមើលត្រូវបានកំណត់សម្រាប់តែ Admin (អ្នកគ្រប់គ្រង) ប៉ុណ្ណោះ។'}
+              </p>
+              <button
+                onClick={() => setShowLockedModal(false)}
+                className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 bg-gray-100 hover:bg-gray-200/90 dark:bg-slate-800 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 transition-colors active:scale-[0.98]"
+              >
+                {language === 'en' ? 'OK, Understood' : 'យល់ព្រម'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
       </>
 
     );
