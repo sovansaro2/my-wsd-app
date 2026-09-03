@@ -1024,49 +1024,53 @@ export default function AccountProfile({
                 </h4>
 
                 {/* Khmer */}
-                <div className="pl-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => setLanguage('km')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      language === 'km' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {language === 'km' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      language === 'km' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
                       {t('profile_setting_lang_km')}
                     </span>
-                    {language === 'km' ? (
-                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                      </span>
-                    ) : (
-                      <button 
-                        onClick={() => setLanguage('km')}
-                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                      >
-                        {t('profile_setting_btn_use')}
-                      </button>
-                    )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
                     {t('profile_setting_lang_km_desc')}
                   </p>
                 </div>
 
                 {/* English */}
-                <div className="pl-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => setLanguage('en')}
+                  className="pl-3 cursor-pointer group select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                      language === 'en' 
+                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                    }`}>
+                      {language === 'en' && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                    </span>
+                    <span className={`text-[14.5px] font-battambang transition-colors ${
+                      language === 'en' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                    }`}>
                       {t('profile_setting_lang_en')}
                     </span>
-                    {language === 'en' ? (
-                      <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                        {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                      </span>
-                    ) : (
-                      <button 
-                        onClick={() => setLanguage('en')}
-                        className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                      >
-                        {t('profile_setting_btn_use')}
-                      </button>
-                    )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-battambang leading-relaxed">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
                     {t('profile_setting_lang_en_desc')}
                   </p>
                 </div>
@@ -1082,41 +1086,45 @@ export default function AccountProfile({
                 </h4>
 
                 {/* Dark mode */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => setCurrentTheme('dark')}
+                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                >
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                    currentTheme === 'dark' 
+                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  }`}>
+                    {currentTheme === 'dark' && (
+                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    )}
+                  </span>
+                  <span className={`text-[14.5px] font-battambang transition-colors ${
+                    currentTheme === 'dark' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                  }`}>
                     {t('profile_setting_theme_dark')}
                   </span>
-                  {currentTheme === 'dark' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => setCurrentTheme('dark')}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
                 </div>
 
                 {/* Light mode */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => setCurrentTheme('light')}
+                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                >
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                    currentTheme === 'light' 
+                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  }`}>
+                    {currentTheme === 'light' && (
+                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    )}
+                  </span>
+                  <span className={`text-[14.5px] font-battambang transition-colors ${
+                    currentTheme === 'light' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                  }`}>
                     {t('profile_setting_theme_light')}
                   </span>
-                  {currentTheme === 'light' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => setCurrentTheme('light')}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
                 </div>
               </div>
 
@@ -1130,54 +1138,55 @@ export default function AccountProfile({
                 </h4>
 
                 {/* Admin */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => {
+                    if (actualRole === 'admin' && onViewModeChange) {
+                      onViewModeChange('admin');
+                    }
+                  }}
+                  className={`pl-3 flex items-center gap-2.5 select-none ${
+                    actualRole === 'admin' ? 'cursor-pointer group' : 'cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                    userRole === 'admin' 
+                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  }`}>
+                    {userRole === 'admin' && (
+                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    )}
+                  </span>
+                  <span className={`text-[14.5px] font-battambang transition-colors ${
+                    userRole === 'admin' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                  }`}>
                     {t('profile_setting_role_admin')}
                   </span>
-                  {userRole === 'admin' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        if (actualRole === 'admin' && onViewModeChange) {
-                          onViewModeChange('admin');
-                        }
-                      }}
-                      disabled={actualRole !== 'admin'}
-                      className={`text-[14.5px] font-battambang ${
-                        actualRole === 'admin' 
-                          ? 'text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline cursor-pointer' 
-                          : 'text-gray-400 dark:text-slate-600 cursor-not-allowed'
-                      }`}
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
                 </div>
 
                 {/* User */}
-                <div className="pl-3 flex items-center gap-2">
-                  <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
+                <div 
+                  onClick={() => {
+                    if (onViewModeChange) {
+                      onViewModeChange('user');
+                    }
+                  }}
+                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                >
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
+                    userRole === 'user' 
+                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
+                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  }`}>
+                    {userRole === 'user' && (
+                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                    )}
+                  </span>
+                  <span className={`text-[14.5px] font-battambang transition-colors ${
+                    userRole === 'user' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
+                  }`}>
                     {t('profile_setting_role_user')}
                   </span>
-                  {userRole === 'user' ? (
-                    <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-blue-600 dark:text-blue-400 font-battambang">
-                      {t('profile_setting_btn_used')} <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-                    </span>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        if (onViewModeChange) {
-                          onViewModeChange('user');
-                        }
-                      }}
-                      className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang"
-                    >
-                      {t('profile_setting_btn_use')}
-                    </button>
-                  )}
                 </div>
               </div>
 
