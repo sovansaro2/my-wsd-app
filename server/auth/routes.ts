@@ -16,6 +16,7 @@ router.post('/signup', async (req, res) => {
       email_confirm: true,
       user_metadata: {
         full_name: data.full_name,
+        latin_name: data.latin_name || null,
         role: 'user'
       }
     });
@@ -28,12 +29,41 @@ router.post('/signup', async (req, res) => {
         options: {
           data: {
             full_name: data.full_name,
+            latin_name: data.latin_name || null,
             role: 'user'
           }
         }
       });
       if (fallbackError) throw fallbackError;
+
+      if (fallbackData?.user) {
+        try {
+          await supabaseAdmin.from('profiles').upsert({
+            id: fallbackData.user.id,
+            full_name: data.full_name,
+            latin_name: data.latin_name || null,
+            email: data.email,
+            role: 'user'
+          });
+        } catch (err) {
+          console.warn('Profile upsert fallback error:', err);
+        }
+      }
       return res.json({ success: true, user: fallbackData.user });
+    }
+
+    if (authData?.user) {
+      try {
+        await supabaseAdmin.from('profiles').upsert({
+          id: authData.user.id,
+          full_name: data.full_name,
+          latin_name: data.latin_name || null,
+          email: data.email,
+          role: 'user'
+        });
+      } catch (err) {
+        console.warn('Profile upsert error:', err);
+      }
     }
     
     res.json({ success: true, user: authData.user });

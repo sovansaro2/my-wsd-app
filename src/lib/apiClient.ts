@@ -40,7 +40,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 export const api = {
   // Auth
   login: (email: string, password: string) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
-  signup: (email: string, password: string, full_name: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name }) }),
+  signup: (email: string, password: string, full_name: string, latin_name?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, latin_name }) }),
   verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
   verifyPassword: (password: string) => apiFetch('/api/auth/verify-password', { method: 'POST', body: JSON.stringify({ password }) }),
   getMe: () => apiFetch('/api/auth/me'),

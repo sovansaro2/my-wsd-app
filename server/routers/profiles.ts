@@ -3,17 +3,49 @@ import { Router } from 'express';
 import { supabaseAdmin} from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
+export function generateUserCodeFromDob(dob: string | null | undefined): string | null {
+  if (!dob || typeof dob !== 'string' || dob.trim() === '') return null;
+  const clean = dob.trim();
+  let day = '';
+  let month = '';
+  let yearTail = '';
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+    const [y, m, d] = clean.split('-');
+    day = d.padStart(2, '0');
+    month = m.padStart(2, '0');
+    yearTail = y.slice(-1);
+  } else if (/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/.test(clean)) {
+    const parts = clean.split(/[\/\-]/);
+    day = parts[0].padStart(2, '0');
+    month = parts[1].padStart(2, '0');
+    yearTail = parts[2].slice(-1);
+  } else {
+    const dateObj = new Date(clean);
+    if (!isNaN(dateObj.getTime())) {
+      day = String(dateObj.getDate()).padStart(2, '0');
+      month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      yearTail = String(dateObj.getFullYear()).slice(-1);
+    }
+  }
+
+  if (day && month && yearTail) {
+    return `WSD-${day}${month}-${yearTail}`;
+  }
+  return null;
+}
+
 const router = Router();
 
 // GET /api/profiles (Admin only)
 router.get('/', requireAuth, requireAdmin, async (req, res) => {
   let { data, error } = await supabaseAdmin
     .from('profiles')
-    .select('id, user_code, family_name, given_name, full_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
+    .select('id, user_code, family_name, given_name, full_name, latin_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
     .order('created_at', { ascending: false });
     
-  if (error && error.message?.includes('user_code')) {
-    // Fallback if column user_code is not yet added in SQL
+  if (error && (error.message?.includes('user_code') || error.message?.includes('latin_name'))) {
+    // Fallback if column user_code or latin_name is not yet added in SQL
     const fallback: any = await supabaseAdmin
       .from('profiles')
       .select('id, family_name, given_name, full_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
@@ -27,7 +59,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
   // Ensure user_code is present in response
   const profilesWithCode = (data || []).map((p: any) => ({
     ...p,
-    user_code: p.user_code || `WSD-${p.id ? p.id.replace(/-/g, '').substring(0, 4).toUpperCase() : '0810'}`
+    user_code: p.user_code || generateUserCodeFromDob(p.date_of_birth) || `WSD-${p.id ? p.id.replace(/-/g, '').substring(0, 4).toUpperCase() : '0810'}`
   }));
 
   res.json(profilesWithCode);
@@ -81,11 +113,11 @@ router.put('/:id/reset-password', requireAuth, requireAdmin, async (req, res) =>
 router.get('/me', requireAuth, async (req, res) => {
   let { data, error } = await supabaseAdmin
     .from('profiles')
-    .select('id, user_code, family_name, given_name, full_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
+    .select('id, user_code, family_name, given_name, full_name, latin_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
     .eq('id', req.user!.id)
     .maybeSingle();
     
-  if (error && error.message?.includes('user_code')) {
+  if (error && (error.message?.includes('user_code') || error.message?.includes('latin_name'))) {
     const fallback: any = await supabaseAdmin
       .from('profiles')
       .select('id, family_name, given_name, full_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
@@ -97,13 +129,15 @@ router.get('/me', requireAuth, async (req, res) => {
 
   if (error) return res.status(400).json({ detail: error.message });
   
-  const userCode = data?.user_code || req.user!.user_metadata?.user_code || 'WSD-0810';
+  const userCode = data?.user_code || generateUserCodeFromDob(data?.date_of_birth) || req.user!.user_metadata?.user_code || 'WSD-0810';
+  const latinName = data?.latin_name || req.user!.user_metadata?.latin_name || null;
 
   if (!data) {
     return res.json({
       id: req.user!.id,
       email: req.user!.email,
       full_name: req.user!.user_metadata?.full_name || '',
+      latin_name: latinName,
       role: req.user!.role || 'user',
       avatar_url: null,
       user_code: userCode,
@@ -113,6 +147,7 @@ router.get('/me', requireAuth, async (req, res) => {
   
   res.json({
     ...data,
+    latin_name: latinName,
     user_code: userCode,
     has_balance_pin: !!req.user!.user_metadata?.balance_pin_hash
   });
@@ -139,17 +174,6 @@ router.put('/me', requireAuth, async (req, res) => {
     if (authError) return res.status(400).json({ detail: authError.message });
   }
 
-  // Persist user_code in auth metadata as well
-  if (updates.user_code) {
-    try {
-      await supabaseAdmin.auth.admin.updateUserById(req.user!.id, {
-        user_metadata: { ...req.user!.user_metadata, user_code: updates.user_code }
-      });
-    } catch (err) {
-      console.warn('Could not update user metadata:', err);
-    }
-  }
-
   // Handle date_of_birth formatting and empty string -> null
   if (updates.date_of_birth !== undefined) {
     if (!updates.date_of_birth || typeof updates.date_of_birth !== 'string' || updates.date_of_birth.trim() === '') {
@@ -161,12 +185,34 @@ router.put('/me', requireAuth, async (req, res) => {
         const [d, m, y] = trimmedDate.split('/');
         updates.date_of_birth = `${y}-${m}-${d}`;
       }
+      
+      // Auto-generate User ID from DOB: e.g. WSD-1008-2
+      const generatedCode = generateUserCodeFromDob(updates.date_of_birth);
+      if (generatedCode) {
+        updates.user_code = generatedCode;
+      }
+    }
+  }
+
+  // Persist user_code and latin_name in auth metadata as well
+  if (updates.user_code || updates.latin_name !== undefined) {
+    try {
+      await supabaseAdmin.auth.admin.updateUserById(req.user!.id, {
+        user_metadata: { 
+          ...req.user!.user_metadata, 
+          ...(updates.user_code ? { user_code: updates.user_code } : {}),
+          ...(updates.latin_name !== undefined ? { latin_name: updates.latin_name } : {})
+        }
+      });
+    } catch (err) {
+      console.warn('Could not update user metadata:', err);
     }
   }
 
   // Sanitize empty strings to null or defaults
   if (updates.family_name !== undefined && updates.family_name.trim() === '') updates.family_name = null;
   if (updates.given_name !== undefined && updates.given_name.trim() === '') updates.given_name = null;
+  if (updates.latin_name !== undefined && updates.latin_name.trim() === '') updates.latin_name = null;
   if (updates.address !== undefined && updates.address.trim() === '') updates.address = null;
   if (updates.phone_number !== undefined && updates.phone_number.trim() === '') updates.phone_number = null;
   
@@ -195,12 +241,12 @@ router.put('/me', requireAuth, async (req, res) => {
   let { data, error } = await supabaseAdmin
     .from('profiles')
     .upsert({ id: req.user!.id, email: req.user!.email, ...updates })
-    .select('id, user_code, family_name, given_name, full_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
+    .select('id, user_code, family_name, given_name, full_name, latin_name, gender, date_of_birth, address, email, phone_number, role, avatar_url, created_at')
     .single();
 
-  if (error && error.message?.includes('user_code')) {
-    // Retry without user_code if column not in DB schema yet
-    const { user_code, ...updatesWithoutCode } = updates;
+  if (error && (error.message?.includes('user_code') || error.message?.includes('latin_name'))) {
+    // Retry without user_code / latin_name if column not in DB schema yet
+    const { user_code, latin_name, ...updatesWithoutCode } = updates;
     const fallback: any = await supabaseAdmin
       .from('profiles')
       .upsert({ id: req.user!.id, email: req.user!.email, ...updatesWithoutCode })
@@ -209,7 +255,8 @@ router.put('/me', requireAuth, async (req, res) => {
     data = fallback.data;
     error = fallback.error;
     if (data) {
-      data.user_code = updates.user_code || 'WSD-0810';
+      data.user_code = updates.user_code || generateUserCodeFromDob(data.date_of_birth) || 'WSD-0810';
+      data.latin_name = updates.latin_name || null;
     }
   }
 
@@ -222,7 +269,8 @@ router.put('/me', requireAuth, async (req, res) => {
 
   res.json({
     ...data,
-    user_code: data?.user_code || updates.user_code || 'WSD-0810'
+    latin_name: data?.latin_name || updates.latin_name || null,
+    user_code: data?.user_code || updates.user_code || generateUserCodeFromDob(data?.date_of_birth) || 'WSD-0810'
   });
 });
 

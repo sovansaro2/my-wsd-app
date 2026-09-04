@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles, AlertCircle } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
@@ -64,6 +64,7 @@ export default function AccountProfile({
   const [userId, setUserId] = useState<string | null>(cachedProfile?.id || null);
   const [userKey, setUserKey] = useState<string | null>(cachedProfile?.id || null);
   const [fullName, setFullName] = useState(cachedProfile?.full_name || '');
+  const [latinName, setLatinName] = useState(cachedProfile?.latin_name || '');
   const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState(cachedProfile?.avatar_url || '');
 
@@ -74,7 +75,42 @@ export default function AccountProfile({
   const [address, setAddress] = useState(cachedProfile?.address || '');
   const [phoneNumber, setPhoneNumber] = useState(cachedProfile?.phone_number || '');
   const [email, setEmail] = useState(cachedProfile?.email || '');
-  const [userCode, setUserCode] = useState(cachedProfile?.user_code || (cachedProfile?.id ? `WSD-${cachedProfile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
+
+  // Generate User Code from Date of Birth: e.g. WSD-1008-2 (10=day, 08=month, 2=tail of year)
+  const generateUserCodeFromDob = (dob: string | null | undefined): string | null => {
+    if (!dob || typeof dob !== 'string' || dob.trim() === '') return null;
+    const clean = dob.trim();
+    let day = '';
+    let month = '';
+    let yearTail = '';
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+      const [y, m, d] = clean.split('-');
+      day = d.padStart(2, '0');
+      month = m.padStart(2, '0');
+      yearTail = y.slice(-1);
+    } else if (/^\d{2}[\/\-]\d{2}[\/\-]\d{4}$/.test(clean)) {
+      const parts = clean.split(/[\/\-]/);
+      day = parts[0].padStart(2, '0');
+      month = parts[1].padStart(2, '0');
+      yearTail = parts[2].slice(-1);
+    } else {
+      const dateObj = new Date(clean);
+      if (!isNaN(dateObj.getTime())) {
+        day = String(dateObj.getDate()).padStart(2, '0');
+        month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        yearTail = String(dateObj.getFullYear()).slice(-1);
+      }
+    }
+
+    if (day && month && yearTail) {
+      return `WSD-${day}${month}-${yearTail}`;
+    }
+    return null;
+  };
+
+  const initialDobCode = generateUserCodeFromDob(cachedProfile?.date_of_birth);
+  const [userCode, setUserCode] = useState(cachedProfile?.user_code || initialDobCode || (cachedProfile?.id ? `WSD-${cachedProfile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
 
   // PIN states
   const [hasBalancePin, setHasBalancePin] = useState(!!cachedProfile?.has_balance_pin);
@@ -98,6 +134,14 @@ export default function AccountProfile({
   const [isInstallingPWA, setIsInstallingPWA] = useState(false);
   const [isPwaLinkCopied, setIsPwaLinkCopied] = useState(false);
   const [isSettingView, setIsSettingView] = useState(false);
+
+  // Incomplete profile check: if user has not completed personal info yet
+  const isProfileIncomplete = !dateOfBirth || !phoneNumber || !address;
+  
+  // Display name toggles based on current language: Latin name in English, Khmer name in Khmer
+  const displayName = language === 'en' 
+    ? (latinName || fullName || 'Wat Snay Duoc') 
+    : (fullName || latinName || 'វត្តស្នាយដួច');
   const [isSystemLogsView, setIsSystemLogsView] = useState(false);
 
   useEffect(() => {
@@ -147,7 +191,7 @@ export default function AccountProfile({
       setShowPasswordModal(false);
       setPassword('');
       setConfirmPassword('');
-      setMessage({ type: 'success', text: t('sec_modal_pwd_success') });
+      setMessage({ type: 'success', key: 'sec_modal_pwd_success' });
     } catch (err: any) {
       setPasswordError(err.message || t('sec_modal_pwd_err_fail'));
     } finally {
@@ -167,7 +211,7 @@ export default function AccountProfile({
       await api.updateProfile({ email: newEmailInput.trim() });
       setEmail(newEmailInput.trim());
       setShowEmailModal(false);
-      setMessage({ type: 'success', text: t('sec_modal_email_success') });
+      setMessage({ type: 'success', key: 'sec_modal_email_success' });
     } catch (err: any) {
       setEmailError(err.message || t('sec_modal_email_err_fail'));
     } finally {
@@ -187,7 +231,7 @@ export default function AccountProfile({
       await api.updateProfile({ phone_number: newPhoneInput.trim() });
       setPhoneNumber(newPhoneInput.trim());
       setShowPhoneModal(false);
-      setMessage({ type: 'success', text: t('sec_modal_phone_success') });
+      setMessage({ type: 'success', key: 'sec_modal_phone_success' });
     } catch (err: any) {
       setPhoneError(err.message || t('sec_modal_phone_err_fail'));
     } finally {
@@ -195,7 +239,13 @@ export default function AccountProfile({
     }
   };
 
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text?: string, key?: string } | null>(null);
+
+  const getMessageText = (msg: { type: 'success' | 'error', text?: string, key?: string } | null) => {
+    if (!msg) return '';
+    if (msg.key) return t(msg.key as any);
+    return msg.text || '';
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -241,7 +291,7 @@ export default function AccountProfile({
         
         setHasBalancePin(true);
         setShowPinSetup(false);
-        setMessage({ type: 'success', text: t('sec_modal_pin_success') });
+        setMessage({ type: 'success', key: 'sec_modal_pin_success' });
         setAuthPassword('');
         setCurrentPin('');
       } catch (err: any) {
@@ -262,6 +312,7 @@ export default function AccountProfile({
       setUserKey(profile.id);
       
       setFullName(profile.full_name || '');
+      setLatinName(profile.latin_name || '');
       setFamilyName(profile.family_name || '');
       setGivenName(profile.given_name || '');
       setGender(profile.gender || 'Male');
@@ -269,7 +320,8 @@ export default function AccountProfile({
       setAddress(profile.address || '');
       setPhoneNumber(profile.phone_number || '');
       setEmail(profile.email || '');
-      setUserCode(profile.user_code || (profile.id ? `WSD-${profile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
+      const dobCode = generateUserCodeFromDob(profile.date_of_birth);
+      setUserCode(profile.user_code || dobCode || (profile.id ? `WSD-${profile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
 
       setHasBalancePin(!!profile.has_balance_pin);
       setAvatarUrl(profile.avatar_url || '');
@@ -295,10 +347,10 @@ export default function AccountProfile({
     try {
       const { publicUrl } = await api.uploadAvatar(file);
       setAvatarUrl(publicUrl);
-      setMessage({ type: 'success', text: 'បានប្តូររូប Profile ជោគជ័យ!' });
+      setMessage({ type: 'success', key: 'profile_avatar_success' });
     } catch (err: any) {
       console.error('Upload error:', err);
-      setMessage({ type: 'error', text: err.message || 'មានបញ្ហាក្នុងការបញ្ចូលរូបភាព។' });
+      setMessage({ type: 'error', text: err.message, key: !err.message ? 'profile_avatar_error' : undefined });
     } finally {
       setIsUploading(false);
     }
@@ -313,8 +365,10 @@ export default function AccountProfile({
 
     try {
       const combinedFullName = [familyName.trim(), givenName.trim()].filter(Boolean).join(' ') || fullName.trim();
+      const generatedDobCode = generateUserCodeFromDob(dateOfBirth);
       const updates: any = {
-        full_name: combinedFullName,
+        full_name: fullName.trim() || combinedFullName,
+        latin_name: latinName.trim() || null,
         family_name: familyName.trim() || null,
         given_name: givenName.trim() || null,
         gender: gender,
@@ -322,7 +376,7 @@ export default function AccountProfile({
         address: address.trim() || null,
         phone_number: phoneNumber.trim() || null,
         email: email.trim() || null,
-        user_code: userCode || null
+        user_code: generatedDobCode || userCode || null
       };
 
       if (password && password.trim() !== '') {
@@ -337,23 +391,27 @@ export default function AccountProfile({
         } else if (combinedFullName) {
           setFullName(combinedFullName);
         }
+        if (res.latin_name !== undefined) setLatinName(res.latin_name || '');
         if (res.family_name !== undefined) setFamilyName(res.family_name || '');
         if (res.given_name !== undefined) setGivenName(res.given_name || '');
         if (res.date_of_birth !== undefined) setDateOfBirth(res.date_of_birth || '');
         if (res.gender) setGender(res.gender);
         if (res.phone_number !== undefined) setPhoneNumber(res.phone_number || '');
         if (res.address !== undefined) setAddress(res.address || '');
-        if (res.user_code !== undefined) setUserCode(res.user_code || 'WSD-0810');
+        if (res.user_code !== undefined) {
+          setUserCode(res.user_code || 'WSD-0810');
+        } else if (generatedDobCode) {
+          setUserCode(generatedDobCode);
+        }
       }
 
-      setMessage({ type: 'success', text: 'រក្សាទុកទិន្នន័យជោគជ័យ!' });
+      setMessage({ type: 'success', key: 'profile_save_success' });
       setIsEditable(false);
-      setIsEditingView(false);
       setPassword('');
 
     } catch (err: any) {
       console.error('Save error:', err);
-      setMessage({ type: 'error', text: err.message || 'មានបញ្ហាក្នុងការរក្សាទុក។' });
+      setMessage({ type: 'error', text: err.message, key: !err.message ? 'profile_save_error' : undefined });
     } finally {
       setIsSaving(false);
     }
@@ -402,10 +460,10 @@ export default function AccountProfile({
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[20px] sm:text-[22px] font-normal text-gray-900 dark:text-white  font-title ">
-                    {fullName || 'No Name'}
+                  <h3 className="text-[20px] sm:text-[22px] font-normal text-gray-900 dark:text-white font-title">
+                    {displayName}
                   </h3>
-                  <p className="text-[13px] font-medium text-gray-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-[13px] font-medium text-gray-500 dark:text-slate-400 mt-0.5 font-rajdhani">
                     My ID: {userCode || 'WSD-0810'}
                   </p>
                 </div>
@@ -414,14 +472,52 @@ export default function AccountProfile({
 
             <form onSubmit={handleSaveProfile} className="p-6 sm:p-8">
               {message && (
-                <div className={`mb-6 rounded-lg p-3 sm:p-4 text-sm font-medium border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
-                  {message.text}
+                <div className={`mb-6 rounded-lg p-3 sm:p-4 text-sm font-medium border ${
+                  message.type === 'success' 
+                    ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:border-green-900/60 dark:text-green-400' 
+                    : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:border-red-900/60 dark:text-red-400'
+                } ${language === 'en' ? 'font-rajdhani text-[15px]' : 'font-battambang'}`}>
+                  {getMessageText(message)}
+                </div>
+              )}
+
+              {/* Incomplete profile warning */}
+              {isProfileIncomplete && (
+                <div className="mb-6 flex items-start gap-2.5 p-3.5 rounded-xl border border-amber-200/80 bg-amber-50/70 dark:bg-amber-950/30 dark:border-amber-900/60 text-amber-700 dark:text-amber-400 text-[13.5px] font-battambang">
+                  <AlertCircle className="w-5 h-5 shrink-0 text-amber-500 stroke-[2.5] mt-0.5" />
+                  <span className="leading-relaxed">
+                    {t('profile_unverified_desc')}
+                  </span>
                 </div>
               )}
               
               <h4 className="text-[16px] text-gray-900 dark:text-white mb-6 font-battambang">{t('profile_personal_details')}</h4>
               
               <div className="space-y-4">
+                {/* Khmer Name */}
+                <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_khmer_name')}</label>
+                  <div className="w-full">
+                    <input disabled={!isEditable} type="text" value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder={t('profile_khmer_name_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
+                    />
+                  </div>
+                </div>
+
+                {/* Latin Name */}
+                <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
+                  <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_latin_name')}</label>
+                  <div className="w-full">
+                    <input disabled={!isEditable} type="text" value={latinName}
+                      onChange={(e) => setLatinName(e.target.value)}
+                      placeholder={t('profile_latin_name_ph')}
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
+                    />
+                  </div>
+                </div>
+
                 {/* Family Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_family_name')}</label>
@@ -450,7 +546,15 @@ export default function AccountProfile({
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_dob')}</label>
                   <div className="w-full relative">
-                    <CustomDatePicker disabled={!isEditable} value={dateOfBirth} onChange={setDateOfBirth} placeholder={t('profile_dob_ph')} 
+                    <CustomDatePicker 
+                      disabled={!isEditable} 
+                      value={dateOfBirth} 
+                      onChange={(newDob) => {
+                        setDateOfBirth(newDob);
+                        const code = generateUserCodeFromDob(newDob);
+                        if (code) setUserCode(code);
+                      }} 
+                      placeholder={t('profile_dob_ph')} 
                     />
                   </div>
                 </div>
@@ -491,7 +595,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="email" value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t('profile_email_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-sans"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
                     />
                   </div>
                 </div>
@@ -503,7 +607,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="tel" value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder={t('profile_phone_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-sans"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
                     />
                   </div>
                 </div>
@@ -557,8 +661,12 @@ export default function AccountProfile({
         {/* Center Content Card */}
         <div className="sm:p-6 w-full max-w-md mx-auto my-2 sm:my-auto flex flex-col justify-center">
           {message && (
-            <div className={`mb-4 -mx-3.5 sm:mx-0 rounded-none sm:rounded-xl p-3.5 text-sm font-medium border-y sm:border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800' : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800'}`}>
-              {message.text}
+            <div className={`mb-4 -mx-3.5 sm:mx-0 rounded-none sm:rounded-xl p-3.5 text-sm font-medium border-y sm:border ${
+              message.type === 'success' 
+                ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800' 
+                : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800'
+            } ${language === 'en' ? 'font-rajdhani text-[15px]' : 'font-battambang'}`}>
+              {getMessageText(message)}
             </div>
           )}
 
@@ -1437,14 +1545,27 @@ export default function AccountProfile({
               </div>
 
               <div className="flex-1 min-w-0">
-                <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white  font-title  leading-normal">
-                  {fullName || 'វត្តស្វាយដួច'}
+                <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 dark:text-white font-title leading-normal">
+                  {displayName}
                 </h2>
-                <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5">
+                <p className="text-[13px] sm:text-sm font-medium text-gray-500 dark:text-slate-400 mt-0.5 font-rajdhani">
                   My ID: {userCode || 'WSD-0810'}
                 </p>
               </div>
             </div>
+
+            {/* Status Message */}
+            {message && (
+              <div className="px-5 sm:px-8 pb-4">
+                <div className={`rounded-xl p-3.5 text-sm font-medium border ${
+                  message.type === 'success' 
+                    ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:border-green-900/60 dark:text-green-400' 
+                    : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:border-red-900/60 dark:text-red-400'
+                } ${language === 'en' ? 'font-rajdhani text-[15px]' : 'font-battambang'}`}>
+                  {getMessageText(message)}
+                </div>
+              </div>
+            )}
 
             {/* Mobile View: Financial Overview placed below Profile (Admin only) - Full Width Edge-to-Edge */}
             {isAdmin && (
@@ -1475,8 +1596,20 @@ export default function AccountProfile({
                 <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
                   {t('profile_account_menu')}
                 </span>
+                {isProfileIncomplete && (
+                  <span className="inline-flex items-center text-amber-500" title={t('profile_unverified_desc')}>
+                    <AlertCircle className="w-4 h-4 stroke-[2.5]" />
+                  </span>
+                )}
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
+              <div className="flex items-center gap-2">
+                {isProfileIncomplete && (
+                  <span className="text-[12.5px] text-amber-600 dark:text-amber-400 font-battambang font-medium">
+                    {t('profile_unverified')}
+                  </span>
+                )}
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
+              </div>
             </button>
 
             {/* ពាក្យសម្ងាត់ និងសុវត្ថិភាព */}
