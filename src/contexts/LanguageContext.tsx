@@ -188,6 +188,13 @@ const translations = {
 
     reports_saved_title: 'របាយការណ៍ដែលបានរក្សាទុក',
     reports_empty: 'មិនទាន់មានរបាយការណ៍ដែលបានរក្សាទុកទេ',
+    reports_preview_title: 'មើលរូបរបាយការណ៍',
+    reports_download: 'ទាញយក',
+    reports_delete: 'លុប',
+    reports_delete_confirm_title: 'បញ្ជាក់ការលុប',
+    reports_delete_confirm_msg: 'តើអ្នកពិតជាចង់លុបរបាយការណ៍នេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។',
+    reports_cancel: 'បោះបង់',
+    reports_preview_hint: 'ចុចដើម្បីមើលរូបភាព',
 
     cert_title: 'លិខិតថ្លែងអំណរគុណ',
     cert_total: 'សរុប {count}',
@@ -509,6 +516,13 @@ const translations = {
 
     reports_saved_title: 'Saved Reports',
     reports_empty: 'No saved reports yet',
+    reports_preview_title: 'Report Preview',
+    reports_download: 'Download',
+    reports_delete: 'Delete',
+    reports_delete_confirm_title: 'Confirm Deletion',
+    reports_delete_confirm_msg: 'Are you sure you want to delete this report? This action cannot be undone.',
+    reports_cancel: 'Cancel',
+    reports_preview_hint: 'Click to preview image',
 
     cert_title: 'Certificates of Appreciation',
     cert_total: 'Total {count}',
