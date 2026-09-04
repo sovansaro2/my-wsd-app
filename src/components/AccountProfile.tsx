@@ -1119,271 +1119,333 @@ export default function AccountProfile({
 
   if (isSettingView) {
     return (
-      <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
-        {/* Sticky Top Header */}
-        <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
-          <button 
-            onClick={() => setIsSettingView(false)}
-            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors focus:outline-none"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white font-battambang">{t('profile_setting_menu')}</h2>
+      <div className="w-full max-w-5xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 font-battambang">
+        {/* Top Header */}
+        <div className="flex items-center justify-between pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-gray-200/80 dark:border-slate-800">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button 
+              onClick={() => setIsSettingView(false)}
+              className="p-2 sm:p-2.5 rounded-xl border border-gray-200 dark:border-slate-800 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition-colors focus:outline-none"
+              aria-label="Back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white font-battambang">
+                {t('profile_setting_menu')}
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-battambang mt-0.5">
+                {language === 'en' 
+                  ? 'Manage language, appearance themes, font scaling, and system preferences' 
+                  : 'កំណត់ជម្រើសភាសា រចនាប័ទ្មពន្លឺ ទំហំអក្សរ និងប្រព័ន្ធទិន្នន័យនៃកម្មវិធី'}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Center Content Card */}
-        <div className="sm:p-6 w-full max-w-md mx-auto my-2 sm:my-auto flex flex-col justify-center">
-          <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 p-5 sm:p-8 font-battambang">
-            {/* Header / Title */}
-            <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
-              {t('profile_setting_modal_title')}
-            </h3>
-
-            <hr className="border-gray-200 dark:border-slate-800 mb-5" />
-
-            <div className="space-y-5">
-              {/* SECTION 1: Language */}
-              <div className="space-y-2.5">
-                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+        {/* Settings Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          {/* Card 1: ភាសា (Language) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <Globe className="w-5 h-5 text-gray-500 dark:text-slate-400 shrink-0" />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
                   {t('profile_setting_lang_heading')}
-                </h4>
-
+                </h3>
+              </div>
+              <div className="space-y-3">
                 {/* Khmer */}
                 <div 
                   onClick={() => setLanguage('km')}
-                  className="pl-3 cursor-pointer group select-none"
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
+                    language === 'km'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      language === 'km' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                        {t('profile_setting_lang_km')}
+                      </span>
                       {language === 'km' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                        <span className="text-[11px] font-normal text-gray-500 dark:text-slate-400 font-battambang">
+                          ({t('profile_setting_btn_used')})
+                        </span>
                       )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      language === 'km' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {t('profile_setting_lang_km')}
-                    </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                      {t('profile_setting_lang_km_desc')}
+                    </p>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_lang_km_desc')}
-                  </p>
+                  <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                    language === 'km'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {language === 'km' && <span className="w-2.5 h-2.5 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                  </span>
                 </div>
 
                 {/* English */}
                 <div 
                   onClick={() => setLanguage('en')}
-                  className="pl-3 cursor-pointer group select-none"
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
+                    language === 'en'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      language === 'en' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-rajdhani">
+                        English
+                      </span>
                       {language === 'en' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                        <span className="text-[11px] font-normal text-gray-500 dark:text-slate-400 font-rajdhani">
+                          (Active)
+                        </span>
                       )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      language === 'en' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {t('profile_setting_lang_en')}
-                    </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                      {t('profile_setting_lang_en_desc')}
+                    </p>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_lang_en_desc')}
-                  </p>
+                  <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                    language === 'en'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {language === 'en' && <span className="w-2.5 h-2.5 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                  </span>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
-
-              {/* SECTION 2: Theme */}
-              <div className="space-y-2.5">
-                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+          {/* Card 2: ស្បែក / រចនាប័ទ្ម (Theme) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <Palette className="w-5 h-5 text-gray-500 dark:text-slate-400 shrink-0" />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
                   {t('profile_setting_theme_heading')}
-                </h4>
-
-                {/* Dark mode */}
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Dark Mode */}
                 <div 
                   onClick={() => setCurrentTheme('dark')}
-                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-3 ${
+                    currentTheme === 'dark'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                  }`}
                 >
-                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                    currentTheme === 'dark' 
-                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                  }`}>
-                    {currentTheme === 'dark' && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                    )}
-                  </span>
-                  <span className={`text-[14.5px] font-battambang transition-colors ${
-                    currentTheme === 'dark' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                  }`}>
-                    {t('profile_setting_theme_dark')}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400 shrink-0" />
+                      <span className="text-[14.5px] font-semibold text-gray-900 dark:text-white font-battambang">
+                        {t('profile_setting_theme_dark')}
+                      </span>
+                    </div>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                      currentTheme === 'dark'
+                        ? 'border-gray-800 dark:border-slate-200'
+                        : 'border-gray-300 dark:border-slate-600'
+                    }`}>
+                      {currentTheme === 'dark' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang">
+                    រចនាប័ទ្មងងឹត សន្សំសំចៃថាមពល និងស្រួលភ្នែកពេលយប់
+                  </p>
                 </div>
 
-                {/* Light mode */}
+                {/* Light Mode */}
                 <div 
                   onClick={() => setCurrentTheme('light')}
-                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-3 ${
+                    currentTheme === 'light'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                  }`}
                 >
-                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                    currentTheme === 'light' 
-                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                  }`}>
-                    {currentTheme === 'light' && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                    )}
-                  </span>
-                  <span className={`text-[14.5px] font-battambang transition-colors ${
-                    currentTheme === 'light' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                  }`}>
-                    {t('profile_setting_theme_light')}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sun className="w-4 h-4 text-gray-500 dark:text-slate-400 shrink-0" />
+                      <span className="text-[14.5px] font-semibold text-gray-900 dark:text-white font-battambang">
+                        {t('profile_setting_theme_light')}
+                      </span>
+                    </div>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                      currentTheme === 'light'
+                        ? 'border-gray-800 dark:border-slate-200'
+                        : 'border-gray-300 dark:border-slate-600'
+                    }`}>
+                      {currentTheme === 'light' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang">
+                    រចនាប័ទ្មភ្លឺ ភ្លឺថ្លាច្បាស់ និងងាយស្រួលអានពេលថ្ងៃ
+                  </p>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
-
-              {/* SECTION: Font Size */}
-              <div className="space-y-3">
-                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+          {/* Card 3: ទំហំអក្សរ (Font Size) - Spans 2 columns on desktop */}
+          <div className="md:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
                   {t('profile_setting_fontsize_heading')}
-                </h4>
+                </h3>
+              </div>
+              <span className="text-xs text-gray-400 dark:text-slate-500 font-rajdhani font-medium">
+                {fontSize === 'sm' ? 'Scale 90%' : fontSize === 'md' ? 'Scale 100%' : fontSize === 'lg' ? 'Scale 110%' : 'Scale 120%'}
+              </span>
+            </div>
 
-                {/* Small */}
-                <div 
-                  onClick={() => setFontSize('sm')}
-                  className="pl-3 cursor-pointer group select-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      fontSize === 'sm' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
-                      {fontSize === 'sm' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                      )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      fontSize === 'sm' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
+            {/* 4 Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Small */}
+              <div 
+                onClick={() => setFontSize('sm')}
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
+                  fontSize === 'sm'
+                    ? 'border-gray-800 dark:border-slate-200'
+                    : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
                       {t('profile_setting_fontsize_sm')}
                     </span>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_fontsize_sm_desc')}
-                  </p>
-                </div>
-
-                {/* Default / Medium */}
-                <div 
-                  onClick={() => setFontSize('md')}
-                  className="pl-3 cursor-pointer group select-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      fontSize === 'md' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
-                      {fontSize === 'md' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                      )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      fontSize === 'md' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {t('profile_setting_fontsize_md')}
+                    <span className="text-xs text-gray-400 dark:text-slate-500 font-rajdhani font-medium">
+                      90%
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_fontsize_md_desc')}
-                  </p>
-                </div>
-
-                {/* Large */}
-                <div 
-                  onClick={() => setFontSize('lg')}
-                  className="pl-3 cursor-pointer group select-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      fontSize === 'lg' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
-                      {fontSize === 'lg' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                      )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      fontSize === 'lg' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {t('profile_setting_fontsize_lg')}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_fontsize_lg_desc')}
-                  </p>
-                </div>
-
-                {/* Extra Large */}
-                <div 
-                  onClick={() => setFontSize('xl')}
-                  className="pl-3 cursor-pointer group select-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                      fontSize === 'xl' 
-                        ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                        : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
-                    }`}>
-                      {fontSize === 'xl' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                      )}
-                    </span>
-                    <span className={`text-[14.5px] font-battambang transition-colors ${
-                      fontSize === 'xl' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                    }`}>
-                      {t('profile_setting_fontsize_xl')}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 pl-6.5 font-battambang leading-relaxed">
-                    {t('profile_setting_fontsize_xl_desc')}
-                  </p>
-                </div>
-
-                {/* Live sample preview line */}
-                <div className="pt-2 pl-3 border-t border-dashed border-gray-200 dark:border-slate-800">
-                  <span className="text-xs text-gray-400 dark:text-slate-500 font-battambang block">
-                    {t('profile_setting_fontsize_preview')}
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                    fontSize === 'sm'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {fontSize === 'sm' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
                   </span>
                 </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                  {t('profile_setting_fontsize_sm_desc')}
+                </p>
               </div>
 
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
+              {/* Medium */}
+              <div 
+                onClick={() => setFontSize('md')}
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
+                  fontSize === 'md'
+                    ? 'border-gray-800 dark:border-slate-200'
+                    : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                      {t('profile_setting_fontsize_md')}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500 font-rajdhani font-medium">
+                      100%
+                    </span>
+                  </div>
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                    fontSize === 'md'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {fontSize === 'md' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                  {t('profile_setting_fontsize_md_desc')}
+                </p>
+              </div>
 
-              {/* SECTION 3: Role */}
-              <div className="space-y-2.5">
-                <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
+              {/* Large */}
+              <div 
+                onClick={() => setFontSize('lg')}
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
+                  fontSize === 'lg'
+                    ? 'border-gray-800 dark:border-slate-200'
+                    : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                      {t('profile_setting_fontsize_lg')}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500 font-rajdhani font-medium">
+                      110%
+                    </span>
+                  </div>
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                    fontSize === 'lg'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {fontSize === 'lg' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                  {t('profile_setting_fontsize_lg_desc')}
+                </p>
+              </div>
+
+              {/* Extra Large */}
+              <div 
+                onClick={() => setFontSize('xl')}
+                className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
+                  fontSize === 'xl'
+                    ? 'border-gray-800 dark:border-slate-200'
+                    : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                      {t('profile_setting_fontsize_xl')}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-slate-500 font-rajdhani font-medium">
+                      120%
+                    </span>
+                  </div>
+                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                    fontSize === 'xl'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
+                  }`}>
+                    {fontSize === 'xl' && <span className="w-2 h-2 rounded-full bg-gray-800 dark:bg-slate-200" />}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                  {t('profile_setting_fontsize_xl_desc')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: តួនាទីអ្នកប្រើប្រាស់ (User Role) */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <Shield className="w-5 h-5 text-gray-500 dark:text-slate-400 shrink-0" />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
                   {t('profile_setting_role_heading')}
-                </h4>
-
+                </h3>
+              </div>
+              <div className="space-y-3">
                 {/* Admin */}
                 <div 
                   onClick={() => {
@@ -1391,23 +1453,35 @@ export default function AccountProfile({
                       onViewModeChange('admin');
                     }
                   }}
-                  className={`pl-3 flex items-center gap-2.5 select-none ${
-                    actualRole === 'admin' ? 'cursor-pointer group' : 'cursor-not-allowed opacity-60'
+                  className={`p-3.5 rounded-xl border transition-all select-none flex items-start justify-between gap-3 ${
+                    actualRole === 'admin' ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'
+                  } ${
+                    userRole === 'admin'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
                   }`}
                 >
-                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                    userRole === 'admin' 
-                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                        {t('profile_setting_role_admin')}
+                      </span>
+                      {userRole === 'admin' && (
+                        <span className="text-[11px] font-normal text-gray-500 dark:text-slate-400 font-battambang">
+                          ({t('profile_setting_btn_used')})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                      {t('profile_role_admin_desc')}
+                    </p>
+                  </div>
+                  <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                    userRole === 'admin'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
                   }`}>
-                    {userRole === 'admin' && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                    )}
-                  </span>
-                  <span className={`text-[14.5px] font-battambang transition-colors ${
-                    userRole === 'admin' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                  }`}>
-                    {t('profile_setting_role_admin')}
+                    {userRole === 'admin' && <span className="w-2.5 h-2.5 rounded-full bg-gray-800 dark:bg-slate-200" />}
                   </span>
                 </div>
 
@@ -1418,97 +1492,107 @@ export default function AccountProfile({
                       onViewModeChange('user');
                     }
                   }}
-                  className="pl-3 flex items-center gap-2.5 cursor-pointer group select-none"
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
+                    userRole === 'user'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700'
+                  }`}
                 >
-                  <span className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${
-                    userRole === 'user' 
-                      ? 'border-blue-600 dark:border-blue-400 bg-white dark:bg-slate-900' 
-                      : 'border-gray-300 dark:border-slate-600 group-hover:border-blue-400'
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[15px] font-semibold text-gray-900 dark:text-white font-battambang">
+                        {t('profile_setting_role_user')}
+                      </span>
+                      {userRole === 'user' && (
+                        <span className="text-[11px] font-normal text-gray-500 dark:text-slate-400 font-battambang">
+                          ({t('profile_setting_btn_used')})
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                      {t('profile_role_user_desc')}
+                    </p>
+                  </div>
+                  <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                    userRole === 'user'
+                      ? 'border-gray-800 dark:border-slate-200'
+                      : 'border-gray-300 dark:border-slate-600'
                   }`}>
-                    {userRole === 'user' && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                    )}
-                  </span>
-                  <span className={`text-[14.5px] font-battambang transition-colors ${
-                    userRole === 'user' ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-800 dark:text-slate-200'
-                  }`}>
-                    {t('profile_setting_role_user')}
+                    {userRole === 'user' && <span className="w-2.5 h-2.5 rounded-full bg-gray-800 dark:bg-slate-200" />}
                   </span>
                 </div>
               </div>
-
-              {/* Separator */}
-              <div className="h-px bg-gray-200/80 dark:bg-slate-800 w-full" />
-
-              {/* SECTION 4: Clear App Storage / Space - Only for Admin */}
-              {userRole === 'admin' && (
-                <div className="space-y-2.5">
-                  <h4 className="text-[15px] font-semibold text-blue-600 dark:text-blue-400 font-battambang">
-                    {t('profile_setting_storage_heading')}
-                  </h4>
-
-                  <div className="pl-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[14.5px] text-gray-800 dark:text-slate-200 font-battambang">
-                          {t('profile_setting_storage_label')}
-                        </span>
-                        <span className="text-xs text-gray-400 dark:text-slate-500 font-mono">
-                          ({storageUsage.formatted})
-                        </span>
-                      </div>
-
-                      {clearStorageStatus === 'success' ? (
-                        <span className="inline-flex items-center gap-1 text-[14.5px] font-medium text-emerald-600 dark:text-emerald-400 font-battambang">
-                          {t('profile_setting_storage_cleaned')} <Check className="w-4 h-4 stroke-[2.5]" />
-                        </span>
-                      ) : clearStorageStatus === 'confirm' ? (
-                        <button 
-                          onClick={() => {
-                            systemLogger.clearLogs();
-                            try {
-                              const keysToKeep = ['access_token', 'theme', 'language', 'balance_visibility', 'last_read_notifications', 'cleared_notifications_at'];
-                              for (let i = localStorage.length - 1; i >= 0; i--) {
-                                const k = localStorage.key(i);
-                                if (k && !keysToKeep.includes(k) && !k.startsWith('pin_')) {
-                                  localStorage.removeItem(k);
-                                }
-                              }
-                            } catch (e) {
-                              console.error(e);
-                            }
-                            setStorageUsage(systemLogger.getStorageUsage());
-                            setClearStorageStatus('success');
-                            setTimeout(() => setClearStorageStatus('idle'), 2000);
-                          }}
-                          className="text-[14.5px] text-red-600 hover:text-red-700 dark:text-red-400 font-medium hover:underline font-battambang cursor-pointer"
-                        >
-                          {t('profile_setting_storage_confirm')}
-                        </button>
-                      ) : (
-                        <button 
-                          onClick={() => {
-                            setClearStorageStatus('confirm');
-                            setTimeout(() => {
-                              setClearStorageStatus(prev => prev === 'confirm' ? 'idle' : prev);
-                            }, 3000);
-                          }}
-                          className="text-[14.5px] text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline font-battambang cursor-pointer"
-                        >
-                          {t('profile_setting_storage_clean_btn')}
-                        </button>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 font-battambang leading-relaxed">
-                      {t('profile_setting_storage_desc')}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
-
-            <hr className="border-gray-200 dark:border-slate-800 mt-6" />
           </div>
+
+          {/* Card 5: អង្គចងចាំប្រព័ន្ធ (System Storage) - Only for Admin */}
+          {userRole === 'admin' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <HardDrive className="w-5 h-5 text-gray-500 dark:text-slate-400 shrink-0" />
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
+                      {t('profile_setting_storage_heading')}
+                    </h3>
+                  </div>
+                  <span className="text-xs text-gray-500 dark:text-slate-400 font-rajdhani font-semibold">
+                    {storageUsage.formatted}
+                  </span>
+                </div>
+                <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[14.5px] font-semibold text-gray-900 dark:text-white font-battambang">
+                      {t('profile_setting_storage_label')}
+                    </span>
+                    {clearStorageStatus === 'success' ? (
+                      <span className="inline-flex items-center gap-1 text-[13.5px] font-medium text-emerald-600 dark:text-emerald-400 font-battambang">
+                        {t('profile_setting_storage_cleaned')} <Check className="w-4 h-4 stroke-[2.5]" />
+                      </span>
+                    ) : clearStorageStatus === 'confirm' ? (
+                      <button 
+                        onClick={() => {
+                          systemLogger.clearLogs();
+                          try {
+                            const keysToKeep = ['access_token', 'theme', 'language', 'balance_visibility', 'last_read_notifications', 'cleared_notifications_at'];
+                            for (let i = localStorage.length - 1; i >= 0; i--) {
+                              const k = localStorage.key(i);
+                              if (k && !keysToKeep.includes(k) && !k.startsWith('pin_')) {
+                                localStorage.removeItem(k);
+                              }
+                            }
+                          } catch (e) {
+                            console.error(e);
+                          }
+                          setStorageUsage(systemLogger.getStorageUsage());
+                          setClearStorageStatus('success');
+                          setTimeout(() => setClearStorageStatus('idle'), 2000);
+                        }}
+                        className="px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-900 text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 font-battambang transition-colors cursor-pointer"
+                      >
+                        {t('profile_setting_storage_confirm')}
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => {
+                          setClearStorageStatus('confirm');
+                          setTimeout(() => {
+                            setClearStorageStatus(prev => prev === 'confirm' ? 'idle' : prev);
+                          }, 3000);
+                        }}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 text-xs font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-battambang transition-colors cursor-pointer"
+                      >
+                        {t('profile_setting_storage_clean_btn')}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang leading-relaxed">
+                    {t('profile_setting_storage_desc')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

@@ -292,7 +292,7 @@ export default function App() {
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
             title={t('profile_change_lang')}
           >
-            <Globe className="w-4 h-4 text-orange-500" />
+            <Globe className="w-4 h-4 text-gray-500 dark:text-slate-400" />
             <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
           </button>
 
@@ -302,7 +302,7 @@ export default function App() {
               className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-gray-400 dark:text-slate-300" /> : <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400" />}
             </button>
 
             <button
