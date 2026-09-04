@@ -281,7 +281,7 @@ export default function OfficialReportPrintModal({
                     ហៅ វត្តស្នាយដួច
                   </span>
                   <span className="font-battambang text-[10px] text-gray-600 leading-tight mt-0.5">
-                    ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង
+                    ឃុំជើងគួន ស្រុកសំរោង ខេត្តតាកែវ
                   </span>
                 </div>
               </div>
