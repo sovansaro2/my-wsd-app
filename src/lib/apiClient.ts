@@ -3,11 +3,13 @@
 // ប្រើប្រាស់ VITE_API_BASE_URL នៅពេល Deploy ទៅ Netlify ដាច់ដោយឡែកពី Backend
 const API_BASE_URL = ''; 
 
-async function apiFetch(path: string, options: RequestInit = {}) {
+async function apiFetch(path: string, options: RequestInit = {}, retries = 1): Promise<any> {
   const token = localStorage.getItem('access_token');
   const controller = new AbortController();
-  const timeoutMs = 12000;
+  const timeoutMs = 25000;
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  const isGetOrHead = !options.method || options.method.toUpperCase() === 'GET' || options.method.toUpperCase() === 'HEAD';
 
   try {
     const res = await fetch(`${API_BASE_URL}${path}`, {
@@ -28,6 +30,11 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     const text = await res.text();
     return text ? JSON.parse(text) : null;
   } catch (err: any) {
+    if (retries > 0 && isGetOrHead && (err.name === 'AbortError' || err.message?.includes('fetch') || err.message?.includes('network'))) {
+      clearTimeout(timeoutId);
+      await new Promise((r) => setTimeout(r, 600));
+      return apiFetch(path, options, retries - 1);
+    }
     if (err.name === 'AbortError') {
       throw new Error('សំណើមានរយៈពេលយូរពេក (Request timed out)');
     }
@@ -38,6 +45,10 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 }
 
 export const api = {
+  // Generic HTTP helpers
+  get: <T = any>(path: string): Promise<T> => apiFetch(path, { method: 'GET' }),
+  post: <T = any>(path: string, body?: any): Promise<T> => apiFetch(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined }),
+
   // Auth
   login: (email: string, password: string) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   signup: (email: string, password: string, full_name: string, latin_name?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, latin_name }) }),

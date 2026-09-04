@@ -11,6 +11,7 @@ interface LanguageContextType {
 const translations = {
   km: {
     app_title: 'កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច',
+    app_title_mobile: 'កម្មវិធីគ្រប់គ្រងទិន្នន័យ វ.ស.ដ',
     nav_home: 'ទំព័រដើម',
     nav_finance: 'ចំណូល-ចំណាយ',
     nav_list: 'បញ្ជីផ្សេងៗ',
@@ -339,6 +340,7 @@ const translations = {
   },
   en: {
     app_title: 'Wat Snay Duoc Data Management',
+    app_title_mobile: 'WSD DATA MANAGEMENT',
     nav_home: 'Home',
     nav_finance: 'Finances',
     nav_list: 'Other Lists',

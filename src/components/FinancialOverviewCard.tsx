@@ -77,6 +77,14 @@ export default function FinancialOverviewCard({
   }, []);
 
   useEffect(() => {
+    try {
+      const cachedSeils = localStorage.getItem('cached_seils');
+      const cachedFin = localStorage.getItem('cached_financials');
+      if (cachedSeils) setSeils(JSON.parse(cachedSeils));
+      if (cachedFin) setFinancials(JSON.parse(cachedFin));
+    } catch {
+      // Ignore cache parse error
+    }
     fetchFinancialData();
   }, []);
 
@@ -87,10 +95,16 @@ export default function FinancialOverviewCard({
         api.getSeilPeriods(),
         api.getFinancialRecords('')
       ]);
-      setSeils(seilData || []);
-      setFinancials(finData || []);
+      if (seilData) {
+        setSeils(seilData);
+        try { localStorage.setItem('cached_seils', JSON.stringify(seilData)); } catch {}
+      }
+      if (finData) {
+        setFinancials(finData);
+        try { localStorage.setItem('cached_financials', JSON.stringify(finData)); } catch {}
+      }
     } catch (err) {
-      console.error('Failed to fetch financial data for account:', err);
+      console.warn('Could not refresh financial data, using cached data if available:', err);
     } finally {
       setLoading(false);
     }

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Award } from 'lucide-react';
+import { Award, Search } from 'lucide-react';
 import ImageSlider from './ImageSlider';
 import { ListSummaryCard } from './ListSummaryCard';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
+import GlobalDonorSearch from './GlobalDonorSearch';
 
 interface FinancialRecord {
   id: string;
@@ -54,6 +55,7 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
   const [categories, setCategories] = useState<ListCategory[]>([]);
   const [hundredKDonors, setHundredKDonors] = useState<HundredKDonor[]>([]);
   const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
+  const [showDonorSearch, setShowDonorSearch] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -150,9 +152,18 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
             <Award className="w-5 h-5 text-orange-500 dark:text-orange-400 shrink-0" />
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard_high_donors')}</h3>
           </div>
-          <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-slate-400 font-battambang">
-            {t('dashboard_donors_count', { count: language === 'km' ? toKhmerNum(hundredKDonors.length) : hundredKDonors.length })}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowDonorSearch(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50 hover:border-orange-400 rounded-lg transition-colors cursor-pointer font-battambang"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>{language === 'en' ? 'Search All' : 'ស្វែងរកទាំងអស់'}</span>
+            </button>
+            <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-slate-400 font-battambang">
+              {t('dashboard_donors_count', { count: language === 'km' ? toKhmerNum(hundredKDonors.length) : hundredKDonors.length })}
+            </span>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0">
@@ -188,6 +199,11 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
         </div>
       </section>
 
+      {/* Global Donor Search Modal */}
+      <GlobalDonorSearch
+        isOpen={showDonorSearch}
+        onClose={() => setShowDonorSearch(false)}
+      />
     </div>
     </div>
   );

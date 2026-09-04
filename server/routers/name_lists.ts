@@ -104,6 +104,108 @@ router.get('/donors-100k', async (req, res) => {
   }
 });
 
+// --- Search Donors Across System ---
+router.get('/search-donors', async (req, res) => {
+  try {
+    const q = ((req.query.q as string) || '').trim().toLowerCase();
+
+    // 1. Fetch categories and seil periods to map names
+    const [catRes, seilRes] = await Promise.all([
+      supabaseAdmin.from('name_list_categories').select('id, name'),
+      supabaseAdmin.from('seil_periods').select('id, name, date_range_text')
+    ]);
+
+    const catMap: Record<string, string> = {};
+    catRes.data?.forEach(c => { catMap[c.id] = c.name; });
+
+    const seilMap: Record<string, string> = {};
+    seilRes.data?.forEach(s => { seilMap[s.id] = s.date_range_text ? `${s.name} (${s.date_range_text})` : s.name; });
+
+    // 2. Fetch name list records and financial income records
+    const [nameRecRes, finRecRes] = await Promise.all([
+      supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false }),
+      supabaseAdmin.from('financial_records').select('*').eq('type', 'income').order('created_at', { ascending: false })
+    ]);
+
+    const allItems: any[] = [];
+
+    (nameRecRes.data || []).forEach(r => {
+      const name = (r.name || '').trim();
+      if (!name) return;
+      if (q && !name.toLowerCase().includes(q) && !(r.note || '').toLowerCase().includes(q)) {
+        return;
+      }
+      allItems.push({
+        id: r.id,
+        name: name,
+        amount: Number(r.amount) || 0,
+        source_type: 'category',
+        source_name: catMap[r.category_id] || 'បញ្ជីផ្សេងៗ',
+        source_id: r.category_id,
+        date: r.created_at,
+        note: r.note || '',
+        referrer: r.referrer || ''
+      });
+    });
+
+    (finRecRes.data || []).forEach(f => {
+      const name = (f.description || '').trim();
+      if (!name) return;
+      if (q && !name.toLowerCase().includes(q) && !(f.note || '').toLowerCase().includes(q)) {
+        return;
+      }
+      allItems.push({
+        id: f.id,
+        name: name,
+        amount: Number(f.amount) || 0,
+        source_type: 'seil',
+        source_name: seilMap[f.seil_id] || 'បញ្ជីសីល',
+        source_id: f.seil_id,
+        date: f.record_date || f.created_at,
+        note: f.note || '',
+        referrer: ''
+      });
+    });
+
+    // Group by normalized donor name
+    const grouped = new Map<string, any>();
+    allItems.forEach(item => {
+      const key = item.name.toLowerCase();
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          name: item.name,
+          total_amount: 0,
+          contributions_count: 0,
+          locations: new Set<string>(),
+          records: []
+        });
+      }
+      const entry = grouped.get(key);
+      entry.total_amount += item.amount;
+      entry.contributions_count += 1;
+      if (item.note) entry.locations.add(item.note);
+      entry.records.push(item);
+    });
+
+    const donors = Array.from(grouped.values()).map(d => ({
+      ...d,
+      locations: Array.from(d.locations)
+    }));
+
+    // Sort by total amount descending
+    donors.sort((a, b) => b.total_amount - a.total_amount);
+
+    res.json({
+      total_donors_found: donors.length,
+      total_contributions_found: allItems.length,
+      donors: donors,
+      recent_items: allItems.slice(0, 50)
+    });
+  } catch (error: any) {
+    res.status(500).json({ detail: error.message });
+  }
+});
+
 // --- Name List Categories ---
 router.get('/categories', async (req, res) => {
   const { data, error } = await supabaseAdmin.from('name_list_categories').select('*').order('created_at', { ascending: false });

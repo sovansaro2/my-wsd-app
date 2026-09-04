@@ -2,11 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles, AlertCircle } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles, AlertCircle, Database } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
 import FinancialOverviewCard from './FinancialOverviewCard';
+import DataBackupModal from './DataBackupModal';
 import CustomDatePicker from './ui/CustomDatePicker';
 import Button from './ui/Button';
 import { api } from '../lib/apiClient';
@@ -61,6 +62,7 @@ export default function AccountProfile({
   };
   const cachedProfile = getInitialProfile();
 
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(cachedProfile?.id || null);
   const [userKey, setUserKey] = useState<string | null>(cachedProfile?.id || null);
   const [fullName, setFullName] = useState(cachedProfile?.full_name || '');
@@ -1679,6 +1681,22 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
+          {/* បម្រុងទុកទិន្នន័យ (Data Backup) */}
+          {userRole === 'admin' && (
+            <button
+              onClick={() => setShowBackupModal(true)}
+              className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+            >
+              <div className="flex items-center gap-3.5">
+                <Database className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                  {language === 'en' ? 'Data Backup' : 'បម្រុងទុកទិន្នន័យ'}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </button>
+          )}
+
           {/* Separator */}
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
@@ -2016,6 +2034,12 @@ export default function AccountProfile({
           </motion.div>
         </motion.div>
       )}
+
+      {/* Data Backup Modal */}
+      <DataBackupModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+      />
       </>
     </div>
   );

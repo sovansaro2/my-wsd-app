@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, AlertTriangle, X } from 'lucide-react';
+import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, AlertTriangle, X, BarChart3, Database, Archive } from 'lucide-react';
 import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../lib/reportUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
+import FinancialSummaryReport from './FinancialSummaryReport';
+import DataBackupModal from './DataBackupModal';
 
 export default function Reports({ userRole }: { userRole: 'admin' | 'user' | null }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'summary' | 'saved'>('summary');
   const [reports, setReports] = useState<SavedReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [reportToDelete, setReportToDelete] = useState<string | null>(null);
   const [showAccessDenied, setShowAccessDenied] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
 
   // Image preview state
   const [previewReport, setPreviewReport] = useState<SavedReport | null>(null);
@@ -104,64 +108,121 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
 
   return (
     <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-4">
-      <h2 className="text-xl text-gray-900 dark:text-white font-title">{t('reports_saved_title')}</h2>
-      
-      <div className="relative">
-        {userRole !== 'admin' && (
-          <div 
-            className="absolute inset-0 z-10 cursor-pointer" 
-            onClick={() => setShowAccessDenied(true)}
-          />
+      {/* Top Header & Tab Navigation */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-gray-100 dark:border-slate-800">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('summary')}
+            className={`flex items-center gap-2 pb-2 text-base sm:text-lg font-title transition-colors border-b-2 cursor-pointer ${
+              activeTab === 'summary'
+                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span>{language === 'en' ? 'Summary & Analytics' : 'របាយការណ៍សង្ខេប'}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('saved')}
+            className={`flex items-center gap-2 pb-2 text-base sm:text-lg font-title transition-colors border-b-2 cursor-pointer ml-4 ${
+              activeTab === 'saved'
+                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <Archive className="w-5 h-5" />
+            <span>{language === 'en' ? 'Saved Archives' : 'ឯកសាររក្សាទុក'}</span>
+            {reports.length > 0 && (
+              <span className="text-xs font-rajdhani font-semibold text-gray-400 dark:text-slate-500">
+                ({reports.length})
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Data Backup Button for Admin */}
+        {userRole === 'admin' && (
+          <button
+            onClick={() => setShowBackupModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50 hover:border-orange-400 rounded-xl transition-colors cursor-pointer self-start sm:self-auto"
+          >
+            <Database className="w-4 h-4" />
+            <span>{language === 'en' ? 'Data Backup' : 'បម្រុងទុកទិន្នន័យ'}</span>
+          </button>
         )}
-        
-        <div className={userRole !== 'admin' ? 'opacity-50 pointer-events-none select-none filter grayscale-[30%]' : ''}>
-          {reports.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 font-battambang">
-              {t('reports_empty')}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {reports.map(report => (
-                <div 
-                  key={report.id}
-                  onClick={() => handlePreviewReport(report)}
-                  className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-2">
-                    <div className="shrink-0">{getIcon(report.type)}</div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-normal text-[15px] text-gray-900 dark:text-white font-battambang truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={report.title}>
-                        {report.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-rajdhani tracking-wide">
-                        {formatReportDate(report.date)}
-                      </p>
+      </div>
+
+      {/* Tab 1: Financial Summary & Analytics */}
+      {activeTab === 'summary' && (
+        <FinancialSummaryReport />
+      )}
+
+      {/* Tab 2: Saved Archives */}
+      {activeTab === 'saved' && (
+        <div className="relative">
+          {userRole !== 'admin' && (
+            <div 
+              className="absolute inset-0 z-10 cursor-pointer" 
+              onClick={() => setShowAccessDenied(true)}
+            />
+          )}
+          
+          <div className={userRole !== 'admin' ? 'opacity-50 pointer-events-none select-none filter grayscale-[30%]' : ''}>
+            {reports.length === 0 ? (
+              <div className="text-center py-12 text-gray-500 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 font-battambang">
+                {t('reports_empty')}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {reports.map(report => (
+                  <div 
+                    key={report.id}
+                    onClick={() => handlePreviewReport(report)}
+                    className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-2">
+                      <div className="shrink-0">{getIcon(report.type)}</div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-normal text-[15px] text-gray-900 dark:text-white font-battambang truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={report.title}>
+                          {report.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 font-rajdhani tracking-wide">
+                          {formatReportDate(report.date)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Action buttons: No background container colors, clean & direct */}
+                    <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        onClick={() => handleDownload(report)} 
+                        className="p-2 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors bg-transparent" 
+                        title={t('reports_download')}
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={() => setReportToDelete(report.id)} 
+                        className="p-2 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors bg-transparent" 
+                        title={t('reports_delete')}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Action buttons: No background container colors, clean & direct */}
-                  <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                      onClick={() => handleDownload(report)} 
-                      className="p-2 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors bg-transparent" 
-                      title={t('reports_download')}
-                    >
-                      <Download className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => setReportToDelete(report.id)} 
-                      className="p-2 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors bg-transparent" 
-                      title={t('reports_delete')}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Data Backup Modal */}
+      <DataBackupModal
+        isOpen={showBackupModal}
+        onClose={() => setShowBackupModal(false)}
+      />
 
       {/* Image Preview Modal (Lightbox) */}
       <AnimatePresence>

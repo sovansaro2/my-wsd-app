@@ -9,6 +9,7 @@ import nameListsRoutes from "./server/routers/name_lists";
 import profilesRoutes from "./server/routers/profiles";
 import storageRoutes from "./server/routers/storage";
 import notificationsRoutes from "./server/routers/notifications";
+import backupRoutes from "./server/routers/backup";
 
 // Setup Request Type Extension
 import "./server/types.d";
@@ -31,6 +32,7 @@ async function startServer() {
   app.use("/api/profiles", profilesRoutes);
   app.use("/api/upload", storageRoutes);
   app.use("/api/notifications", notificationsRoutes);
+  app.use("/api/backup", backupRoutes);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

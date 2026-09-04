@@ -16,7 +16,8 @@ import {
   Trash2,
   Shield,
   AlertTriangle,
-  Terminal
+  Terminal,
+  Search
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -32,6 +33,7 @@ import Reports from './components/Reports';
 import NameLists from './components/NameLists';
 import Users from './components/Users';
 import InstallPrompt from './components/InstallPrompt';
+import GlobalDonorSearch from './components/GlobalDonorSearch';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
@@ -54,6 +56,7 @@ export default function App() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
+  const [showGlobalDonorSearch, setShowGlobalDonorSearch] = useState(false);
 
   
   useEffect(() => {
@@ -146,9 +149,7 @@ export default function App() {
         setUnreadCount(0);
       }
     } catch (err: any) {
-      if (err.message !== 'Failed to fetch') {
-        console.error('Failed to fetch notifications:', err);
-      }
+      console.warn('Notifications temporarily unavailable:', err);
     }
   };
 
@@ -329,6 +330,15 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Global Donor Search */}
+          <button
+            onClick={() => setShowGlobalDonorSearch(true)}
+            className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+            title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
+          >
+            <Search className="w-5 h-5 text-gray-700 dark:text-slate-300" />
+          </button>
+
           {/* Quick System Logs for Admin */}
           {actualRole === 'admin' && (
             <button
@@ -363,14 +373,23 @@ export default function App() {
       {/* MOBILE TOP NAVBAR (Visible ONLY on mobile screens < md) */}
       {/* ========================================================================= */}
       <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className={`text-white select-none pt-0.5 ${
+        <h1 className={`text-white select-none pt-0.5 truncate mr-2 ${
           language === 'en'
-            ? 'font-sans font-bold text-lg sm:text-xl md:text-2xl tracking-normal'
+            ? 'font-rajdhani font-bold text-lg sm:text-xl md:text-2xl tracking-wide uppercase'
             : 'font-title font-normal text-lg sm:text-xl md:text-2xl tracking-normal'
         }`}>
-          {t('app_title')}
+          {t('app_title_mobile')}
         </h1>
         <div className="relative shrink-0 flex items-center gap-1">
+          {/* Global Donor Search */}
+          <button
+            onClick={() => setShowGlobalDonorSearch(true)}
+            className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+            title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
+          >
+            <Search className="w-5 h-5 text-white" />
+          </button>
+
           {actualRole === 'admin' && (
             <button
               onClick={() => {
@@ -708,6 +727,12 @@ export default function App() {
       
       {/* PWA Install Prompt */}
       <InstallPrompt />
+
+      {/* Global Donor Search Modal */}
+      <GlobalDonorSearch
+        isOpen={showGlobalDonorSearch}
+        onClose={() => setShowGlobalDonorSearch(false)}
+      />
     </div>
   );
 }

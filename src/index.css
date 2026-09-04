@@ -110,8 +110,8 @@
     font-size: 16px !important;
   }
   @page {
-    size: A5 portrait;
-    margin: 10mm;
+    size: auto;
+    margin: 8mm 10mm;
   }
   body * {
     visibility: hidden;
