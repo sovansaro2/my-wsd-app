@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { useLanguage } from '../contexts/LanguageContext';
+import Button from './ui/Button';
 
 interface IntroducedGuideModalProps {
   isOpen: boolean;
@@ -120,7 +121,7 @@ export default function IntroducedGuideModal({
               }`}
             >
               <Share className="w-4 h-4" />
-              <span>សម្រាប់ iOS (iPhone)</span>
+              <span>សម្រាប់ iOS</span>
             </button>
           </div>
 
@@ -135,7 +136,7 @@ export default function IntroducedGuideModal({
                     <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <div>
                       <h4 className="text-[14px] font-semibold text-emerald-700 dark:text-emerald-400">
-                        បានដំឡើងរួចរាល់ (Installed)
+                        បានដំឡើងរួចរាល់
                       </h4>
                       <p className="text-[12px] text-gray-600 dark:text-slate-300 mt-0.5">
                         កម្មវិធីកំពុងដំណើរការជា App ពេញលេញនៅលើទូរស័ព្ទរបស់អ្នក។
@@ -144,10 +145,9 @@ export default function IntroducedGuideModal({
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="border border-orange-500/40 dark:border-orange-500/30 rounded-xl p-3.5">
-                      <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-orange-500" />
-                        តម្រូវឲ្យដំឡើងកម្មវិធីនៅលើ Android
+                    <div>
+                      <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                        ដំឡើងកម្មវិធីនៅលើ Android
                       </h4>
                       <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
                         សូមដំឡើងកម្មវិធីវត្តស្នាយដួចនៅលើទូរស័ព្ទ Android របស់អ្នក ដើម្បីទទួលបានល្បឿនលឿន ងាយស្រួលបើកប្រើ និងដំណើរការពេញលេញ។
@@ -155,14 +155,13 @@ export default function IntroducedGuideModal({
                     </div>
 
                     {/* Direct Install Button */}
-                    <button
+                    <Button
                       onClick={handleAndroidInstall}
                       disabled={installing}
-                      className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[14px] font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
                     >
-                      <Download className="w-5 h-5" />
-                      <span>{installing ? 'កំពុងដំណើរការ...' : 'ដំឡើងកម្មវិធីឥឡូវនេះ (Install App)'}</span>
-                    </button>
+                      <Download className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+                      <span>{installing ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី'}</span>
+                    </Button>
                   </div>
                 )}
 
@@ -196,7 +195,7 @@ export default function IntroducedGuideModal({
                         3
                       </span>
                       <div>
-                        ជ្រើសរើសយក <strong>"ដំឡើងកម្មវិធី (Install app)"</strong> ឬ <strong>"បន្ថែមទៅអេក្រង់ដើម (Add to Home screen)"</strong>។
+                        ជ្រើសរើសយក <strong>"ដំឡើងកម្មវិធី"</strong> ឬ <strong>"បន្ថែមទៅអេក្រង់ដើម"</strong>។
                       </div>
                     </li>
 
@@ -205,7 +204,7 @@ export default function IntroducedGuideModal({
                         4
                       </span>
                       <div>
-                        ចុចពាក្យ <strong>"ដំឡើង (Install)"</strong> ជាការស្រេច។ រូបសញ្ញាកម្មវិធីនឹងបង្ហាញលើអេក្រង់ដើមទូរស័ព្ទរបស់អ្នក។
+                        ចុចពាក្យ <strong>"ដំឡើង"</strong> ជាការស្រេច។ រូបសញ្ញាកម្មវិធីនឹងបង្ហាញលើអេក្រង់ដើមទូរស័ព្ទរបស់អ្នក។
                       </div>
                     </li>
                   </ol>
@@ -214,10 +213,10 @@ export default function IntroducedGuideModal({
             ) : (
               /* iOS Tab Content */
               <div className="space-y-4">
-                <div className="border border-blue-500/40 dark:border-blue-500/30 rounded-xl p-3.5">
+                <div className="border border-gray-200 dark:border-slate-800 rounded-xl p-3.5">
                   <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Share className="w-4 h-4 text-blue-500" />
-                    ការបន្ថែមទៅលើអេក្រង់ដើម (Add to Home Screen)
+                    ការបន្ថែមទៅលើអេក្រង់ដើម
                   </h4>
                   <p className="text-[13px] text-gray-600 dark:text-slate-300 mt-1 leading-relaxed">
                     សម្រាប់ប្រព័ន្ធ iOS (iPhone / iPad) សូមប្រើប្រាស់កម្មវិធីរុករក Safari ដើម្បីដំឡើងកម្មវិធីតាមជំហានខាងក្រោម៖
@@ -240,7 +239,7 @@ export default function IntroducedGuideModal({
                       2
                     </span>
                     <div>
-                      ចុចលើប៊ូតុង <strong>ចែករំលែក (Share)</strong> <Share className="w-4 h-4 inline text-blue-500 mx-0.5" /> នៅរបារឧបករណ៍ខាងក្រោមអេក្រង់ Safari។
+                      ចុចលើប៊ូតុង <strong>ចែករំលែក</strong> <Share className="w-4 h-4 inline text-blue-500 mx-0.5" /> នៅរបារឧបករណ៍ខាងក្រោមអេក្រង់ Safari។
                     </div>
                   </li>
 
@@ -249,7 +248,7 @@ export default function IntroducedGuideModal({
                       3
                     </span>
                     <div>
-                      អូសចុះក្រោមបន្តិច រួចចុចជ្រើសរើសយក <strong>"បន្ថែមទៅអេក្រង់ដើម" (Add to Home Screen)</strong> <PlusSquare className="w-4 h-4 inline text-blue-500 mx-0.5" />។
+                      អូសចុះក្រោមបន្តិច រួចចុចជ្រើសរើសយក <strong>"បន្ថែមទៅអេក្រង់ដើម"</strong> <PlusSquare className="w-4 h-4 inline text-blue-500 mx-0.5" />។
                     </div>
                   </li>
 
@@ -258,7 +257,7 @@ export default function IntroducedGuideModal({
                       4
                     </span>
                     <div>
-                      ចុចពាក្យ <strong>"បន្ថែម" (Add)</strong> នៅជ្រុងខាងស្តាំខាងលើ។ កម្មវិធីនឹងបង្ហាញរូបសញ្ញាវត្តស្នាយដួចនៅលើអេក្រង់ដើម iPhone របស់អ្នកភ្លាមៗ!
+                      ចុចពាក្យ <strong>"បន្ថែម"</strong> នៅជ្រុងខាងស្តាំខាងលើ។ កម្មវិធីនឹងបង្ហាញរូបសញ្ញាវត្តស្នាយដួចនៅលើអេក្រង់ដើម iPhone របស់អ្នកភ្លាមៗ!
                     </div>
                   </li>
                 </ol>

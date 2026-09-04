@@ -8,6 +8,7 @@ import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
 import FinancialOverviewCard from './FinancialOverviewCard';
 import CustomDatePicker from './ui/CustomDatePicker';
+import Button from './ui/Button';
 import { api } from '../lib/apiClient';
 import { systemLogger } from '../lib/logger';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -1694,8 +1695,8 @@ export default function AccountProfile({
                   <div className="mb-2.5 flex items-center justify-center flex-shrink-0">
                     <Info className="w-10 h-10 text-orange-500" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                    កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច
+                  <h3 className="text-lg font-title text-gray-900 dark:text-white mb-1">
+                    {t('app_title')}
                   </h3>
                   <p className="text-gray-500 dark:text-slate-400 text-xs mb-4 flex-shrink-0">
                     {t('about_version')} 1.2.0
@@ -1709,7 +1710,7 @@ export default function AccountProfile({
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
                       <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
-                      <p className="text-[14px] font-medium text-orange-600 dark:text-orange-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                      <p className="text-[15px] font-title text-orange-600 dark:text-orange-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
@@ -1751,7 +1752,7 @@ export default function AccountProfile({
                       }`}
                     >
                       <Share className="w-4 h-4 text-blue-500" />
-                      <span>iOS (iPhone)</span>
+                      <span>iOS</span>
                     </button>
                   </div>
 
@@ -1761,16 +1762,16 @@ export default function AccountProfile({
                       {isInstalled ? (
                         <div className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 py-1">
                           <CheckCircle2 className="w-5 h-5 shrink-0" />
-                          <span className="text-[13.5px] font-medium">កម្មវិធីបានដំឡើងរួចរាល់នៅលើឧបករណ៍នេះ</span>
+                          <span className="text-[13.5px] font-medium">{t('install_already_installed')}</span>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           <p className="text-[13.5px] text-gray-600 dark:text-slate-300 leading-relaxed">
-                            លោកអ្នកអាចដំឡើងកម្មវិធីវត្តស្នាយដួចលើទូរស័ព្ទ Android ដើម្បីបើកប្រើប្រាស់បានលឿន ងាយស្រួល និងរហ័សទាន់ចិត្ត។
+                            {t('install_android_desc')}
                           </p>
 
                           {/* Direct Install Button */}
-                          <button
+                          <Button
                             onClick={async () => {
                               setIsInstallingPWA(true);
                               try {
@@ -1780,35 +1781,34 @@ export default function AccountProfile({
                               }
                             }}
                             disabled={isInstallingPWA}
-                            className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white rounded-xl text-[14px] font-medium transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
                           >
-                            <Download className="w-4 h-4" />
-                            <span>{isInstallingPWA ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី (Install)'}</span>
-                          </button>
+                            <Download className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+                            <span>{isInstallingPWA ? t('install_btn_installing') : t('install_btn_install')}</span>
+                          </Button>
                         </div>
                       )}
 
                       {/* Android Steps */}
                       <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
                         <h5 className="text-[13px] font-semibold text-gray-900 dark:text-white">
-                          ជំហានដំឡើងតាម Chrome ឬ Samsung Internet:
+                          {t('install_android_steps_title')}
                         </h5>
                         <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">01</span>
-                            <span>បើកកម្មវិធីតាមរយៈ <strong>Google Chrome</strong> ឬ <strong>Samsung Internet</strong></span>
+                            <span>{t('install_android_step_1_prefix')}<strong>Google Chrome</strong>{t('install_android_step_1_or')}<strong>Samsung Internet</strong></span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">02</span>
-                            <span>ចុចលើសញ្ញាម៉ឺនុយជម្រើស <strong>(⋮)</strong> នៅជ្រុងខាងលើស្តាំ</span>
+                            <span>{t('install_android_step_2')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">03</span>
-                            <span>ជ្រើសរើសយក <strong>«ដំឡើងកម្មវិធី»</strong> ឬ <strong>«បន្ថែមទៅអេក្រង់ដើម»</strong></span>
+                            <span>{t('install_android_step_3')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">04</span>
-                            <span>ចុច <strong>«ដំឡើង»</strong> ដើម្បីបញ្ចប់ការដំឡើង</span>
+                            <span>{t('install_android_step_4')}</span>
                           </li>
                         </ol>
                       </div>
@@ -1817,29 +1817,29 @@ export default function AccountProfile({
                     /* iOS Section */
                     <div className="space-y-4">
                       <p className="text-[13.5px] text-gray-600 dark:text-slate-300 leading-relaxed">
-                        សម្រាប់ទូរស័ព្ទ iPhone / iPad សូមបើកដំណើរការតាមរយៈកម្មវិធី <strong>Safari</strong> រួចអនុវត្តតាមជំហានខាងក្រោម៖
+                        {t('install_ios_desc')}
                       </p>
 
                       <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
                         <h5 className="text-[13px] font-semibold text-gray-900 dark:text-white">
-                          ជំហានបន្ថែមទៅលើអេក្រង់ដើម (Add to Home Screen):
+                          {t('install_ios_steps_title')}
                         </h5>
                         <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">01</span>
-                            <span>បើកតំណភ្ជាប់ក្នុងកម្មវិធី <strong>Safari</strong></span>
+                            <span>{t('install_ios_step_1')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">02</span>
-                            <span>ចុចលើប៊ូតុង <strong>ចែករំលែក (Share)</strong> នៅរបារខាងក្រោម</span>
+                            <span>{t('install_ios_step_2')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">03</span>
-                            <span>អូសចុះក្រោម រួចជ្រើសរើស <strong>«Add to Home Screen»</strong></span>
+                            <span>{t('install_ios_step_3')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
                             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 pt-0.5 w-4 shrink-0">04</span>
-                            <span>ចុច <strong>«Add»</strong> នៅជ្រុងខាងលើស្តាំជាការស្រេច</span>
+                            <span>{t('install_ios_step_4')}</span>
                           </li>
                         </ol>
                       </div>
@@ -1856,12 +1856,12 @@ export default function AccountProfile({
                           {isPwaLinkCopied ? (
                             <>
                               <Check className="w-4 h-4 text-emerald-600" />
-                              <span className="text-emerald-600 dark:text-emerald-400">បានចម្លងតំណភ្ជាប់រួចរាល់!</span>
+                              <span className="text-emerald-600 dark:text-emerald-400">{t('install_ios_copied')}</span>
                             </>
                           ) : (
                             <>
                               <Copy className="w-4 h-4 text-gray-600 dark:text-slate-400" />
-                              <span>ចម្លងតំណភ្ជាប់ (Copy Link ដើម្បីបើកក្នុង Safari)</span>
+                              <span>{t('install_ios_copy_btn')}</span>
                             </>
                           )}
                         </button>

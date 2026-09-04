@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import Button from './ui/Button';
 
 export default function InstallPrompt() {
   const { isInstallable, isInstalled, isIOS, isAndroid, isInAppBrowser, install } = usePWAInstall();
@@ -208,14 +209,13 @@ export default function InstallPrompt() {
 
             <div className="p-5 space-y-3.5">
               {/* Force Install Primary Button */}
-              <button
+              <Button
                 onClick={handleInstallClick}
                 disabled={isInstalling}
-                className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white rounded-xl text-[14px] font-medium transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-60"
               >
-                <Download className="w-4 h-4" />
-                <span>{isInstalling ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី (Install)'}</span>
-              </button>
+                <Download className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+                <span>{isInstalling ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី'}</span>
+              </Button>
 
               {/* Instructions if already prompted or Chrome 3-dot */}
               <div className="border border-gray-100 dark:border-slate-800 rounded-xl p-3 text-left">
@@ -229,7 +229,7 @@ export default function InstallPrompt() {
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-4 h-4 rounded-full border border-gray-300 dark:border-slate-600 text-[10px] flex items-center justify-center shrink-0">2</span>
-                    <span>ជ្រើសរើស <strong>"ដំឡើងកម្មវិធី"</strong> ឬ <strong>"Install app"</strong></span>
+                    <span>ជ្រើសរើស <strong>"ដំឡើងកម្មវិធី"</strong></span>
                   </li>
                 </ol>
               </div>

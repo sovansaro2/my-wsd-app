@@ -365,7 +365,7 @@ export default function App() {
       <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className={`text-white select-none pt-0.5 ${
           language === 'en'
-            ? 'font-rajdhani font-semibold text-lg sm:text-xl md:text-2xl tracking-wider'
+            ? 'font-sans font-bold text-lg sm:text-xl md:text-2xl tracking-normal'
             : 'font-title font-normal text-lg sm:text-xl md:text-2xl tracking-normal'
         }`}>
           {t('app_title')}
