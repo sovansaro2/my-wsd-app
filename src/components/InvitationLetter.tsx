@@ -22,7 +22,9 @@ import {
   Trash2,
   X,
   Share2,
-  CheckCircle2
+  CheckCircle2,
+  Landmark,
+  UserCheck
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -716,10 +718,18 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           {(activeView === 'both' || activeView === 'edit') && (
             <div className={`no-print ${activeView === 'both' ? 'lg:col-span-5' : 'max-w-3xl mx-auto w-full'} flex flex-col gap-5`}>
               
-              {/* Input Forms Accordion / Sections */}
-              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-4">
-                <h2 className="text-sm font-bold text-gray-900 dark:text-white font-battambang border-b border-gray-100 dark:border-slate-800 pb-2 flex items-center justify-between">
-                  <span>កែប្រែព័ត៌មានលិខិតអញ្ជើញរដ្ឋបាល</span>
+              {/* Input Forms: Organized in Clean, Logical Sections */}
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-6 shadow-xs">
+                {/* Form Header */}
+                <div className="border-b border-gray-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm sm:text-base font-koulen text-gray-900 dark:text-white tracking-wide">
+                      កែប្រែព័ត៌មានលិខិតអញ្ជើញរដ្ឋបាល
+                    </h2>
+                    <p className="text-[11px] font-battambang text-gray-400 dark:text-slate-500 mt-0.5">
+                      រាល់ព័ត៌មានដែលបំពេញនឹងបង្ហាញផ្ទាល់លើគំរូលិខិត A5 ភ្លាមៗ
+                    </p>
+                  </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={handleReset}
@@ -727,15 +737,23 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       title="កំណត់ទៅទម្រង់ដើមវិញ"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      ទម្រង់ដើម
+                      <span>ទម្រង់ដើម</span>
                     </button>
-                    <span className="text-[11px] text-gray-400 font-normal">រក្សាទុកស្វ័យប្រវត្តិ</span>
+                    <span className="text-[11px] font-battambang text-gray-400 font-normal hidden sm:inline">រក្សាទុកស្វ័យប្រវត្តិ</span>
                   </div>
-                </h2>
+                </div>
 
-                {/* 1. ព័ត៌មានក្បាលលិខិត និង ក្បាច់ Symbol */}
+                {/* ========================================================================= */}
+                {/* 1. ព័ត៌មានក្បាលលិខិត និង វត្តអារាម */}
+                {/* ========================================================================= */}
                 <div className="flex flex-col gap-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
+                    <Landmark className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <span>១. ក្បាលលិខិត និង ព័ត៌មានវត្តអារាម</span>
+                  </div>
+
+                  {/* Row 1: Temple Name & Letter Admin Number (2 columns) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                         ឈ្មោះវត្តអារាម
@@ -744,17 +762,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.templeName}
                         onChange={(e) => handleChange('templeName', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                        អាសយដ្ឋានវត្ត
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.templeAddress}
-                        onChange={(e) => handleChange('templeAddress', e.target.value)}
                         className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       />
                     </div>
@@ -771,7 +778,21 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     </div>
                   </div>
 
-                  {/* Header Fine-Tuning: Symbol Size, Address in Header, Upper Authority */}
+                  {/* Row 2: Temple Address (Full width so long commune/district/province is 100% visible) */}
+                  <div>
+                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                      អាសយដ្ឋានវត្ត (ឃុំ ស្រុក ខេត្ត)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.templeAddress}
+                      onChange={(e) => handleChange('templeAddress', e.target.value)}
+                      placeholder="ឧ. ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង"
+                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Row 3: Symbol size & Header Checkboxes */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
@@ -832,14 +853,22 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   )}
                 </div>
 
-                {/* 2. ការគោរពអញ្ជើញ (Salutation) */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* ========================================================================= */}
+                {/* 2. អ្នកទទួល និង កម្មវត្ថុ */}
+                {/* ========================================================================= */}
+                <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
+                    <UserCheck className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <span>២. អ្នកទទួល និង កម្មវត្ថុ</span>
+                  </div>
+
+                  {/* Salutation Prefix */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
                         ពាក្យអញ្ជើញ <span className="text-orange-600 dark:text-orange-400 font-semibold">(Battambang Bold)</span>
                       </label>
-                      <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                      <div className="flex items-center gap-1.5 text-[11px] font-battambang text-gray-500">
                         <button
                           type="button"
                           onClick={() => handleChange('salutationPrefix', 'សូមអញ្ជើញ')}
@@ -861,88 +890,110 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       type="text"
                       value={formData.salutationPrefix}
                       onChange={(e) => handleChange('salutationPrefix', e.target.value)}
-                      placeholder="សូមអញ្ជើញ"
+                      placeholder="សូមគោរពអញ្ជើញ"
                       className="w-full px-3 py-2 text-xs font-battambang font-bold border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     />
                   </div>
-                  <div className="sm:col-span-2">
+
+                  {/* Recipient Name: Full Width & Generous Height so Moul font doesn't get clipped! */}
+                  <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
                         ឈ្មោះអ្នកទទួល <span className="text-orange-600 dark:text-orange-400 font-bold">(Font Moul ធំច្បាស់)</span>
                       </label>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleChange('recipientName', '...........................................................................')}
-                          className="text-[10px] font-battambang text-orange-600 hover:underline cursor-pointer"
-                        >
-                          + ដាក់ចន្លោះសរសេរដៃ
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleChange('recipientName', '...........................................................................')}
+                        className="text-[11px] font-battambang text-orange-600 hover:underline cursor-pointer"
+                      >
+                        + ដាក់ចន្លោះសរសេរដៃ
+                      </button>
                     </div>
-                    <input
-                      type="text"
+                    <textarea
+                      rows={2}
                       value={formData.recipientName}
                       onChange={(e) => handleChange('recipientName', e.target.value)}
                       placeholder="វាយឈ្មោះបុគ្គលផ្ទាល់ ឬទុកចន្លោះចុចៗសម្រាប់សរសេរដៃ"
-                      className="w-full px-3 py-2 text-xs font-moul border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      className="w-full px-3 py-2.5 text-xs sm:text-[13px] font-moul border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[56px]"
                     />
                   </div>
-                </div>
 
-                {/* 3. កម្មវត្ថុ & យោង */}
-                <div>
-                  <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1 font-semibold">
-                    កម្មវត្ថុ (គ្មានពាក្យ «ស្ដីពី» ឡើយ)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.subject}
-                    onChange={(e) => handleChange('subject', e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-battambang text-gray-600 dark:text-slate-400 font-semibold">
-                      យោង (តាមស្តង់ដារលិខិតរដ្ឋបាល)
+                  {/* Subject: Full Width */}
+                  <div>
+                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1 font-semibold">
+                      កម្មវត្ថុ (គ្មានពាក្យ «ស្ដីពី» ឡើយ)
                     </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-battambang">
-                      <input
-                        type="checkbox"
-                        checked={formData.showReference}
-                        onChange={(e) => handleChange('showReference', e.target.checked)}
-                        className="w-3.5 h-3.5 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                    <textarea
+                      rows={2}
+                      value={formData.subject}
+                      onChange={(e) => handleChange('subject', e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[48px]"
+                    />
+                  </div>
+
+                  {/* Reference (យោង) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-battambang text-gray-600 dark:text-slate-400 font-semibold">
+                        យោង (តាមស្តង់ដារលិខិតរដ្ឋបាល)
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer text-xs font-battambang">
+                        <input
+                          type="checkbox"
+                          checked={formData.showReference}
+                          onChange={(e) => handleChange('showReference', e.target.checked)}
+                          className="w-3.5 h-3.5 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                        />
+                        <span className="text-gray-500 dark:text-slate-400">បង្ហាញ «យោង»</span>
+                      </label>
+                    </div>
+                    {formData.showReference && (
+                      <textarea
+                        rows={2}
+                        value={formData.referenceText}
+                        onChange={(e) => handleChange('referenceText', e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[48px]"
                       />
-                      <span className="text-gray-500 dark:text-slate-400">បង្ហាញ «យោង»</span>
-                    </label>
+                    )}
                   </div>
-                  {formData.showReference && (
-                    <input
-                      type="text"
-                      value={formData.referenceText}
-                      onChange={(e) => handleChange('referenceText', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                    />
-                  )}
                 </div>
 
-                {/* 4. សេចក្តីផ្តើម/សេចក្តីលម្អិតកិច្ចប្រជុំ */}
-                <div>
-                  <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                    ខ្លឹមសារសេចក្តីផ្តើម (កថាខណ្ឌទី១)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={formData.bodyIntro}
-                    onChange={(e) => handleChange('bodyIntro', e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-none leading-relaxed"
-                  />
-                </div>
+                {/* ========================================================================= */}
+                {/* 3. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែង */}
+                {/* ========================================================================= */}
+                <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
+                    <Calendar className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <span>៣. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែងប្រជុំ</span>
+                  </div>
 
-                {/* 5. ព័ត៌មានលម្អិតកិច្ចប្រជុំ */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Row 1: Meeting Time & Solar Date (2 columns - shorter text) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                        ពេលវេលា
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.meetingTime}
+                        onChange={(e) => handleChange('meetingTime', e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                        កាលបរិច្ឆេទ (សុរិយគតិ)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.solarDate}
+                        onChange={(e) => handleChange('solarDate', e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2: Lunar Date - FULL WIDTH so long Buddhist lunar calendar doesn't get clipped! */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       កាលបរិច្ឆេទ (ចន្ទគតិ)
@@ -951,34 +1002,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       type="text"
                       value={formData.lunarDate}
                       onChange={(e) => handleChange('lunarDate', e.target.value)}
+                      placeholder="ឧ. ថ្ងៃអាទិត្យ ១០កើត ខែផល្គុន ឆ្នាំរោង ឆស័ក ពុទ្ធសករាជ ២៥៦៨"
                       className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                      កាលបរិច្ឆេទ (សុរិយគតិ)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.solarDate}
-                      onChange={(e) => handleChange('solarDate', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                      ពេលវេលា
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.meetingTime}
-                      onChange={(e) => handleChange('meetingTime', e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                    />
-                  </div>
+                  {/* Row 3: Meeting Location - FULL WIDTH */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       ទីកន្លែងប្រជុំ
@@ -987,50 +1016,82 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       type="text"
                       value={formData.location}
                       onChange={(e) => handleChange('location', e.target.value)}
+                      placeholder="ឧ. នៅសាលាឆាន់ វត្តស្នាយដួច ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង"
                       className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                      របៀបវារៈកិច្ចប្រជុំ <span className="text-orange-600 dark:text-orange-400 font-semibold">(៣ ចំណុច)</span>
+                {/* ========================================================================= */}
+                {/* 4. ខ្លឹមសារលិខិត របៀបវារៈ និង សេចក្តីបញ្ចប់ */}
+                {/* ========================================================================= */}
+                <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
+                    <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <span>៤. ខ្លឹមសារលិខិត និង របៀបវារៈ</span>
+                  </div>
+
+                  {/* Body Intro: rows=4, leading-[1.8], min-h-[96px], resize-y -> NO VERTICAL SLICING OF KHMER GLYPHS! */}
+                  <div>
+                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                      ខ្លឹមសារសេចក្តីផ្តើម (កថាខណ្ឌទី១)
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => handleChange('agenda', `១. ពិភាក្សាលើប្លង់ស្ថាបត្យកម្ម ប៉ាន់ប្រមាណថវិកា និងបង្កើតគណៈកម្មការទទួលបន្ទុកការងារ
+                    <textarea
+                      rows={4}
+                      value={formData.bodyIntro}
+                      onChange={(e) => handleChange('bodyIntro', e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[96px]"
+                    />
+                  </div>
+
+                  {/* Agenda: rows=4, leading-[1.8], min-h-[96px], resize-y */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
+                        របៀបវារៈកិច្ចប្រជុំ <span className="text-orange-600 dark:text-orange-400 font-semibold">(៣ ចំណុច)</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleChange('agenda', `១. ពិភាក្សាលើប្លង់ស្ថាបត្យកម្ម ប៉ាន់ប្រមាណថវិកា និងបង្កើតគណៈកម្មការទទួលបន្ទុកការងារ
 ២. ពិភាក្សាលើផែនការកៀរគរបច្ច័យ និងទំនាក់ទំនងសប្បុរសជនទាំងក្នុងនិងក្រៅប្រទេស
 ៣. កំណត់កាលបរិច្ឆេទប្រារព្ធពិធីបញ្ចុះបឋមសិលាបើកការដ្ឋានកសាង និងបញ្ហាផ្សេងៗ`)}
-                      className="text-[10px] font-battambang text-orange-600 hover:underline cursor-pointer"
-                    >
-                      + បញ្ចូលគំរូ ៣ ចំណុច
-                    </button>
+                        className="text-[11px] font-battambang text-orange-600 hover:underline cursor-pointer"
+                      >
+                        + បញ្ចូលគំរូ ៣ ចំណុច
+                      </button>
+                    </div>
+                    <textarea
+                      rows={4}
+                      value={formData.agenda}
+                      onChange={(e) => handleChange('agenda', e.target.value)}
+                      placeholder="១. ...&#10;២. ...&#10;៣. ..."
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[96px]"
+                    />
                   </div>
-                  <textarea
-                    rows={3}
-                    value={formData.agenda}
-                    onChange={(e) => handleChange('agenda', e.target.value)}
-                    placeholder="១. ...&#10;២. ...&#10;៣. ..."
-                    className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-none leading-relaxed"
-                  />
+
+                  {/* Conclusion (អាស្រ័យហេតុនេះ) */}
+                  <div>
+                    <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                      សេចក្ដីបញ្ចប់ (អាស្រ័យហេតុនេះ)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={formData.therefore}
+                      onChange={(e) => handleChange('therefore', e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[72px]"
+                    />
+                  </div>
                 </div>
 
-                {/* 6. សេចក្តីបញ្ចប់ */}
-                <div>
-                  <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                    សេចក្ដីបញ្ចប់ (អាស្រ័យហេតុនេះ)
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={formData.therefore}
-                    onChange={(e) => handleChange('therefore', e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-none leading-relaxed"
-                  />
-                </div>
+                {/* ========================================================================= */}
+                {/* 5. ការចុះហត្ថលេខា និង កន្លែងទទួល */}
+                {/* ========================================================================= */}
+                <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
+                    <PenTool className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <span>៥. ការចុះហត្ថលេខា និង កន្លែងទទួល</span>
+                  </div>
 
-                {/* 7. ការចុះហត្ថលេខា និងកន្លែងទទួល */}
-                <div className="space-y-3 pt-2 border-t border-gray-100 dark:border-slate-800">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
@@ -1059,23 +1120,23 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                        ថ្ងៃខែចុះហត្ថលេខា (ចន្ទគតិ)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.signingDateLunar}
-                        onChange={(e) => handleChange('signingDateLunar', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                         ថ្ងៃខែចុះហត្ថលេខា (សុរិយគតិ)
                       </label>
                       <input
                         type="text"
                         value={formData.signingDateSolar}
                         onChange={(e) => handleChange('signingDateSolar', e.target.value)}
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
+                        ថ្ងៃខែចុះហត្ថលេខា (ចន្ទគតិ)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.signingDateLunar}
+                        onChange={(e) => handleChange('signingDateLunar', e.target.value)}
                         className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       />
                     </div>
@@ -1101,7 +1162,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         rows={3}
                         value={formData.distributionText}
                         onChange={(e) => handleChange('distributionText', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-none leading-relaxed"
+                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[72px]"
                       />
                     )}
                   </div>
