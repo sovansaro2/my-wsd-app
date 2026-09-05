@@ -1767,15 +1767,15 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
-          {/* គ្រប់គ្រងអ្នកប្រើប្រាស់ */}
+          {/* ផ្ទាំងគ្រប់គ្រង Admin (Admin Panel) */}
           <button
             onClick={onManageUsers}
             className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
           >
             <div className="flex items-center gap-3.5">
-              <Users className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+              <Shield className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {t('profile_users')}
+                {language === 'en' ? 'Admin Panel (Users & Invitations)' : 'ផ្ទាំងគ្រប់គ្រង Admin (អ្នកប្រើប្រាស់ & លិខិតអញ្ជើញ)'}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />

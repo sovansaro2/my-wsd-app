@@ -15,6 +15,7 @@ import {
   Moon,
   Trash2,
   Shield,
+  ShieldCheck,
   AlertTriangle,
   Terminal,
   Search
@@ -32,13 +33,14 @@ import RecordsComponent from './components/Records';
 import Reports from './components/Reports';
 import NameLists from './components/NameLists';
 import Users from './components/Users';
+import AdminPanel from './components/AdminPanel';
 import InstallPrompt from './components/InstallPrompt';
 import GlobalDonorSearch from './components/GlobalDonorSearch';
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -277,7 +279,7 @@ export default function App() {
     { id: 'categories' as Tab, label: t('nav_list'), icon: List },
     { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
     { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
-    ...(actualRole === 'admin' ? [{ id: 'users' as Tab, label: t('profile_users'), icon: UsersIcon }] : []),
+    ...(actualRole === 'admin' ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
     { id: 'account' as Tab, label: t('nav_account'), icon: User },
   ];
 
@@ -288,7 +290,8 @@ export default function App() {
       case 'categories': return t('nav_list');
       case 'reports': return t('nav_reports');
       case 'certificates': return t('profile_certificates');
-      case 'users': return t('profile_users');
+      case 'admin_panel': return language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin';
+      case 'users': return language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin';
       case 'account': return t('nav_account');
       default: return t('app_title');
     }
@@ -673,7 +676,7 @@ export default function App() {
                 onLogout={handleLogout}
                 initialSystemLogsOpen={openSystemLogsDirectly}
                 onClearInitialSystemLogsOpen={() => setOpenSystemLogsDirectly(false)}
-                onManageUsers={() => setActiveTab('users')}
+                onManageUsers={() => setActiveTab('admin_panel')}
                 onCertificates={() => setActiveTab('certificates')}
               />
             )}
@@ -682,9 +685,13 @@ export default function App() {
               <Certificates userRole={userRole} onBack={() => setActiveTab('account')} />
             )}
 
-            {/* Admin Management Views */}
-            {activeTab === 'users' && userRole === 'admin' && (
-              <Users onBack={() => setActiveTab('account')} />
+            {/* Admin Management Views (Admin Panel with Users and Invitation Letter tabs) */}
+            {(activeTab === 'admin_panel' || activeTab === 'users') && actualRole === 'admin' && (
+              <AdminPanel 
+                initialTab="users"
+                onNavigateTab={(tab) => setActiveTab(tab as Tab)}
+                onBack={() => setActiveTab('account')}
+              />
             )}
           </motion.div>
         </main>

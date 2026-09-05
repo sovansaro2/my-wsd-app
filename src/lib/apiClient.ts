@@ -38,7 +38,7 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
       return apiFetch(path, options, retries - 1);
     }
     if (err.name === 'AbortError') {
-      console.error(`[API Timeout] ${options.method || 'GET'} ${path}`);
+      console.warn(`[API Timeout] ${options.method || 'GET'} ${path}`);
       throw new Error('សំណើមានរយៈពេលយូរពេក (Request timed out)');
     }
     throw err;
