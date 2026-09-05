@@ -15,10 +15,25 @@ import {
   Sparkles, 
   Stamp,
   Sliders,
-  ChevronDown
+  ChevronDown,
+  FileDown,
+  FolderArchive,
+  BookmarkPlus,
+  Trash2,
+  X,
+  Share2,
+  CheckCircle2
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { jsPDF } from 'jspdf';
 import { useLanguage } from '../contexts/LanguageContext';
+import { 
+  SavedInvitationLetter, 
+  saveInvitationLetter, 
+  getSavedInvitationLetters, 
+  deleteSavedInvitationLetter, 
+  shareOrDownloadPdf 
+} from '../lib/invitationLetterUtils';
 
 const toKhmerNum = (num: number | string): string => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -87,8 +102,27 @@ export default function InvitationLetter() {
   const letterRef = useRef<HTMLDivElement>(null);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isSavingToApp, setIsSavingToApp] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [activeView, setActiveView] = useState<'both' | 'edit' | 'preview'>('both');
+  const [activeView, setActiveView] = useState<'both' | 'edit' | 'preview' | 'archive'>('both');
+  const [savedLetters, setSavedLetters] = useState<SavedInvitationLetter[]>([]);
+  const [viewingLetter, setViewingLetter] = useState<SavedInvitationLetter | null>(null);
+  const [saveToastMessage, setSaveToastMessage] = useState<string | null>(null);
+
+  // Load saved letters from IndexedDB on component mount
+  const loadSavedLetters = async () => {
+    try {
+      const list = await getSavedInvitationLetters();
+      setSavedLetters(list);
+    } catch (err) {
+      console.error('Failed to load saved letters', err);
+    }
+  };
+
+  useEffect(() => {
+    loadSavedLetters();
+  }, []);
 
   // Compute current default dates
   const now = new Date();
@@ -189,6 +223,133 @@ export default function InvitationLetter() {
       window.print();
       setIsPrinting(false);
     }, 150);
+  };
+
+  // Download as PDF function (Standard A5 Portrait) with automatic in-app archiving
+  const handleDownloadPdf = async () => {
+    if (!letterRef.current) return;
+    setIsExportingPdf(true);
+    try {
+      const dataUrl = await toPng(letterRef.current, {
+        quality: 1,
+        pixelRatio: 3, // High DPI for crisp printing and rendering
+        backgroundColor: '#ffffff',
+        cacheBust: true
+      });
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a5'
+      });
+      // Standard A5 dimensions: 148 mm x 210 mm
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 148, 210, undefined, 'FAST');
+      const filename = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.pdf`;
+      pdf.save(filename);
+
+      // Automatically also save a copy into the app's internal archive
+      try {
+        const pdfBlob = pdf.output('blob');
+        const sizeInKb = (pdfBlob.size / 1024).toFixed(0);
+        await saveInvitationLetter({
+          title: formData.letterTitle || 'លិខិតអញ្ជើញ',
+          recipientName: formData.recipientName,
+          subject: formData.subject,
+          formattedDate: `ថ្ងៃទី ${dayStr} ខែ ${monthStr} ឆ្នាំ ${yearStr}`,
+          pdfBlob: pdfBlob,
+          previewImage: dataUrl,
+          formData: { ...formData },
+          fileSize: `${sizeInKb} KB`
+        });
+        await loadSavedLetters();
+        setSaveToastMessage('បានទាញយក និងរក្សាទុកក្នុងបណ្ណសារកម្មវិធីដោយជោគជ័យ!');
+        setTimeout(() => setSaveToastMessage(null), 3500);
+      } catch (saveErr) {
+        console.warn('Auto-save error:', saveErr);
+      }
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('មិនអាចទាញយកជា PDF បានទេ។ សូមសាកល្បងម្តងទៀត!');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
+  // Explicit Save to App (without downloading to disk immediately)
+  const handleSaveToApp = async () => {
+    if (!letterRef.current) return;
+    setIsSavingToApp(true);
+    try {
+      const dataUrl = await toPng(letterRef.current, {
+        quality: 0.95,
+        pixelRatio: 2.5,
+        backgroundColor: '#ffffff',
+        cacheBust: true
+      });
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a5'
+      });
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 148, 210, undefined, 'FAST');
+      const pdfBlob = pdf.output('blob');
+      const sizeInKb = (pdfBlob.size / 1024).toFixed(0);
+
+      await saveInvitationLetter({
+        title: formData.letterTitle || 'លិខិតអញ្ជើញ',
+        recipientName: formData.recipientName,
+        subject: formData.subject,
+        formattedDate: `ថ្ងៃទី ${dayStr} ខែ ${monthStr} ឆ្នាំ ${yearStr}`,
+        pdfBlob: pdfBlob,
+        previewImage: dataUrl,
+        formData: { ...formData },
+        fileSize: `${sizeInKb} KB`
+      });
+
+      await loadSavedLetters();
+      setSaveToastMessage('បានរក្សាទុកលិខិតអញ្ជើញជា PDF ក្នុងកម្មវិធីនេះរួចរាល់!');
+      setTimeout(() => setSaveToastMessage(null), 3500);
+    } catch (err) {
+      console.error('Save to app error:', err);
+      alert('មិនអាចរក្សាទុកក្នុងកម្មវិធីបានទេ។ សូមសាកល្បងម្តងទៀត!');
+    } finally {
+      setIsSavingToApp(false);
+    }
+  };
+
+  // Delete saved letter
+  const handleDeleteSavedLetter = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (window.confirm('តើលោកអ្នកពិតជាចង់លុបលិខិតនេះចេញពីបណ្ណសារកម្មវិធីមែនទេ?')) {
+      await deleteSavedInvitationLetter(id);
+      await loadSavedLetters();
+      if (viewingLetter?.id === id) {
+        setViewingLetter(null);
+      }
+      setSaveToastMessage('បានលុបលិខិតចេញពីបណ្ណសាររួចរាល់!');
+      setTimeout(() => setSaveToastMessage(null), 3000);
+    }
+  };
+
+  // Load saved letter back into editor
+  const handleLoadSavedLetterToForm = (letter: SavedInvitationLetter) => {
+    if (letter.formData) {
+      if (window.confirm('តើលោកអ្នកចង់បើកទិន្នន័យលិខិតនេះមកកែសម្រួលឡើងវិញមែនទេ?')) {
+        setFormData(letter.formData);
+        setActiveView('edit');
+        setSaveToastMessage('បានផ្ទុកទិន្នន័យលិខិតមកកាន់ទម្រង់កែសម្រួលរួចរាល់!');
+        setTimeout(() => setSaveToastMessage(null), 3000);
+      }
+    }
+  };
+
+  // Download directly to PC or Phone from saved record
+  const handleDownloadSavedLetterDirectly = async (letter: SavedInvitationLetter, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (letter.pdfBlob) {
+      const safeName = (letter.recipientName || 'លិខិតអញ្ជើញ').replace(/[^\p{L}\p{N}\s_-]/gu, '').slice(0, 30).trim();
+      const filename = `លិខិតអញ្ជើញ_${safeName || 'វត្តស្នាយដួច'}.pdf`;
+      await shareOrDownloadPdf(letter.pdfBlob, filename);
+    }
   };
 
   // Download image function
@@ -317,10 +478,46 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           >
             មើលគំរូ
           </button>
+          <button
+            onClick={() => setActiveView('archive')}
+            className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+              activeView === 'archive' 
+                ? 'bg-gray-100 dark:bg-slate-800 text-orange-600 dark:text-orange-400 font-semibold' 
+                : 'text-gray-500 dark:text-slate-400 hover:text-gray-900'
+            }`}
+          >
+            <FolderArchive className="w-3.5 h-3.5" />
+            <span>បណ្ណសារ PDF</span>
+            <span className="font-rajdhani text-[11px] font-semibold text-orange-600 dark:text-orange-400">
+              ({toKhmerNum(savedLetters.length)})
+            </span>
+          </button>
         </div>
 
         {/* Action Buttons in single row */}
         <div className="flex items-center flex-wrap gap-2">
+          <button
+            onClick={() => setActiveView('archive')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
+            title="បើកមើលបណ្ណសារលិខិតដែលបានរក្សាទុកក្នុងកម្មវិធី"
+          >
+            <FolderArchive className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            <span>បណ្ណសារ</span>
+            <span className="font-rajdhani font-semibold text-xs text-orange-600 dark:text-orange-400">
+              ({toKhmerNum(savedLetters.length)})
+            </span>
+          </button>
+
+          <button
+            onClick={handleSaveToApp}
+            disabled={isSavingToApp}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+            title="រក្សាទុកលិខិតនេះជា PDF ក្នុងកម្មវិធីនេះ"
+          >
+            <BookmarkPlus className="w-4 h-4 text-gray-500" />
+            <span>{isSavingToApp ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកក្នុងកម្មវិធី'}</span>
+          </button>
+
           <button
             onClick={handleCopyText}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
@@ -341,18 +538,176 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           </button>
 
           <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-sm transition-colors cursor-pointer"
-            title="ព្រីនចេញជាសន្លឹក A5 បញ្ឈរ"
+            onClick={handleDownloadPdf}
+            disabled={isExportingPdf}
+            className="flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
+            title="ទាញយកជាឯកសារ PDF A5 សម្រាប់ PC ឬ Phone"
           >
-            <Printer className="w-4 h-4" />
-            <span>ព្រីន A5 បញ្ឈរ</span>
+            <FileDown className="w-4 h-4" />
+            <span>{isExportingPdf ? 'កំពុងបង្កើត PDF...' : 'ទាញយកជា PDF'}</span>
           </button>
         </div>
       </div>
 
-      {/* Main Workspace: Editor Left, Live A5 Preview Right */}
+      {/* Main Workspace: Editor Left, Live A5 Preview Right, OR Dedicated Archive */}
       <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
+        {/* ========================================================================= */}
+        {/* DEDICATED ARCHIVE VIEW (Saved Letters in App) */}
+        {/* ========================================================================= */}
+        {activeView === 'archive' ? (
+          <div className="max-w-6xl mx-auto flex flex-col gap-6">
+            {/* Header banner */}
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <FolderArchive className="w-6 h-6 text-orange-600 dark:text-orange-400 mt-1 shrink-0" />
+                <div>
+                  <h2 className="font-koulen text-lg sm:text-xl text-gray-900 dark:text-white tracking-wide">
+                    បណ្ណសារលិខិតអញ្ជើញ (រក្សាទុកក្នុងកម្មវិធី)
+                  </h2>
+                  <p className="font-battambang text-xs text-gray-600 dark:text-slate-400 mt-1 leading-relaxed">
+                    រាល់លិខិតអញ្ជើញដែលលោកអ្នកបានរក្សាទុកជា PDF ក្នុងកម្មវិធីនេះ។ លោកអ្នកអាចបើកមើល ឬទាញយកទៅកាន់កុំព្យូទ័រ (PC) ឬទូរស័ព្ទដៃ (Phone) បានគ្រប់ពេលវេលា។
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                <button
+                  onClick={() => setActiveView('both')}
+                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-colors cursor-pointer"
+                >
+                  <PenTool className="w-4 h-4" />
+                  <span>បង្កើត ឬកែសម្រួលលិខិតថ្មី</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Saved Letters List */}
+            {savedLetters.length === 0 ? (
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-10 sm:p-14 text-center flex flex-col items-center justify-center">
+                <FolderArchive className="w-16 h-16 text-gray-300 dark:text-slate-700 mb-4 stroke-1" />
+                <h3 className="font-koulen text-base sm:text-lg text-gray-700 dark:text-slate-300 tracking-wide">
+                  មិនទាន់មានលិខិតអញ្ជើញដែលបានរក្សាទុកនៅឡើយទេ
+                </h3>
+                <p className="font-battambang text-xs text-gray-500 dark:text-slate-400 max-w-md mt-2 leading-relaxed">
+                  នៅពេលលោកអ្នកបង្កើតលិខិតអញ្ជើញរួច សូមចុចប៊ូតុង <span className="font-semibold text-orange-600 dark:text-orange-400">«រក្សាទុកក្នុងកម្មវិធី»</span> ឬ <span className="font-semibold text-orange-600 dark:text-orange-400">«ទាញយកជា PDF»</span> នោះប្រព័ន្ធនឹងរក្សាទុកលិខិតនោះក្នុងបណ្ណសារនេះដោយស្វ័យប្រវត្តិ។
+                </p>
+                <button
+                  onClick={() => setActiveView('both')}
+                  className="mt-5 px-4 py-2 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
+                >
+                  ទៅកាន់ទំព័របង្កើតលិខិត
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {savedLetters.map((letter) => (
+                  <div
+                    key={letter.id}
+                    className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-orange-400 dark:hover:border-orange-600 transition-all shadow-xs group"
+                  >
+                    <div>
+                      {/* Top Row: Thumbnail + Info */}
+                      <div className="flex gap-3.5 items-start">
+                        {/* Clickable Thumbnail */}
+                        <div
+                          onClick={() => setViewingLetter(letter)}
+                          className="w-20 h-28 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden shrink-0 cursor-pointer shadow-xs group-hover:shadow transition-shadow relative"
+                          title="ចុចដើម្បីមើលលិខិតពេញលេញ"
+                        >
+                          {letter.previewImage ? (
+                            <img
+                              src={letter.previewImage}
+                              alt={letter.title}
+                              className="w-full h-full object-cover object-top"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FileText className="w-6 h-6 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors flex items-center justify-center">
+                            <Eye className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 drop-shadow transition-opacity" />
+                          </div>
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex-1 min-w-0 flex flex-col gap-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-koulen text-xs sm:text-sm text-gray-900 dark:text-white tracking-wide truncate">
+                              {letter.title || 'លិខិតអញ្ជើញ'}
+                            </span>
+                            <span className="font-rajdhani text-[11px] text-gray-400 font-medium shrink-0">
+                              {letter.fileSize || 'PDF'}
+                            </span>
+                          </div>
+
+                          <p className="font-battambang text-xs text-gray-800 dark:text-slate-200 line-clamp-2 leading-relaxed font-semibold">
+                            {letter.recipientName}
+                          </p>
+
+                          <p className="font-battambang text-[11px] text-gray-500 dark:text-slate-400 line-clamp-2 leading-tight mt-0.5">
+                            {letter.subject}
+                          </p>
+
+                          <p className="font-rajdhani text-[11px] text-gray-400 mt-auto pt-1">
+                            {new Date(letter.date).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons Bar */}
+                    <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <button
+                          onClick={() => setViewingLetter(letter)}
+                          className="flex items-center gap-1 px-2.5 py-1 text-xs font-battambang text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors cursor-pointer"
+                          title="មើលលិខិតនេះពេញលេញលើអេក្រង់"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>មើល</span>
+                        </button>
+
+                        <button
+                          onClick={(e) => handleDownloadSavedLetterDirectly(letter, e)}
+                          className="flex items-center gap-1 px-2.5 py-1 text-xs font-battambang font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors cursor-pointer"
+                          title="ទាញយកជាឯកសារ PDF ទៅកាន់ PC ឬ Phone"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>ទាញយក PDF</span>
+                        </button>
+
+                        {letter.formData && (
+                          <button
+                            onClick={() => handleLoadSavedLetterToForm(letter)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs font-battambang text-orange-600 dark:text-orange-400 hover:text-orange-700 transition-colors cursor-pointer"
+                            title="យកទិន្នន័យលិខិតនេះមកកែសម្រួលឡើងវិញ"
+                          >
+                            <PenTool className="w-3.5 h-3.5" />
+                            <span>កែសម្រួល</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={(e) => handleDeleteSavedLetter(letter.id, e)}
+                        className="flex items-center gap-1 p-1 text-xs font-battambang text-gray-400 hover:text-rose-600 transition-colors cursor-pointer"
+                        title="លុបចេញពីបណ្ណសារ"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
         <div className={`grid gap-6 ${activeView === 'both' ? 'lg:grid-cols-12' : 'grid-cols-1'}`}>
           
           {/* ========================================================================= */}
@@ -975,7 +1330,96 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             </div>
           )}
         </div>
+        )}
       </div>
+
+      {/* ========================================================================= */}
+      {/* MODAL: FULL PREVIEW FOR PC OR PHONE */}
+      {/* ========================================================================= */}
+      {viewingLetter && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-white dark:bg-slate-900 shrink-0">
+              <div className="min-w-0">
+                <h3 className="font-koulen text-sm sm:text-base text-gray-900 dark:text-white truncate">
+                  {viewingLetter.title}
+                </h3>
+                <p className="font-battambang text-xs text-gray-600 dark:text-slate-400 truncate">
+                  {viewingLetter.recipientName}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => handleDownloadSavedLetterDirectly(viewingLetter)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
+                  title="ទាញយកទៅកាន់ PC ឬ Phone"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>ទាញយក PDF</span>
+                </button>
+                <button
+                  onClick={() => setViewingLetter(null)}
+                  className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-lg transition-colors cursor-pointer"
+                  title="បិទ"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Letter Preview Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-100 dark:bg-slate-950 flex justify-center">
+              {viewingLetter.previewImage ? (
+                <img
+                  src={viewingLetter.previewImage}
+                  alt={viewingLetter.title}
+                  className="w-full max-w-[500px] h-auto object-contain bg-white shadow-lg border border-gray-300"
+                />
+              ) : (
+                <div className="text-center py-12 font-battambang text-xs text-gray-500">
+                  មិនមានរូបភាពគំរូឡើយ
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-4 py-2.5 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-between text-xs font-battambang text-gray-500 dark:text-slate-400 shrink-0">
+              <span className="font-rajdhani text-[11px]">
+                កាលបរិច្ឆេទរក្សាទុក ៖ {new Date(viewingLetter.date).toLocaleDateString('en-GB')}
+              </span>
+              <div className="flex items-center gap-3">
+                {viewingLetter.formData && (
+                  <button
+                    onClick={() => {
+                      handleLoadSavedLetterToForm(viewingLetter);
+                      setViewingLetter(null);
+                    }}
+                    className="text-orange-600 hover:underline cursor-pointer"
+                  >
+                    យកមកកែសម្រួល
+                  </button>
+                )}
+                <button
+                  onClick={() => setViewingLetter(null)}
+                  className="text-gray-600 dark:text-slate-300 hover:underline cursor-pointer"
+                >
+                  បិទ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Save Toast Notification */}
+      {saveToastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 bg-gray-950 text-white text-xs font-battambang px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{saveToastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }
