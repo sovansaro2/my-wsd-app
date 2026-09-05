@@ -1129,8 +1129,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           {/* Footer Signature Area */}
           <div className="mt-16 flex justify-end px-12 text-center text-gray-900">
             <div className="flex flex-col items-center">
-              <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដូច {getKhmerDate()}</p>
-              <p className="mb-2  text-lg">អ្នកកាន់បញ្ជី</p>
+              <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដួច {getKhmerDate()}</p>
+              <p className="mb-2  text-lg font-moul">អ្នកកាន់បញ្ជី</p>
               <div className="h-24 w-40 relative mb-2 flex items-center justify-center">
                 <div 
                   className="w-full h-full"

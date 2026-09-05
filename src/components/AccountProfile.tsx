@@ -135,7 +135,23 @@ export default function AccountProfile({
   const { isInstallable, isInstalled, isIOS, isAndroid, install } = usePWAInstall();
   const [isInstallingPWA, setIsInstallingPWA] = useState(false);
   const [isPwaLinkCopied, setIsPwaLinkCopied] = useState(false);
-  const [isSettingView, setIsSettingView] = useState(false);
+  const [isSettingView, setIsSettingView] = useState(() => {
+    try {
+      return localStorage.getItem('account_subview') === 'settings';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (isSettingView) {
+        localStorage.setItem('account_subview', 'settings');
+      } else {
+        localStorage.removeItem('account_subview');
+      }
+    } catch {}
+  }, [isSettingView]);
 
   // Incomplete profile check: if user has not completed personal info yet
   const isProfileIncomplete = !dateOfBirth || !phoneNumber || !address;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Home, 
   List, 
@@ -44,11 +44,66 @@ type Role = 'admin' | 'user' | null;
 export default function App() {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState<Tab>('home');
+
+  // Restore previous tab from localStorage on refresh
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    try {
+      const saved = localStorage.getItem('active_tab') as Tab;
+      const validTabs: Tab[] = [
+        'home', 
+        'records', 
+        'reports', 
+        'categories', 
+        'account', 
+        'manage_financials', 
+        'manage_name_lists', 
+        'certificates', 
+        'users'
+      ];
+      if (saved && validTabs.includes(saved)) {
+        return saved;
+      }
+    } catch {}
+    return 'home';
+  });
+
   const [actualRole, setActualRole] = useState<Role>(null);
   const [userRole, setUserRole] = useState<Role>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  
+  // Track activeTab changes in localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('active_tab', activeTab);
+    } catch {}
+  }, [activeTab]);
+
+  // Double-tap tracker on mobile bottom navigation to trigger app/page refresh
+  const lastTabClickRef = useRef<{ tab: Tab; time: number }>({ tab: activeTab, time: 0 });
+
+  const handleMobileTabClick = (tab: Tab) => {
+    const now = Date.now();
+    const isDoubleClick = lastTabClickRef.current.tab === tab && (now - lastTabClickRef.current.time) < 500;
+    
+    // Ensure active tab is saved before any potential reload
+    try {
+      localStorage.setItem('active_tab', tab);
+    } catch {}
+
+    if (isDoubleClick) {
+      try {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          navigator.vibrate(40);
+        }
+      } catch {}
+      window.location.reload();
+      return;
+    }
+
+    lastTabClickRef.current = { tab, time: now };
+    setActiveTab(tab);
+  };
   
   // Notifications State
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -186,6 +241,8 @@ export default function App() {
   const handleLogout = async () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('cached_user_profile');
+    localStorage.removeItem('active_tab');
+    localStorage.removeItem('account_subview');
     setActualRole(null);
     setUserRole(null);
     setCurrentUser(null);
@@ -639,7 +696,7 @@ export default function App() {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
-            onClick={() => setActiveTab('home')}
+            onClick={() => handleMobileTabClick('home')}
             aria-label={t('nav_home')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-all relative ${
               activeTab === 'home' 
@@ -656,7 +713,7 @@ export default function App() {
           </button>
           
           <button
-            onClick={() => setActiveTab('records')}
+            onClick={() => handleMobileTabClick('records')}
             aria-label={t('nav_finance')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'records' 
@@ -673,7 +730,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setActiveTab('categories')}
+            onClick={() => handleMobileTabClick('categories')}
             aria-label={t('nav_list')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'categories' 
@@ -690,7 +747,7 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setActiveTab('reports')}
+            onClick={() => handleMobileTabClick('reports')}
             aria-label={t('nav_reports')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'reports' 
@@ -707,7 +764,7 @@ export default function App() {
           </button>
           
           <button
-            onClick={() => setActiveTab('account')}
+            onClick={() => handleMobileTabClick('account')}
             aria-label={t('nav_account')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               ['account', 'users', 'certificates'].includes(activeTab) 
