@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabaseAdmin, getClient } from '../database';
+import { supabaseAdmin } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
@@ -214,21 +214,21 @@ router.get('/categories', async (req, res) => {
 });
 
 router.post('/categories', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await getClient(req).from('name_list_categories').insert([req.body]).select();
+  const { data, error } = await supabaseAdmin.from('name_list_categories').insert([req.body]).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
   res.json(data[0]);
 });
 
 router.put('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await getClient(req).from('name_list_categories').update(req.body).eq('id', req.params.id).select();
+  const { data, error } = await supabaseAdmin.from('name_list_categories').update(req.body).eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
   res.json(data[0]);
 });
 
 router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await getClient(req).from('name_list_categories').delete().eq('id', req.params.id).select();
+  const { data, error } = await supabaseAdmin.from('name_list_categories').delete().eq('id', req.params.id).select();
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });
@@ -249,11 +249,11 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
   if (recordBody.is_100k_donor === undefined && recordBody.amount) {
     recordBody.is_100k_donor = Number(recordBody.amount) >= 100000 && isHighTierIndividualDonor(recordBody.name, category_name);
   }
-  let { data, error } = await getClient(req).from('name_list_records').insert([recordBody]).select();
+  let { data, error } = await supabaseAdmin.from('name_list_records').insert([recordBody]).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_100k_donor')))) {
     delete (recordBody as any).is_100k_donor;
-    const retry = await getClient(req).from('name_list_records').insert([recordBody]).select();
+    const retry = await supabaseAdmin.from('name_list_records').insert([recordBody]).select();
     data = retry.data;
     error = retry.error;
   }
@@ -282,16 +282,16 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
   if (recordBody.name && recordBody.amount !== undefined && recordBody.is_100k_donor === undefined) {
     recordBody.is_100k_donor = Number(recordBody.amount) >= 100000 && isHighTierIndividualDonor(recordBody.name);
   }
-  let { data, error } = await getClient(req).from('name_list_records').update(recordBody).eq('id', req.params.id).select();
+  let { data, error } = await supabaseAdmin.from('name_list_records').update(recordBody).eq('id', req.params.id).select();
   
   if (error && (error.code === '42703' || (error.message && error.message.includes('is_100k_donor')))) {
     delete (recordBody as any).is_100k_donor;
     if (Object.keys(recordBody).length === 0) {
-      const existing = await getClient(req).from('name_list_records').select('*').eq('id', req.params.id);
+      const existing = await supabaseAdmin.from('name_list_records').select('*').eq('id', req.params.id);
       data = existing.data;
       error = existing.error;
     } else {
-      const retry = await getClient(req).from('name_list_records').update(recordBody).eq('id', req.params.id).select();
+      const retry = await supabaseAdmin.from('name_list_records').update(recordBody).eq('id', req.params.id).select();
       data = retry.data;
       error = retry.error;
     }
@@ -303,7 +303,7 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
 });
 
 router.delete('/records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { error } = await getClient(req).from('name_list_records').delete().eq('id', req.params.id);
+  const { error } = await supabaseAdmin.from('name_list_records').delete().eq('id', req.params.id);
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });

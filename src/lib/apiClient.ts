@@ -25,7 +25,9 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
     
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.detail || 'Request failed');
+      const errorMsg = errorData.detail || `Request failed with status ${res.status}`;
+      console.error(`[API ${res.status}] ${options.method || 'GET'} ${path}: ${errorMsg}`, errorData);
+      throw new Error(errorMsg);
     }
     const text = await res.text();
     return text ? JSON.parse(text) : null;
@@ -36,6 +38,7 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
       return apiFetch(path, options, retries - 1);
     }
     if (err.name === 'AbortError') {
+      console.error(`[API Timeout] ${options.method || 'GET'} ${path}`);
       throw new Error('សំណើមានរយៈពេលយូរពេក (Request timed out)');
     }
     throw err;

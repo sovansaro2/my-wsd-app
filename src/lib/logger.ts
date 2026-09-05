@@ -117,3 +117,81 @@ export const systemLogger = {
     }
   }
 };
+
+// Automatic Console Interception to ensure all console.error and console.warn calls
+// appear in the in-app System Logs / Console Log viewer
+let isConsoleIntercepted = false;
+
+export function initConsoleCapture() {
+  if (isConsoleIntercepted || typeof window === 'undefined') return;
+  isConsoleIntercepted = true;
+
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+
+  console.error = function (...args: any[]) {
+    originalConsoleError.apply(console, args);
+    try {
+      const message = args.map(arg => {
+        if (arg instanceof Error) return arg.message + (arg.stack ? `\n${arg.stack}` : '');
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg);
+          } catch {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+
+      // Ignore noise
+      if (
+        message.includes('WebSocket') || 
+        message.includes('vite') || 
+        message.includes('ResizeObserver') ||
+        message.includes('failed to connect to websocket')
+      ) {
+        return;
+      }
+
+      systemLogger.log('ERROR', message);
+    } catch {
+      // Avoid recursive loops
+    }
+  };
+
+  console.warn = function (...args: any[]) {
+    originalConsoleWarn.apply(console, args);
+    try {
+      const message = args.map(arg => {
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg);
+          } catch {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+
+      if (
+        message.includes('WebSocket') || 
+        message.includes('vite') || 
+        message.includes('ResizeObserver') ||
+        message.includes('failed to connect to websocket')
+      ) {
+        return;
+      }
+
+      systemLogger.log('WARN', message);
+    } catch {
+      // Avoid recursive loops
+    }
+  };
+}
+
+// Auto-run on module import in browser
+if (typeof window !== 'undefined') {
+  initConsoleCapture();
+}
+

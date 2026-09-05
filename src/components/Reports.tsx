@@ -106,6 +106,24 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
 
   if (isLoading) return <div className="p-8 text-center text-gray-500 font-battambang">{t('common_loading')}</div>;
 
+  if (userRole !== 'admin') {
+    return (
+      <div className="max-w-xl mx-auto py-16 px-4 text-center">
+        <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 flex flex-col items-center">
+          <AlertTriangle className="w-12 h-12 text-orange-500 mb-4 stroke-[1.6]" />
+          <h2 className="text-xl font-bold font-title text-gray-900 dark:text-white mb-2">
+            {language === 'en' ? 'Access Restricted' : 'មិនមានសិទ្ធិអនុញ្ញាត'}
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-slate-400 font-battambang max-w-sm leading-relaxed">
+            {language === 'en'
+              ? 'This reports and analytics section is reserved for administrators only.'
+              : 'ទំព័ររបាយការណ៍ និងទិន្នន័យស្ថិតិនេះ ត្រូវបានកំណត់សម្រាប់តែអ្នកគ្រប់គ្រង (Admin) តែប៉ុណ្ណោះ។'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-4">
       {/* Top Header & Tab Navigation */}

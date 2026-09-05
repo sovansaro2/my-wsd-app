@@ -24,11 +24,7 @@ export const getAuthClient = (token: string) => {
   });
 };
 
-export const getClient = (req: Request) => {
-  if (config.SUPABASE_SERVICE_ROLE_KEY) {
-    return supabaseAdmin;
-  }
-  const token = req.headers.authorization?.split(' ')[1] || '';
-  return getAuthClient(token);
+export const getClient = (_req?: Request) => {
+  return supabaseAdmin;
 };
 
