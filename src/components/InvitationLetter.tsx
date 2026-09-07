@@ -29,6 +29,8 @@ import {
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useLanguage } from '../contexts/LanguageContext';
+import { FONT_EMBED_CSS } from '../lib/fontEmbed';
+import { logoBase64 } from '../lib/logoBase64';
 import { 
   SavedInvitationLetter, 
   saveInvitationLetter, 
@@ -232,32 +234,64 @@ export default function InvitationLetter() {
     }, 150);
   };
 
+  // Helper to capture letter node with base64 fonts embedded
+  const captureLetterImage = async (pixelRatio = 2.5): Promise<string> => {
+    if (!letterRef.current) {
+      throw new Error('Letter element not found');
+    }
+
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    const targetNode = letterRef.current;
+    const targetWidth = 560;
+    const targetHeight = Math.max(targetNode.scrollHeight, targetNode.offsetHeight, 792);
+
+    return await toPng(targetNode, {
+      quality: 1,
+      pixelRatio: pixelRatio,
+      backgroundColor: '#ffffff',
+      cacheBust: true,
+      fontEmbedCSS: FONT_EMBED_CSS,
+      width: targetWidth,
+      height: targetHeight,
+      style: {
+        transform: 'none',
+        transformOrigin: 'top left',
+        margin: '0',
+        width: `${targetWidth}px`,
+        minHeight: '792px',
+        maxWidth: 'none',
+        maxHeight: 'none',
+        position: 'static',
+      }
+    });
+  };
+
+  // Helper to create A5 PDF with proper proportional height
+  const createLetterPdf = (dataUrl: string): jsPDF => {
+    const targetNode = letterRef.current;
+    const targetHeight = targetNode ? Math.max(targetNode.scrollHeight, targetNode.offsetHeight, 792) : 792;
+    const pdfHeight = targetHeight <= 800 ? 210 : Math.round((148 * targetHeight) / 560);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: targetHeight <= 800 ? 'a5' : [148, pdfHeight]
+    });
+
+    pdf.addImage(dataUrl, 'PNG', 0, 0, 148, targetHeight <= 800 ? 210 : pdfHeight, undefined, 'FAST');
+    return pdf;
+  };
+
   // Download as PDF function (Standard A5 Portrait) with automatic in-app archiving
   const handleDownloadPdf = async () => {
     if (!letterRef.current) return;
     setIsExportingPdf(true);
     try {
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
-      const dataUrl = await toPng(letterRef.current, {
-        quality: 1,
-        pixelRatio: 3, // High DPI for crisp printing and rendering
-        backgroundColor: '#ffffff',
-        cacheBust: true,
-        skipFonts: true,
-        style: {
-          transform: 'none',
-          margin: '0',
-        }
-      });
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a5'
-      });
-      // Standard A5 dimensions: 148 mm x 210 mm
-      pdf.addImage(dataUrl, 'PNG', 0, 0, 148, 210, undefined, 'FAST');
+      const dataUrl = await captureLetterImage(3);
+      const pdf = createLetterPdf(dataUrl);
       const filename = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(filename);
 
@@ -294,26 +328,8 @@ export default function InvitationLetter() {
     if (!letterRef.current) return;
     setIsSavingToApp(true);
     try {
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
-      const dataUrl = await toPng(letterRef.current, {
-        quality: 0.95,
-        pixelRatio: 2.5,
-        backgroundColor: '#ffffff',
-        cacheBust: true,
-        skipFonts: true,
-        style: {
-          transform: 'none',
-          margin: '0',
-        }
-      });
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a5'
-      });
-      pdf.addImage(dataUrl, 'PNG', 0, 0, 148, 210, undefined, 'FAST');
+      const dataUrl = await captureLetterImage(2.5);
+      const pdf = createLetterPdf(dataUrl);
       const pdfBlob = pdf.output('blob');
       const sizeInKb = (pdfBlob.size / 1024).toFixed(0);
 
@@ -380,20 +396,7 @@ export default function InvitationLetter() {
     if (!letterRef.current) return;
     setIsExporting(true);
     try {
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
-      const dataUrl = await toPng(letterRef.current, {
-        quality: 0.98,
-        pixelRatio: 2.5,
-        backgroundColor: '#ffffff',
-        cacheBust: true,
-        skipFonts: true,
-        style: {
-          transform: 'none',
-          margin: '0',
-        }
-      });
+      const dataUrl = await captureLetterImage(2.5);
       const link = document.createElement('a');
       link.download = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.png`;
       link.href = dataUrl;
@@ -1266,184 +1269,213 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           {/* ========================================================================= */}
           {/* RIGHT COLUMN: LIVE A5 PORTRAIT SHEET PREVIEW (Print target) */}
           {/* ========================================================================= */}
-          {(activeView === 'both' || activeView === 'preview') && (
-            <div className={`${activeView === 'both' ? 'lg:col-span-7' : 'max-w-4xl mx-auto w-full'} flex flex-col items-center`}>
-              
-              {/* Paper Visual Stage with Mobile Responsive Scale */}
-              <div className="w-full flex justify-center py-2 sm:py-4 overflow-x-auto">
-                {/* Responsive container for mobile screen fit */}
-                <div className="relative w-[340px] h-[510px] sm:w-[560px] sm:h-auto mx-auto shrink-0 transition-all duration-300 flex justify-center">
-                  <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100 shadow-xl sm:shadow-2xl">
-                    <div
-                      ref={letterRef}
-                      id="invitation-letter-a5"
-                      className="print-section bg-white text-gray-950 border border-gray-300 rounded-none w-[560px] min-h-[792px] p-7 sm:p-9 flex flex-col justify-between select-text relative font-battambang text-[12px] leading-[1.65]"
-                      style={{
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                  {/* Outer subtle boundary border fitting official A5 document sheet */}
-                  <div>
-                    {/* Top Letterhead: Pagoda Info Left | National Motto Right (Official Cambodian Administrative Standard - No Full-width Border Line) */}
-                    <div className="flex items-start justify-between gap-3 mb-5">
-                      {/* Left: Temple info & logo */}
-                      <div className="flex items-start gap-2.5">
-                        <img 
-                          src="/logo.png" 
-                          alt="Wat Logo" 
-                          className="w-12 h-12 object-contain shrink-0 mt-0.5" 
-                        />
-                        <div className="flex flex-col">
-                          {formData.showHigherOrg && formData.higherOrgName && (
-                            <div className="text-[10px] text-gray-700 font-battambang leading-tight mb-0.5">
-                              {formData.higherOrgName}
+          <div
+            className={`${
+              activeView === 'both' ? 'lg:col-span-7' : 'max-w-4xl mx-auto w-full'
+            } ${
+              activeView === 'edit'
+                ? 'absolute -left-[9999px] top-0 opacity-0 pointer-events-none lg:static lg:opacity-100 lg:pointer-events-auto'
+                : 'flex'
+            } flex-col items-center`}
+          >
+            {/* Paper Visual Stage with Mobile Responsive Scale */}
+            <div className="w-full flex justify-center py-2 sm:py-4 overflow-x-auto">
+              {/* Responsive container for mobile screen fit */}
+              <div className="relative w-[340px] h-[510px] sm:w-[560px] sm:h-auto mx-auto shrink-0 transition-all duration-300 flex justify-center">
+                <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100 shadow-xl sm:shadow-2xl">
+                  <div
+                    ref={letterRef}
+                    id="invitation-letter-a5"
+                    className="print-section bg-white text-gray-950 border border-gray-300 rounded-none w-[560px] min-h-[792px] p-7 sm:p-9 flex flex-col justify-between select-text relative font-battambang text-[12px] leading-[1.65]"
+                    style={{
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    {/* Outer subtle boundary border fitting official A5 document sheet */}
+                    <div>
+                      {/* Top Letterhead: Pagoda Info Left | National Motto Right (Official Cambodian Administrative Standard - No Full-width Border Line) */}
+                      <div className="flex items-start justify-between gap-3 mb-5">
+                        {/* Left: Temple info & logo */}
+                        <div className="flex items-start gap-2.5">
+                          <img 
+                            src={logoBase64 || "/logo.png"} 
+                            alt="Wat Logo" 
+                            className="w-12 h-12 object-contain shrink-0 mt-0.5" 
+                          />
+                          <div className="flex flex-col">
+                            {formData.showHigherOrg && formData.higherOrgName && (
+                              <div className="text-[10px] text-gray-700 font-battambang leading-tight mb-0.5">
+                                {formData.higherOrgName}
+                              </div>
+                            )}
+                            <div className="font-moul text-[13px] text-gray-900 tracking-wide leading-tight">
+                              {formData.templeName}
                             </div>
-                          )}
-                          <div className="font-moul text-[13px] text-gray-900 tracking-wide leading-tight">
-                            {formData.templeName}
-                          </div>
-                          {formData.showTempleAddressInHeader && formData.templeAddress && (
-                            <div className="text-[10px] text-gray-600 font-battambang mt-0.5 leading-tight">
-                              {formData.templeAddress}
+                            {formData.showTempleAddressInHeader && formData.templeAddress && (
+                              <div className="text-[10px] text-gray-600 font-battambang mt-0.5 leading-tight">
+                                {formData.templeAddress}
+                              </div>
+                            )}
+                            <div className="text-[10.5px] text-gray-800 font-battambang mt-1">
+                              លេខ ៖ {formData.letterNumber}
                             </div>
-                          )}
-                          <div className="text-[10.5px] text-gray-800 font-battambang mt-1">
-                            លេខ ៖ {formData.letterNumber}
+                          </div>
+                        </div>
+
+                        {/* Right: National Motto */}
+                        <div className="text-center">
+                          <div className="font-moul text-[12.5px] text-gray-900 leading-tight">
+                            {formData.countryName}
+                          </div>
+                          <div className="font-moul text-[11.5px] text-gray-800 mt-1">
+                            {formData.nationalMotto}
+                          </div>
+                          {/* Tacteing Ornament Symbol rr2ss: Proportional, delicate administrative size */}
+                          <div 
+                            className={`font-tacteing text-gray-950 select-none tracking-normal leading-none mt-1 ${
+                              formData.symbolSize === 'xs' ? 'text-[11px]' :
+                              formData.symbolSize === 'md' ? 'text-[16px]' :
+                              formData.symbolSize === 'lg' ? 'text-[20px]' :
+                              'text-[13px]'
+                            }`}
+                          >
+                            rr2ss
                           </div>
                         </div>
                       </div>
 
-                      {/* Right: National Motto */}
-                      <div className="text-center">
-                        <div className="font-moul text-[12.5px] text-gray-900 leading-tight">
-                          {formData.countryName}
-                        </div>
-                        <div className="font-moul text-[11.5px] text-gray-800 mt-1">
-                          {formData.nationalMotto}
-                        </div>
-                        {/* Tacteing Ornament Symbol rr2ss: Proportional, delicate administrative size */}
-                        <div 
-                          className={`font-tacteing text-gray-950 select-none tracking-normal leading-none mt-1 ${
-                            formData.symbolSize === 'xs' ? 'text-[11px]' :
-                            formData.symbolSize === 'md' ? 'text-[16px]' :
-                            formData.symbolSize === 'lg' ? 'text-[20px]' :
-                            'text-[13px]'
-                          }`}
-                        >
-                          rr2ss
-                        </div>
+                      {/* Document Title: លិខិតអញ្ជើញ */}
+                      <div className="text-center my-3.5">
+                        <h2 className="font-moul text-[19px] text-gray-950 tracking-wider inline-block border-b-2 border-gray-900 pb-0.5 px-3">
+                          {formData.letterTitle}
+                        </h2>
                       </div>
-                    </div>
 
-                    {/* Document Title: លិខិតអញ្ជើញ */}
-                    <div className="text-center my-3.5">
-                      <h2 className="font-moul text-[19px] text-gray-950 tracking-wider inline-block border-b-2 border-gray-900 pb-0.5 px-3">
-                        {formData.letterTitle}
-                      </h2>
-                    </div>
-
-                    {/* Salutation: សូមអញ្ជើញ (Font Khmer OS Battambang Bold) + ឈ្មោះអ្នកទទួល (Font Moul ធំច្បាស់លេចធ្លោ) */}
-                    <div className="mb-2.5 flex items-baseline flex-wrap">
-                      <span className="font-battambang font-bold text-[12px] text-gray-950 inline-block mr-2 shrink-0">
-                        {formData.salutationPrefix} ៖
-                      </span>
-                      <span className="font-moul text-[13.5px] text-gray-950 leading-[1.8] tracking-wide">
-                        {formData.recipientName}
-                      </span>
-                    </div>
-
-                    {/* Administrative Items: កម្មវត្ថុ និង យោង (គ្មានពាក្យ «ស្ដីពី» ឡើយ) */}
-                    <div className="space-y-1 mb-2.5 text-[12px]">
-                      <div className="flex items-start">
-                        <span className="font-bold text-gray-950 w-20 shrink-0">កម្មវត្ថុ ៖</span>
-                        <span className="text-gray-900 flex-1 font-medium">{formData.subject}</span>
+                      {/* Salutation: សូមអញ្ជើញ (Font Battambang Bold) + ឈ្មោះអ្នកទទួល (Font Moul ធំច្បាស់លេចធ្លោ) */}
+                      <div className="mb-2.5 text-[12px] leading-relaxed">
+                        <span className="font-battambang font-bold text-gray-950 mr-2 inline-block">
+                          {formData.salutationPrefix} ៖
+                        </span>
+                        <span className="font-moul text-[13.5px] text-gray-950 tracking-wide inline-block">
+                          {formData.recipientName}
+                        </span>
                       </div>
-                      {formData.showReference && formData.referenceText && (
-                        <div className="flex items-start">
-                          <span className="font-bold text-gray-950 w-20 shrink-0">យោង ៖</span>
-                          <span className="text-gray-900 flex-1">{formData.referenceText}</span>
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Body text paragraphs */}
-                    <div className="space-y-2 text-justify">
-                      {/* Body Intro (Indented) */}
-                      <p className="leading-relaxed indent-7">
-                        {formData.bodyIntro}
-                      </p>
-
-                      {/* Meeting Information Block (Clean Administrative Listing, No Box/Container Background) */}
-                      <div className="my-2 pl-6 sm:pl-8 space-y-1 text-[11.5px] leading-relaxed">
-                        <div className="flex items-start">
-                          <span className="font-bold text-gray-950 w-28 shrink-0">- កាលបរិច្ឆេទ ៖</span>
-                          <div className="text-gray-900">
-                            <span>{formData.lunarDate}</span>
-                            <span className="text-[11px] text-gray-700 ml-1">({formData.solarDate})</span>
+                      {/* Administrative Items: កម្មវត្ថុ និង យោង (គ្មានពាក្យ «ស្ដីពី» ឡើយ) */}
+                      <div className="table w-full border-spacing-y-1 mb-2.5 text-[12px]">
+                        <div className="table-row">
+                          <div className="table-cell font-bold text-gray-950 w-20 align-top whitespace-nowrap pr-2">
+                            កម្មវត្ថុ ៖
+                          </div>
+                          <div className="table-cell text-gray-900 align-top font-medium leading-relaxed">
+                            {formData.subject}
                           </div>
                         </div>
-
-                        <div className="flex items-start">
-                          <span className="font-bold text-gray-950 w-28 shrink-0">- ពេលវេលា ៖</span>
-                          <span className="text-gray-900 font-semibold">{formData.meetingTime}</span>
-                        </div>
-
-                        <div className="flex items-start">
-                          <span className="font-bold text-gray-950 w-28 shrink-0">- ទីកន្លែង ៖</span>
-                          <span className="text-gray-900">{formData.location}</span>
-                        </div>
-
-                        {formData.agenda && (
-                          <div className="flex items-start">
-                            <span className="font-bold text-gray-950 w-28 shrink-0">- របៀបវារៈ ៖</span>
-                            <div className="text-gray-900 flex-1 whitespace-pre-line leading-relaxed">
-                              {formData.agenda}
+                        {formData.showReference && formData.referenceText && (
+                          <div className="table-row">
+                            <div className="table-cell font-bold text-gray-950 w-20 align-top whitespace-nowrap pr-2 pt-1">
+                              យោង ៖
+                            </div>
+                            <div className="table-cell text-gray-900 align-top leading-relaxed pt-1">
+                              {formData.referenceText}
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {/* Concluding Paragraph (Indented) */}
-                      <p className="leading-relaxed indent-7">
-                        {formData.therefore}
-                      </p>
-                    </div>
-                  </div>
+                      {/* Body text paragraphs */}
+                      <div className="space-y-2 text-justify leading-[1.7]">
+                        {/* Body Intro (Indented) */}
+                        <p className="leading-relaxed indent-7">
+                          {formData.bodyIntro}
+                        </p>
 
-                  {/* Sign-off, Distribution & Footer Section */}
-                  <div className="mt-3 pt-2">
-                    <div className="grid grid-cols-2 gap-4 items-end">
-                      {/* Left: កន្លែងទទួល (Distribution List) */}
-                      <div className="text-left">
-                        {formData.showDistribution && (
-                          <div className="text-[10px] text-gray-700 leading-snug">
-                            <div className="font-moul text-[10.5px] text-gray-950 mb-1">កន្លែងទទួល ៖</div>
-                            <div className="whitespace-pre-line pl-1 font-battambang">
-                              {formData.distributionText}
+                        {/* Meeting Information Block (Clean Administrative Listing, Table layout for SVG stability) */}
+                        <div className="my-2 pl-6 sm:pl-8 text-[11.5px] leading-relaxed table w-full border-spacing-y-1">
+                          <div className="table-row">
+                            <div className="table-cell font-bold text-gray-950 w-28 align-top whitespace-nowrap pr-2">
+                              - កាលបរិច្ឆេទ ៖
+                            </div>
+                            <div className="table-cell text-gray-900 align-top">
+                              <span>{formData.lunarDate}</span>
+                              <span className="text-[11px] text-gray-700 ml-1">({formData.solarDate})</span>
                             </div>
                           </div>
-                        )}
+
+                          <div className="table-row">
+                            <div className="table-cell font-bold text-gray-950 w-28 align-top whitespace-nowrap pr-2 pt-1">
+                              - ពេលវេលា ៖
+                            </div>
+                            <div className="table-cell text-gray-900 font-semibold align-top pt-1">
+                              {formData.meetingTime}
+                            </div>
+                          </div>
+
+                          <div className="table-row">
+                            <div className="table-cell font-bold text-gray-950 w-28 align-top whitespace-nowrap pr-2 pt-1">
+                              - ទីកន្លែង ៖
+                            </div>
+                            <div className="table-cell text-gray-900 align-top pt-1">
+                              {formData.location}
+                            </div>
+                          </div>
+
+                          {formData.agenda && (
+                            <div className="table-row">
+                              <div className="table-cell font-bold text-gray-950 w-28 align-top whitespace-nowrap pr-2 pt-1">
+                                - របៀបវារៈ ៖
+                              </div>
+                              <div className="table-cell text-gray-900 align-top pt-1 whitespace-pre-line leading-relaxed">
+                                {formData.agenda}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Concluding Paragraph (Indented) */}
+                        <p className="leading-relaxed indent-7">
+                          {formData.therefore}
+                        </p>
                       </div>
+                    </div>
 
-                      {/* Right: Date, Signer Title & Blank Space for Manual Signing/Stamping */}
-                      <div className="text-center flex flex-col items-center">
-                        <p className="text-[11px] text-gray-700 font-battambang">
-                          ធ្វើនៅ {formData.issuingPlace}
-                        </p>
-                        <p className="text-[11px] text-gray-700 font-battambang mt-0.5">
-                          {formData.signingDateLunar}
-                        </p>
-                        <p className="text-[11px] text-gray-700 font-battambang">
-                          {formData.signingDateSolar}
-                        </p>
+                    {/* Sign-off, Distribution & Footer Section */}
+                    <div className="mt-3 pt-2 table w-full">
+                      <div className="table-row">
+                        {/* Left: កន្លែងទទួល (Distribution List) */}
+                        <div className="table-cell w-1/2 align-bottom text-left pr-2">
+                          {formData.showDistribution && (
+                            <div className="text-[10px] text-gray-700 leading-snug">
+                              <div className="font-moul text-[10.5px] text-gray-950 mb-1">កន្លែងទទួល ៖</div>
+                              <div className="whitespace-pre-line pl-1 font-battambang">
+                                {formData.distributionText}
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
-                        <p className="font-moul text-[12px] text-gray-950 mt-1.5">
-                          {formData.signerRole}
-                        </p>
+                        {/* Right: Date, Signer Title & Blank Space for Manual Signing/Stamping */}
+                        <div className="table-cell w-1/2 align-bottom text-center">
+                          <div className="flex flex-col items-center">
+                            <p className="text-[11px] text-gray-700 font-battambang">
+                              ធ្វើនៅ {formData.issuingPlace}
+                            </p>
+                            <p className="text-[11px] text-gray-700 font-battambang mt-0.5">
+                              {formData.signingDateLunar}
+                            </p>
+                            <p className="text-[11px] text-gray-700 font-battambang">
+                              {formData.signingDateSolar}
+                            </p>
 
-                        {/* Blank spacious area strictly for manual handwriting signature & pagoda stamp */}
-                        <div className="w-44 h-24 my-1 flex items-center justify-center pointer-events-none">
-                          {/* Blank space for handwriting signature & official stamp */}
+                            <p className="font-moul text-[12px] text-gray-950 mt-1.5">
+                              {formData.signerRole}
+                            </p>
+
+                            {/* Blank spacious area strictly for manual handwriting signature & pagoda stamp */}
+                            <div className="w-44 h-24 my-1 flex items-center justify-center pointer-events-none">
+                              {/* Blank space for handwriting signature & official stamp */}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1458,21 +1490,21 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Mobile Back to Edit Button */}
-          <div className="lg:hidden mt-3 sm:mt-4 pb-8 flex justify-center w-full">
-            <button
-              type="button"
-              onClick={() => setActiveView('edit')}
-              className="flex items-center gap-2 py-2 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl font-battambang text-xs font-medium shadow-xs hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
-            >
-              <PenTool className="w-3.5 h-3.5 text-[#028090] dark:text-teal-400" />
-              <span>ត្រឡប់ទៅកែសម្រួលព័ត៌មាន</span>
-            </button>
+            {/* Mobile Back to Edit Button */}
+            {activeView === 'preview' && (
+              <div className="lg:hidden mt-3 sm:mt-4 pb-8 flex justify-center w-full">
+                <button
+                  type="button"
+                  onClick={() => setActiveView('edit')}
+                  className="flex items-center gap-2 py-2 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl font-battambang text-xs font-medium shadow-xs hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                >
+                  <PenTool className="w-3.5 h-3.5 text-[#028090] dark:text-teal-400" />
+                  <span>ត្រឡប់ទៅកែសម្រួលព័ត៌មាន</span>
+                </button>
+              </div>
+            )}
           </div>
-        </div>
-      )}
         </div>
         )}
       </div>

@@ -10,6 +10,7 @@ import { toPng } from 'html-to-image';
 import { saveCertificate } from '../lib/certificateUtils';
 import { getImageDataUrl } from '../lib/utils';
 import { jsPDF } from "jspdf";
+import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -387,14 +388,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -447,14 +448,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -512,14 +513,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -552,7 +553,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       const dataUrl = await toPng(printRef.current, {
         quality: 1,
         pixelRatio: 2,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: { opacity: '1', transform: 'none' },
         cacheBust: true,
         backgroundColor: '#ffffff'

@@ -11,6 +11,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { saveCertificate } from '../lib/certificateUtils';
 import { saveReport } from '../lib/reportUtils';
 import { getImageDataUrl } from '../lib/utils';
+import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -199,7 +200,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -251,7 +252,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -336,14 +337,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       const reportWidth = reportRef.current.scrollWidth || 800;
       const reportHeight = reportRef.current.scrollHeight;
       
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, fontEmbedCSS: FONT_EMBED_CSS, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
         width: reportWidth,
         height: reportHeight,
         pixelRatio: 2,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Printer, Download, X, Edit3, Check, Eye, EyeOff } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useLanguage } from '../contexts/LanguageContext';
+import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 
 interface MonthlyItem {
   month: number;
@@ -109,13 +110,13 @@ export default function OfficialReportPrintModal({
       const reportHeight = reportRef.current.scrollHeight || 1123;
 
       // Warmup renders
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2.5, skipFonts: true }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2.5, fontEmbedCSS: FONT_EMBED_CSS }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, {
         backgroundColor: '#ffffff',
         width: reportWidth,
         height: reportHeight,
         pixelRatio: 2.5,
-        skipFonts: true,
+        fontEmbedCSS: FONT_EMBED_CSS,
       });
 
       const link = document.createElement('a');

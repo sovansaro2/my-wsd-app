@@ -14,7 +14,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icon.svg', 'icon-192.png', 'icon-512.png', 'maskable.png'],
-      workbox: { maximumFileSizeToCacheInBytes: 2000000 },
+      workbox: { maximumFileSizeToCacheInBytes: 5000000 },
       manifest: {
         id: '/',
         name: 'វត្តស្នាយដួច',
