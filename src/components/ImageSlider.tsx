@@ -131,7 +131,7 @@ export default function ImageSlider() {
               aria-label={`Go to slide ${idx + 1}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 currentIndex === idx 
-                  ? 'w-5 bg-orange-500' 
+                  ? 'w-5 bg-[#028090]' 
                   : 'w-1.5 bg-white/60 hover:bg-white/90'
               }`}
             />

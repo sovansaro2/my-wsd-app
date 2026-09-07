@@ -15,9 +15,10 @@ interface UserProfile {
 
 interface UsersProps {
   onBack?: () => void;
+  hideHeader?: boolean;
 }
 
-export default function Users({ onBack }: UsersProps) {
+export default function Users({ onBack, hideHeader = false }: UsersProps) {
   const { t, language } = useLanguage();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -128,65 +129,181 @@ export default function Users({ onBack }: UsersProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#028090]" />
       </div>
     );
   }
 
   return (
-    <div className="w-full mx-auto p-2 sm:p-4 animate-in fade-in duration-300 pb-20">
-      {onBack && (
+    <div className="w-full mx-auto p-3 sm:p-4 animate-in fade-in duration-300 pb-24">
+      {!hideHeader && onBack && (
         <button 
           onClick={onBack}
-          className="mb-4 flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium text-sm"
+          className="mb-4 flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium text-sm font-battambang"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           {t('common_back')}
         </button>
       )}
       
-      <div className="flex items-center gap-3.5 mb-6">
-        <div className="text-orange-500 shrink-0">
-          <UserCog className="w-7 h-7 sm:w-8 sm:h-8" />
+      {!hideHeader && (
+        <div className="flex items-center gap-3.5 mb-6">
+          <div className="text-[#028090] dark:text-teal-400 shrink-0">
+            <UserCog className="w-7 h-7 sm:w-8 sm:h-8" />
+          </div>
+          <div>
+            <h2 className="text-xl font-title text-gray-900 dark:text-white uppercase">{t('users_title')}</h2>
+            <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang">{t('users_subtitle')}</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-title text-gray-900 dark:text-white uppercase">{t('users_title')}</h2>
-          <p className="text-xs text-gray-500 dark:text-slate-400">{t('users_subtitle')}</p>
+      )}
+
+      {/* Tabs / Sub-Controls */}
+      <div className="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-slate-800 pb-1">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`pb-2.5 text-xs sm:text-sm font-medium transition-colors font-battambang relative ${
+              activeTab === 'list' 
+                ? 'text-[#028090] dark:text-teal-400 font-bold' 
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            {t('users_tab_list')}
+            {activeTab === 'list' && (
+              <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#028090] rounded-t-full" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('advanced')}
+            className={`pb-2.5 text-xs sm:text-sm font-medium transition-colors font-battambang relative ${
+              activeTab === 'advanced' 
+                ? 'text-[#028090] dark:text-teal-400 font-bold' 
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            {t('users_tab_advanced')}
+            {activeTab === 'advanced' && (
+              <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#028090] rounded-t-full" />
+            )}
+          </button>
+        </div>
+
+        {/* Count badge */}
+        <div className="text-xs text-gray-500 dark:text-slate-400 font-battambang flex items-center gap-1.5">
+          <span>{language === 'km' ? 'សរុប' : 'Total'}:</span>
+          <span className="font-rajdhani font-bold text-gray-900 dark:text-white text-sm">{users.length}</span>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-6 mb-6 border-b border-gray-200 dark:border-slate-800">
-        <button
-          onClick={() => setActiveTab('list')}
-          className={`pb-3 text-sm font-medium transition-colors font-battambang relative ${
-            activeTab === 'list' 
-              ? 'text-orange-600 dark:text-orange-400' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          {t('users_tab_list')}
-          {activeTab === 'list' && (
-            <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-t-full" />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('advanced')}
-          className={`pb-3 text-sm font-medium transition-colors font-battambang relative ${
-            activeTab === 'advanced' 
-              ? 'text-orange-600 dark:text-orange-400' 
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          {t('users_tab_advanced')}
-          {activeTab === 'advanced' && (
-            <motion.div layoutId="userTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-t-full" />
-          )}
-        </button>
+      {/* Mobile Card List View (< sm) */}
+      <div className="block sm:hidden space-y-3 mb-6">
+        {users.length === 0 ? (
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-8 text-center text-gray-500 font-battambang text-sm">
+            {t('common_no_data')}
+          </div>
+        ) : (
+          users.map((user, index) => (
+            <div 
+              key={user.id} 
+              className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-3.5 transition-all shadow-xs"
+            >
+              <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="relative shrink-0">
+                    <div className="h-10 w-10 rounded-full border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                      {user.avatar_url ? (
+                        <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-gray-600 dark:text-gray-300 font-rajdhani font-bold text-sm">
+                          {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?')}
+                        </span>
+                      )}
+                    </div>
+                    {/* Status dot */}
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800"></span>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="font-title text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {user.full_name || t('users_no_name')}
+                    </div>
+                    <div className="font-rajdhani text-xs text-gray-500 dark:text-slate-400 truncate">
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Role Badge - clean border without filled box */}
+                <div className="shrink-0">
+                  {user.role === 'admin' ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-battambang font-medium border border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400">
+                      <Shield className="w-3 h-3" />
+                      <span>{t('users_role_admin')}</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-battambang font-medium border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400">
+                      <UserIcon className="w-3 h-3" />
+                      <span>{t('users_role_user')}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Meta row */}
+              <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-rajdhani text-gray-400 dark:text-slate-500">
+                <span>ID: #{index + 1} ({user.id.substring(0, 8)})</span>
+                <span>{new Date(user.created_at).toLocaleDateString(language === 'km' ? 'km-KH' : 'en-GB')}</span>
+              </div>
+
+              {/* Advanced Controls on Mobile */}
+              {activeTab === 'advanced' && (
+                <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-battambang text-gray-500 dark:text-slate-400">{t('users_col_role')}:</span>
+                    {updatingId === user.id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#028090]" />
+                    ) : (
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleSelect(user, e.target.value as 'admin' | 'user')}
+                        className="bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white text-xs rounded-md px-2 py-1 font-battambang outline-none cursor-pointer"
+                      >
+                        <option value="user">{t('users_role_user')}</option>
+                        <option value="admin">{t('users_role_admin')}</option>
+                      </select>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setResettingUser(user)}
+                      className="flex items-center gap-1 p-1.5 text-gray-600 hover:text-[#028090] dark:text-gray-300 dark:hover:text-teal-400 rounded-md transition-colors"
+                      title="Reset Password"
+                    >
+                      <KeyRound className="w-4 h-4" />
+                      <span className="text-xs font-battambang hidden xs:inline">{language === 'km' ? 'ប្ដូរលេខកូដ' : 'Reset'}</span>
+                    </button>
+                    <button
+                      onClick={() => setToast({
+                        type: 'info',
+                        message: language === 'km' ? 'មុខងារលុបមិនទាន់ដំណើរការនៅឡើយទេ!' : 'Delete functionality is not enabled yet!'
+                      })}
+                      className="p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 rounded-md transition-colors"
+                      title="Delete User"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
-      {/* User List Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden w-full">
+      {/* User List Table (Tablet & Desktop screens >= sm) */}
+      <div className="hidden sm:block bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden w-full">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 font-battambang">
             <thead className="bg-gray-50 dark:bg-slate-900/50 text-xs uppercase text-gray-700 dark:text-gray-300 font-title border-b border-gray-200 dark:border-slate-700">
@@ -212,8 +329,8 @@ export default function Users({ onBack }: UsersProps) {
                 users.map((user, index) => (
                   <tr key={user.id} className="border-b border-gray-100 dark:border-slate-700/60 hover:bg-gray-50/60 dark:hover:bg-slate-700/30 transition-colors">
                     <td className="px-4 py-4 sm:px-6 font-medium text-gray-900 dark:text-white">
-                      #{index + 1}
-                      <span className="text-gray-400 dark:text-gray-500 text-[10px] ml-1 block truncate w-16" title={user.id}>{user.id.substring(0, 8)}</span>
+                      <span className="font-rajdhani font-semibold">#{index + 1}</span>
+                      <span className="text-gray-400 dark:text-gray-500 text-[11px] font-rajdhani ml-1 block truncate w-16" title={user.id}>{user.id.substring(0, 8)}</span>
                     </td>
                     <td className="px-4 py-4 sm:px-6">
                       <div className="flex items-center gap-3">
@@ -221,7 +338,7 @@ export default function Users({ onBack }: UsersProps) {
                           {user.avatar_url ? (
                             <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
                           ) : (
-                            <span className="text-gray-500 dark:text-gray-400 font-medium text-xs">
+                            <span className="text-gray-500 dark:text-gray-400 font-rajdhani font-semibold text-xs">
                               {user.full_name ? user.full_name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?')}
                             </span>
                           )}
@@ -231,12 +348,12 @@ export default function Users({ onBack }: UsersProps) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4 sm:px-6 text-[13px] select-all">
+                    <td className="px-4 py-4 sm:px-6 text-[13px] font-rajdhani select-all">
                       {user.email}
                     </td>
                     <td className="px-4 py-4 sm:px-6">
                       {updatingId === user.id && activeTab === 'advanced' ? (
-                        <div className="flex items-center gap-2 text-xs text-orange-500 font-battambang">
+                        <div className="flex items-center gap-2 text-xs text-[#028090] font-battambang">
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           <span>{language === 'km' ? 'កំពុងរក្សាទុក...' : 'Updating...'}</span>
                         </div>
@@ -246,7 +363,7 @@ export default function Users({ onBack }: UsersProps) {
                             value={user.role}
                             onChange={(e) => handleRoleSelect(user, e.target.value as 'admin' | 'user')}
                             disabled={updatingId === user.id}
-                            className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-[13px] rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-1.5 font-battambang font-medium min-w-[105px] outline-none cursor-pointer hover:border-gray-300 dark:hover:border-slate-500 transition-colors"
+                            className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white text-[13px] rounded-lg focus:ring-[#028090] focus:border-[#028090] block p-1.5 font-battambang font-medium min-w-[105px] outline-none cursor-pointer hover:border-gray-300 dark:hover:border-slate-500 transition-colors"
                           >
                             <option value="user">{t('users_role_user')}</option>
                             <option value="admin">{t('users_role_admin')}</option>
@@ -255,7 +372,7 @@ export default function Users({ onBack }: UsersProps) {
                             type="button"
                             onClick={() => handleRoleSelect(user, user.role === 'admin' ? 'user' : 'admin')}
                             title={language === 'km' ? 'ចុចដើម្បីប្ដូរសិទ្ធិ' : 'Toggle role'}
-                            className="p-1 rounded text-gray-400 hover:text-orange-500 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                            className="p-1 rounded text-gray-400 hover:text-[#028090] hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -274,9 +391,9 @@ export default function Users({ onBack }: UsersProps) {
                     <td className="px-4 py-4 sm:px-6">
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                        <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Active</span>
+                        <span className="text-[12px] font-medium font-rajdhani text-gray-700 dark:text-gray-300">Active</span>
                       </div>
-                      <div className="text-[10px] text-gray-400 mt-1">
+                      <div className="text-[10px] font-rajdhani text-gray-400 mt-1">
                         {new Date(user.created_at).toLocaleDateString(language === 'km' ? 'km-KH' : 'en-GB')}
                       </div>
                     </td>
@@ -285,7 +402,7 @@ export default function Users({ onBack }: UsersProps) {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setResettingUser(user)}
-                            className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:text-gray-500 dark:hover:text-orange-400 dark:hover:bg-orange-500/10 rounded-lg transition-colors cursor-pointer"
+                            className="p-2 text-gray-400 hover:text-[#028090] hover:bg-teal-50 dark:text-gray-500 dark:hover:text-teal-400 dark:hover:bg-teal-950/30 rounded-lg transition-colors cursor-pointer"
                             title="Reset Password"
                           >
                             <KeyRound className="w-4 h-4" />
@@ -412,7 +529,7 @@ export default function Users({ onBack }: UsersProps) {
                     type="button"
                     onClick={handleConfirmRoleChange}
                     disabled={isUpdatingRole}
-                    className="flex-1 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition-colors text-sm disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2.5 bg-[#028090] hover:bg-[#005F73] text-white rounded-xl font-medium transition-colors text-sm disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm shadow-[#028090]/25"
                   >
                     {isUpdatingRole ? (
                       <>
@@ -442,10 +559,10 @@ export default function Users({ onBack }: UsersProps) {
             >
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 dark:bg-orange-500/20 text-orange-600 rounded-xl">
+                  <div className="text-[#028090] dark:text-teal-400">
                     <KeyRound className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl  font-title text-gray-900 dark:text-white">
+                  <h3 className="text-xl font-title text-gray-900 dark:text-white">
                     {t('users_reset_pwd_title')}
                   </h3>
                 </div>
@@ -502,7 +619,7 @@ export default function Users({ onBack }: UsersProps) {
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-shadow font-battambang"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#028090] focus:border-transparent transition-shadow font-battambang"
                         placeholder={t('users_new_pwd_ph')}
                       />
                     </div>
@@ -519,7 +636,7 @@ export default function Users({ onBack }: UsersProps) {
                       <button
                         type="submit"
                         disabled={isResetting || newPassword.length < 6}
-                        className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors font-battambang disabled:opacity-70 flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-3 bg-[#028090] hover:bg-[#005F73] text-white rounded-xl font-medium transition-colors font-battambang disabled:opacity-70 flex items-center justify-center gap-2 shadow-sm shadow-[#028090]/25"
                       >
                         {isResetting ? (
                           <div>

@@ -78,88 +78,92 @@ export default function FinancialSummaryReport() {
   return (
     <div className="space-y-4 font-battambang">
       {/* Controls Bar: Year & Quarter Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <span>{language === 'en' ? 'Period:' : 'ចន្លោះពេល៖'}</span>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex flex-col xs:flex-row xs:items-center gap-2 sm:gap-2.5">
+            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 shrink-0">
+              <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+              <span className="whitespace-nowrap">{language === 'en' ? 'Period:' : 'ចន្លោះពេល៖'}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+              {/* Year Select */}
+              <select
+                value={selectedYear}
+                onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
+                className="w-full sm:w-auto px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white font-rajdhani font-semibold focus:outline-none focus:border-[#028090] cursor-pointer"
+              >
+                {data?.available_years?.map(y => (
+                  <option key={y} value={y} className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                    {language === 'en' ? `Year ${y}` : `ឆ្នាំ ${y}`}
+                  </option>
+                )) || (
+                  <option value={selectedYear} className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                    {selectedYear}
+                  </option>
+                )}
+              </select>
+
+              {/* Quarter Select */}
+              <select
+                value={selectedQuarter}
+                onChange={e => setSelectedQuarter(e.target.value)}
+                className="w-full sm:w-auto px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white font-battambang focus:outline-none focus:border-[#028090] cursor-pointer"
+              >
+                <option value="all" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                  {language === 'en' ? 'Full Year (12M)' : 'ពេញមួយឆ្នាំ (១២ ខែ)'}
+                </option>
+                <option value="1" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                  {language === 'en' ? 'Q1 (Jan - Mar)' : 'ត្រីមាសទី ១ (មករា - មីនា)'}
+                </option>
+                <option value="2" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                  {language === 'en' ? 'Q2 (Apr - Jun)' : 'ត្រីមាសទី ២ (មេសា - មិថុនា)'}
+                </option>
+                <option value="3" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                  {language === 'en' ? 'Q3 (Jul - Sep)' : 'ត្រីមាសទី ៣ (កក្កដា - កញ្ញា)'}
+                </option>
+                <option value="4" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+                  {language === 'en' ? 'Q4 (Oct - Dec)' : 'ត្រីមាសទី ៤ (តុលា - ធ្នូ)'}
+                </option>
+              </select>
+            </div>
           </div>
 
-          {/* Year Select */}
-          <select
-            value={selectedYear}
-            onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
-            className="px-3 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white font-rajdhani font-semibold focus:outline-none focus:border-orange-500 cursor-pointer"
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 rounded-xl transition-colors cursor-pointer whitespace-nowrap"
           >
-            {data?.available_years?.map(y => (
-              <option key={y} value={y} className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-                {language === 'en' ? `Year ${y}` : `ឆ្នាំ ${y}`}
-              </option>
-            )) || (
-              <option value={selectedYear} className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-                {selectedYear}
-              </option>
-            )}
-          </select>
-
-          {/* Quarter Select */}
-          <select
-            value={selectedQuarter}
-            onChange={e => setSelectedQuarter(e.target.value)}
-            className="px-3 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white font-battambang focus:outline-none focus:border-orange-500 cursor-pointer"
-          >
-            <option value="all" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-              {language === 'en' ? 'Full Year (12 Months)' : 'ពេញមួយឆ្នាំ (១២ ខែ)'}
-            </option>
-            <option value="1" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-              {language === 'en' ? 'Q1 (Jan - Mar)' : 'ត្រីមាសទី ១ (មករា - មីនា)'}
-            </option>
-            <option value="2" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-              {language === 'en' ? 'Q2 (Apr - Jun)' : 'ត្រីមាសទី ២ (មេសា - មិថុនា)'}
-            </option>
-            <option value="3" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-              {language === 'en' ? 'Q3 (Jul - Sep)' : 'ត្រីមាសទី ៣ (កក្កដា - កញ្ញា)'}
-            </option>
-            <option value="4" className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-              {language === 'en' ? 'Q4 (Oct - Dec)' : 'ត្រីមាសទី ៤ (តុលា - ធ្នូ)'}
-            </option>
-          </select>
+            <Printer className="w-4 h-4 text-gray-500 shrink-0" />
+            <span>{language === 'en' ? 'Print Summary' : 'បោះពុម្ពសង្ខេប'}</span>
+          </button>
         </div>
-
-        {/* Print Button */}
-        <button
-          onClick={handlePrint}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 rounded-xl transition-colors cursor-pointer"
-        >
-          <Printer className="w-4 h-4 text-gray-500" />
-          <span>{language === 'en' ? 'Print Summary' : 'បោះពុម្ពសង្ខេប'}</span>
-        </button>
       </div>
 
       {loading && (
         <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin mb-2 text-orange-500" />
+          <Loader2 className="w-6 h-6 animate-spin mb-2 text-[#028090]" />
           <span className="text-xs sm:text-sm">{language === 'en' ? 'Calculating summary...' : 'កំពុងគណនារបាយការណ៍...'}</span>
         </div>
       )}
 
       {!loading && data && (
         <div className="space-y-4">
-          {/* Key Metrics Row (Strictly NO background boxes behind icons or numbers) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* Key Metrics Row (2x2 grid on mobile for clean orderly dashboard, 4 on desktop) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
             {/* Beginning Balance Card */}
-            <div className="p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
+            <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-medium">
+                <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
                   {language === 'en' ? 'Beginning Balance' : 'សមតុល្យដើមគ្រា'}
                 </span>
-                <DollarSign className="w-4 h-4 text-sky-500" />
+                <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-500 shrink-0" />
               </div>
-              <div className="mt-3">
-                <span className="font-rajdhani font-bold text-2xl sm:text-3xl text-sky-600 dark:text-sky-400 block leading-none">
+              <div className="mt-2 sm:mt-3">
+                <span className="font-rajdhani font-bold text-lg sm:text-3xl text-sky-600 dark:text-sky-400 block leading-tight">
                   {(data.beginning_balance || 0).toLocaleString()} ៛
                 </span>
-                <span className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 block">
+                <span className="text-[10px] sm:text-xs text-gray-400 dark:text-slate-500 mt-1 block truncate">
                   {selectedQuarter === 'all'
                     ? (language === 'en' ? 'Brought forward (Jan 1)' : 'ថវិកាដើមឆ្នាំ (លើកមក)')
                     : (language === 'en' ? `Carried forward from Q${parseInt(selectedQuarter, 10) > 1 ? parseInt(selectedQuarter, 10) - 1 : 1}` : `ថវិកាសល់លើកមកពីត្រីមាសមុន`)}
@@ -168,59 +172,59 @@ export default function FinancialSummaryReport() {
             </div>
 
             {/* Total Income Card */}
-            <div className="p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
+            <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-medium">
+                <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
                   {language === 'en' ? 'Total Income' : 'ចំណូលក្នុងគ្រា'}
                 </span>
-                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
               </div>
-              <div className="mt-3">
-                <span className="font-rajdhani font-bold text-2xl sm:text-3xl text-emerald-600 dark:text-emerald-400 block leading-none">
+              <div className="mt-2 sm:mt-3">
+                <span className="font-rajdhani font-bold text-lg sm:text-3xl text-emerald-600 dark:text-emerald-400 block leading-tight">
                   {data.total_income.toLocaleString()} ៛
                 </span>
-                <span className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 block">
+                <span className="text-[10px] sm:text-xs text-gray-400 dark:text-slate-500 mt-1 block truncate">
                   {language === 'en' ? `${data.income_count} transactions` : `${data.income_count} ប្រតិបត្តិការ`}
                 </span>
               </div>
             </div>
 
             {/* Total Expense Card */}
-            <div className="p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
+            <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-medium">
+                <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
                   {language === 'en' ? 'Total Expense' : 'ចំណាយក្នុងគ្រា'}
                 </span>
-                <TrendingDown className="w-4 h-4 text-rose-500" />
+                <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-500 shrink-0" />
               </div>
-              <div className="mt-3">
-                <span className="font-rajdhani font-bold text-2xl sm:text-3xl text-rose-600 dark:text-rose-400 block leading-none">
+              <div className="mt-2 sm:mt-3">
+                <span className="font-rajdhani font-bold text-lg sm:text-3xl text-rose-600 dark:text-rose-400 block leading-tight">
                   {data.total_expense.toLocaleString()} ៛
                 </span>
-                <span className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 block">
+                <span className="text-[10px] sm:text-xs text-gray-400 dark:text-slate-500 mt-1 block truncate">
                   {language === 'en' ? `${data.expense_count} transactions` : `${data.expense_count} ប្រតិបត្តិការ`}
                 </span>
               </div>
             </div>
 
             {/* Ending True Balance Card */}
-            <div className="p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
+            <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-medium">
+                <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
                   {language === 'en' ? 'Actual Cash in Hand' : 'សមតុល្យសរុបជាក់ស្ដែង'}
                 </span>
-                <DollarSign className={`w-4 h-4 ${data.net_balance >= 0 ? 'text-emerald-500' : 'text-rose-500'}`} />
+                <DollarSign className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${data.net_balance >= 0 ? 'text-emerald-500' : 'text-rose-500'}`} />
               </div>
-              <div className="mt-3">
-                <span className={`font-rajdhani font-bold text-2xl sm:text-3xl block leading-none ${
+              <div className="mt-2 sm:mt-3">
+                <span className={`font-rajdhani font-bold text-lg sm:text-3xl block leading-tight ${
                   data.net_balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                 }`}>
                   {data.net_balance.toLocaleString()} ៛
                 </span>
-                <span className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 block">
+                <span className="text-[10px] sm:text-xs text-gray-400 dark:text-slate-500 mt-1 block truncate">
                   {language === 'en'
                     ? `Actual cash remaining in hand`
-                    : `ថវិកាសល់ជាក់ស្ដែងក្នុងដៃ (បញ្ជីចុងក្រោយ)`}
+                    : `ថវិកាសល់ជាក់ស្ដែងក្នុងដៃ`}
                 </span>
               </div>
             </div>
@@ -229,7 +233,7 @@ export default function FinancialSummaryReport() {
           {/* Period In-Flow Performance Badge/Strip & Seil Carried Adjustment */}
           <div className="space-y-2">
             {typeof data.period_net === 'number' && (
-              <div className="px-4 py-2.5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col xs:flex-row xs:items-center justify-between gap-1 sm:gap-2 text-xs">
                 <span className="text-gray-500 dark:text-slate-400">
                   {language === 'en' ? 'Net Flow in this Period (Income - Expense):' : 'លទ្ធផលចំណូល-ចំណាយក្នុងគ្រានេះ (ចំណូល - ចំណាយ)៖'}
                 </span>
@@ -243,7 +247,7 @@ export default function FinancialSummaryReport() {
             )}
 
             {data.carried_adjustment && data.carried_adjustment !== 0 && (
-              <div className="px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="px-3 sm:px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col xs:flex-row xs:items-center justify-between gap-1 sm:gap-2 text-xs">
                 <span className="text-gray-500 dark:text-slate-400">
                   {language === 'en'
                     ? 'Carried Forward & Seil Balance Adjustments:'
@@ -333,36 +337,42 @@ export default function FinancialSummaryReport() {
           </div>
 
           {/* Breakdown Section: Monthly vs Seil Periods Table */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 sm:p-5 overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-3 sm:p-5 overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 sm:pb-3 border-b border-gray-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-orange-500" />
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                <Calendar className="w-4 h-4 text-[#028090] dark:text-teal-400 shrink-0" />
+                <h4 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
                   {language === 'en' ? 'Detailed Breakdown' : 'តារាងលម្អិតចំណូល-ចំណាយ'}
                 </h4>
               </div>
 
-              {/* Clean Transparent Tabs (No background boxes) */}
-              <div className="flex items-center gap-1 border-b border-transparent text-xs sm:text-sm">
+              {/* Clean Transparent Tabs (No background boxes, Single-line labels) */}
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-none text-xs sm:text-sm">
                 <button
                   onClick={() => setActiveTableTab('monthly')}
-                  className={`px-3 py-1 font-medium transition-colors border-b-2 cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1 font-medium transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
                     activeTableTab === 'monthly'
-                      ? 'text-orange-600 dark:text-orange-400 border-orange-500 font-semibold'
+                      ? 'text-[#028090] dark:text-teal-400 border-[#028090] font-semibold'
                       : 'text-gray-500 dark:text-slate-400 border-transparent hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
-                  {language === 'en' ? 'Monthly Flow (12 Months)' : 'តារាងសង្ខេបប្រចាំខែ (១២ ខែ)'}
+                  <span>{language === 'en' ? 'Monthly Flow' : 'តារាងប្រចាំខែ'}</span>
+                  <span className="font-rajdhani text-[11px] sm:text-xs ml-1">
+                    {language === 'en' ? '(12M)' : '(១២ ខែ)'}
+                  </span>
                 </button>
                 <button
                   onClick={() => setActiveTableTab('seils')}
-                  className={`px-3 py-1 font-medium transition-colors border-b-2 cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1 font-medium transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
                     activeTableTab === 'seils'
-                      ? 'text-orange-600 dark:text-orange-400 border-orange-500 font-semibold'
+                      ? 'text-[#028090] dark:text-teal-400 border-[#028090] font-semibold'
                       : 'text-gray-500 dark:text-slate-400 border-transparent hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
-                  {language === 'en' ? 'Seil Periods Flow (11 Periods)' : 'តារាងលម្អិតតាមកាលបរិច្ឆេទបញ្ជីសីល (១១ សីល)'}
+                  <span>{language === 'en' ? 'Seil Periods' : 'តាមបញ្ជីសីល'}</span>
+                  <span className="font-rajdhani text-[11px] sm:text-xs ml-1">
+                    {language === 'en' ? '(11 Periods)' : '(១១ សីល)'}
+                  </span>
                 </button>
               </div>
             </div>

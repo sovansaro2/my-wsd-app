@@ -18,12 +18,12 @@ export default function AdminPanel({ initialTab = 'users', onNavigateTab, onBack
   return (
     <div className="min-h-full flex flex-col">
       {/* Top Admin Panel Navigation Banner */}
-      <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-3.5 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           {onBack && (
             <button
               onClick={onBack}
-              className="p-1.5 text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+              className="p-1 sm:p-1.5 text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white transition-colors"
               title="ត្រឡប់ក្រោយ"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -31,12 +31,12 @@ export default function AdminPanel({ initialTab = 'users', onNavigateTab, onBack
           )}
           <div>
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              <h1 className="font-title text-xl sm:text-2xl text-gray-900 dark:text-white tracking-wide">
+              <Shield className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
+              <h1 className="font-title text-lg sm:text-2xl text-gray-900 dark:text-white tracking-wide">
                 {language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin'}
               </h1>
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-battambang mt-0.5">
+            <p className="hidden sm:block text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-battambang mt-0.5">
               {language === 'en' 
                 ? 'Manage system users, access privileges, and official invitation letters' 
                 : 'គ្រប់គ្រងគណនីអ្នកប្រើប្រាស់ កំណត់សិទ្ធិ និងបង្កើតលិខិតអញ្ជើញផ្លូវការ'}
@@ -45,12 +45,12 @@ export default function AdminPanel({ initialTab = 'users', onNavigateTab, onBack
         </div>
 
         {/* Sub-Tabs: គ្រប់គ្រងអ្នកប្រើប្រាស់ & លិខិតអញ្ជើញ */}
-        <div className="flex items-center gap-1 border-b border-gray-200 dark:border-slate-700 md:border-none">
+        <div className="grid grid-cols-2 sm:flex items-center gap-1 border-b sm:border-b-0 border-gray-200 dark:border-slate-800 w-full sm:w-auto">
           <button
             onClick={() => setCurrentSubTab('users')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-battambang transition-colors border-b-2 ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-battambang transition-colors border-b-2 sm:border-b-2 ${
               currentSubTab === 'users'
-                ? 'border-orange-600 text-orange-600 dark:text-orange-400 font-bold'
+                ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-bold'
                 : 'border-transparent text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -60,9 +60,9 @@ export default function AdminPanel({ initialTab = 'users', onNavigateTab, onBack
 
           <button
             onClick={() => setCurrentSubTab('invitation')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-battambang transition-colors border-b-2 ${
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-battambang transition-colors border-b-2 sm:border-b-2 ${
               currentSubTab === 'invitation'
-                ? 'border-orange-600 text-orange-600 dark:text-orange-400 font-bold'
+                ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-bold'
                 : 'border-transparent text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -83,7 +83,7 @@ export default function AdminPanel({ initialTab = 'users', onNavigateTab, onBack
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.15 }}
             >
-              <Users onBack={onBack} />
+              <Users hideHeader={true} />
             </motion.div>
           )}
 

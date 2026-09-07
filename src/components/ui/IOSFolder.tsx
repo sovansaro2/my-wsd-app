@@ -3,7 +3,7 @@ import React from 'react';
 export interface IOSFolderProps {
   size?: number | string;
   className?: string;
-  variant?: 'blue' | 'amber' | 'orange' | 'emerald' | 'purple' | 'slate';
+  variant?: 'blue' | 'amber' | 'orange' | 'emerald' | 'purple' | 'slate' | 'teal';
   hasPaper?: boolean;
 }
 
@@ -40,15 +40,26 @@ export const IOSFolder = React.memo(function IOSFolder({
       paperLines: '#FDE047',
     },
     orange: {
-      backTop: '#FDBA74',
-      backBottom: '#F97316',
-      innerPocket: '#EA580C',
-      frontTop: '#FB923C',
-      frontBottom: '#EA580C',
+      backTop: '#5CE1E6',
+      backBottom: '#028090',
+      innerPocket: '#005F73',
+      frontTop: '#00A896',
+      frontBottom: '#028090',
       frontHighlight: 'rgba(255, 255, 255, 0.65)',
-      frontShadow: 'rgba(180, 50, 0, 0.35)',
-      paperBg: '#FFF7ED',
-      paperLines: '#FED7AA',
+      frontShadow: 'rgba(0, 95, 115, 0.35)',
+      paperBg: '#F0FDFA',
+      paperLines: '#99F6E4',
+    },
+    teal: {
+      backTop: '#5CE1E6',
+      backBottom: '#028090',
+      innerPocket: '#005F73',
+      frontTop: '#00A896',
+      frontBottom: '#028090',
+      frontHighlight: 'rgba(255, 255, 255, 0.65)',
+      frontShadow: 'rgba(0, 95, 115, 0.35)',
+      paperBg: '#F0FDFA',
+      paperLines: '#99F6E4',
     },
     emerald: {
       backTop: '#6EE7B7',

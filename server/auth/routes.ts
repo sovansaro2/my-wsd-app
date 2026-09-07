@@ -96,6 +96,7 @@ router.post('/verify-otp', async (req, res) => {
       
     res.json({ 
        access_token: authData.session.access_token, 
+       refresh_token: authData.session.refresh_token,
        token_type: 'bearer',
        user: profile || authData.user 
     });
@@ -128,6 +129,7 @@ router.post('/login', async (req, res) => {
 
     res.json({ 
       access_token: authData.session.access_token, 
+      refresh_token: authData.session.refresh_token,
       token_type: 'bearer',
       user: profile || authData.user
     });
@@ -136,11 +138,44 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// POST /api/auth/refresh
+router.post('/refresh', async (req, res) => {
+  try {
+    const refreshToken = req.body?.refresh_token || req.headers['x-refresh-token'];
+    if (!refreshToken) {
+      return res.status(400).json({ detail: 'Missing refresh token' });
+    }
+
+    const { data, error } = await supabaseAdmin.auth.refreshSession({ refresh_token: String(refreshToken) });
+    if (error || !data.session) {
+      return res.status(401).json({ detail: 'Session expired or invalid refresh token' });
+    }
+
+    const userId = data.user?.id || data.session.user?.id;
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    res.json({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      token_type: 'bearer',
+      user: profile || data.user || data.session.user
+    });
+  } catch (e: any) {
+    res.status(401).json({ detail: e.message || 'Error refreshing session' });
+  }
+});
+
 // GET /api/auth/me
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ detail: 'Unauthorized' });
+    if (!token || token === 'null' || token === 'undefined') {
+      return res.status(401).json({ detail: 'Unauthorized: No token provided' });
+    }
 
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
     if (error || !user) {
@@ -153,8 +188,8 @@ router.get('/me', async (req, res) => {
       .eq('id', user.id)
       .single();
     
-    if (profileError) {
-      console.error('Profile fetch error:', profileError);
+    if (profileError && (profileError as any).code !== 'PGRST116') {
+      console.warn('Profile fetch note:', profileError.message);
     }
 
     res.json({
@@ -162,7 +197,6 @@ router.get('/me', async (req, res) => {
       has_balance_pin: !!user.user_metadata?.balance_pin_hash
     });
   } catch (e: any) {
-    console.error("GET /me error:", e);
     res.status(401).json({ detail: e.message || 'Unauthorized' });
   }
 });

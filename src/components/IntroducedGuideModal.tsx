@@ -79,7 +79,7 @@ export default function IntroducedGuideModal({
           {/* Header */}
           <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Smartphone className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <Smartphone className="w-6 h-6 text-[#028090] dark:text-teal-400" />
               <div>
                 <h3 className="text-[17px] font-semibold text-gray-900 dark:text-white leading-snug">
                   ការណែនាំដំឡើង App (Introduced)
@@ -104,7 +104,7 @@ export default function IntroducedGuideModal({
               onClick={() => setPlatformTab('android')}
               className={`flex-1 py-2 px-3 text-[14px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
                 platformTab === 'android'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  ? 'border-[#028090] text-[#028090] dark:text-teal-400'
                   : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
               }`}
             >
@@ -116,7 +116,7 @@ export default function IntroducedGuideModal({
               onClick={() => setPlatformTab('ios')}
               className={`flex-1 py-2 px-3 text-[14px] font-medium rounded-xl border transition-all text-center flex items-center justify-center gap-2 ${
                 platformTab === 'ios'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  ? 'border-[#028090] text-[#028090] dark:text-teal-400'
                   : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
               }`}
             >
@@ -186,7 +186,7 @@ export default function IntroducedGuideModal({
                         2
                       </span>
                       <div>
-                        ចុចសញ្ញាម៉ឺនុយចុចបី <MoreVertical className="w-4 h-4 inline text-orange-500 mx-0.5" /> នៅជ្រុងខាងស្តាំខាងលើនៃ Browser។
+                        ចុចសញ្ញាម៉ឺនុយចុចបី <MoreVertical className="w-4 h-4 inline text-[#028090] dark:text-teal-400 mx-0.5" /> នៅជ្រុងខាងស្តាំខាងលើនៃ Browser។
                       </div>
                     </li>
 

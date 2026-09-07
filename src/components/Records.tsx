@@ -84,7 +84,7 @@ const PeriodCard = React.memo(function PeriodCard({
             e.stopPropagation();
             onEdit(period, e);
           }}
-          className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-lg transition-colors z-10"
+          className="absolute top-2.5 right-2.5 p-1.5 text-gray-400 hover:text-[#028090] rounded-lg transition-colors z-10 cursor-pointer"
           title="កែប្រែ"
         >
           <Pencil className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -251,7 +251,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         width: 794,
         height: 559,
         pixelRatio: 2,
-        
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left", margin: '0' }
@@ -336,14 +336,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       const reportWidth = reportRef.current.scrollWidth || 800;
       const reportHeight = reportRef.current.scrollHeight;
       
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, { 
         backgroundColor: '#ffffff',
         width: reportWidth,
         height: reportHeight,
         pixelRatio: 2,
-        
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -602,7 +602,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             {userRole === 'admin' && (
               <button 
                 onClick={openAddSeilModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium rounded-xl transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#028090] hover:bg-[#005F73] text-white text-xs font-medium rounded-xl transition-colors shadow-sm cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t('records_btn_add_new')}</span>
@@ -671,7 +671,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       required
                       value={seilName}
                       onChange={(e) => setSeilName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
                       placeholder="បញ្ចូលឈ្មោះបញ្ជី"
                     />
                   </div>
@@ -683,7 +683,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="text"
                       value={seilDateRange}
                       onChange={(e) => setSeilDateRange(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
                       placeholder="បញ្ចូលកាលបរិច្ឆេទ"
                     />
                   </div>
@@ -695,7 +695,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="number"
                       value={seilPreviousBalance}
                       onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-sans"
                       placeholder="0"
                     />
                   </div>
@@ -703,7 +703,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     <button
                       type="submit"
                       disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="w-full flex items-center justify-center bg-[#028090] hover:bg-[#005F73] text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70 cursor-pointer shadow-sm shadow-[#028090]/25"
                     >
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -756,7 +756,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       required
                       value={seilName}
                       onChange={(e) => setSeilName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
                     />
                   </div>
                   <div>
@@ -767,7 +767,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="text"
                       value={seilDateRange}
                       onChange={(e) => setSeilDateRange(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
                     />
                   </div>
                   <div>
@@ -778,14 +778,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="number"
                       value={seilPreviousBalance}
                       onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-sans"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-sans"
                     />
                   </div>
                   <div className="pt-2">
                     <button
                       type="submit"
                       disabled={isSavingSeil}
-                      className="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="w-full flex items-center justify-center bg-[#028090] hover:bg-[#005F73] text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70 cursor-pointer shadow-sm shadow-[#028090]/25"
                     >
                       {isSavingSeil ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -864,7 +864,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           <div className="flex items-center justify-between">
             <button 
               onClick={() => setSelectedPeriod(null)}
-              className="p-2 -ml-2 flex items-center justify-center text-gray-700 dark:text-slate-200 hover:text-orange-500 dark:hover:text-orange-400 transition-colors shrink-0"
+              className="p-2 -ml-2 flex items-center justify-center text-gray-700 dark:text-slate-200 hover:text-[#028090] dark:hover:text-teal-400 transition-colors shrink-0 cursor-pointer"
               aria-label="Back"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -877,7 +877,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 <button 
                   onClick={handleDownload}
                   disabled={isDownloading || isLoading || records.length === 0}
-                  className="p-2 text-gray-600 dark:text-slate-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors focus:outline-none disabled:opacity-40"
+                  className="p-2 text-gray-600 dark:text-slate-300 hover:text-[#028090] dark:hover:text-teal-400 transition-colors focus:outline-none disabled:opacity-40 cursor-pointer"
                   title="ទាញយកជារូបភាព"
                   aria-label="Download"
                 >
@@ -898,7 +898,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     setIsHighLevel(false);
                     setIsAddModalOpen(true);
                   }}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-medium transition-colors shadow-sm focus:outline-none"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-[#028090] hover:bg-[#005F73] text-white rounded-xl text-xs font-medium transition-colors shadow-sm focus:outline-none cursor-pointer"
                   title={t('records_add_new')}
                 >
                   <Plus className="w-4 h-4" />
@@ -922,10 +922,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           {/* Current Balance */}
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+              <span className="w-2 h-2 rounded-full bg-[#028090]"></span>
               <p className="text-gray-500 dark:text-slate-400 text-xs font-medium ">{t('records_current_balance')}</p>
             </div>
-            <p className="text-base sm:text-lg  text-orange-600 dark:text-orange-400 ">{formatCurrency(currentBalance)}</p>
+            <p className="text-base sm:text-lg  text-[#028090] dark:text-teal-400 ">{formatCurrency(currentBalance)}</p>
           </div>
         </div>
         </div>
@@ -991,7 +991,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         {(activeTab === 'income' ? incomeRecords : expenseRecords).map((record, index) => (
                           <tr
                             key={record.id}
-                            className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-orange-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
+                            className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-teal-50/30 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
                             <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
                               <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
@@ -1010,13 +1010,13 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                       e.stopPropagation();
                                       toggleHighLevel(record);
                                     }}
-                                    className={`shrink-0 p-1 rounded-full transition-colors ${record.is_high_level ? 'text-orange-500 bg-orange-50 dark:bg-orange-500/10' : 'text-gray-300 dark:text-slate-600 hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
+                                    className={`shrink-0 p-1 transition-colors ${record.is_high_level ? 'text-[#028090]' : 'text-gray-300 dark:text-slate-600 hover:text-[#028090]'}`}
                                     title="ថវិកាកម្រិតខ្ពស់"
                                   >
                                     <Star className="w-4 h-4" fill={record.is_high_level ? "currentColor" : "none"} />
                                   </button>
                                 ) : record.is_high_level ? (
-                                  <div className="shrink-0 p-1 text-orange-500 bg-orange-50 dark:bg-orange-500/10 rounded-full" title="ថវិកាកម្រិតខ្ពស់">
+                                  <div className="shrink-0 p-1 text-[#028090]" title="ថវិកាកម្រិតខ្ពស់">
                                     <Star className="w-4 h-4" fill="currentColor" />
                                   </div>
                                 ) : null}
@@ -1040,7 +1040,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                               <div className="flex items-center justify-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button 
                                   onClick={() => openEditRecordModal(record)}
-                                  className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
+                                  className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 rounded-lg transition-colors focus:outline-none shrink-0"
                                   title="កែប្រែ"
                                 >
                                   <Pencil className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
@@ -1048,7 +1048,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                                 {activeTab === 'income' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
-                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
+                                    className="p-1 sm:p-1.5 text-[#028090] hover:text-[#005F73] rounded-lg transition-colors focus:outline-none shrink-0"
                                     title="ប័ណ្ណអនុមោទនា"
                                   >
                                     <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
@@ -1074,7 +1074,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           {/* Header */}
           <div className="text-center mb-8 border-b-2 border-gray-800 pb-6">
             <h1 className="text-3xl mb-2 text-gray-900" style={{ fontFamily: 'Koulen, "Khmer OS Kulen", sans-serif' }}>វត្តវារីបាការាម (ស្នាយដួច)</h1>
-            <h2 className="text-3xl font-moul mb-3 text-orange-600">របាយការណ៍បច្ច័យ</h2>
+            <h2 className="text-3xl font-moul mb-3 text-[#028090]">របាយការណ៍បច្ច័យ</h2>
             <p className="text-xl ">{selectedPeriod?.name} {selectedPeriod?.date_range_text ? `(${selectedPeriod.date_range_text})` : ''}</p>
           </div>
 
@@ -1121,9 +1121,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
 
           {/* Current Balance */}
-          <div className="flex justify-between items-center bg-orange-50 border-2 border-orange-500 p-6 rounded-2xl">
-            <span className=" text-2xl text-orange-900">បច្ច័យសល់ជាក់ស្ដែង៖</span>
-            <span className=" text-3xl text-orange-600">{formatCurrency(currentBalance)}</span>
+          <div className="flex justify-between items-center bg-teal-50 border-2 border-[#028090] p-6 rounded-2xl">
+            <span className=" text-2xl text-[#005F73]">បច្ច័យសល់ជាក់ស្ដែង៖</span>
+            <span className=" text-3xl text-[#028090]">{formatCurrency(currentBalance)}</span>
           </div>
           
           {/* Footer Signature Area */}
@@ -1217,7 +1217,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       value={newDescription}
                       onChange={(e) => setNewDescription(e.target.value)}
                       placeholder={newRecordType === 'income' ? (t('records_description_income_ph') || 'សូមបញ្ជូលឈ្មោះ') : (t('records_description_expense_ph') || 'ឧ. ទិញទឹកសុទ្ធ...')}
-                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all placeholder:text-gray-400"
                     />
                   </div>
 
@@ -1232,7 +1232,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         setNewAmount(val ? parseInt(val, 10).toLocaleString('en-US') : '');
                       }}
                       placeholder={t('records_amount_ph')}
-                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all placeholder:text-gray-400"
                     />
                   </div>
 
@@ -1244,7 +1244,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         required
                         value={newDate}
                         onChange={(e) => setNewDate(e.target.value)}
-                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all appearance-none"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all appearance-none"
                       />
                     </div>
                     <div>
@@ -1254,7 +1254,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
                         placeholder={t('records_note_ph')}
-                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -1262,16 +1262,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   {/* High Level Budget Checkbox */}
                   {newRecordType === 'income' && (
                     <div className="flex flex-col gap-2 mt-2">
-                      <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                      <div className="flex items-center gap-3 p-4 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
                         <input 
                           type="checkbox" 
                           id="isHighLevel" 
                           checked={isHighLevel}
                           onChange={(e) => setIsHighLevel(e.target.checked)}
-                          className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                          className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="isHighLevel" className="flex items-center gap-2 text-[14px] font-battambang  text-orange-800 dark:text-orange-300 select-none cursor-pointer">
-                          <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
+                        <label htmlFor="isHighLevel" className="flex items-center gap-2 text-[14px] font-battambang text-teal-800 dark:text-teal-300 select-none cursor-pointer">
+                          <Star className="w-4 h-4 fill-[#028090] text-[#028090]" /> ថវិកាកម្រិតខ្ពស់
                         </label>
                       </div>
 
@@ -1283,16 +1283,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           onChange={(e) => setAddToRoofFund(e.target.checked)}
                           className="w-5 h-5 rounded text-blue-500 focus:ring-blue-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="addToRoofFund" className="flex items-center gap-2 text-[14px] font-battambang  text-blue-800 dark:text-blue-300 select-none cursor-pointer">
+                        <label htmlFor="addToRoofFund" className="flex items-center gap-2 text-[14px] font-battambang text-blue-800 dark:text-blue-300 select-none cursor-pointer">
                           <Landmark className="w-4 h-4 text-blue-500" /> បន្ថែមចូលបញ្ជីកសាងដំបូលព្រះវិហារ
                         </label>
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                  <div className="flex items-center gap-3 p-4 mt-2 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
                     <div className="flex-shrink-0">
-                      <Bell className="w-5 h-5 text-orange-600 dark:text-orange-500" />
+                      <Bell className="w-5 h-5 text-[#028090] dark:text-teal-400" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-sm sm:text-[15px]  text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
@@ -1305,14 +1305,14 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         checked={newNotifyPublic}
                         onChange={(e) => setNewNotifyPublic(e.target.checked)}
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#028090]"></div>
                     </label>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="w-full mt-2 py-4 rounded-2xl bg-zinc-900 dark:bg-orange-600 text-white  text-[15px] shadow-none dark:shadow-none hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/50 disabled:opacity-70 flex justify-center items-center"
+                    className="w-full mt-2 py-4 rounded-2xl bg-[#028090] hover:bg-[#005F73] text-white text-[15px] shadow-sm shadow-[#028090]/25 transition-colors focus:outline-none focus:ring-2 focus:ring-[#028090]/50 disabled:opacity-70 flex justify-center items-center cursor-pointer"
                   >
                     {isSaving ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1367,7 +1367,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       value={newDescription}
                       onChange={(e) => setNewDescription(e.target.value)}
                       placeholder={newRecordType === 'income' ? (t('records_description_income_ph') || 'សូមបញ្ជូលឈ្មោះ') : (t('records_description_expense_ph') || 'ឧ. ទិញទឹកសុទ្ធ...')}
-                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all placeholder:text-gray-400"
                     />
                   </div>
 
@@ -1384,7 +1384,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           setNewAmount(val ? parseInt(val).toLocaleString() : '');
                         }}
                         placeholder={t('records_amount_ph')}
-                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all  placeholder:font-normal placeholder:text-gray-400"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all  placeholder:font-normal placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -1398,7 +1398,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                           required
                           value={newDate}
                           onChange={(e) => setNewDate(e.target.value)}
-                          className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
+                          className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all"
                         />
                       </div>
                     </div>
@@ -1409,23 +1409,23 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         value={newNote}
                         onChange={(e) => setNewNote(e.target.value)}
                         placeholder={t('records_note_ph')}
-                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-gray-400"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-[15px] text-gray-900 dark:text-white focus:border-[#028090] focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
 
                   {newRecordType === 'income' && (
                     <div className="flex flex-col gap-2 mt-2">
-                      <div className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                      <div className="flex items-center gap-3 p-4 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
                         <input 
                           type="checkbox" 
                           id="editIsHighLevel" 
                           checked={isHighLevel}
                           onChange={(e) => setIsHighLevel(e.target.checked)}
-                          className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                          className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                         />
-                        <label htmlFor="editIsHighLevel" className="flex items-center gap-2 text-[14px] font-battambang  text-orange-800 dark:text-orange-300 select-none cursor-pointer">
-                          <Star className="w-4 h-4 fill-orange-500 text-orange-500" /> ថវិកាកម្រិតខ្ពស់
+                        <label htmlFor="editIsHighLevel" className="flex items-center gap-2 text-[14px] font-battambang text-teal-800 dark:text-teal-300 select-none cursor-pointer">
+                          <Star className="w-4 h-4 fill-[#028090] text-[#028090]" /> ថវិកាកម្រិតខ្ពស់
                         </label>
                       </div>
                     </div>

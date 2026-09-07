@@ -138,6 +138,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const onAuthExpired = () => {
+      setCurrentUser(null);
+      setActualRole(null);
+      setUserRole(null);
+    };
+    window.addEventListener('auth-token-expired', onAuthExpired);
+
     const token = localStorage.getItem('access_token');
     if (token) {
       fetchUserRole();
@@ -151,30 +158,42 @@ export default function App() {
       const interval = setInterval(fetchNotifications, 180000);
       
       return () => {
+        window.removeEventListener('auth-token-expired', onAuthExpired);
         window.removeEventListener('focus', onFocus);
         clearInterval(interval);
       };
     } else {
       setIsInitializing(false);
+      return () => {
+        window.removeEventListener('auth-token-expired', onAuthExpired);
+      };
     }
   }, []);
 
   const fetchUserRole = async () => {
     try {
       const data = await api.getMe();
-      setCurrentUser(data);
-      if (data) {
-        try {
-          localStorage.setItem('cached_user_profile', JSON.stringify(data));
-        } catch {}
+      if (!data) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('cached_user_profile');
+        setCurrentUser(null);
+        setActualRole(null);
+        setUserRole(null);
+        return;
       }
+      setCurrentUser(data);
+      try {
+        localStorage.setItem('cached_user_profile', JSON.stringify(data));
+      } catch {}
       const role = data?.role as Role || 'user';
       setActualRole(role);
       setUserRole(role);
-    } catch (err) {
-      console.log('Session expired or unauthorized');
-      localStorage.removeItem('access_token'); // Token might be expired
+    } catch {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       localStorage.removeItem('cached_user_profile');
+      setCurrentUser(null);
       setActualRole(null);
       setUserRole(null);
     } finally {
@@ -305,7 +324,7 @@ export default function App() {
       {/* ========================================================================= */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
         {/* Brand Header */}
-        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-orange-500 dark:bg-slate-900 text-white">
+        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-[#028090] dark:bg-slate-900 text-white">
           <img 
             src="/logo.png" 
             alt="WSD Logo" 
@@ -315,7 +334,7 @@ export default function App() {
             <h1 className="text-white font-title text-base lg:text-lg leading-tight truncate">
               {language === 'en' ? 'WSD Management' : 'វត្តស្នាយដួច'}
             </h1>
-            <p className="text-[11px] text-orange-100 dark:text-slate-400 font-battambang truncate">
+            <p className="text-[11px] text-teal-100 dark:text-slate-400 font-battambang truncate">
               {language === 'en' ? 'Data Management System' : 'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ'}
             </p>
           </div>
@@ -332,12 +351,12 @@ export default function App() {
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center px-4 py-3.5 text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 ${
                   isActive
-                    ? 'bg-gray-100 dark:bg-slate-800 border-blue-600 dark:border-blue-500 text-gray-900 dark:text-white'
+                    ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
                     : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
-                  isActive ? 'text-gray-700 dark:text-slate-200' : 'text-gray-500 dark:text-slate-400'
+                  isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
                 }`} />
                 <span className="truncate">{item.label}</span>
               </button>
@@ -432,7 +451,7 @@ export default function App() {
       {/* ========================================================================= */}
       {/* MOBILE TOP NAVBAR (Visible ONLY on mobile screens < md) */}
       {/* ========================================================================= */}
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-orange-500 dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-orange-600/20 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className={`text-white select-none pt-0.5 truncate mr-2 ${
           language === 'en'
             ? 'font-rajdhani font-bold text-lg sm:text-xl md:text-2xl tracking-wide uppercase'
@@ -469,7 +488,7 @@ export default function App() {
           >
             <Bell className="w-6 h-6" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white border border-orange-500 dark:border-slate-950 px-1">
+              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white border border-[#028090] dark:border-slate-950 px-1">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -529,10 +548,10 @@ export default function App() {
                       <div 
                         key={notif.id}
                         onClick={() => handleNotificationClick(notif)}
-                        className="p-4 hover:bg-orange-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer bg-white dark:bg-transparent"
+                        className="p-4 hover:bg-teal-50/60 dark:hover:bg-slate-800/50 transition-colors cursor-pointer bg-white dark:bg-transparent"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="p-2 bg-orange-100 text-orange-600 dark:bg-orange-950/60 dark:text-orange-400 rounded-xl shrink-0 mt-0.5">
+                          <div className="p-2 text-[#028090] dark:text-teal-400 rounded-xl shrink-0 mt-0.5">
                             <Bell className="w-4 h-4" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -628,7 +647,7 @@ export default function App() {
                       setShowNotifications(false);
                       setSelectedNotification(null);
                     }}
-                    className="flex-1 py-3 px-4 rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition-colors shadow-lg shadow-orange-500/30"
+                    className="flex-1 py-3 px-4 rounded-xl text-white bg-[#028090] hover:bg-[#005F73] transition-colors shadow-lg shadow-[#028090]/25"
                   >
                     ទៅកាន់ទំព័រ
                   </button>
@@ -707,7 +726,7 @@ export default function App() {
             aria-label={t('nav_home')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-all relative ${
               activeTab === 'home' 
-                ? 'text-orange-500 dark:text-orange-400' 
+                ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
@@ -724,7 +743,7 @@ export default function App() {
             aria-label={t('nav_finance')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'records' 
-                ? 'text-orange-500 dark:text-orange-400' 
+                ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
@@ -741,7 +760,7 @@ export default function App() {
             aria-label={t('nav_list')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'categories' 
-                ? 'text-orange-500 dark:text-orange-400' 
+                ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
@@ -758,7 +777,7 @@ export default function App() {
             aria-label={t('nav_reports')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               activeTab === 'reports' 
-                ? 'text-orange-500 dark:text-orange-400' 
+                ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
@@ -775,7 +794,7 @@ export default function App() {
             aria-label={t('nav_account')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
               ['account', 'users', 'certificates'].includes(activeTab) 
-                ? 'text-orange-500 dark:text-orange-400' 
+                ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >

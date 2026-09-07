@@ -110,7 +110,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     return (
       <div className="max-w-xl mx-auto py-16 px-4 text-center">
         <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 flex flex-col items-center">
-          <AlertTriangle className="w-12 h-12 text-orange-500 mb-4 stroke-[1.6]" />
+          <AlertTriangle className="w-12 h-12 text-[#028090] dark:text-teal-400 mb-4 stroke-[1.6]" />
           <h2 className="text-xl font-bold font-title text-gray-900 dark:text-white mb-2">
             {language === 'en' ? 'Access Restricted' : 'មិនមានសិទ្ធិអនុញ្ញាត'}
           </h2>
@@ -125,34 +125,34 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
   }
 
   return (
-    <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-4">
+    <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-3 sm:space-y-4">
       {/* Top Header & Tab Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-gray-100 dark:border-slate-800">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 pb-1 sm:pb-2 border-b border-gray-100 dark:border-slate-800">
+        <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('summary')}
-            className={`flex items-center gap-2 pb-2 text-base sm:text-lg font-title transition-colors border-b-2 cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 pb-2 text-xs sm:text-base font-title transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
               activeTab === 'summary'
-                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
                 : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <BarChart3 className="w-5 h-5" />
+            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span>{language === 'en' ? 'Summary & Analytics' : 'របាយការណ៍សង្ខេប'}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('saved')}
-            className={`flex items-center gap-2 pb-2 text-base sm:text-lg font-title transition-colors border-b-2 cursor-pointer ml-4 ${
+            className={`flex items-center gap-1.5 sm:gap-2 pb-2 text-xs sm:text-base font-title transition-colors border-b-2 whitespace-nowrap cursor-pointer ml-2 sm:ml-4 ${
               activeTab === 'saved'
-                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
                 : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <Archive className="w-5 h-5" />
+            <Archive className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span>{language === 'en' ? 'Saved Archives' : 'ឯកសាររក្សាទុក'}</span>
             {reports.length > 0 && (
-              <span className="text-xs font-rajdhani font-semibold text-gray-400 dark:text-slate-500">
+              <span className="text-[11px] sm:text-xs font-rajdhani font-semibold text-gray-400 dark:text-slate-500">
                 ({reports.length})
               </span>
             )}
@@ -163,9 +163,9 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         {userRole === 'admin' && (
           <button
             onClick={() => setShowBackupModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50 hover:border-orange-400 rounded-xl transition-colors cursor-pointer self-start sm:self-auto"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang text-[#028090] dark:text-teal-400 border border-teal-200 dark:border-teal-900/50 hover:border-[#028090] rounded-xl transition-colors cursor-pointer shrink-0 whitespace-nowrap"
           >
-            <Database className="w-4 h-4" />
+            <Database className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             <span>{language === 'en' ? 'Data Backup' : 'បម្រុងទុកទិន្នន័យ'}</span>
           </button>
         )}
@@ -338,14 +338,14 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               className="relative w-full max-w-sm z-10 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
             >
               <div className="flex flex-col items-center text-center">
-                <AlertTriangle className="w-10 h-10 text-orange-500 mb-3" />
+                <AlertTriangle className="w-10 h-10 text-[#028090] dark:text-teal-400 mb-3" />
                 <h3 className="text-lg text-gray-900 dark:text-white mb-2 font-battambang">មិនមានសិទ្ធិអនុញ្ញាត</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-battambang leading-relaxed">
                   ទំព័រនេះសម្រាប់តែអ្នកគ្រប់គ្រងតែប៉ុណ្ណោះ។
                 </p>
                 <button
                   onClick={() => setShowAccessDenied(false)}
-                  className="w-full py-2.5 px-4 rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition-colors font-battambang"
+                  className="w-full py-2.5 px-4 rounded-xl text-white bg-[#028090] hover:bg-[#005F73] transition-colors font-battambang shadow-sm shadow-[#028090]/25"
                 >
                   យល់ព្រម
                 </button>

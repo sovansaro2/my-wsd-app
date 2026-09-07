@@ -119,7 +119,7 @@ export default function InstallPrompt() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <Globe className="w-10 h-10 text-orange-500 mb-3" />
+              <Globe className="w-10 h-10 text-[#028090] dark:text-teal-400 mb-3" />
               <h3 className="text-gray-900 dark:text-white text-base font-semibold">
                 សូមបើកជាមួយ Browser ក្រៅ
               </h3>
@@ -195,7 +195,7 @@ export default function InstallPrompt() {
                 <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
               </div>
 
-              <div className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400 text-xs font-semibold mb-1">
+              <div className="flex items-center gap-1.5 text-[#028090] dark:text-teal-400 text-xs font-semibold mb-1">
                 <span>ដំឡើងលើអេក្រង់ទូរស័ព្ទ</span>
               </div>
 
@@ -225,7 +225,7 @@ export default function InstallPrompt() {
                 <ol className="space-y-1 text-[12px] text-gray-600 dark:text-slate-300">
                   <li className="flex items-center gap-1.5">
                     <span className="w-4 h-4 rounded-full border border-gray-300 dark:border-slate-600 text-[10px] flex items-center justify-center shrink-0">1</span>
-                    <span>ចុចសញ្ញាចុចបី <MoreVertical className="w-3.5 h-3.5 inline text-orange-500" /> នៅជ្រុងខាងស្តាំលើ</span>
+                    <span>ចុចសញ្ញាចុចបី <MoreVertical className="w-3.5 h-3.5 inline text-[#028090] dark:text-teal-400" /> នៅជ្រុងខាងស្តាំលើ</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <span className="w-4 h-4 rounded-full border border-gray-300 dark:border-slate-600 text-[10px] flex items-center justify-center shrink-0">2</span>
@@ -354,7 +354,7 @@ export default function InstallPrompt() {
               <button
                 onClick={handleInstallClick}
                 disabled={isInstalling}
-                className="bg-orange-500 hover:bg-orange-600 text-white text-[13px] font-semibold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5"
+                className="bg-[#028090] hover:bg-[#005F73] text-white text-[13px] font-semibold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm shadow-[#028090]/25"
               >
                 <Download className="w-4 h-4" />
                 <span>ដំឡើង</span>

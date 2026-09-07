@@ -26,6 +26,49 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       const errorMsg = errorData.detail || `Request failed with status ${res.status}`;
+
+      // Handle token expiration / unauthorized
+      if (res.status === 401) {
+        const refreshToken = localStorage.getItem('refresh_token');
+        const isAuthEndpoint = path.startsWith('/api/auth/login') || path.startsWith('/api/auth/refresh');
+
+        // Attempt silent session refresh if we have a refresh token and aren't already refreshing/logging in
+        if (refreshToken && !isAuthEndpoint && retries > 0) {
+          try {
+            const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refresh_token: refreshToken })
+            });
+
+            if (refreshRes.ok) {
+              const refreshData = await refreshRes.json();
+              if (refreshData.access_token) {
+                localStorage.setItem('access_token', refreshData.access_token);
+                if (refreshData.refresh_token) {
+                  localStorage.setItem('refresh_token', refreshData.refresh_token);
+                }
+                clearTimeout(timeoutId);
+                // Retry request with the new access token
+                return apiFetch(path, options, 0);
+              }
+            }
+          } catch {
+            // Silently fall through to token cleanup
+          }
+        }
+
+        // Token expired or invalid and cannot be refreshed: clean up local state
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('cached_user_profile');
+        window.dispatchEvent(new CustomEvent('auth-token-expired'));
+
+        // Log as warning rather than error for expected session expiration
+        console.warn(`[API 401] ${options.method || 'GET'} ${path}: ${errorMsg}`);
+        throw new Error(errorMsg);
+      }
+
       console.error(`[API ${res.status}] ${options.method || 'GET'} ${path}: ${errorMsg}`, errorData);
       throw new Error(errorMsg);
     }
@@ -57,7 +100,16 @@ export const api = {
   signup: (email: string, password: string, full_name: string, latin_name?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, latin_name }) }),
   verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
   verifyPassword: (password: string) => apiFetch('/api/auth/verify-password', { method: 'POST', body: JSON.stringify({ password }) }),
-  getMe: () => apiFetch('/api/auth/me'),
+  refresh: (refresh_token: string) => apiFetch('/api/auth/refresh', { method: 'POST', body: JSON.stringify({ refresh_token }) }),
+  getMe: async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+    try {
+      return await apiFetch('/api/auth/me');
+    } catch {
+      return null;
+    }
+  },
 
   getNotifications: () => apiFetch('/api/notifications'),
   clearNotifications: () => apiFetch('/api/notifications', { method: 'DELETE' }),

@@ -65,7 +65,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500 mb-4" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#028090] mb-4" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('cert_search_ph')}
-            className="w-full bg-gray-100/80 dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 rounded-xl pl-9 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-battambang transition-colors"
+            className="w-full bg-gray-100/80 dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 rounded-xl pl-9 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang transition-colors"
           />
           {searchQuery && (
             <button

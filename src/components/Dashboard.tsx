@@ -149,13 +149,13 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
       <section className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/70 dark:border-slate-800 shadow-2xs overflow-hidden">
         <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-orange-500 dark:text-orange-400 shrink-0" />
+            <Award className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard_high_donors')}</h3>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowDonorSearch(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900/50 hover:border-orange-400 rounded-lg transition-colors cursor-pointer font-battambang"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#028090] dark:text-teal-400 border border-[#028090]/30 dark:border-teal-900/50 hover:border-[#028090] hover:bg-teal-50/50 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer font-battambang"
             >
               <Search className="w-3.5 h-3.5" />
               <span>{language === 'en' ? 'Search All' : 'ស្វែងរកទាំងអស់'}</span>

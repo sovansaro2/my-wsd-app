@@ -85,7 +85,7 @@ const CategoryCard = React.memo(function CategoryCard({
           className={`absolute top-2.5 right-2.5 p-1.5 ${
             isAmber 
               ? 'text-amber-600/60 hover:text-amber-600 hover:bg-amber-50' 
-              : 'text-gray-400 hover:text-orange-500 hover:bg-orange-50'
+              : 'text-gray-400 hover:text-[#028090] hover:bg-teal-50'
           } dark:hover:bg-slate-800 rounded-full transition-colors z-10`}
         >
           <Pencil className="w-3.5 h-3.5" />
@@ -387,14 +387,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
-        
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -447,13 +447,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -511,13 +512,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
-      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
+      await toPng(certificateRef.current, { backgroundColor: '#ffffff', width: 794, height: 559, pixelRatio: 3, skipFonts: true, style: { transform: 'scale(1)', transformOrigin: 'top left', margin: '0' } }).catch(() => {});
       const dataUrl = await toPng(certificateRef.current, { 
         backgroundColor: '#ffffff',
         width: 794,
         height: 559,
         pixelRatio: 3,
+        skipFonts: true,
         style: {
           transform: "scale(1)",
           transformOrigin: "top left",
@@ -550,6 +552,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       const dataUrl = await toPng(printRef.current, {
         quality: 1,
         pixelRatio: 2,
+        skipFonts: true,
         style: { opacity: '1', transform: 'none' },
         cacheBust: true,
         backgroundColor: '#ffffff'
@@ -632,7 +635,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             {userRole === 'admin' && (
               <button 
                 onClick={openAddCatModal}
-                className="flex items-center justify-center bg-transparent text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
+                className="flex items-center justify-center bg-transparent text-gray-400 hover:text-[#028090] hover:bg-teal-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
               >
                 <Plus className="w-6 h-6" />
               </button>
@@ -643,12 +646,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           {roofCat && (
             <div className="mb-8">
               <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span className="w-2 h-2 rounded-full bg-[#028090]"></span>
                 {t('lists_category_roof')}
               </h3>
               <button 
                 onClick={() => handleCategoryClick(roofCat)}
-                className="w-full text-left bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg shadow-orange-500/20 relative overflow-hidden transition-transform active:scale-95"
+                className="w-full text-left bg-gradient-to-r from-[#028090] to-[#005F73] rounded-2xl p-5 shadow-lg shadow-[#028090]/20 relative overflow-hidden transition-transform active:scale-95"
               >
                 {/* Full Card Lock Overlay with White Lock Icon */}
                 {userRole !== 'admin' && (
@@ -675,7 +678,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   </div>
                   <div>
                     <h4 className="text-lg sm:text-xl font-normal text-white mb-1  font-battambang">{roofCat.name}</h4>
-                    <p className="text-orange-50 text-sm opacity-90  font-battambang">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
+                    <p className="text-teal-50 text-sm opacity-90  font-battambang">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
                   </div>
                 </div>
               </button>
@@ -768,7 +771,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       required
                       value={catName}
                       onChange={(e) => setCatName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
                       placeholder="បញ្ចូលឈ្មោះបញ្ជី"
                     />
                   </div>
@@ -779,7 +782,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <textarea
                       value={catDesc}
                       onChange={(e) => setCatDesc(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm h-24 resize-none"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm h-24 resize-none"
                       placeholder="បញ្ចូលការពិពណ៌នាបញ្ជី"
                     />
                   </div>
@@ -806,7 +809,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <button
                       type="submit"
                       disabled={isSavingCat}
-                      className="flex-1 flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-3.5 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="flex-1 flex items-center justify-center bg-[#028090] hover:bg-[#005F73] text-white py-3 sm:py-3.5 rounded-xl text-sm sm:text-[15px] transition-colors disabled:opacity-70"
                     >
                       {isSavingCat ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -890,7 +893,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               {userRole === 'admin' && !isListClosed && (
                 <button 
                   onClick={openAddModal}
-                  className="flex items-center justify-center bg-orange-500 text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex-shrink-0"
+                  className="flex items-center justify-center bg-[#028090] text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-[#005F73] transition-colors focus:outline-none focus:ring-2 focus:ring-[#028090]/50 flex-shrink-0"
                   title={t('list_add_new')}
                 >
                   <Plus className="w-5 h-5" />
@@ -970,7 +973,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
                             key={record.id}
-                            className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-orange-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
+                            className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-teal-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
                             <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
                               <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
@@ -1006,7 +1009,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             )}
                             {!isKathina && (
                               <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
-                                <span className="text-[13px] sm:text-[15px] font-medium text-orange-600 dark:text-orange-400 whitespace-nowrap font-battambang">
+                                <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-battambang">
                                   {formatCurrency(record.amount)}
                                 </span>
                               </td>
@@ -1016,7 +1019,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
-                                    className="p-1 sm:p-1.5 text-orange-500 hover:text-orange-600 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
+                                    className="p-1 sm:p-1.5 text-[#028090] hover:text-[#005F73] hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
                                     title="ប័ណ្ណអនុមោទនា"
                                   >
                                     <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
@@ -1075,9 +1078,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
                 <span className=" text-blue-800">{formatCurrency(totalAmount)}</span>
               </div>
-              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+              <div className="bg-rose-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">ចំណាយជាវកណ្ដឹង ៤ (មួយស្មើ 55$) សរុប</span>
-                <span className=" text-orange-800">890,000៛</span>
+                <span className=" text-rose-800">890,000៛</span>
               </div>
               <div className="bg-green-100/50 p-3 flex justify-between items-center">
                 <span className="text-sm  text-gray-800 dark:text-slate-200">បច្ច័យនៅសល់</span>
@@ -1088,9 +1091,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                     {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
-              <div className="bg-orange-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+              <div className="bg-teal-100/50 p-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">បច្ច័យសរុប</span>
-                <span className=" text-orange-800">{formatCurrency(totalAmount)}</span>
+                <span className=" text-teal-900">{formatCurrency(totalAmount)}</span>
               </div>
               <div className="bg-blue-100/50 p-3 flex flex-col gap-1 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex justify-between items-center">
@@ -1107,9 +1110,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
           {selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
-              <div className="bg-orange-100/50 p-3 flex justify-between items-center">
+              <div className="bg-teal-100/50 p-3 flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-slate-300">សរុប</span>
-                <span className=" text-orange-800">{formatCurrency(totalAmount)}</span>
+                <span className=" text-teal-900">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
           )}
@@ -1212,15 +1215,15 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
 
               {/* Checkbox for 100k Donor */}
-              <div className="flex items-center gap-3 p-4 mt-2 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+              <div className="flex items-center gap-3 p-4 mt-2 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
                 <input 
                   type="checkbox" 
                   id="is100kDonor" 
                   checked={is100kDonor}
                   onChange={(e) => setIs100kDonor(e.target.checked)}
-                  className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                  className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                 />
-                <label htmlFor="is100kDonor" className="text-[14px] font-battambang  text-orange-800 dark:text-orange-300 select-none cursor-pointer">
+                <label htmlFor="is100kDonor" className="text-[14px] font-battambang text-teal-800 dark:text-teal-300 select-none cursor-pointer">
                   ✅ ថវិកាកម្រិតខ្ពស់
                 </label>
               </div>
@@ -1257,7 +1260,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               <button
                 onClick={handleSaveRecord}
                 disabled={isSaving || !name.trim() || (!isKathina && !amount.trim())}
-                className="flex-1 py-3.5 px-4 bg-orange-500 text-white rounded-2xl  text-[15px] hover:bg-orange-600 shadow-md shadow-orange-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none"
+                className="flex-1 py-3.5 px-4 bg-[#028090] text-white rounded-2xl text-[15px] hover:bg-[#005F73] shadow-md shadow-[#028090]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
               >
                 {isSaving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -1691,7 +1694,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <button
                   onClick={handleDownloadCertificate}
                   disabled={downloadingType !== null}
-                  className="flex-[2] sm:flex-1 py-3 px-2 sm:px-4 bg-orange-500 text-white rounded-xl text-[13px] sm:text-[14px] hover:bg-orange-600 shadow-none shadow-orange-500/20 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70 w-full sm:w-auto"
+                  className="flex-[2] sm:flex-1 py-3 px-2 sm:px-4 bg-[#028090] text-white rounded-xl text-[13px] sm:text-[14px] hover:bg-[#005F73] shadow-none shadow-[#028090]/20 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70 w-full sm:w-auto cursor-pointer"
                 >
                   {downloadingType === 'image' ? (
                     <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />

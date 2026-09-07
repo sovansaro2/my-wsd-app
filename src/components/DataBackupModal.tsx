@@ -88,7 +88,7 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Database className="w-5 h-5 text-orange-500 shrink-0" />
+            <Database className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
               {language === 'en' ? 'System Data Backup' : 'ការបម្រុងទុកទិន្នន័យប្រព័ន្ធ'}
             </h3>

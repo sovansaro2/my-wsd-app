@@ -1,5 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
+import { 
+  Eye, 
+  EyeOff, 
+  ChevronRight, 
+  ChevronLeft, 
+  ArrowRight
+} from 'lucide-react';
+import { 
+  CloudDataIllustration, 
+  AnalyticsIllustration, 
+  DocumentIllustration 
+} from './WelcomeIllustrations';
 
 const generateEmailFromUsername = (identifier: string) => {
   const normalized = identifier.trim().toLowerCase();
@@ -17,11 +29,65 @@ const generateEmailFromUsername = (identifier: string) => {
   return `${hex}@wsd.local`;
 };
 
+interface SlideItem {
+  id: number;
+  title: string;
+  tagline: string;
+  description: string;
+  illustration: React.ReactNode;
+  highlights: string[];
+}
+
+const ONBOARDING_SLIDES: SlideItem[] = [
+  {
+    id: 0,
+    title: 'គ្រប់គ្រងទិន្នន័យវត្តស្នាយដួច',
+    tagline: 'ប្រព័ន្ធផ្ទៃក្នុង វត្តស្នាយដួច',
+    description: 'រៀបចំ និងរក្សាទុកទិន្នន័យវត្តអារាមប្រកបដោយសុវត្ថិភាព និងភាពងាយស្រួល។',
+    illustration: <CloudDataIllustration className="w-60 h-52 sm:w-72 sm:h-64 mx-auto drop-shadow-xl" />,
+    highlights: ['ទិន្នន័យមានសុវត្ថិភាព', 'រក្សាទុកស្វ័យប្រវត្ត', 'ប្រើប្រាស់គ្រប់ឧបករណ៍']
+  },
+  {
+    id: 1,
+    title: 'របាយការណ៍បច្ច័យ និងហិរញ្ញវត្ថុ',
+    tagline: 'កត់ត្រា និងផ្ទៀងផ្ទាត់ច្បាស់លាស់',
+    description: 'កត់ត្រាចំណូល-ចំណាយ បច្ច័យសីល និងបញ្ជីឈ្មោះសប្បុរសជនបានត្រឹមត្រូវ។',
+    illustration: <AnalyticsIllustration className="w-60 h-52 sm:w-72 sm:h-64 mx-auto drop-shadow-xl" />,
+    highlights: ['កត់ត្រាបច្ច័យសីល និងចំណាយ', 'តារាងស្ថិតិច្បាស់លាស់', 'ផ្ទៀងផ្ទាត់ទិន្នន័យបានរហ័ស']
+  },
+  {
+    id: 2,
+    title: 'លិខិតរដ្ឋបាល និងឯកសារវត្ត',
+    tagline: 'ចេញលិខិតផ្លូវការ និងទាញយកជា PDF',
+    description: 'រៀបចំលិខិតអញ្ជើញ លិខិតថ្លែងអំណរគុណ និងឯកសាររដ្ឋបាលវត្តបានឆាប់រហ័ស។',
+    illustration: <DocumentIllustration className="w-60 h-52 sm:w-72 sm:h-64 mx-auto drop-shadow-xl" />,
+    highlights: ['ទម្រង់លិខិតរដ្ឋបាលស្ដង់ដារ', 'ក្បាលលិខិតផ្លូវការ', 'ទាញយកជា PDF ភ្លាមៗ']
+  }
+];
+
 export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | 'user') => void }) {
+  // Check if user has seen onboarding previously
+  const [showMobileOnboarding, setShowMobileOnboarding] = useState(() => {
+    try {
+      return localStorage.getItem('has_seen_welcome_v1') !== 'true';
+    } catch {
+      return true;
+    }
+  });
+
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   
   // Login fields
-  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState(() => {
+    try {
+      return localStorage.getItem('saved_login_identifier') || '';
+    } catch {
+      return '';
+    }
+  });
   
   // Sign up fields
   const [khmerName, setKhmerName] = useState('');
@@ -34,6 +100,40 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Auto-advance desktop onboarding slides every 6.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % ONBOARDING_SLIDES.length);
+    }, 6500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleNextSlide = () => {
+    if (currentSlide < ONBOARDING_SLIDES.length - 1) {
+      setCurrentSlide(prev => prev + 1);
+    } else {
+      finishOnboarding();
+    }
+  };
+
+  const handlePrevSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(prev => prev - 1);
+    }
+  };
+
+  const finishOnboarding = () => {
+    try {
+      localStorage.setItem('has_seen_welcome_v1', 'true');
+    } catch {}
+    setShowMobileOnboarding(false);
+  };
+
+  const handleReopenOnboarding = () => {
+    setCurrentSlide(0);
+    setShowMobileOnboarding(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +158,20 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         const loginEmail = generateEmailFromUsername(loginIdentifier);
         const data = await api.login(loginEmail, password);
         localStorage.setItem('access_token', data.access_token);
+        if (data.refresh_token) {
+          localStorage.setItem('refresh_token', data.refresh_token);
+        }
+
+        if (rememberMe) {
+          try {
+            localStorage.setItem('saved_login_identifier', loginIdentifier.trim());
+          } catch {}
+        } else {
+          try {
+            localStorage.removeItem('saved_login_identifier');
+          } catch {}
+        }
+
         onLogin((data.user?.role) || 'user');
       } else {
         // Sign Up Flow
@@ -102,172 +216,468 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     }
   };
 
-  const toggleMode = () => {
-    setIsLogin(!isLogin);
-    setError(null);
-    setSuccess(null);
-  };
+  const currentSlideData = ONBOARDING_SLIDES[currentSlide];
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] p-4 font-battambang">
-      <div className="w-full max-w-md rounded-3xl bg-white p-7 sm:p-8 border border-gray-100/80">
-        {/* Header with Temple Logo */}
-        <div className="mb-6 text-center">
-          <img 
-            src="/logo.png" 
-            alt="វត្តស្នាយដួច" 
-            className="w-20 h-20 mx-auto mb-3 object-contain"
-          />
-          <h2 className="mb-1.5 font-title text-[19px] min-[375px]:text-[21px] sm:text-2xl text-zinc-900 whitespace-nowrap tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
-            កម្មវិធីគ្រប់គ្រងទិន្នន័យ វត្តស្នាយដួច
-          </h2>
-          <h3 className="text-zinc-400 text-sm font-battambang">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ</h3>
-        </div>
-        
-        <h3 className="mb-6 text-lg font-medium text-zinc-800 text-center font-battambang">
-          {isLogin ? 'ចូលគណនីរបស់អ្នក' : 'បង្កើតគណនីថ្មី'}
-        </h3>
-        
-        {error && (
-          <div className="mb-5 rounded-2xl bg-rose-50/80 p-4 text-[13.5px] text-rose-600 border border-rose-100 font-battambang leading-relaxed">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="mb-5 rounded-2xl bg-emerald-50/80 p-4 text-[13.5px] text-emerald-700 border border-emerald-100 font-battambang leading-relaxed">
-            {success}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {isLogin ? (
-            /* Login Form */
-            <>
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-                  អ៊ីម៉ែល ឬ ឈ្មោះអ្នកប្រើប្រាស់
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={loginIdentifier}
-                  onChange={(e) => setLoginIdentifier(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-battambang"
-                  placeholder="បញ្ចូលអ៊ីម៉ែល ឬឈ្មោះអ្នកប្រើប្រាស់"
-                />
-              </div>
-              
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">ពាក្យសម្ងាត់</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-rajdhani"
-                  placeholder="បញ្ចូលពាក្យសម្ងាត់"
-                />
-              </div>
-            </>
-          ) : (
-            /* Sign Up Form with 4 requested fields */
-            <>
-              {/* 1. ឈ្មោះខ្មែរ */}
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-                  ឈ្មោះខ្មែរ
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={khmerName}
-                  onChange={(e) => setKhmerName(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-battambang"
-                  placeholder="ឧ. រ៉ាវី ឬ វត្តស្នាយដួច"
-                />
-              </div>
+    <div className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center">
+      {/* ========================================================================= */}
+      {/* 1. MOBILE ONBOARDING VIEW (Shown on small screens before landing on Auth) */}
+      {/* ========================================================================= */}
+      {showMobileOnboarding && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col bg-[#028090] text-white overflow-hidden">
+          {/* Top Visual Area (Gradient, Header, Isometric Illustration) */}
+          <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-[#005F73] via-[#028090] to-[#0A9396] select-none">
+            {/* Ambient subtle glow overlay */}
+            <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+            
+            {/* Top Navigation Bar */}
+            <div className="relative z-10 flex items-center justify-between pt-2">
+              {currentSlide > 0 ? (
+                <button
+                  type="button"
+                  onClick={handlePrevSlide}
+                  aria-label="ត្រឡប់ក្រោយ"
+                  className="p-2 -ml-2 text-white/90 hover:text-white transition-colors active:scale-90"
+                >
+                  <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+                </button>
+              ) : (
+                <div className="w-8" />
+              )}
 
-              {/* 2. ឈ្មោះឡាតាំង */}
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-                  ឈ្មោះឡាតាំង
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={latinName}
-                  onChange={(e) => setLatinName(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-rajdhani"
-                  placeholder="e.g. Ravi or Wat Snay Duoc"
-                />
-              </div>
-
-              {/* 3. អ៊ីម៉ែល */}
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-                  អ៊ីម៉ែល
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-rajdhani"
-                  placeholder="example@gmail.com"
-                />
-              </div>
-
-              {/* 4. ពាក្យសម្ងាត់ */}
-              <div>
-                <label className="mb-1.5 block text-[14px] text-zinc-700 font-battambang">
-                  ពាក្យសម្ងាត់
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-200/80 bg-zinc-50 px-4 py-3.5 text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-[15px] font-rajdhani"
-                  placeholder="បញ្ចូលពាក្យសម្ងាត់ (យ៉ាងហោច ៦ ខ្ទង់)"
-                />
-              </div>
-            </>
-          )}
-          
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="mt-6 w-full rounded-2xl bg-zinc-900 border border-zinc-900 px-4 py-3.5 text-white transition-all hover:bg-zinc-800 focus:outline-none active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-[15px] font-battambang"
-          >
-            {isLoading ? 'កំពុងដំណើរការ...' : (isLogin ? 'ចូលគណនី' : 'ចុះឈ្មោះ')}
-          </button>
-        </form>
-
-        <div className="mt-7 space-y-4 text-center">
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="text-[14px] text-zinc-600 hover:text-zinc-900 transition-colors block w-full font-battambang"
-          >
-            {isLogin ? 'មិនទាន់មានគណនីមែនទេ? ចុះឈ្មោះថ្មី' : 'មានគណនីរួចហើយ? ចូលគណនី'}
-          </button>
-          
-          {isLogin && (
-            <div className="pt-4 border-t border-gray-100">
-              <p className="text-[13px] text-zinc-500 mb-1.5 font-battambang">ភ្លេចពាក្យសម្ងាត់ ឬមានបញ្ហាក្នុងការចូលប្រើ?</p>
-              <a 
-                href="https://t.me/sovansaro" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[14px] text-[#2AABEE] hover:text-[#229ED9] transition-colors inline-flex items-center justify-center gap-1.5 font-battambang"
+              {/* Skip Button */}
+              <button
+                type="button"
+                onClick={finishOnboarding}
+                className="text-white/80 hover:text-white text-[15px] font-battambang px-2 py-1 transition-colors active:opacity-75"
               >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.2-1.58.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.97 1.25-5.55 3.67-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.38-.51 1.07-.78 4.2-1.82 7-3.03 8.4-3.61 4-.1.67-1.12.87-1.12 1.05 0 .2.04.38.11.53.11.13.33.29.58.5z"/>
-                </svg>
-                ទំនាក់ទំនង Admin តាម Telegram
-              </a>
+                រំលង
+              </button>
             </div>
-          )}
+
+            {/* Center Isometric Illustration */}
+            <div className="relative z-10 my-auto flex items-center justify-center py-4">
+              <div className="transition-all duration-500 transform">
+                {currentSlideData.illustration}
+              </div>
+            </div>
+
+            {/* Subtle spacer */}
+            <div className="h-2" />
+          </div>
+
+          {/* Bottom Card (White Sheet with Rounded Top Corners) */}
+          <div className="relative z-20 bg-white text-zinc-900 rounded-t-[32px] p-6 sm:p-8 flex flex-col justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.12)]">
+            <div>
+              {/* Slide Title */}
+              <h2 className="font-title text-[22px] leading-tight text-zinc-900 text-center mb-1 tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
+                {currentSlideData.title}
+              </h2>
+              <p className="text-[#028090] text-center text-[13.5px] font-medium mb-3 font-battambang">
+                {currentSlideData.tagline}
+              </p>
+
+              {/* Description */}
+              <p className="text-zinc-600 text-center text-[14px] leading-relaxed font-battambang max-w-sm mx-auto mb-6">
+                {currentSlideData.description}
+              </p>
+            </div>
+
+            <div>
+              {/* Dots Indicator */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                {ONBOARDING_SLIDES.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    onClick={() => setCurrentSlide(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                    className={`h-2 transition-all duration-300 rounded-full ${
+                      currentSlide === idx 
+                        ? 'w-7 bg-[#028090]' 
+                        : 'w-2 bg-zinc-200 hover:bg-zinc-300'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Primary Action Button */}
+              <button
+                type="button"
+                onClick={handleNextSlide}
+                className="w-full py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[16px] font-medium shadow-md shadow-[#028090]/25 transition-all flex items-center justify-center gap-2"
+              >
+                <span>{currentSlide === ONBOARDING_SLIDES.length - 1 ? 'ចាប់ផ្តើមឥឡូវនេះ' : 'បន្ទាប់'}</span>
+                <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. MAIN SPLIT DESKTOP & AUTH VIEW                                         */}
+      {/* ========================================================================= */}
+      <div className="w-full max-w-6xl mx-auto md:p-6 lg:p-8 min-h-[100dvh] md:min-h-0 flex items-center justify-center">
+        <div className="w-full bg-white md:rounded-[32px] md:shadow-xl md:border md:border-zinc-200/60 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[100dvh] md:min-h-[640px]">
+          
+          {/* LEFT SIDE: Onboarding Showcase (Visible on Desktop / Tablets) */}
+          <div className="hidden md:flex md:col-span-6 lg:col-span-7 bg-gradient-to-br from-[#005F73] via-[#028090] to-[#014F5A] text-white p-8 lg:p-12 flex-col justify-between relative overflow-hidden select-none">
+            {/* Ambient Background Decorative Effects */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#00E5FF]/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Header: Pagoda Crest & Title */}
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-3.5">
+                <img 
+                  src="/logo.png" 
+                  alt="វត្តស្នាយដួច" 
+                  className="w-16 h-16 sm:w-[72px] sm:h-[72px] object-contain drop-shadow-md"
+                />
+                <div>
+                  <h1 className="font-title text-[22px] sm:text-[24px] leading-none text-white tracking-wide mb-1" style={{ fontFamily: 'Koulen, cursive' }}>
+                    វត្តស្នាយដួច
+                  </h1>
+                  <span className="text-white/80 text-[13.5px] font-battambang">
+                    ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ
+                  </span>
+                </div>
+              </div>
+
+              {/* Version */}
+              <div className="text-white/70 text-[13px] font-rajdhani tracking-wider">
+                <span>v1.2.0</span>
+              </div>
+            </div>
+
+            {/* Center Area: Current Slide Artwork & Information */}
+            <div className="relative z-10 my-auto py-8">
+              {/* Illustration */}
+              <div className="mb-6 flex items-center justify-center">
+                {currentSlideData.illustration}
+              </div>
+
+              {/* Text Info */}
+              <div className="text-center max-w-md mx-auto">
+                <h2 className="font-title text-2xl lg:text-3xl text-white mb-2 leading-tight tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
+                  {currentSlideData.title}
+                </h2>
+                <p className="text-cyan-200 text-sm font-medium mb-3 font-battambang">
+                  {currentSlideData.tagline}
+                </p>
+                <p className="text-white/80 text-[14px] leading-relaxed font-battambang mb-6">
+                  {currentSlideData.description}
+                </p>
+
+                {/* Feature Highlights List */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  {currentSlideData.highlights.map((item, i) => (
+                    <span 
+                      key={i}
+                      className="text-xs text-white/90 border border-white/20 rounded-full px-3 py-1 font-battambang backdrop-blur-sm"
+                    >
+                      • {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Controls: Carousel Indicators & Arrows */}
+            <div className="relative z-10 flex items-center justify-between pt-4 border-t border-white/10">
+              {/* Dots */}
+              <div className="flex items-center gap-2">
+                {ONBOARDING_SLIDES.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    onClick={() => setCurrentSlide(idx)}
+                    aria-label={`Show slide ${idx + 1}`}
+                    className={`h-2 transition-all duration-300 rounded-full ${
+                      currentSlide === idx 
+                        ? 'w-8 bg-white shadow-sm' 
+                        : 'w-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Previous / Next Arrow Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrevSlide}
+                  disabled={currentSlide === 0}
+                  className="p-2 text-white/70 hover:text-white disabled:opacity-30 disabled:hover:text-white/70 transition-colors"
+                  aria-label="Previous Slide"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextSlide}
+                  className="p-2 text-white/70 hover:text-white transition-colors"
+                  aria-label="Next Slide"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: Authentication Portal (Matching Screen 3 in Mockup) */}
+          <div className="col-span-1 md:col-span-6 lg:col-span-5 p-6 sm:p-8 lg:p-10 flex flex-col justify-between bg-white">
+            
+            {/* Top Bar for Mobile to reopen tour if needed */}
+            <div className="flex items-center justify-between md:justify-end pb-2">
+              <div className="md:hidden flex items-center gap-2">
+                <img src="/logo.png" alt="វត្តស្នាយដួច" className="w-8 h-8 object-contain" />
+                <span className="font-title text-base text-zinc-900" style={{ fontFamily: 'Koulen, cursive' }}>
+                  វត្តស្នាយដួច
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleReopenOnboarding}
+                className="text-xs text-[#028090] hover:text-[#005F73] transition-colors font-battambang inline-flex items-center py-1 px-3 rounded-full border border-[#028090]/20 hover:border-[#028090]/40"
+              >
+                <span>មើលការណែនាំ</span>
+              </button>
+            </div>
+
+            {/* Centered Auth Card Content */}
+            <div className="my-auto py-4 max-w-sm w-full mx-auto">
+              
+              {/* App / Temple Logo & Welcome Title */}
+              <div className="text-center mb-6">
+                <div className="inline-block p-1 mb-2.5">
+                  <img 
+                    src="/logo.png" 
+                    alt="វត្តស្នាយដួច" 
+                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto object-contain drop-shadow-sm" 
+                  />
+                </div>
+                
+                <h2 className="font-title text-2xl sm:text-[26px] text-zinc-900 tracking-tight mb-1" style={{ fontFamily: 'Koulen, cursive' }}>
+                  {isLogin ? 'ចូលប្រើប្រាស់ប្រព័ន្ធ' : 'បង្កើតគណនីថ្មី'}
+                </h2>
+                <p className="text-zinc-500 text-[13.5px] font-battambang">
+                  {isLogin ? 'សូមបញ្ចូលព័ត៌មានគណនីដើម្បីបន្ត' : 'បំពេញព័ត៌មានដើម្បីចុះឈ្មោះក្នុងប្រព័ន្ធ'}
+                </p>
+              </div>
+
+              {/* Segmented Tab Bar (Matching Mockup Screen 3: [ ចូលគណនី ] [ ចុះឈ្មោះ ]) */}
+              <div className="p-1 bg-zinc-100 rounded-2xl flex items-center mb-6">
+                <button
+                  type="button"
+                  onClick={() => { setIsLogin(true); setError(null); setSuccess(null); }}
+                  className={`flex-1 py-2.5 text-center text-[14px] font-medium rounded-xl transition-all font-battambang ${
+                    isLogin 
+                      ? 'bg-white text-[#028090] shadow-sm' 
+                      : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  ចូលគណនី
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsLogin(false); setError(null); setSuccess(null); }}
+                  className={`flex-1 py-2.5 text-center text-[14px] font-medium rounded-xl transition-all font-battambang ${
+                    !isLogin 
+                      ? 'bg-white text-[#028090] shadow-sm' 
+                      : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  ចុះឈ្មោះ
+                </button>
+              </div>
+
+              {/* Notification Banners */}
+              {error && (
+                <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-[13.5px] leading-relaxed font-battambang">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-[13.5px] leading-relaxed font-battambang">
+                  {success}
+                </div>
+              )}
+
+              {/* Form Body */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {isLogin ? (
+                  /* ================= LOGIN FIELDS ================= */
+                  <>
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        អ៊ីម៉ែល ឬ ឈ្មោះអ្នកប្រើប្រាស់
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          value={loginIdentifier}
+                          onChange={(e) => setLoginIdentifier(e.target.value)}
+                          placeholder="បញ្ចូលអ៊ីម៉ែល ឬឈ្មោះគណនី"
+                          className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-battambang"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        ពាក្យសម្ងាត់
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="បញ្ចូលពាក្យសម្ងាត់"
+                          className="w-full rounded-2xl border border-zinc-200 bg-white pl-4 pr-11 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? 'លាក់ពាក្យសម្ងាត់' : 'បង្ហាញពាក្យសម្ងាត់'}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Remember me & Forgot password row */}
+                    <div className="flex items-center justify-between pt-1">
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-zinc-300 accent-[#028090]"
+                        />
+                        <span className="text-[13px] text-zinc-600 font-battambang">ចងចាំខ្ញុំ</span>
+                      </label>
+
+                      <a
+                        href="https://t.me/sovansaro"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[13px] text-[#028090] hover:underline font-battambang"
+                      >
+                        ភ្លេចលេខសម្ងាត់?
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  /* ================= SIGN UP FIELDS ================= */
+                  <>
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        ឈ្មោះខ្មែរ
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={khmerName}
+                        onChange={(e) => setKhmerName(e.target.value)}
+                        placeholder="ឧ. រ៉ាវី ឬ វត្តស្នាយដួច"
+                        className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-battambang"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        ឈ្មោះឡាតាំង (Latin Name)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={latinName}
+                        onChange={(e) => setLatinName(e.target.value)}
+                        placeholder="e.g. Ravi or Wat Snay Duoch"
+                        className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        អ៊ីម៉ែល
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@gmail.com"
+                        className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
+                        ពាក្យសម្ងាត់
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="បញ្ចូលពាក្យសម្ងាត់ (យ៉ាងហោច ៦ ខ្ទង់)"
+                          className="w-full rounded-2xl border border-zinc-200 bg-white pl-4 pr-11 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Submit Action Button */}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full mt-2 py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[15.5px] font-medium shadow-md shadow-[#028090]/25 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <span>កំពុងដំណើរការ...</span>
+                  ) : (
+                    <>
+                      <span>{isLogin ? 'ចូលប្រើប្រាស់' : 'ចុះឈ្មោះបង្កើតគណនី'}</span>
+                      <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Telegram Support Link */}
+              <div className="mt-5 text-center">
+                <a 
+                  href="https://t.me/sovansaro" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[13px] text-zinc-500 hover:text-[#028090] transition-colors inline-flex items-center justify-center gap-1.5 font-battambang"
+                >
+                  <span>ជំនួយបច្ចេកទេស ៖</span>
+                  <span className="text-[#2AABEE] font-medium hover:underline">ទាក់ទង Admin តាម Telegram</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Footer Disclaimer */}
+            <div className="pt-4 border-t border-zinc-100 text-center text-xs text-zinc-400 font-battambang leading-relaxed">
+              ប្រព័ន្ធគ្រប់គ្រងផ្ទៃក្នុង វត្តស្នាយដួច · សម្រាប់តែអ្នកទទួលសិទ្ធិប្រើប្រាស់
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

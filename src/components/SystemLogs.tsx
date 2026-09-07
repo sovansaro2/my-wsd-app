@@ -142,7 +142,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             </h2>
             <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-slate-400">
               <span className="flex items-center gap-1 font-mono">
-                <HardDrive className="w-3 h-3 text-orange-500" />
+                <HardDrive className="w-3 h-3 text-[#028090] dark:text-teal-400" />
                 {storageUsage.formatted} ({storageUsage.logCount} logs)
               </span>
             </div>
@@ -157,7 +157,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-xs"
             title="Reload Logs"
           >
-            <RefreshCw className={`w-4 h-4 ${isReloading ? 'animate-spin text-orange-500' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isReloading ? 'animate-spin text-[#028090] dark:text-teal-400' : ''}`} />
           </button>
 
           {/* Device Info Toggle */}
@@ -249,7 +249,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ស្វែងរកក្នុងកំណត់ត្រា Logs..."
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-orange-500 font-battambang"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#028090] font-battambang"
           />
           {searchQuery && (
             <button 
@@ -269,7 +269,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
               onClick={() => setLevelFilter(lvl)}
               className={`px-2 py-1 rounded transition-colors ${
                 levelFilter === lvl
-                  ? 'bg-orange-500 text-white font-bold'
+                  ? 'bg-[#028090] text-white font-bold'
                   : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
               }`}
             >

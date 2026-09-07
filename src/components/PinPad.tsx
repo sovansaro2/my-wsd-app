@@ -67,7 +67,7 @@ export default function PinPad({ title, subtitle, error, onComplete, onCancel, o
             key={index}
             className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
               index < pin.length 
-                ? 'bg-orange-500 border-orange-500 scale-110' 
+                ? 'bg-[#028090] border-[#028090] scale-110' 
                 : 'border-gray-300 dark:border-slate-600 bg-transparent'
             }`}
           />

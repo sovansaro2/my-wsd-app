@@ -115,7 +115,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
         <div className="p-4 sm:p-5 border-b border-gray-200/80 dark:border-slate-800 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <HeartHandshake className="w-5 h-5 text-orange-500 shrink-0" />
+              <HeartHandshake className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
               <h2 className="text-base sm:text-lg font-title text-gray-900 dark:text-white tracking-wide">
                 {language === 'en' ? 'GLOBAL DONOR SEARCH' : 'ស្វែងរកសប្បុរសជនទូទាំងប្រព័ន្ធ'}
               </h2>
@@ -138,7 +138,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder={language === 'en' ? 'Search donor name or location...' : 'វាយឈ្មោះសប្បុរសជន ឬទីកន្លែង...'}
-              className="w-full pl-10 pr-10 py-2.5 sm:py-3 text-sm sm:text-base bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors font-battambang"
+              className="w-full pl-10 pr-10 py-2.5 sm:py-3 text-sm sm:text-base bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#028090] transition-colors font-battambang"
             />
             {searchTerm && (
               <button
@@ -164,7 +164,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
               </span>
             </div>
             {loading && (
-              <span className="text-xs text-orange-500 animate-pulse font-medium">
+              <span className="text-xs text-[#028090] dark:text-teal-400 animate-pulse font-medium">
                 {language === 'en' ? 'Searching...' : 'កំពុងស្វែងរក...'}
               </span>
             )}

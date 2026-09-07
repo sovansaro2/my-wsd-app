@@ -1775,7 +1775,7 @@ export default function AccountProfile({
             <div className="flex items-center gap-3.5">
               <Shield className="w-5 h-5 text-gray-700 dark:text-slate-200" />
               <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {language === 'en' ? 'Admin Panel (Users & Invitations)' : 'ផ្ទាំងគ្រប់គ្រង Admin (អ្នកប្រើប្រាស់ & លិខិតអញ្ជើញ)'}
+                {language === 'en' ? 'Admin Panel ' : 'ផ្ទាំងគ្រប់គ្រង'}
               </span>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -1917,7 +1917,7 @@ export default function AccountProfile({
                 onClick={() => setAboutModalTab('about')}
                 className={`flex-1 pb-3 text-center text-[14px] transition-colors border-b-2 ${
                   aboutModalTab === 'about'
-                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                    ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
                     : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium'
                 }`}
               >
@@ -1930,7 +1930,7 @@ export default function AccountProfile({
                 }}
                 className={`flex-1 pb-3 text-center text-[14px] transition-colors border-b-2 ${
                   aboutModalTab === 'introduced'
-                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-semibold'
+                    ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
                     : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium'
                 }`}
               >
@@ -1944,7 +1944,7 @@ export default function AccountProfile({
                 /* About Tab Content */
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-2.5 flex items-center justify-center flex-shrink-0">
-                    <Info className="w-10 h-10 text-orange-500" />
+                    <Info className="w-10 h-10 text-[#028090] dark:text-teal-400" />
                   </div>
                   <h3 className="text-lg font-title text-gray-900 dark:text-white mb-1">
                     {t('app_title')}
@@ -1961,7 +1961,7 @@ export default function AccountProfile({
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
                       <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
-                      <p className="text-[15px] font-title text-orange-600 dark:text-orange-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                      <p className="text-[15px] font-title text-[#028090] dark:text-teal-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
@@ -1990,7 +1990,7 @@ export default function AccountProfile({
                           : 'text-gray-500 hover:text-gray-800 dark:text-slate-400 font-medium'
                       }`}
                     >
-                      <Smartphone className="w-4 h-4 text-orange-500" />
+                      <Smartphone className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                       <span>Android</span>
                     </button>
 
@@ -2046,19 +2046,19 @@ export default function AccountProfile({
                         </h5>
                         <ol className="space-y-2.5 text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
                           <li className="flex items-start gap-2.5">
-                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">01</span>
+                            <span className="text-xs font-semibold text-[#028090] dark:text-teal-400 pt-0.5 w-4 shrink-0 font-rajdhani">01</span>
                             <span>{t('install_android_step_1_prefix')}<strong>Google Chrome</strong>{t('install_android_step_1_or')}<strong>Samsung Internet</strong></span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">02</span>
+                            <span className="text-xs font-semibold text-[#028090] dark:text-teal-400 pt-0.5 w-4 shrink-0 font-rajdhani">02</span>
                             <span>{t('install_android_step_2')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">03</span>
+                            <span className="text-xs font-semibold text-[#028090] dark:text-teal-400 pt-0.5 w-4 shrink-0 font-rajdhani">03</span>
                             <span>{t('install_android_step_3')}</span>
                           </li>
                           <li className="flex items-start gap-2.5">
-                            <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 pt-0.5 w-4 shrink-0">04</span>
+                            <span className="text-xs font-semibold text-[#028090] dark:text-teal-400 pt-0.5 w-4 shrink-0 font-rajdhani">04</span>
                             <span>{t('install_android_step_4')}</span>
                           </li>
                         </ol>

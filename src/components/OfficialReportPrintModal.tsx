@@ -109,12 +109,13 @@ export default function OfficialReportPrintModal({
       const reportHeight = reportRef.current.scrollHeight || 1123;
 
       // Warmup renders
-      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2.5 }).catch(() => {});
+      await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2.5, skipFonts: true }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, {
         backgroundColor: '#ffffff',
         width: reportWidth,
         height: reportHeight,
         pixelRatio: 2.5,
+        skipFonts: true,
       });
 
       const link = document.createElement('a');
@@ -161,7 +162,7 @@ export default function OfficialReportPrintModal({
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-sm transition-colors cursor-pointer font-battambang"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-[#028090] hover:bg-[#005F73] rounded-lg shadow-sm transition-colors cursor-pointer font-battambang"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>បោះពុម្ព (Print / PDF)</span>
@@ -179,7 +180,7 @@ export default function OfficialReportPrintModal({
 
       {/* Edit Controls Panel (Optional drawer) */}
       {showEditControls && (
-        <div className="bg-amber-50/90 dark:bg-slate-800/95 border-b border-amber-200 dark:border-slate-700 p-4 font-battambang text-xs no-print">
+        <div className="bg-teal-50/50 dark:bg-slate-800/95 border-b border-teal-100 dark:border-slate-700 p-4 font-battambang text-xs no-print">
           <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <label className="block text-gray-700 dark:text-slate-300 mb-1 font-medium">
@@ -189,7 +190,7 @@ export default function OfficialReportPrintModal({
                 type="text"
                 value={lunarDateText}
                 onChange={e => setLunarDateText(e.target.value)}
-                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-orange-500"
+                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-[#028090]"
               />
             </div>
 
@@ -201,7 +202,7 @@ export default function OfficialReportPrintModal({
                 type="text"
                 value={solarDateText}
                 onChange={e => setSolarDateText(e.target.value)}
-                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-orange-500"
+                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-[#028090]"
               />
             </div>
 
@@ -213,7 +214,7 @@ export default function OfficialReportPrintModal({
                 type="text"
                 value={signerTitle}
                 onChange={e => setSignerTitle(e.target.value)}
-                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-orange-500"
+                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-[#028090]"
               />
             </div>
 
@@ -225,17 +226,17 @@ export default function OfficialReportPrintModal({
                 type="text"
                 value={signerName}
                 onChange={e => setSignerName(e.target.value)}
-                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-orange-500"
+                className="w-full px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded text-gray-900 dark:text-white focus:outline-none focus:border-[#028090]"
               />
             </div>
 
-            <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-6 pt-1 border-t border-amber-200/60 dark:border-slate-700/60">
+            <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-6 pt-1 border-t border-teal-200/60 dark:border-slate-700/60">
               <label className="flex items-center gap-2 cursor-pointer text-gray-800 dark:text-slate-200">
                 <input
                   type="checkbox"
                   checked={includeSignatureImage}
                   onChange={e => setIncludeSignatureImage(e.target.checked)}
-                  className="rounded text-orange-600 focus:ring-orange-500"
+                  className="rounded text-[#028090] focus:ring-[#028090]"
                 />
                 <span>បង្ហាញរូបហត្ថលេខា (/Sign.png)</span>
               </label>
@@ -244,7 +245,7 @@ export default function OfficialReportPrintModal({
                   type="checkbox"
                   checked={includeTopHighlights}
                   onChange={e => setIncludeTopHighlights(e.target.checked)}
-                  className="rounded text-orange-600 focus:ring-orange-500"
+                  className="rounded text-[#028090] focus:ring-[#028090]"
                 />
                 <span>បង្ហាញបញ្ជីប្រតិបត្តិការចម្បងៗ (កំពូល ៥)</span>
               </label>

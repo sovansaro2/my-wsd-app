@@ -107,7 +107,12 @@ export default function InvitationLetter() {
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isSavingToApp, setIsSavingToApp] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [activeView, setActiveView] = useState<'both' | 'edit' | 'preview' | 'archive'>('both');
+  const [activeView, setActiveView] = useState<'both' | 'edit' | 'preview' | 'archive'>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      return 'edit';
+    }
+    return 'both';
+  });
   const [savedLetters, setSavedLetters] = useState<SavedInvitationLetter[]>([]);
   const [viewingLetter, setViewingLetter] = useState<SavedInvitationLetter | null>(null);
   const [saveToastMessage, setSaveToastMessage] = useState<string | null>(null);
@@ -232,11 +237,19 @@ export default function InvitationLetter() {
     if (!letterRef.current) return;
     setIsExportingPdf(true);
     try {
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
       const dataUrl = await toPng(letterRef.current, {
         quality: 1,
         pixelRatio: 3, // High DPI for crisp printing and rendering
         backgroundColor: '#ffffff',
-        cacheBust: true
+        cacheBust: true,
+        skipFonts: true,
+        style: {
+          transform: 'none',
+          margin: '0',
+        }
       });
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -281,11 +294,19 @@ export default function InvitationLetter() {
     if (!letterRef.current) return;
     setIsSavingToApp(true);
     try {
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
       const dataUrl = await toPng(letterRef.current, {
         quality: 0.95,
         pixelRatio: 2.5,
         backgroundColor: '#ffffff',
-        cacheBust: true
+        cacheBust: true,
+        skipFonts: true,
+        style: {
+          transform: 'none',
+          margin: '0',
+        }
       });
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -359,10 +380,19 @@ export default function InvitationLetter() {
     if (!letterRef.current) return;
     setIsExporting(true);
     try {
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
       const dataUrl = await toPng(letterRef.current, {
         quality: 0.98,
         pixelRatio: 2.5,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        cacheBust: true,
+        skipFonts: true,
+        style: {
+          transform: 'none',
+          margin: '0',
+        }
       });
       const link = document.createElement('a');
       link.download = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.png`;
@@ -441,112 +471,141 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               box-shadow: none !important;
               font-size: 11.5pt !important;
               line-height: 1.6 !important;
+              transform: none !important;
             }
           }
         `
       }} />
 
-      {/* Top Header Controls Bar - Single Row */}
-      <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-16 z-20">
-        {/* View toggle */}
-        <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-lg p-0.5 text-xs font-battambang">
+      {/* Top Header Controls Bar - Responsive & Clean */}
+      <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 sticky top-16 z-20">
+        {/* View toggle for Mobile (3 Equal Segments - Never Wraps) */}
+        <div className="grid grid-cols-3 w-full lg:hidden border border-gray-200 dark:border-slate-700 rounded-xl p-1 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
+          <button
+            onClick={() => setActiveView('edit')}
+            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 ${
+              activeView === 'edit'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
+                : 'text-gray-600 dark:text-slate-400'
+            }`}
+          >
+            <PenTool className="w-3.5 h-3.5 shrink-0" />
+            <span>កែសម្រួល</span>
+          </button>
+          <button
+            onClick={() => setActiveView('preview')}
+            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 ${
+              activeView === 'preview'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
+                : 'text-gray-600 dark:text-slate-400'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5 shrink-0" />
+            <span>មើលគំរូ</span>
+          </button>
+          <button
+            onClick={() => setActiveView('archive')}
+            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1 ${
+              activeView === 'archive'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
+                : 'text-gray-600 dark:text-slate-400'
+            }`}
+          >
+            <FolderArchive className="w-3.5 h-3.5 shrink-0" />
+            <span>បណ្ណសារ</span>
+            <span className="font-rajdhani text-[11px] font-bold text-[#028090] dark:text-teal-400">
+              ({toKhmerNum(savedLetters.length)})
+            </span>
+          </button>
+        </div>
+
+        {/* View toggle for Desktop (Lg screens) */}
+        <div className="hidden lg:flex items-center border border-gray-200 dark:border-slate-700 rounded-xl p-0.5 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
           <button
             onClick={() => setActiveView('both')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
               activeView === 'both' 
-                ? 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white font-medium' 
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-900'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
             }`}
           >
             បង្ហាញទាំងពីរ
           </button>
           <button
             onClick={() => setActiveView('edit')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
               activeView === 'edit' 
-                ? 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white font-medium' 
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-900'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
             }`}
           >
             កែសម្រួល
           </button>
           <button
             onClick={() => setActiveView('preview')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
               activeView === 'preview' 
-                ? 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white font-medium' 
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-900'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
             }`}
           >
             មើលគំរូ
           </button>
           <button
             onClick={() => setActiveView('archive')}
-            className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeView === 'archive' 
-                ? 'bg-gray-100 dark:bg-slate-800 text-orange-600 dark:text-orange-400 font-semibold' 
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-900'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
             }`}
           >
-            <FolderArchive className="w-3.5 h-3.5" />
+            <FolderArchive className="w-3.5 h-3.5 shrink-0" />
             <span>បណ្ណសារ PDF</span>
-            <span className="font-rajdhani text-[11px] font-semibold text-orange-600 dark:text-orange-400">
+            <span className="font-rajdhani text-[11px] font-bold text-[#028090] dark:text-teal-400">
               ({toKhmerNum(savedLetters.length)})
             </span>
           </button>
         </div>
 
-        {/* Action Buttons in single row */}
-        <div className="flex items-center flex-wrap gap-2">
+        {/* Action Buttons: Clean horizontal scrollable row with no wrapping */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto py-0.5">
           <button
-            onClick={() => setActiveView('archive')}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
-            title="បើកមើលបណ្ណសារលិខិតដែលបានរក្សាទុកក្នុងកម្មវិធី"
+            onClick={handleDownloadPdf}
+            disabled={isExportingPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-[#028090] hover:bg-[#005F73] text-white rounded-xl shadow-xs transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="ទាញយកជាឯកសារ PDF A5 សម្រាប់ PC ឬ Phone"
           >
-            <FolderArchive className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-            <span>បណ្ណសារ</span>
-            <span className="font-rajdhani font-semibold text-xs text-orange-600 dark:text-orange-400">
-              ({toKhmerNum(savedLetters.length)})
-            </span>
-          </button>
-
-          <button
-            onClick={handleSaveToApp}
-            disabled={isSavingToApp}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
-            title="រក្សាទុកលិខិតនេះជា PDF ក្នុងកម្មវិធីនេះ"
-          >
-            <BookmarkPlus className="w-4 h-4 text-gray-500" />
-            <span>{isSavingToApp ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកក្នុងកម្មវិធី'}</span>
-          </button>
-
-          <button
-            onClick={handleCopyText}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
-            title="ចម្លងអត្ថបទទាំងអស់"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-gray-500" />}
-            <span>{copied ? 'បានចម្លង!' : 'ចម្លងអត្ថបទ'}</span>
+            <FileDown className="w-3.5 h-3.5 shrink-0" />
+            <span className="whitespace-nowrap">{isExportingPdf ? 'កំពុងបង្កើត PDF...' : 'ទាញយកជា PDF'}</span>
           </button>
 
           <button
             onClick={handleDownloadImage}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
-            title="ទាញយកជារូបភាព PNG សម្រាប់ផ្ញើតាម Telegram"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="ទាញយកជារូបភាព PNG"
           >
-            <Download className="w-4 h-4 text-gray-500" />
-            <span>{isExporting ? 'កំពុងបង្កើត...' : 'ទាញយកជារូប'}</span>
+            <Download className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+            <span className="whitespace-nowrap">{isExporting ? 'កំពុងបង្កើត...' : 'ទាញយកជារូប'}</span>
           </button>
 
           <button
-            onClick={handleDownloadPdf}
-            disabled={isExportingPdf}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
-            title="ទាញយកជាឯកសារ PDF A5 សម្រាប់ PC ឬ Phone"
+            onClick={handleSaveToApp}
+            disabled={isSavingToApp}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="រក្សាទុកលិខិតនេះជា PDF ក្នុងកម្មវិធីនេះ"
           >
-            <FileDown className="w-4 h-4" />
-            <span>{isExportingPdf ? 'កំពុងបង្កើត PDF...' : 'ទាញយកជា PDF'}</span>
+            <BookmarkPlus className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+            <span className="whitespace-nowrap">{isSavingToApp ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកក្នុងកម្មវិធី'}</span>
+          </button>
+
+          <button
+            onClick={handleCopyText}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer shrink-0"
+            title="ចម្លងអត្ថបទទាំងអស់"
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Copy className="w-3.5 h-3.5 text-gray-500 shrink-0" />}
+            <span className="whitespace-nowrap">{copied ? 'បានចម្លង!' : 'ចម្លងអត្ថបទ'}</span>
           </button>
         </div>
       </div>
@@ -561,7 +620,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             {/* Header banner */}
             <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
-                <FolderArchive className="w-6 h-6 text-orange-600 dark:text-orange-400 mt-1 shrink-0" />
+                <FolderArchive className="w-6 h-6 text-[#028090] dark:text-teal-400 mt-1 shrink-0" />
                 <div>
                   <h2 className="font-koulen text-lg sm:text-xl text-gray-900 dark:text-white tracking-wide">
                     បណ្ណសារលិខិតអញ្ជើញ (រក្សាទុកក្នុងកម្មវិធី)
@@ -573,8 +632,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               </div>
               <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
                 <button
-                  onClick={() => setActiveView('both')}
-                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl transition-colors cursor-pointer"
+                  onClick={() => setActiveView(typeof window !== 'undefined' && window.innerWidth < 1024 ? 'edit' : 'both')}
+                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium font-battambang bg-[#028090] hover:bg-[#005F73] text-white rounded-xl transition-colors cursor-pointer"
                 >
                   <PenTool className="w-4 h-4" />
                   <span>បង្កើត ឬកែសម្រួលលិខិតថ្មី</span>
@@ -590,10 +649,10 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   មិនទាន់មានលិខិតអញ្ជើញដែលបានរក្សាទុកនៅឡើយទេ
                 </h3>
                 <p className="font-battambang text-xs text-gray-500 dark:text-slate-400 max-w-md mt-2 leading-relaxed">
-                  នៅពេលលោកអ្នកបង្កើតលិខិតអញ្ជើញរួច សូមចុចប៊ូតុង <span className="font-semibold text-orange-600 dark:text-orange-400">«រក្សាទុកក្នុងកម្មវិធី»</span> ឬ <span className="font-semibold text-orange-600 dark:text-orange-400">«ទាញយកជា PDF»</span> នោះប្រព័ន្ធនឹងរក្សាទុកលិខិតនោះក្នុងបណ្ណសារនេះដោយស្វ័យប្រវត្តិ។
+                  នៅពេលលោកអ្នកបង្កើតលិខិតអញ្ជើញរួច សូមចុចប៊ូតុង <span className="font-semibold text-[#028090] dark:text-teal-400">«រក្សាទុកក្នុងកម្មវិធី»</span> ឬ <span className="font-semibold text-[#028090] dark:text-teal-400">«ទាញយកជា PDF»</span> នោះប្រព័ន្ធនឹងរក្សាទុកលិខិតនោះក្នុងបណ្ណសារនេះដោយស្វ័យប្រវត្តិ។
                 </p>
                 <button
-                  onClick={() => setActiveView('both')}
+                  onClick={() => setActiveView(typeof window !== 'undefined' && window.innerWidth < 1024 ? 'edit' : 'both')}
                   className="mt-5 px-4 py-2 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-800 dark:text-slate-200 rounded-xl transition-colors cursor-pointer"
                 >
                   ទៅកាន់ទំព័របង្កើតលិខិត
@@ -604,7 +663,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {savedLetters.map((letter) => (
                   <div
                     key={letter.id}
-                    className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-orange-400 dark:hover:border-orange-600 transition-all shadow-xs group"
+                    className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-[#028090] dark:hover:border-teal-500 transition-all shadow-xs group"
                   >
                     <div>
                       {/* Top Row: Thumbnail + Info */}
@@ -687,7 +746,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         {letter.formData && (
                           <button
                             onClick={() => handleLoadSavedLetterToForm(letter)}
-                            className="flex items-center gap-1 px-2 py-1 text-xs font-battambang text-orange-600 dark:text-orange-400 hover:text-orange-700 transition-colors cursor-pointer"
+                            className="flex items-center gap-1 px-2 py-1 text-xs font-battambang text-[#028090] dark:text-teal-400 hover:text-[#005F73] transition-colors cursor-pointer"
                             title="យកទិន្នន័យលិខិតនេះមកកែសម្រួលឡើងវិញ"
                           >
                             <PenTool className="w-3.5 h-3.5" />
@@ -747,8 +806,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {/* 1. ព័ត៌មានក្បាលលិខិត និង វត្តអារាម */}
                 {/* ========================================================================= */}
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
-                    <Landmark className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
+                    <Landmark className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>១. ក្បាលលិខិត និង ព័ត៌មានវត្តអារាម</span>
                   </div>
 
@@ -762,7 +821,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.templeName}
                         onChange={(e) => handleChange('templeName', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -773,7 +832,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.letterNumber}
                         onChange={(e) => handleChange('letterNumber', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -788,7 +847,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.templeAddress}
                       onChange={(e) => handleChange('templeAddress', e.target.value)}
                       placeholder="ឧ. ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង"
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                     />
                   </div>
 
@@ -801,7 +860,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       <select
                         value={formData.symbolSize || 'sm'}
                         onChange={(e) => handleChange('symbolSize', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       >
                         <option value="xs">ល្អិតសមរម្យ (11px)</option>
                         <option value="sm">តូចសមាមាត្រ - ស្តង់ដាររដ្ឋបាល (13px)</option>
@@ -816,7 +875,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           type="checkbox"
                           checked={formData.showTempleAddressInHeader ?? false}
                           onChange={(e) => handleChange('showTempleAddressInHeader', e.target.checked)}
-                          className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                          className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
                         <span className="text-gray-700 dark:text-slate-300">
                           បង្ហាញអាសយដ្ឋានវត្តនៅក្បាលលិខិត
@@ -828,7 +887,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           type="checkbox"
                           checked={formData.showHigherOrg ?? false}
                           onChange={(e) => handleChange('showHigherOrg', e.target.checked)}
-                          className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                          className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
                         <span className="text-gray-700 dark:text-slate-300">
                           បន្ថែមស្ថាប័នថ្នាក់លើ (សាលាអនុគណ/គណៈសង្ឃនាយក)
@@ -847,7 +906,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         value={formData.higherOrgName || ''}
                         onChange={(e) => handleChange('higherOrgName', e.target.value)}
                         placeholder="ឧ. សាលាអនុគណស្រុកបាភ្នំ"
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                   )}
@@ -857,8 +916,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {/* 2. អ្នកទទួល និង កម្មវត្ថុ */}
                 {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
-                    <UserCheck className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
+                    <UserCheck className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>២. អ្នកទទួល និង កម្មវត្ថុ</span>
                   </div>
 
@@ -866,13 +925,13 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                        ពាក្យអញ្ជើញ <span className="text-orange-600 dark:text-orange-400 font-semibold">(Battambang Bold)</span>
+                        ពាក្យអញ្ជើញ <span className="text-[#028090] dark:text-teal-400 font-semibold">(Battambang Bold)</span>
                       </label>
                       <div className="flex items-center gap-1.5 text-[11px] font-battambang text-gray-500">
                         <button
                           type="button"
                           onClick={() => handleChange('salutationPrefix', 'សូមអញ្ជើញ')}
-                          className="hover:text-orange-600 cursor-pointer underline"
+                          className="hover:text-[#028090] cursor-pointer underline"
                         >
                           សូមអញ្ជើញ
                         </button>
@@ -880,7 +939,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         <button
                           type="button"
                           onClick={() => handleChange('salutationPrefix', 'សូមគោរពអញ្ជើញ')}
-                          className="hover:text-orange-600 cursor-pointer underline"
+                          className="hover:text-[#028090] cursor-pointer underline"
                         >
                           សូមគោរពអញ្ជើញ
                         </button>
@@ -891,7 +950,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.salutationPrefix}
                       onChange={(e) => handleChange('salutationPrefix', e.target.value)}
                       placeholder="សូមគោរពអញ្ជើញ"
-                      className="w-full px-3 py-2 text-xs font-battambang font-bold border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      className="w-full px-3 py-2 text-xs font-battambang font-bold border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                     />
                   </div>
 
@@ -899,12 +958,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                        ឈ្មោះអ្នកទទួល <span className="text-orange-600 dark:text-orange-400 font-bold">(Font Moul ធំច្បាស់)</span>
+                        ឈ្មោះអ្នកទទួល <span className="text-[#028090] dark:text-teal-400 font-bold">(Font Moul ធំច្បាស់)</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => handleChange('recipientName', '...........................................................................')}
-                        className="text-[11px] font-battambang text-orange-600 hover:underline cursor-pointer"
+                        className="text-[11px] font-battambang text-[#028090] hover:underline cursor-pointer"
                       >
                         + ដាក់ចន្លោះសរសេរដៃ
                       </button>
@@ -914,7 +973,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.recipientName}
                       onChange={(e) => handleChange('recipientName', e.target.value)}
                       placeholder="វាយឈ្មោះបុគ្គលផ្ទាល់ ឬទុកចន្លោះចុចៗសម្រាប់សរសេរដៃ"
-                      className="w-full px-3 py-2.5 text-xs sm:text-[13px] font-moul border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[56px]"
+                      className="w-full px-3 py-2.5 text-xs sm:text-[13px] font-moul border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-relaxed min-h-[56px]"
                     />
                   </div>
 
@@ -927,7 +986,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       rows={2}
                       value={formData.subject}
                       onChange={(e) => handleChange('subject', e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[48px]"
+                      className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-relaxed min-h-[48px]"
                     />
                   </div>
 
@@ -942,7 +1001,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           type="checkbox"
                           checked={formData.showReference}
                           onChange={(e) => handleChange('showReference', e.target.checked)}
-                          className="w-3.5 h-3.5 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                          className="w-3.5 h-3.5 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
                         <span className="text-gray-500 dark:text-slate-400">បង្ហាញ «យោង»</span>
                       </label>
@@ -952,7 +1011,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         rows={2}
                         value={formData.referenceText}
                         onChange={(e) => handleChange('referenceText', e.target.value)}
-                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-relaxed min-h-[48px]"
+                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-relaxed min-h-[48px]"
                       />
                     )}
                   </div>
@@ -962,8 +1021,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {/* 3. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែង */}
                 {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
-                    <Calendar className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
+                    <Calendar className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>៣. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែងប្រជុំ</span>
                   </div>
 
@@ -977,7 +1036,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.meetingTime}
                         onChange={(e) => handleChange('meetingTime', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -988,7 +1047,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.solarDate}
                         onChange={(e) => handleChange('solarDate', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1003,7 +1062,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.lunarDate}
                       onChange={(e) => handleChange('lunarDate', e.target.value)}
                       placeholder="ឧ. ថ្ងៃអាទិត្យ ១០កើត ខែផល្គុន ឆ្នាំរោង ឆស័ក ពុទ្ធសករាជ ២៥៦៨"
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                     />
                   </div>
 
@@ -1017,7 +1076,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.location}
                       onChange={(e) => handleChange('location', e.target.value)}
                       placeholder="ឧ. នៅសាលាឆាន់ វត្តស្នាយដួច ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង"
-                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                      className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1026,8 +1085,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {/* 4. ខ្លឹមសារលិខិត របៀបវារៈ និង សេចក្តីបញ្ចប់ */}
                 {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
-                    <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
+                    <FileText className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>៤. ខ្លឹមសារលិខិត និង របៀបវារៈ</span>
                   </div>
 
@@ -1040,7 +1099,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       rows={4}
                       value={formData.bodyIntro}
                       onChange={(e) => handleChange('bodyIntro', e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[96px]"
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-[1.8] min-h-[96px]"
                     />
                   </div>
 
@@ -1048,14 +1107,14 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                        របៀបវារៈកិច្ចប្រជុំ <span className="text-orange-600 dark:text-orange-400 font-semibold">(៣ ចំណុច)</span>
+                        របៀបវារៈកិច្ចប្រជុំ <span className="text-[#028090] dark:text-teal-400 font-semibold">(៣ ចំណុច)</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => handleChange('agenda', `១. ពិភាក្សាលើប្លង់ស្ថាបត្យកម្ម ប៉ាន់ប្រមាណថវិកា និងបង្កើតគណៈកម្មការទទួលបន្ទុកការងារ
 ២. ពិភាក្សាលើផែនការកៀរគរបច្ច័យ និងទំនាក់ទំនងសប្បុរសជនទាំងក្នុងនិងក្រៅប្រទេស
 ៣. កំណត់កាលបរិច្ឆេទប្រារព្ធពិធីបញ្ចុះបឋមសិលាបើកការដ្ឋានកសាង និងបញ្ហាផ្សេងៗ`)}
-                        className="text-[11px] font-battambang text-orange-600 hover:underline cursor-pointer"
+                        className="text-[11px] font-battambang text-[#028090] hover:underline cursor-pointer"
                       >
                         + បញ្ចូលគំរូ ៣ ចំណុច
                       </button>
@@ -1065,7 +1124,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       value={formData.agenda}
                       onChange={(e) => handleChange('agenda', e.target.value)}
                       placeholder="១. ...&#10;២. ...&#10;៣. ..."
-                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[96px]"
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-[1.8] min-h-[96px]"
                     />
                   </div>
 
@@ -1078,7 +1137,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       rows={3}
                       value={formData.therefore}
                       onChange={(e) => handleChange('therefore', e.target.value)}
-                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[72px]"
+                      className="w-full px-3.5 py-2.5 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-[1.8] min-h-[72px]"
                     />
                   </div>
                 </div>
@@ -1087,8 +1146,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 {/* 5. ការចុះហត្ថលេខា និង កន្លែងទទួល */}
                 {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-xs font-koulen text-orange-600 dark:text-orange-400 tracking-wide">
-                    <PenTool className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
+                    <PenTool className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>៥. ការចុះហត្ថលេខា និង កន្លែងទទួល</span>
                   </div>
 
@@ -1101,7 +1160,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.issuingPlace}
                         onChange={(e) => handleChange('issuingPlace', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1112,7 +1171,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.signerRole}
                         onChange={(e) => handleChange('signerRole', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1126,7 +1185,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.signingDateSolar}
                         onChange={(e) => handleChange('signingDateSolar', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1137,7 +1196,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.signingDateLunar}
                         onChange={(e) => handleChange('signingDateLunar', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1150,7 +1209,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           type="checkbox"
                           checked={formData.showDistribution}
                           onChange={(e) => handleChange('showDistribution', e.target.checked)}
-                          className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                          className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
                         <span className="text-gray-700 dark:text-slate-300 font-semibold">
                           បង្ហាញ «កន្លែងទទួល» (Administrative Distribution)
@@ -1162,7 +1221,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         rows={3}
                         value={formData.distributionText}
                         onChange={(e) => handleChange('distributionText', e.target.value)}
-                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none resize-y leading-[1.8] min-h-[72px]"
+                        className="w-full px-3.5 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none resize-y leading-[1.8] min-h-[72px]"
                       />
                     )}
                   </div>
@@ -1174,7 +1233,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="checkbox"
                         checked={formData.showNote}
                         onChange={(e) => handleChange('showNote', e.target.checked)}
-                        className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-gray-300"
+                        className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                       />
                       <span className="text-gray-700 dark:text-slate-300">បង្ហាញកំណត់សម្គាល់បន្ថែម</span>
                     </label>
@@ -1183,10 +1242,22 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         type="text"
                         value={formData.noteText}
                         onChange={(e) => handleChange('noteText', e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="w-full px-3 py-2 text-xs font-battambang border border-gray-200 dark:border-slate-700 rounded-xl bg-transparent focus:ring-2 focus:ring-[#028090] focus:outline-none"
                       />
                     )}
                   </div>
+                </div>
+
+                {/* Mobile Jump to Preview Button */}
+                <div className="lg:hidden pt-4 border-t border-gray-100 dark:border-slate-800 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setActiveView('preview')}
+                    className="w-full py-2.5 px-4 bg-[#028090] hover:bg-[#005F73] text-white rounded-xl font-battambang text-xs sm:text-sm font-medium flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4" />
+                    <span>មើលគំរូលិខិត A5</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1198,21 +1269,19 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           {(activeView === 'both' || activeView === 'preview') && (
             <div className={`${activeView === 'both' ? 'lg:col-span-7' : 'max-w-4xl mx-auto w-full'} flex flex-col items-center`}>
               
-              {/* Paper Visual Stage */}
+              {/* Paper Visual Stage with Mobile Responsive Scale */}
               <div className="w-full flex justify-center py-2 sm:py-4 overflow-x-auto">
-                {/* 
-                  Standard A5 Portrait:
-                  Ratio: 148mm : 210mm (1 : 1.419)
-                  Document simulation adhering to authentic Cambodian administrative standards.
-                */}
-                <div
-                  ref={letterRef}
-                  id="invitation-letter-a5"
-                  className="print-section bg-white text-gray-950 shadow-2xl border border-gray-300 rounded-none w-[560px] min-h-[792px] p-7 sm:p-9 flex flex-col justify-between select-text relative font-battambang text-[12px] leading-[1.65]"
-                  style={{
-                    boxSizing: 'border-box'
-                  }}
-                >
+                {/* Responsive container for mobile screen fit */}
+                <div className="relative w-[340px] h-[510px] sm:w-[560px] sm:h-auto mx-auto shrink-0 transition-all duration-300 flex justify-center">
+                  <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100 shadow-xl sm:shadow-2xl">
+                    <div
+                      ref={letterRef}
+                      id="invitation-letter-a5"
+                      className="print-section bg-white text-gray-950 border border-gray-300 rounded-none w-[560px] min-h-[792px] p-7 sm:p-9 flex flex-col justify-between select-text relative font-battambang text-[12px] leading-[1.65]"
+                      style={{
+                        boxSizing: 'border-box'
+                      }}
+                    >
                   {/* Outer subtle boundary border fitting official A5 document sheet */}
                   <div>
                     {/* Top Letterhead: Pagoda Info Left | National Motto Right (Official Cambodian Administrative Standard - No Full-width Border Line) */}
@@ -1389,7 +1458,21 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Mobile Back to Edit Button */}
+          <div className="lg:hidden mt-3 sm:mt-4 pb-8 flex justify-center w-full">
+            <button
+              type="button"
+              onClick={() => setActiveView('edit')}
+              className="flex items-center gap-2 py-2 px-4 border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl font-battambang text-xs font-medium shadow-xs hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            >
+              <PenTool className="w-3.5 h-3.5 text-[#028090] dark:text-teal-400" />
+              <span>ត្រឡប់ទៅកែសម្រួលព័ត៌មាន</span>
+            </button>
+          </div>
+        </div>
+      )}
         </div>
         )}
       </div>
@@ -1414,7 +1497,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => handleDownloadSavedLetterDirectly(viewingLetter)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-[#028090] hover:bg-[#005F73] text-white rounded-xl shadow-xs transition-colors cursor-pointer"
                   title="ទាញយកទៅកាន់ PC ឬ Phone"
                 >
                   <Download className="w-4 h-4" />
@@ -1457,7 +1540,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       handleLoadSavedLetterToForm(viewingLetter);
                       setViewingLetter(null);
                     }}
-                    className="text-orange-600 hover:underline cursor-pointer"
+                    className="text-[#028090] hover:underline cursor-pointer"
                   >
                     យកមកកែសម្រួល
                   </button>
