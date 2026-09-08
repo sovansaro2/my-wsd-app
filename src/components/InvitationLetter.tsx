@@ -1282,7 +1282,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             <div className="w-full flex justify-center py-2 sm:py-4 overflow-x-auto">
               {/* Responsive container for mobile screen fit */}
               <div className="relative w-[340px] h-[510px] sm:w-[560px] sm:h-auto mx-auto shrink-0 transition-all duration-300 flex justify-center">
-                <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100 shadow-xl sm:shadow-2xl">
+                <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100">
                   <div
                     ref={letterRef}
                     id="invitation-letter-a5"
@@ -1551,7 +1551,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 <img
                   src={viewingLetter.previewImage}
                   alt={viewingLetter.title}
-                  className="w-full max-w-[500px] h-auto object-contain bg-white shadow-lg border border-gray-300"
+                  className="w-full max-w-[500px] h-auto object-contain bg-white border border-gray-300"
                 />
               ) : (
                 <div className="text-center py-12 font-battambang text-xs text-gray-500">
