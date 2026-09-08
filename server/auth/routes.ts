@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SignupSchema, LoginSchema } from './schemas';
-import { supabaseAdmin} from '../database';
+import { supabaseAdmin, createAuthClient } from '../database';
 
 const router = Router();
 
@@ -22,8 +22,9 @@ router.post('/signup', async (req, res) => {
     });
 
     if (signUpError) {
-      // Fallback to normal signUp if admin API fails (e.g. no service role key)
-      const { data: fallbackData, error: fallbackError } = await supabaseAdmin.auth.signUp({
+      // Fallback to normal signUp using isolated auth client
+      const authClient = createAuthClient();
+      const { data: fallbackData, error: fallbackError } = await authClient.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -76,7 +77,8 @@ router.post('/signup', async (req, res) => {
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const { data: authData, error } = await supabaseAdmin.auth.verifyOtp({
+    const authClient = createAuthClient();
+    const { data: authData, error } = await authClient.auth.verifyOtp({
       email,
       token: otp,
       type: 'signup'
@@ -110,7 +112,9 @@ router.post('/login', async (req, res) => {
   try {
     const data = LoginSchema.parse(req.body);
     
-    const { data: authData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
+    // Use dedicated isolated auth client so admin client session is never tainted
+    const authClient = createAuthClient();
+    const { data: authData, error: signInError } = await authClient.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
@@ -120,7 +124,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ detail: 'អុីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ' });
     }
 
-    // Fetch profile to get role
+    // Fetch profile to get role using admin client
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -146,7 +150,8 @@ router.post('/refresh', async (req, res) => {
       return res.status(400).json({ detail: 'Missing refresh token' });
     }
 
-    const { data, error } = await supabaseAdmin.auth.refreshSession({ refresh_token: String(refreshToken) });
+    const authClient = createAuthClient();
+    const { data, error } = await authClient.auth.refreshSession({ refresh_token: String(refreshToken) });
     if (error || !data.session) {
       return res.status(401).json({ detail: 'Session expired or invalid refresh token' });
     }
@@ -218,8 +223,9 @@ router.post('/verify-password', async (req, res) => {
     const { password } = req.body;
     if (!password) return res.status(400).json({ detail: 'Password required' });
 
-    // Verify password by attempting to sign in
-    const { data, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
+    // Verify password by attempting to sign in using isolated auth client
+    const authClient = createAuthClient();
+    const { data, error: signInError } = await authClient.auth.signInWithPassword({
       email: user.email!,
       password
     });

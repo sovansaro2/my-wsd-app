@@ -65,9 +65,9 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
           onClick={() => handleSelectDate(i)}
           className={`h-8 w-8 rounded-full flex items-center justify-center text-sm transition-all
             ${isSelected 
-              ? 'bg-[#1d70b8] text-white  shadow-md scale-110 z-10' 
+              ? 'bg-[#028090] text-white shadow-md scale-110 z-10' 
               : isToday 
-                ? 'bg-blue-50 text-[#1d70b8]  border border-blue-200' 
+                ? 'text-[#028090] dark:text-teal-400 border border-[#028090]/40' 
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:scale-110'
             }`}
         >
@@ -89,7 +89,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
             setViewDate(new Date(y, viewMonth, 1));
             setMode('date');
           }}
-          className={`py-2 px-2 rounded-lg text-[13px] text-center transition-colors ${viewYear === y ? 'bg-[#1d70b8] text-white  shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
+          className={`py-2 px-2 rounded-lg text-[13px] text-center transition-colors ${viewYear === y ? 'bg-[#028090] text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
         >
           {y}
         </button>
@@ -106,12 +106,12 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
     <div className="relative" ref={containerRef}>
       <div 
         onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full rounded-md border px-3.5 py-2.5 text-[14px] flex items-center justify-between transition-colors ${disabled ? 'bg-transparent text-gray-500 cursor-not-allowed border-gray-200 dark:border-slate-700' : 'bg-transparent cursor-pointer ' + (isOpen ? 'border-[#1d70b8]' : 'border-gray-200 dark:border-slate-700 hover:border-gray-300')}`}
+        className={`w-full rounded-md border px-3.5 py-2.5 text-[14px] flex items-center justify-between transition-colors ${disabled ? 'bg-transparent text-gray-500 cursor-not-allowed border-gray-200 dark:border-slate-700' : 'bg-transparent cursor-pointer ' + (isOpen ? 'border-[#028090]' : 'border-gray-200 dark:border-slate-700 hover:border-gray-300')}`}
       >
         <span className={value ? "text-gray-700 dark:text-white" : "text-gray-400"}>
           {value ? value.split('-').reverse().join('/') : placeholder}
         </span>
-        <Calendar className={`w-4 h-4 transition-colors stroke-[1.5] ${isOpen ? 'text-[#1d70b8]' : 'text-gray-400'}`} />
+        <Calendar className={`w-4 h-4 transition-colors stroke-[1.5] ${isOpen ? 'text-[#028090]' : 'text-gray-400'}`} />
       </div>
 
       <AnimatePresence>
@@ -180,7 +180,7 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
                     onChange(`${y}-${m}-${d}`);
                     setIsOpen(false);
                 }}
-                className="px-3 py-1.5 text-[13px]  text-[#1d70b8] hover:text-[#16568d] transition-colors focus:outline-none"
+                className="px-3 py-1.5 text-[13px] text-[#028090] dark:text-teal-400 hover:text-[#026b78] transition-colors focus:outline-none font-medium"
               >
                 Today
               </button>

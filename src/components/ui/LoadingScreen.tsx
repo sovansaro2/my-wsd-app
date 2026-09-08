@@ -11,9 +11,9 @@ export function LoadingScreen({ message = 'កំពុងដំណើរកា�
   return (
     <div className={cn("flex flex-col items-center justify-center bg-[#FAFAFA] dark:bg-slate-900 text-zinc-900 dark:text-white space-y-4", className || "h-screen")}>
       <div className="text-3xl">
-        <Dots className="w-12 h-4 text-amber-600" />
+        <Dots className="w-12 h-4 text-[#028090] dark:text-teal-400" />
       </div>
-      <p className="text-sm font-medium font-battambang st text-zinc-400 uppercase animate-pulse">
+      <p className="text-sm font-medium font-battambang text-zinc-400 dark:text-slate-400 uppercase animate-pulse">
         {message}
       </p>
     </div>

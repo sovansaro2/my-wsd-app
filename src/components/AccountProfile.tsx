@@ -461,7 +461,7 @@ export default function AccountProfile({
                 <div className="relative w-[88px] h-[88px] rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 flex-shrink-0 group">
                   {isUploading ? (
                     <div className="w-full h-full flex items-center justify-center bg-white/80 dark:bg-slate-900/80">
-                      <Loader2 className="w-6 h-6 animate-spin text-[#1d70b8]" />
+                      <Loader2 className="w-6 h-6 animate-spin text-[#028090] dark:text-teal-400" />
                     </div>
                   ) : avatarUrl ? (
                     <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -519,7 +519,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="text" value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder={t('profile_khmer_name_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
@@ -531,7 +531,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="text" value={latinName}
                       onChange={(e) => setLatinName(e.target.value)}
                       placeholder={t('profile_latin_name_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
                     />
                   </div>
                 </div>
@@ -543,7 +543,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="text" value={familyName}
                       onChange={(e) => setFamilyName(e.target.value)}
                       placeholder={t('profile_family_name_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
@@ -555,7 +555,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="text" value={givenName}
                       onChange={(e) => setGivenName(e.target.value)}
                       placeholder={t('profile_given_name_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
@@ -583,7 +583,7 @@ export default function AccountProfile({
                   <div className="w-full relative">
                     <select disabled={!isEditable} value={gender === 'Female' || gender === 'ស្រី' ? 'Female' : 'Male'}
                       onChange={(e) => setGender(e.target.value)}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white focus:border-[#1d70b8] outline-none transition-colors appearance-none cursor-pointer disabled:cursor-not-allowed font-battambang"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white focus:border-[#028090] outline-none transition-colors appearance-none cursor-pointer disabled:cursor-not-allowed font-battambang"
                     >
                       <option value="Male" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">{t('profile_gender_male')}</option>
                       <option value="Female" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-white">{t('profile_gender_female')}</option>
@@ -601,7 +601,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="text" value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder={t('profile_address_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-battambang"
                     />
                   </div>
                 </div>
@@ -613,7 +613,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="email" value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t('profile_email_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
                     />
                   </div>
                 </div>
@@ -625,7 +625,7 @@ export default function AccountProfile({
                     <input disabled={!isEditable} type="tel" value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder={t('profile_phone_ph')}
-                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#1d70b8] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
+                      className="w-full rounded-md border border-gray-200 dark:border-slate-700 bg-transparent px-3.5 py-2.5 text-[14px] text-gray-700 dark:text-white placeholder:text-gray-400 focus:border-[#028090] outline-none transition-colors disabled:cursor-not-allowed font-rajdhani"
                     />
                   </div>
                 </div>
@@ -636,7 +636,7 @@ export default function AccountProfile({
                   <button 
                     type="button" 
                     onClick={(e) => { e.preventDefault(); setIsEditable(true); }}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full text-[13.5px] font-medium shadow-sm transition-colors flex items-center justify-center min-w-[120px] font-battambang active:scale-[0.98]"
+                    className="px-8 py-2.5 bg-[#028090] hover:bg-[#026b78] text-white rounded-full text-[13.5px] font-medium shadow-sm transition-colors flex items-center justify-center min-w-[120px] font-battambang active:scale-[0.98]"
                   >
                     {t('profile_btn_edit')}
                   </button>
@@ -644,7 +644,7 @@ export default function AccountProfile({
                   <button 
                     type="submit" 
                     disabled={isSaving}
-                    className="px-8 py-2.5 bg-[#1d70b8] hover:bg-[#16568d] text-white rounded-full text-[14px] font-medium shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px] font-battambang active:scale-[0.98]"
+                    className="px-8 py-2.5 bg-[#028090] hover:bg-[#026b78] text-white rounded-full text-[14px] font-medium shadow-sm transition-colors disabled:opacity-70 flex items-center justify-center min-w-[140px] font-battambang active:scale-[0.98]"
                   >
                     {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : t('profile_btn_save')}
                   </button>
@@ -1748,7 +1748,7 @@ export default function AccountProfile({
 
           {/* SECTION 2: ការគ្រប់គ្រង: */}
           <div className="px-6 pt-2 pb-1">
-            <span className="text-[13.5px]  text-[#1d70b8] dark:text-blue-400 font-battambang">
+            <span className="text-[13.5px] text-[#028090] dark:text-teal-400 font-battambang">
               {t('profile_mgmt_heading')}
             </span>
           </div>

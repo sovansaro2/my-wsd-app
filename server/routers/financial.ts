@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../database';
+import { supabaseAdmin, getDirectAdminClient } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
@@ -16,14 +16,26 @@ router.get('/seil-periods', async (req, res) => {
 });
 
 router.post('/seil-periods', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('seil_periods').insert([req.body]).select();
+  let { data, error } = await supabaseAdmin.from('seil_periods').insert([req.body]).select();
+  if (error && (error.code === '42501' || error.message?.includes('row-level security'))) {
+    console.warn('[Seil Periods] RLS error detected, retrying with direct admin client...');
+    const retry = await getDirectAdminClient().from('seil_periods').insert([req.body]).select();
+    data = retry.data;
+    error = retry.error;
+  }
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.put('/seil-periods/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('seil_periods').update(req.body).eq('id', req.params.id).select();
+  let { data, error } = await supabaseAdmin.from('seil_periods').update(req.body).eq('id', req.params.id).select();
+  if (error && (error.code === '42501' || error.message?.includes('row-level security'))) {
+    console.warn('[Seil Periods] RLS error detected, retrying with direct admin client...');
+    const retry = await getDirectAdminClient().from('seil_periods').update(req.body).eq('id', req.params.id).select();
+    data = retry.data;
+    error = retry.error;
+  }
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
@@ -54,7 +66,19 @@ router.post('/financial-records', requireAuth, requireAdmin, async (req, res) =>
     error = retry.error;
   }
 
-  if (error) return res.status(400).json({ detail: error.message });
+  // Auto-recovery if RLS error occurs
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    console.warn('[Financial Records] RLS policy error detected, retrying with direct admin client...');
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('financial_records').insert([recordBody]).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
+  if (error) {
+    console.error('[Financial Records Save Error]:', error);
+    return res.status(400).json({ detail: error.message });
+  }
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   if (notify_public) {
     try {
@@ -90,13 +114,30 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
     }
   }
 
-  if (error) return res.status(400).json({ detail: error.message });
+  // Auto-recovery if RLS error occurs
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    console.warn('[Financial Records Update] RLS policy error detected, retrying with direct admin client...');
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('financial_records').update(recordBody).eq('id', req.params.id).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
+  if (error) {
+    console.error('[Financial Records Update Error]:', error);
+    return res.status(400).json({ detail: error.message });
+  }
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ (RLS) សូមពិនិត្យមើល Service Role Key' });
   res.json(data[0]);
 });
 
 router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { error } = await supabaseAdmin.from('financial_records').delete().eq('id', req.params.id);
+  let { error } = await supabaseAdmin.from('financial_records').delete().eq('id', req.params.id);
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('financial_records').delete().eq('id', req.params.id);
+    error = retry.error;
+  }
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });

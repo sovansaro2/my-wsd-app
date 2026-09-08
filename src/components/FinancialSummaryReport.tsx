@@ -142,7 +142,7 @@ export default function FinancialSummaryReport() {
 
       {loading && (
         <div className="py-12 flex flex-col items-center justify-center text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin mb-2 text-[#028090]" />
+          <Loader2 className="w-6 h-6 animate-spin mb-2 text-[#028090] dark:text-teal-400" />
           <span className="text-xs sm:text-sm">{language === 'en' ? 'Calculating summary...' : 'កំពុងគណនារបាយការណ៍...'}</span>
         </div>
       )}

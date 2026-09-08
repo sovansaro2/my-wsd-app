@@ -129,7 +129,7 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#028090]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#028090] dark:text-teal-400" />
       </div>
     );
   }
@@ -262,7 +262,7 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-battambang text-gray-500 dark:text-slate-400">{t('users_col_role')}:</span>
                     {updatingId === user.id ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#028090]" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#028090] dark:text-teal-400" />
                     ) : (
                       <select
                         value={user.role}

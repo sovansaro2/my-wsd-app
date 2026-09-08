@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../database';
+import { supabaseAdmin, getDirectAdminClient } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
@@ -258,6 +258,15 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
     error = retry.error;
   }
 
+  // Auto-recovery if RLS error occurs
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    console.warn('[Name List Records] RLS policy error detected, retrying with direct admin client...');
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('name_list_records').insert([recordBody]).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
   if (notify_public) {
@@ -297,13 +306,27 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
     }
   }
 
+  // Auto-recovery if RLS error occurs
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    console.warn('[Name List Records Update] RLS policy error detected, retrying with direct admin client...');
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('name_list_records').update(recordBody).eq('id', req.params.id).select();
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error) return res.status(400).json({ detail: error.message });
   if (!data || data.length === 0) return res.status(403).json({ detail: 'មិនអាចកែប្រែបានទេ (RLS)' });
   res.json(data[0]);
 });
 
 router.delete('/records/:id', requireAuth, requireAdmin, async (req, res) => {
-  const { error } = await supabaseAdmin.from('name_list_records').delete().eq('id', req.params.id);
+  let { error } = await supabaseAdmin.from('name_list_records').delete().eq('id', req.params.id);
+  if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
+    const directAdmin = getDirectAdminClient();
+    const retry = await directAdmin.from('name_list_records').delete().eq('id', req.params.id);
+    error = retry.error;
+  }
   if (error) return res.status(400).json({ detail: error.message });
   
   res.json({ success: true });

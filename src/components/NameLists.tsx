@@ -1674,7 +1674,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   className="flex-1 py-3 px-2 sm:px-4 bg-gray-100 text-gray-700 rounded-xl text-[13px] sm:text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70"
                 >
                   {downloadingType === 'share' ? (
-                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
+                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin text-[#028090] dark:text-teal-400" />
                   ) : (
                     <Share2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                   )}
@@ -1686,7 +1686,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   className="flex-1 py-3 px-2 sm:px-4 bg-gray-100 text-gray-700 rounded-xl text-[13px] sm:text-[14px] hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none disabled:opacity-70"
                 >
                   {downloadingType === 'pdf' ? (
-                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin" />
+                    <Loader2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] animate-spin text-[#028090] dark:text-teal-400" />
                   ) : (
                     <Download className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                   )}

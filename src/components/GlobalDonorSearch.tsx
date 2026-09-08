@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, ChevronDown, ChevronUp, Copy, Check, User, MapPin, Calendar, HeartHandshake } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Copy, Check, User, MapPin, Calendar, HeartHandshake, Loader2 } from 'lucide-react';
 import { api } from '../lib/apiClient';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -173,6 +173,15 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
 
         {/* Results Scroll Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 divide-y divide-gray-100 dark:divide-slate-800/80">
+          {loading && !data && (
+            <div className="py-14 text-center flex flex-col items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-[#028090] dark:text-teal-400 mb-2" />
+              <p className="text-sm text-gray-500 dark:text-slate-400 font-battambang">
+                {language === 'en' ? 'Searching donors...' : 'កំពុងស្វែងរកសប្បុរសជន...'}
+              </p>
+            </div>
+          )}
+
           {data && data.donors.length === 0 && !loading && (
             <div className="py-14 text-center">
               <User className="w-8 h-8 text-gray-300 dark:text-slate-600 mx-auto mb-2" />

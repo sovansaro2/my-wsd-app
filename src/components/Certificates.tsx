@@ -65,7 +65,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#028090] mb-4" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#028090] dark:text-teal-400 mb-4" />
       </div>
     );
   }

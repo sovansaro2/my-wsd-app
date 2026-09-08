@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import FinancialSummaryReport from './FinancialSummaryReport';
 import DataBackupModal from './DataBackupModal';
+import { LoadingScreen } from './ui/LoadingScreen';
 
 export default function Reports({ userRole }: { userRole: 'admin' | 'user' | null }) {
   const { t, language } = useLanguage();
@@ -104,7 +105,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-gray-500 font-battambang">{t('common_loading')}</div>;
+  if (isLoading) return <LoadingScreen className="h-64 bg-transparent" />;
 
   if (userRole !== 'admin') {
     return (

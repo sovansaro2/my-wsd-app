@@ -229,7 +229,7 @@ export default function FinancialOverviewCard({
               }
             >
               {isPinLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-500" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#028090] dark:text-teal-400" />
               ) : isAmountVisible ? (
                 <>
                   <EyeOff className="w-3.5 h-3.5 text-gray-600 dark:text-slate-300" />

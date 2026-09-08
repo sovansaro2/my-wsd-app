@@ -882,7 +882,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                   title="ទាញយកជារូបភាព"
                   aria-label="Download"
                 >
-                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin text-[#028090] dark:text-teal-400" /> : <Download className="w-5 h-5" />}
                 </button>
               )}
 
@@ -1612,19 +1612,19 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               </div>
 
               {/* Action Buttons */}
-              <div className="p-4 sm:p-6 border-t border-gray-200 bg-white sm:rounded-b-3xl rounded-b-2xl flex flex-col sm:flex-row gap-3 justify-end relative z-10 shrink-0">
+              <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 sm:rounded-b-3xl rounded-b-2xl flex flex-col sm:flex-row gap-3 justify-end relative z-10 shrink-0">
                 <button
                   onClick={handleShareCertificate}
                   disabled={isDownloading}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-battambang disabled:opacity-70"
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 rounded-xl transition-colors font-battambang disabled:opacity-70"
                 >
-                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Share2 className="w-5 h-5" />}
+                  {isDownloading ? <Loader2 className="w-5 h-5 animate-spin text-[#028090] dark:text-teal-400" /> : <Share2 className="w-5 h-5" />}
                   ចែករំលែក
                 </button>
                 <button
                   onClick={handleDownloadCertificate}
                   disabled={isDownloading}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-battambang disabled:opacity-70"
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#028090] hover:bg-[#026b78] text-white rounded-xl transition-colors font-battambang disabled:opacity-70"
                 >
                   {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                   ទាញយក
