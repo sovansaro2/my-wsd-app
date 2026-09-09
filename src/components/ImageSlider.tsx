@@ -3,14 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDE_IMAGES = [
-  { id: 1, src: '/slide/slide1.jpg', alt: 'Slide 1' },
-  { id: 2, src: '/slide/slide2.jpg', alt: 'Slide 2' },
   { id: 3, src: '/slide/slide3.jpg', alt: 'Slide 3' },
   { id: 4, src: '/slide/slide4.jpg', alt: 'Slide 4' },
   { id: 5, src: '/slide/slide5.jpg', alt: 'Slide 5' },
   { id: 6, src: '/slide/slide6.jpg', alt: 'Slide 6' },
-  { id: 7, src: '/slide/slide7.jpg', alt: 'Slide 7' },
-  { id: 8, src: '/slide/slide8.jpg', alt: 'Slide 8' },
 ];
 
 export default function ImageSlider() {
