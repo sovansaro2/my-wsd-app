@@ -323,7 +323,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     try {
       const recordData = {
         category_id: selectedCategory.id,
-        name: name.trim(),
+        name: name.split('\n').map(l => l.trim()).filter(Boolean).join('\n'),
         amount: parseFloat(amount) || 0,
         note: note.trim() || null,
         referrer: referrer.trim() || null,
@@ -951,11 +951,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <thead>
                       <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[12px] sm:text-[14px] font-battambang font-medium">
                         <th className="px-1 sm:px-3 py-2 sm:py-3 w-8 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
-                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 whitespace-nowrap w-full">ឈ្មោះសប្បុរសជន</th>
+                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 w-full">ឈ្មោះសប្បុរសជន</th>
                         {isKathina && (
                           <>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[100px] sm:w-auto text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-20 sm:min-w-[180px] sm:w-auto text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[95px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
+                            <th className="px-1.5 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[105px] text-right whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-20 sm:min-w-[150px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
                           </>
                         )}
                         {!isKathina && (
@@ -981,9 +982,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800 whitespace-nowrap">
+                            <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800">
                               <div className="flex flex-col justify-center">
-                                <span className="font-normal text-[13.5px] sm:text-[15px] text-gray-900 dark:text-white leading-snug font-battambang">
+                                <span className="font-normal text-[13.5px] sm:text-[15px] text-gray-900 dark:text-white leading-snug font-battambang whitespace-pre-line">
                                   {record.name}
                                 </span>
                                 {record.note && (
@@ -1001,9 +1002,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                     {record.metadata?.trai_liang || '-'}
                                   </span>
                                 </td>
+                                <td className="px-1.5 sm:px-3 py-1.5 sm:py-2.5 text-right align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-battambang">
+                                    {record.amount > 0 ? formatCurrency(record.amount) : '-'}
+                                  </span>
+                                </td>
                                 <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800 max-w-[200px] sm:max-w-none">
                                   <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang block sm:inline-block sm:whitespace-nowrap truncate sm:overflow-visible">
-                                    {record.metadata?.others || (record.amount > 0 ? formatCurrency(record.amount) : '-')}
+                                    {record.metadata?.others || '-'}
                                   </span>
                                 </td>
                               </>
@@ -1152,41 +1158,41 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
                   {t('list_name')}
                 </label>
-                <input
-                  type="text"
+                <textarea
+                  rows={2}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang text-[14.5px] leading-relaxed resize-y min-h-[58px]"
                   placeholder={t('list_name_ph')}
                 />
               </div>
 
               {isKathina && (
-                <div>
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
                       ត្រៃ/លៀង
                     </label>
                     <input
                       type="text"
                       value={traiLiang}
                       onChange={(e) => setTraiLiang(e.target.value)}
-                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang"
                       placeholder="ឧ. ១ត្រៃ ២លៀង..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
                       ផ្សេងៗ
                     </label>
                     <input
                       type="text"
                       value={others}
                       onChange={(e) => setOthers(e.target.value)}
-                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang"
                       placeholder="កំណត់សម្គាល់ផ្សេងៗ..."
                     />
                   </div>
@@ -1194,8 +1200,8 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               )}
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  {isKathina ? 'ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount')}
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
+                  {isKathina ? 'ថវិកា / ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount')}
                 </label>
                 <input
                   type="number"
@@ -1205,7 +1211,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         setAmount(val);
                         if (Number(val) >= 100000) setIs100kDonor(true);
                       }}
-                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang"
                   placeholder={t('list_amount_ph')}
                 />
               </div>
@@ -1304,7 +1310,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#f0f2f5]">
                 {/* Responsive scaling wrapper */}
                 <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-none border border-gray-200/80">
                     {isKathina ? (
                       <div 
                         ref={certificateRef}
@@ -1489,7 +1495,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                         {/* Center Section - Name */}
                         <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-1 w-full px-2">
-                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-3 px-4 flex flex-col items-center justify-center relative min-h-[120px]">
+                          <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-4 px-4 flex flex-col items-center justify-center relative min-h-[135px]">
                             {/* Small Inner Box Corner Ornaments */}
                             <svg className="absolute top-1.5 left-1.5 w-6 h-6 opacity-70" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute top-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
@@ -1498,33 +1504,43 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
                             {/* Top label */}
                             <div className="absolute -top-[14px] bg-[#991b1b] px-6 py-[2px] rounded-full border-2 border-[#d4af37] flex items-center justify-center">
-                              <span className="text-[#fdfaf0] font-battambang text-[14px]  ">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
+                              <span className="text-[#fdfaf0] font-battambang text-[14px]">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
-                            <div className="w-full flex justify-center mt-1 mb-1 px-1">
+                            {/* Centered Donor Name */}
+                            <div className="w-full flex-1 flex items-center justify-center my-auto px-4 py-2">
                               <h1 
-                                className="text-[#1e3a8a] leading-[1.5] py-1 text-center break-words" 
+                                className="text-[#1e3a8a] leading-[1.7] py-0.5 text-center whitespace-pre-line break-words" 
                                 style={{ 
-                                  fontFamily: '"Khmer OS Muol Light", Moul, "Khmer OS Kulen", Koulen, cursive',
-                                  fontSize: certificateRecord.name.length > 40 ? '24px' : certificateRecord.name.length > 30 ? '30px' : certificateRecord.name.length > 20 ? '36px' : '46px',
-                                  textShadow: '1px 1px 3px rgba(0,0,0,0.15)'
+                                  fontFamily: '"Khmer OS Muol Light", "Moul Light", Moul, serif',
+                                  fontSize: certificateRecord.name.includes('\n')
+                                    ? (certificateRecord.name.length > 50 ? '20px' : certificateRecord.name.length > 30 ? '24px' : '28px')
+                                    : (certificateRecord.name.length > 40 ? '24px' : certificateRecord.name.length > 30 ? '30px' : certificateRecord.name.length > 20 ? '36px' : '44px'),
+                                  textShadow: '1px 1px 2px rgba(0,0,0,0.12)'
                                 }}
                               >
                                 {certificateRecord.name}
                               </h1>
                             </div>
                             
-                            {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others) && (
-                              <div className="flex justify-center items-center gap-3 font-battambang mt-1 mb-1">
+                            {/* Bottom attached box on the bottom line */}
+                            {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others || (certificateRecord.amount && certificateRecord.amount > 0)) && (
+                              <div className="absolute -bottom-[14px] flex justify-center items-center gap-2.5 font-battambang z-20">
                                 {certificateRecord.metadata?.trai_liang && (
-                                  <div className="bg-[#fdfaf0] px-3 py-0.5 rounded border border-[#d4af37] shadow-sm">
-                                    <span className="text-[#991b1b] text-[14px] leading-tight">{certificateRecord.metadata.trai_liang}</span>
+                                  <div className="bg-[#fdfaf0] px-4 py-[3px] rounded-lg border-2 border-[#d4af37] flex items-center justify-center shadow-none">
+                                    <span className="text-[#991b1b] text-[14px] leading-tight font-medium font-battambang">{certificateRecord.metadata.trai_liang}</span>
+                                  </div>
+                                )}
+                                {certificateRecord.amount > 0 && (
+                                  <div className="bg-[#fdfaf0] px-3.5 py-[3px] rounded-lg border-2 border-[#d4af37] flex items-center justify-center gap-1 shadow-none">
+                                    <span className="text-gray-600 text-[12px] leading-tight font-battambang">ថវិកា៖</span>
+                                    <span className="text-[#991b1b] text-[13px] leading-tight font-medium font-battambang">{formatCurrency(certificateRecord.amount)}</span>
                                   </div>
                                 )}
                                 {certificateRecord.metadata?.others && (
-                                  <div className="bg-[#fdfaf0] px-3 py-0.5 rounded border border-[#d4af37] shadow-sm">
-                                    <span className="text-gray-500 mr-1.5 text-[13px] leading-tight">ផ្សេងៗ៖</span>
-                                    <span className="text-[#991b1b] text-[14px] leading-tight">{certificateRecord.metadata.others}</span>
+                                  <div className="bg-[#fdfaf0] px-3.5 py-[3px] rounded-lg border-2 border-[#d4af37] flex items-center justify-center gap-1 shadow-none">
+                                    <span className="text-gray-600 text-[12px] leading-tight font-battambang">ផ្សេងៗ៖</span>
+                                    <span className="text-[#991b1b] text-[13px] leading-tight font-medium font-battambang">{certificateRecord.metadata.others}</span>
                                   </div>
                                 )}
                               </div>
@@ -1616,10 +1632,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       
                       <div className="px-6 py-1 mb-2 border-b border-dashed border-orange-400 min-w-[350px] max-w-[700px] flex justify-center">
                         <h3 
-                          className="text-indigo-900 leading-normal pb-1 whitespace-nowrap" 
+                          className="text-indigo-900 leading-[1.7] pb-1 text-center whitespace-pre-line break-words" 
                           style={{ 
-                            fontFamily: '"Khmer OS Kulen", Koulen, cursive',
-                            fontSize: certificateRecord.name.length > 40 ? '22px' : certificateRecord.name.length > 30 ? '26px' : certificateRecord.name.length > 20 ? '32px' : '40px'
+                            fontFamily: '"Khmer OS Muol Light", "Moul Light", Moul, serif',
+                            fontSize: certificateRecord.name.includes('\n')
+                              ? (certificateRecord.name.length > 50 ? '18px' : certificateRecord.name.length > 30 ? '22px' : '26px')
+                              : (certificateRecord.name.length > 40 ? '22px' : certificateRecord.name.length > 30 ? '26px' : certificateRecord.name.length > 20 ? '32px' : '40px')
                           }}
                         >
                           {certificateRecord.name}
@@ -1759,7 +1777,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             {filteredRecords.map((r, i) => (
               <tr key={r.id} className="border-b border-black/50 text-[13px]">
                 <td className="py-2 px-2 border border-black text-center">{toKhmerNum(i + 1)}</td>
-                <td className="py-2 px-4 border border-black">{r.name}</td>
+                <td className="py-2 px-4 border border-black whitespace-pre-line">{r.name}</td>
                 {isKathina && (
                   <>
                     <td className="py-2 px-3 text-center border border-black">{r.metadata?.trai_liang || (r.note?.includes('ត្រៃ') || r.note?.includes('លៀង') ? r.note : '')}</td>

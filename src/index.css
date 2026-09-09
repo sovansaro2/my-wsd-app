@@ -9,6 +9,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Khmer OS Muol Light';
+  src: url('/fonts/KhmerOS_muollight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moul Light';
+  src: url('/fonts/KhmerOS_muollight.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -19,6 +35,7 @@
   
   --font-title: 'Rajdhani', 'Koulen', 'Battambang', sans-serif;
   --font-moul: 'Rajdhani', 'Moul', 'Khmer OS Muol', serif;
+  --font-moul-light: 'Rajdhani', 'Khmer OS Muol Light', 'Moul Light', 'Moul', serif;
   --font-tacteing: 'Tacteing', serif;
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
@@ -71,6 +88,12 @@
 
   .font-moul {
     font-family: 'Rajdhani', 'Moul', 'Khmer OS Muol', serif !important;
+    line-height: 1.8 !important;
+    padding-top: 0.15em;
+  }
+
+  .font-moul-light {
+    font-family: 'Rajdhani', 'Khmer OS Muol Light', 'Moul Light', 'Moul', serif !important;
     line-height: 1.8 !important;
     padding-top: 0.15em;
   }
