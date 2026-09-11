@@ -17,6 +17,8 @@ const translations = {
     nav_list: 'បញ្ជីផ្សេងៗ',
     nav_reports: 'របាយការណ៍',
     nav_account: 'គណនី',
+    nav_section_operations: 'កិច្ចការចម្បង',
+    nav_section_admin: 'រដ្ឋបាល & ប្រព័ន្ធ',
     
     common_back: 'ត្រឡប់ក្រោយ',
     common_loading: 'កំពុងផ្ទុក...',
@@ -352,6 +354,8 @@ const translations = {
     nav_list: 'Other Lists',
     nav_reports: 'Reports',
     nav_account: 'Account',
+    nav_section_operations: 'Core Operations',
+    nav_section_admin: 'Administration & System',
     
     common_back: 'Back',
     common_loading: 'Loading...',

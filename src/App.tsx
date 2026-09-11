@@ -307,15 +307,27 @@ export default function App() {
     );
   }
 
-  const navItems = [
-    { id: 'home' as Tab, label: t('nav_home'), icon: Home },
-    { id: 'calendar' as Tab, label: language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិន & កាលវិភាគបុណ្យ', icon: CalendarDays },
-    { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
-    { id: 'categories' as Tab, label: t('nav_list'), icon: List },
-    { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
-    { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
-    ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
-    { id: 'account' as Tab, label: t('nav_account'), icon: User },
+  const navSections = [
+    {
+      id: 'operations',
+      title: t('nav_section_operations'),
+      items: [
+        { id: 'home' as Tab, label: t('nav_home'), icon: Home },
+        { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
+        { id: 'categories' as Tab, label: t('nav_list'), icon: List },
+        { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
+        { id: 'calendar' as Tab, label: language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិន & កាលវិភាគបុណ្យ', icon: CalendarDays },
+      ]
+    },
+    {
+      id: 'administration',
+      title: t('nav_section_admin'),
+      items: [
+        { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
+        ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
+        { id: 'account' as Tab, label: t('nav_account'), icon: User },
+      ]
+    }
   ];
 
   const getActiveTabTitle = () => {
@@ -355,26 +367,37 @@ export default function App() {
 
         <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200/80 dark:border-slate-800">
           <div className="flex-1 overflow-y-auto py-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center px-4 py-3.5 text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 ${
-                    isActive
-                      ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
-                      : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
-                    isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
-                  }`} />
-                  <span className="truncate">{item.label}</span>
-                </button>
-              );
-            })}
+            {navSections.map((section, sIndex) => (
+              <div key={section.id} className={sIndex > 0 ? 'mt-3.5 pt-2 border-t border-gray-100 dark:border-slate-800/80' : ''}>
+                <div className="px-4 pb-1.5 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider font-battambang">
+                    {section.title}
+                  </span>
+                </div>
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center px-4 py-3 text-[14px] lg:text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 cursor-pointer ${
+                          isActive
+                            ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
+                            : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
+                          isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
+                        }`} />
+                        <span className="truncate">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">

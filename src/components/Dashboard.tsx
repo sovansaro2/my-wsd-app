@@ -422,25 +422,25 @@ export default function Dashboard({
       {/* Buddhist Calendar & Upcoming Events Banner */}
       <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/70 dark:border-slate-800 p-4 sm:p-5 shadow-2xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <CalendarIcon className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white font-title">
+              <h3 className="text-base sm:text-[17px] font-medium text-gray-900 dark:text-white font-battambang">
                 {language === 'en' ? 'Buddhist Calendar & Event Schedule' : 'ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ'}
               </h3>
             </div>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 font-battambang">
-              ថ្ងៃ{todayLunar.dayOfWeekKhmer} {todayLunar.lunarDayStr} ខែ{todayLunar.lunarMonthStr} ឆ្នាំ{todayLunar.lunarYearStr} • ព.ស. <span className="font-rajdhani">{todayLunar.buddhistEra}</span>
+              ថ្ងៃ{todayLunar.dayOfWeekKhmer} {todayLunar.lunarDayStr} ខែ{todayLunar.lunarMonthStr} ឆ្នាំ{todayLunar.lunarYearStr} • ព.ស. <span className="font-rajdhani font-medium">{todayLunar.buddhistEra}</span>
               {todayLunar.isSeil && (
-                <span className="ml-2 font-semibold text-amber-600 dark:text-amber-400">({todayLunar.seilTitle})</span>
+                <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">({todayLunar.seilTitle})</span>
               )}
             </p>
-            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 pt-1 flex-wrap">
-              <span className="text-amber-600 dark:text-amber-400 font-medium">
+            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 pt-0.5 flex-wrap font-battambang">
+              <span className="text-amber-600 dark:text-amber-400 font-normal">
                 • ថ្ងៃសីលបន្ទាប់៖ {nextSeil.lunar.seilTitle} ({nextSeil.daysRemaining === 0 ? 'ថ្ងៃនេះ' : nextSeil.daysRemaining === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextSeil.daysRemaining)} ថ្ងៃ`})
               </span>
               {nextEvent && (
-                <span className="text-teal-600 dark:text-teal-400 font-medium flex items-center gap-1">
+                <span className="text-teal-600 dark:text-teal-400 font-normal flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
                   កម្មវិធីបន្ទាប់៖ {nextEvent.title} ({nextEventDaysDiff === 0 ? 'ថ្ងៃនេះ' : nextEventDaysDiff === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextEventDaysDiff || 0)} ថ្ងៃ`})
                 </span>
@@ -451,7 +451,7 @@ export default function Dashboard({
           <button
             type="button"
             onClick={() => onNavigateTab?.('calendar')}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-[#028090] dark:text-teal-400 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0 font-battambang self-start md:self-auto"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs sm:text-sm font-medium text-[#028090] dark:text-teal-400 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0 font-battambang self-start md:self-auto"
           >
             <span>{language === 'en' ? 'View Schedule' : 'មើលកាលវិភាគ & ប្រតិទិន'}</span>
             <ArrowRight className="w-4 h-4" />
