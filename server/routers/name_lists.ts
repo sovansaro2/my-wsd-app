@@ -62,6 +62,8 @@ export function findCrossListedFinancialRecordIds(
 
     const nrCat = catMap[nr.category_id] || '';
     const isConstruction = nrCat.includes('កសាង');
+    // Cross-deduplication should strictly only apply to construction records cross-entered in both lists
+    if (!isConstruction) return;
 
     const match = finRecords.find(fr => {
       if (matchedFinIds.has(fr.id)) return false;
@@ -70,13 +72,11 @@ export function findCrossListedFinancialRecordIds(
       const frNorm = normalizeDonorName(fr.description);
       if (!frNorm) return false;
 
-      // Direct normalized match
-      if (frNorm === nrNorm) return true;
+      const frNote = (fr.note || '').toLowerCase();
+      const frDesc = (fr.description || '').toLowerCase();
+      const isFrConstruction = frNote.includes('កសាង') || frDesc.includes('កសាង');
 
-      // Name containment match (at least 4 characters long)
-      if (nrNorm.length >= 4 && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
-
-      // Check specific known spelling variations
+      // Check specific known spelling variations for roof construction entries
       const n1 = (nr.name || '').replace(/\s+/g, '');
       const n2 = (fr.description || '').replace(/\s+/g, '');
       if (n1.includes('ឆេងប៉េងគុណ') && n2.includes('ឆេងប៉េងគុណ')) return true;
@@ -84,13 +84,12 @@ export function findCrossListedFinancialRecordIds(
       if (n1.includes('ឆេងស៊ុយ') && n2.includes('ឆេងស៊ុយ')) return true;
       if (n1.includes('កុងសុក') && n2.includes('កុងសុភ')) return true;
 
-      const timeDiffDays = Math.abs(new Date(nr.created_at).getTime() - new Date(fr.created_at).getTime()) / (1000 * 60 * 60 * 24);
-      const frNote = (fr.note || '').toLowerCase();
-      const isFrConstruction = frNote.includes('កសាង') || (fr.description || '').includes('កសាង');
-
-      if (timeDiffDays <= 7 && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
-      if (isConstruction && isFrConstruction && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
-      if (nr.note && fr.note && normalizeDonorName(nr.note) === normalizeDonorName(fr.note)) return true;
+      // When matching in construction, ensure name matches AND it relates to construction or same recording period
+      if (frNorm === nrNorm || (nrNorm.length >= 4 && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm)))) {
+        if (isFrConstruction) return true;
+        const timeDiffDays = Math.abs(new Date(nr.created_at).getTime() - new Date(fr.created_at).getTime()) / (1000 * 60 * 60 * 24);
+        if (timeDiffDays <= 14) return true;
+      }
 
       return false;
     });
@@ -264,8 +263,10 @@ router.get('/top-benefactors', async (req, res) => {
         });
       }
       const d = donorsMap.get(norm)!;
-      // Preserve the most descriptive / complete display name
-      if (rawName.trim().length > d.displayName.length) {
+      // Preserve clean descriptive display name (avoid keeping parentheses notes as primary title)
+      if (!rawName.includes('(') && d.displayName.includes('(')) {
+        d.displayName = rawName.trim();
+      } else if (rawName.trim().length > d.displayName.length && (!rawName.includes('(') || d.displayName.includes('('))) {
         d.displayName = rawName.trim();
       }
       return d;
@@ -442,7 +443,9 @@ router.get('/search-donors', async (req, res) => {
         });
       }
       const entry = grouped.get(key);
-      if (item.name.length > entry.name.length) {
+      if (!item.name.includes('(') && entry.name.includes('(')) {
+        entry.name = item.name;
+      } else if (item.name.length > entry.name.length && (!item.name.includes('(') || entry.name.includes('('))) {
         entry.name = item.name;
       }
       entry.total_amount += item.amount;

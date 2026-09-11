@@ -362,6 +362,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       setConfirmingRecordDeleteId(null);
       setRecords(prev => prev.filter(r => r.id !== id));
       await api.deleteNameListRecord(id);
+      playSuccessSound();
       if (selectedCategory) fetchRecords(selectedCategory.id);
     } catch (error) {
       console.error('Error deleting record:', error);
@@ -885,7 +886,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </h2>
             
             <div className="flex items-center gap-2">
-              {userRole === 'admin' && !isListClosed && (
+              {userRole === 'admin' && (
                 <button 
                   onClick={openAddModal}
                   className="flex items-center justify-center bg-[#028090] text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-[#005F73] transition-colors focus:outline-none focus:ring-2 focus:ring-[#028090]/50 flex-shrink-0"
@@ -955,7 +956,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         {!isKathina && (
                           <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-16 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
                         )}
-                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-[76px] sm:w-[100px] text-center whitespace-nowrap">សកម្មភាព</th>
+                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-[84px] sm:w-[115px] text-center whitespace-nowrap">សកម្មភាព</th>
                       </tr>
                     </thead>
                     <tbody className="font-battambang">
@@ -1014,42 +1015,42 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 </span>
                               </td>
                             )}
-                            <td className="px-0.5 sm:px-3 py-1.5 sm:py-2.5 align-middle text-center w-[76px] sm:w-[100px]">
-                              <div className="flex items-center justify-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 align-middle text-center w-[84px] sm:w-[115px]">
+                              <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                                 {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
-                                    className="p-1 sm:p-1.5 text-[#028090] hover:text-[#005F73] hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-lg transition-colors focus:outline-none shrink-0"
+                                    className="p-1 sm:p-1.5 text-[#028090] hover:text-[#005F73] dark:text-teal-400 dark:hover:text-teal-300 transition-colors focus:outline-none shrink-0"
                                     title="ប័ណ្ណអនុមោទនា"
                                   >
                                     <Award className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                                   </button>
                                 )}
-                                {userRole === 'admin' && !isListClosed && (
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    <button 
-                                      onClick={() => openEditModal(record)}
-                                      className="p-1 sm:p-1.5 text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors focus:outline-none"
-                                      title="កែប្រែ"
-                                    >
-                                      <Edit2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-                                    </button>
-                                    <button 
-                                      onClick={() => handleDeleteRecord(record.id)}
-                                      className={`p-1 sm:p-1.5 rounded-lg transition-colors focus:outline-none ${
-                                        confirmingRecordDeleteId === record.id
-                                          ? 'bg-rose-600 text-white hover:bg-rose-700'
-                                          : 'text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30'
-                                      }`}
-                                      title="លុប"
-                                    >
-                                      {confirmingRecordDeleteId === record.id ? (
-                                        <span className="text-xs px-1 font-battambang">លុប?</span>
-                                      ) : (
-                                        <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-                                      )}
-                                    </button>
-                                  </div>
+                                {userRole === 'admin' && (
+                                  <button 
+                                    onClick={() => openEditModal(record)}
+                                    className="p-1 sm:p-1.5 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors focus:outline-none shrink-0"
+                                    title="កែប្រែ"
+                                  >
+                                    <Edit2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                  </button>
+                                )}
+                                {userRole === 'admin' && (
+                                  <button 
+                                    onClick={() => handleDeleteRecord(record.id)}
+                                    className={`p-1 sm:p-1.5 transition-colors focus:outline-none shrink-0 ${
+                                      confirmingRecordDeleteId === record.id
+                                        ? 'bg-rose-600 text-white hover:bg-rose-700 text-xs rounded-md px-1.5 py-0.5'
+                                        : 'text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300'
+                                    }`}
+                                    title="លុប"
+                                  >
+                                    {confirmingRecordDeleteId === record.id ? (
+                                      <span className="text-xs font-battambang">លុប?</span>
+                                    ) : (
+                                      <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                                    )}
+                                  </button>
                                 )}
                               </div>
                             </td>
@@ -1205,6 +1206,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   }}
                   className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-rajdhani font-semibold text-base"
                   placeholder={t('list_amount_ph')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
+                  ចំណាំ ឬទីលំនៅ (ភូមិ/ឃុំ/ស្រុក)
+                </label>
+                <input
+                  type="text"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang text-[14.5px]"
+                  placeholder="ឧ. ច្រាត់, ត្រពាំងវិហារ, ភ្នំពេញ..."
                 />
               </div>
 
