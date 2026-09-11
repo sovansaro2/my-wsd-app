@@ -38,6 +38,7 @@ import {
   deleteSavedInvitationLetter, 
   shareOrDownloadPdf 
 } from '../lib/invitationLetterUtils';
+import { playSuccessSound } from '../lib/sound';
 
 const toKhmerNum = (num: number | string): string => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -291,6 +292,7 @@ export default function InvitationLetter() {
         });
         await loadSavedLetters();
         setSaveToastMessage('បានទាញយក និងរក្សាទុកក្នុងបណ្ណសារកម្មវិធីដោយជោគជ័យ!');
+        playSuccessSound();
         setTimeout(() => setSaveToastMessage(null), 3500);
       } catch (saveErr) {
         console.warn('Auto-save error:', saveErr);
@@ -325,6 +327,7 @@ export default function InvitationLetter() {
 
       await loadSavedLetters();
       setSaveToastMessage('បានរក្សាទុកលិខិតអញ្ជើញជា PDF ក្នុងកម្មវិធីនេះរួចរាល់!');
+      playSuccessSound();
       setTimeout(() => setSaveToastMessage(null), 3500);
     } catch (err) {
       console.error('Save to app error:', err);
@@ -376,6 +379,9 @@ export default function InvitationLetter() {
       link.download = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.png`;
       link.href = dataUrl;
       link.click();
+      setSaveToastMessage('បានទាញយករូបភាពលិខិតអញ្ជើញរួចរាល់!');
+      playSuccessSound();
+      setTimeout(() => setSaveToastMessage(null), 3000);
     } catch (err) {
       console.error('Download error:', err);
       alert('មិនអាចទាញយករូបភាពបានទេ។ សូមសាកល្បងប្រើមុខងារព្រីនជំនួសវិញ!');
@@ -418,6 +424,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
 `;
     navigator.clipboard.writeText(text);
     setCopied(true);
+    playSuccessSound();
     setTimeout(() => setCopied(false), 2500);
   };
 

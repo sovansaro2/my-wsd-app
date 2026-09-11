@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database, Volume2, VolumeX } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
@@ -15,6 +15,7 @@ import { systemLogger } from '../lib/logger';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useFontSize } from '../contexts/FontSizeContext';
+import { sound, playSuccessSound, playFailSound } from '../lib/sound';
 
 interface AccountProfileProps {
   userRole?: 'admin' | 'user' | null;
@@ -185,6 +186,7 @@ export default function AccountProfile({
   const [isAdminContactCopied, setIsAdminContactCopied] = useState(false);
   const [clearStorageStatus, setClearStorageStatus] = useState<'idle' | 'confirm' | 'success'>('idle');
   const [storageUsage, setStorageUsage] = useState(systemLogger.getStorageUsage());
+  const [isSoundEnabled, setIsSoundEnabled] = useState(sound.isEnabled());
 
   const handlePasswordChange = async () => {
     if (password.length < 6) {
@@ -263,6 +265,20 @@ export default function AccountProfile({
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (message?.type === 'success') {
+      playSuccessSound();
+    } else if (message?.type === 'error') {
+      playFailSound();
+    }
+  }, [message]);
+
+  useEffect(() => {
+    if (clearStorageStatus === 'success') {
+      playSuccessSound();
+    }
+  }, [clearStorageStatus]);
 
   
   const handlePinSetupComplete = async (pin: string) => {
@@ -1484,6 +1500,70 @@ export default function AccountProfile({
                   }`}>
                     {userRole === 'user' && <span className="w-2.5 h-2.5 rounded-full bg-gray-800 dark:bg-slate-200" />}
                   </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sound Notification Settings Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <Volume2 className="w-5 h-5 text-gray-500 dark:text-slate-400 shrink-0" />
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang">
+                    សម្លេងជូនដំណឹង
+                  </h3>
+                </div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 font-rajdhani font-semibold">
+                  {isSoundEnabled ? 'ON' : 'OFF'}
+                </span>
+              </div>
+              <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[14.5px] font-semibold text-gray-900 dark:text-white font-battambang block">
+                      សម្លេងនៅពេលជោគជ័យ
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = sound.toggle();
+                      setIsSoundEnabled(next);
+                    }}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      isSoundEnabled ? 'bg-[#028090] dark:bg-[#19E2FF]' : 'bg-gray-300 dark:bg-slate-700'
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        isSoundEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <div className="pt-2 border-t border-gray-100 dark:border-slate-800/80 flex flex-wrap items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playSuccess();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 text-xs font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-battambang transition-colors cursor-pointer"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    សាកល្បងសម្លេងជោគជ័យ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playFail();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 text-xs font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-battambang transition-colors cursor-pointer"
+                  >
+                    <VolumeX className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
+                    សាកល្បងសម្លេងបរាជ័យ
+                  </button>
                 </div>
               </div>
             </div>

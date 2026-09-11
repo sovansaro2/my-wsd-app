@@ -11,6 +11,7 @@ import { saveCertificate } from '../lib/certificateUtils';
 import { getImageDataUrl } from '../lib/utils';
 import { jsPDF } from "jspdf";
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
+import { playSuccessSound } from '../lib/sound';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -339,6 +340,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
       await fetchRecords(selectedCategory.id);
       setIsRecordModalOpen(false);
+
+      setShowSuccessPopup(true);
+      playSuccessSound();
+      setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (error) {
       console.error('Error saving record:', error);
       alert(t('list_alert_error'));
@@ -407,6 +412,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           blob: blob
         });
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (e) {
         const link = document.createElement('a');
@@ -414,6 +420,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         link.href = dataUrl;
         link.click();
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       }
     } catch (err) {
@@ -528,6 +535,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       pdf.save(`អនុមោទនាប័ត្រ_${certificateRecord.name}.pdf`);
       
       setShowSuccessPopup(true);
+      playSuccessSound();
       setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (err) {
       console.error('Error generating PDF', err);
@@ -557,6 +565,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           blob: blob
         });
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (e) {
         const link = document.createElement('a');
@@ -564,6 +573,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         link.href = dataUrl;
         link.click();
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       }
     } catch (err) {

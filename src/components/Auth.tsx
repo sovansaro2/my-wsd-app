@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/apiClient';
+import { playSuccessSound, playFailSound } from '../lib/sound';
 import { 
   Eye, 
   EyeOff, 
@@ -96,6 +97,12 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    if (error) {
+      playFailSound();
+    }
+  }, [error]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % ONBOARDING_SLIDES.length);
     }, 6500);
@@ -164,6 +171,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
           } catch {}
         }
 
+        playSuccessSound();
         onLogin((data.user?.role) || 'user');
       } else {
         if (khmerName.trim().length < 2) {
@@ -188,6 +196,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         }
 
         await api.signup(email.trim().toLowerCase(), password, khmerName.trim(), latinName.trim());
+        playSuccessSound();
         setSuccess('បង្កើតគណនីបានជោគជ័យ! លោកអ្នកអាចចូលគណនីបានហើយ។');
         setLoginIdentifier(email.trim().toLowerCase());
         setIsLogin(true);

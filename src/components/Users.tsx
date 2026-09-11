@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { UserCog, Shield, User as UserIcon, Loader2, ArrowLeft, KeyRound, X, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
 import { api } from '../lib/apiClient';
 import { useLanguage } from '../contexts/LanguageContext';
+import { playSuccessSound } from '../lib/sound';
 
 interface UserProfile {
   id: string;
@@ -44,6 +45,9 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
 
   useEffect(() => {
     if (toast) {
+      if (toast.type === 'success') {
+        playSuccessSound();
+      }
       const timer = setTimeout(() => setToast(null), 3500);
       return () => clearTimeout(timer);
     }

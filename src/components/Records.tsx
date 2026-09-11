@@ -12,6 +12,7 @@ import { saveCertificate } from '../lib/certificateUtils';
 import { saveReport } from '../lib/reportUtils';
 import { getImageDataUrl } from '../lib/utils';
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
+import { playSuccessSound } from '../lib/sound';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -205,6 +206,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           blob: blob
         });
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (e) {
         const link = document.createElement('a');
@@ -212,6 +214,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         link.href = dataUrl;
         link.click();
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
       }
     } catch (err) {
@@ -352,6 +355,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           blob: blob
         });
         setShowSuccessPopup(true);
+        playSuccessSound();
         setTimeout(() => setShowSuccessPopup(false), 3000);
 
       } catch (e) {
@@ -359,6 +363,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         link.download = `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`;
         link.href = dataUrl;
         link.click();
+        setShowSuccessPopup(true);
+        playSuccessSound();
+        setTimeout(() => setShowSuccessPopup(false), 3000);
       }
     } catch (err) {
       console.error('Error downloading image:', err);
@@ -467,6 +474,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       
       setIsEditRecordModalOpen(false);
       setEditingRecord(null);
+
+      setShowSuccessPopup(true);
+      playSuccessSound();
+      setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (err: any) {
       setEditErrorMessage(err.message || 'Error updating record');
     } finally {
@@ -550,6 +561,10 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       setNewNote('');
       setNewNotifyPublic(false);
       setAddToRoofFund(false);
+
+      setShowSuccessPopup(true);
+      playSuccessSound();
+      setTimeout(() => setShowSuccessPopup(false), 3000);
     } catch (error) {
       console.error('Error saving record:', error);
       alert('មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ: ' + (error.message || ''));

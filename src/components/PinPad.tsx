@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Delete } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { playFailSound } from '../lib/sound';
 
 interface PinPadProps {
   title: string;
@@ -20,6 +21,7 @@ export default function PinPad({ title, subtitle, error, onComplete, onCancel, o
 
   useEffect(() => {
     if (error) {
+      playFailSound();
       setShake(true);
       setPin('');
       const timer = setTimeout(() => setShake(false), 500);
