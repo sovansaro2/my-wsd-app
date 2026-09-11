@@ -186,7 +186,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
           return;
         }
         if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-          setError('សូមបញ្ចូលអ៊ីម៉ែលដែលត្រឹមត្រូវ (ឧ. example@gmail.com)។');
+          setError('សូមបញ្ចូលអ៊ីម៉ែលដែលត្រឹមត្រូវ។');
           setIsLoading(false);
           return;
         }
@@ -304,7 +304,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               <button
                 type="button"
                 onClick={handleNextSlide}
-                className="w-full py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[16px] font-medium shadow-md shadow-[#028090]/25 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[16px] font-medium shadow-sm transition-all flex items-center justify-center gap-2"
               >
                 <span>{currentSlide === ONBOARDING_SLIDES.length - 1 ? 'ចាប់ផ្តើមឥឡូវនេះ' : 'បន្ទាប់'}</span>
                 <ChevronRight className="w-5 h-5 stroke-[2.5]" />
@@ -318,7 +318,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
       {/* 2. MAIN SPLIT DESKTOP & AUTH VIEW                                         */}
       {/* ========================================================================= */}
       <div className="w-full max-w-6xl mx-auto md:p-6 lg:p-8 min-h-[100dvh] md:min-h-0 flex items-center justify-center">
-        <div className="w-full bg-white md:rounded-[32px] md:shadow-xl md:border md:border-zinc-200/60 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[100dvh] md:min-h-[640px]">
+        <div className="w-full bg-white md:rounded-[32px] md:shadow-sm md:border md:border-zinc-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[100dvh] md:min-h-[640px]">
           
           {/* LEFT SIDE: Onboarding Showcase (Visible on Desktop / Tablets) */}
           <div className="hidden md:flex md:col-span-6 lg:col-span-7 bg-gradient-to-br from-[#005F73] via-[#028090] to-[#014F5A] text-white p-8 lg:p-12 flex-col justify-between relative overflow-hidden select-none">
@@ -583,7 +583,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                         required
                         value={khmerName}
                         onChange={(e) => setKhmerName(e.target.value)}
-                        placeholder="ឧ. រ៉ាវី ឬ វត្តស្នាយដួច"
+                        placeholder="បញ្ចូលឈ្មោះខ្មែរ"
                         className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-battambang"
                       />
                     </div>
@@ -597,7 +597,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                         required
                         value={latinName}
                         onChange={(e) => setLatinName(e.target.value)}
-                        placeholder="e.g. Ravi or Wat Snay Duoch"
+                        placeholder="បញ្ចូលឈ្មោះឡាតាំង"
                         className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
                       />
                     </div>
@@ -611,7 +611,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="example@gmail.com"
+                        placeholder="បញ្ចូលអ៊ីម៉ែល"
                         className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
                       />
                     </div>
@@ -626,7 +626,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="បញ្ចូលពាក្យសម្ងាត់ (យ៉ាងហោច ៦ ខ្ទង់)"
+                          placeholder="បញ្ចូលពាក្យសម្ងាត់"
                           className="w-full rounded-2xl border border-zinc-200 bg-white pl-4 pr-11 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#028090] focus:outline-none focus:ring-2 focus:ring-[#028090]/10 transition-all font-rajdhani"
                         />
                         <button
@@ -645,7 +645,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-2 py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[15.5px] font-medium shadow-md shadow-[#028090]/25 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full mt-2 py-4 px-6 rounded-2xl bg-[#028090] hover:bg-[#026b78] active:scale-[0.98] text-white font-battambang text-[15.5px] font-medium shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <span>កំពុងដំណើរការ...</span>

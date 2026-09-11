@@ -5,7 +5,7 @@ import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download,
 import { IOSFolder } from './ui/IOSFolder';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
 import { saveCertificate } from '../lib/certificateUtils';
@@ -860,7 +860,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang">
       {/* Detail Header */}
-      <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 relative z-10 sticky top-0">
+      <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <button 

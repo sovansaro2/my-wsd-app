@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Users, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Trash2, Smartphone, Download, Share, PlusSquare, CheckCircle2, MoreVertical, Sparkles, AlertCircle, Database } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
