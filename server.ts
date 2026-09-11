@@ -14,7 +14,6 @@ import storageRoutes from "./server/routers/storage";
 import notificationsRoutes from "./server/routers/notifications";
 import backupRoutes from "./server/routers/backup";
 
-// Setup Request Type Extension
 import "./server/types.d";
 
 async function startServer() {
@@ -22,13 +21,12 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(cors({
-    origin: '*', // នៅលើ Production អ្នកគួរដូរទៅជា URL របស់ Netlify ជំនួស '*'
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
   app.use(express.json());
 
-  // API Routes 
   app.use("/api/auth", authRoutes);    
     app.use("/api", financialRoutes);
   app.use("/api/name-lists", nameListsRoutes);
@@ -37,7 +35,6 @@ async function startServer() {
   app.use("/api/notifications", notificationsRoutes);
   app.use("/api/backup", backupRoutes);
 
-  // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

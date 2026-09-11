@@ -38,17 +38,14 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
   const isKm = language === 'km';
   const formatNum = (n: number) => (isKm ? toKhmerNum(n) : n.toString());
 
-  // 1. បញ្ជីផ្សេងៗ (Other Lists)
   const otherTotal = categories.length > 0 ? categories.length : 7;
   const otherActiveCount = 3;
   const otherClosedCount = Math.max(0, otherTotal - otherActiveCount);
 
-  // 2. បញ្ជីចំណូល-ចំណាយ (Income-Expense Lists)
   const financeTotal = seils.length > 0 ? seils.length : 11;
   const financeActiveCount = financeTotal > 0 ? 1 : 0;
   const financeClosedCount = Math.max(0, financeTotal - financeActiveCount);
 
-  // 3. សរុបរួមទាំងអស់ (Grand Totals)
   const totalAll = otherTotal + financeTotal;
   const totalOpen = otherActiveCount + financeActiveCount;
   const totalClosed = otherClosedCount + financeClosedCount;
@@ -56,10 +53,8 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 p-4 sm:p-5 font-battambang text-gray-800 dark:text-slate-200 shadow-xs transition-colors">
       
-      {/* ផ្នែកសរុបរួមនៅខាងលើ (Overall Summary at Top) */}
       <div className="pb-3.5 mb-3.5 border-b border-gray-100 dark:border-slate-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
-          {/* បញ្ជីសរុប */}
           <div className="flex items-center justify-between sm:justify-start sm:gap-2">
             <span className="text-gray-600 dark:text-slate-400 font-medium">
               {isKm ? 'បញ្ជីសរុប៖' : 'Total Lists:'}
@@ -69,7 +64,6 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
             </span>
           </div>
 
-          {/* បញ្ជីបើកសរុប (Green Dot + Dark Green text) */}
           <div className="flex items-center justify-between sm:justify-start sm:gap-2">
             <span className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
@@ -80,7 +74,6 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
             </span>
           </div>
 
-          {/* បញ្ជីបិទសរុប */}
           <div className="flex items-center justify-between sm:justify-start sm:gap-2">
             <span className="text-gray-600 dark:text-slate-400 font-medium">
               {isKm ? 'បញ្ជីបិទសរុប៖' : 'Total Closed:'}
@@ -92,10 +85,8 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
         </div>
       </div>
 
-      {/* បញ្ជីផ្សេងៗ និង បញ្ជីចំណូល-ចំណាយ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 dark:divide-slate-800">
         
-        {/* បញ្ជីផ្សេងៗ */}
         <div className="pt-0 sm:pt-0 sm:pr-4">
           <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white mb-2.5">
             {isKm ? 'បញ្ជីផ្សេងៗ' : 'Other Lists'}
@@ -125,7 +116,6 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
           </div>
         </div>
 
-        {/* បញ្ជីចំណូល-ចំណាយ */}
         <div className="pt-4 sm:pt-0 sm:pl-6">
           <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white mb-2.5">
             {isKm ? 'បញ្ជីចំណូល-ចំណាយ' : 'Income & Expense Lists'}

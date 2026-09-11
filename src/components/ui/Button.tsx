@@ -8,12 +8,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   className?: string;
 }
 
-/**
- * Reusable Button component configured with the user-defined style:
- * - ពណ៌សឌិតបន្តិច (slightly off-white)
- * - មាន Border (clean border)
- * - គ្មាន Shadow (shadow-none)
- */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'offWhiteBorder',
   children,

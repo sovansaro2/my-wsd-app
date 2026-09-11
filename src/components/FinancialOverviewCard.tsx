@@ -34,7 +34,6 @@ export default function FinancialOverviewCard({
   userRole,
   onNavigateToSecurity
 }: FinancialOverviewCardProps) {
-  // If user role is provided and not admin, do not render or load data
   if (userRole !== undefined && userRole !== 'admin') {
     return null;
   }
@@ -44,7 +43,6 @@ export default function FinancialOverviewCard({
   const [financials, setFinancials] = useState<FinancialRecord[]>([]);
   const [seils, setSeils] = useState<SeilPeriod[]>([]);
   
-  // Visibility and PIN states
   const [isAmountVisible, setIsAmountVisible] = useState(false);
   const [showPinPad, setShowPinPad] = useState(false);
   const [isPinLoading, setIsPinLoading] = useState(false);
@@ -53,7 +51,6 @@ export default function FinancialOverviewCard({
   const [isLockedOut, setIsLockedOut] = useState(false);
   const [showSetupPrompt, setShowSetupPrompt] = useState(false);
 
-  // Auto-hide balance after 30 seconds
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     if (isAmountVisible) {
@@ -64,7 +61,6 @@ export default function FinancialOverviewCard({
     };
   }, [isAmountVisible]);
 
-  // Hide on background / tab switch
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -82,9 +78,7 @@ export default function FinancialOverviewCard({
       const cachedFin = localStorage.getItem('cached_financials');
       if (cachedSeils) setSeils(JSON.parse(cachedSeils));
       if (cachedFin) setFinancials(JSON.parse(cachedFin));
-    } catch {
-      // Ignore cache parse error
-    }
+    } catch {}
     fetchFinancialData();
   }, []);
 
@@ -167,7 +161,6 @@ export default function FinancialOverviewCard({
     }
   };
 
-  // Metrics calculation
   let totalIncome = 0;
   let totalExpense = 0;
 
@@ -204,7 +197,6 @@ export default function FinancialOverviewCard({
         }
       >
         <div>
-          {/* Header Row */}
           <div className="flex items-center justify-between pb-2.5 border-b border-gray-100 dark:border-slate-800">
             <div>
               <span className="text-[11px] sm:text-xs font-medium text-gray-400 dark:text-slate-400">
@@ -244,7 +236,6 @@ export default function FinancialOverviewCard({
             </button>
           </div>
 
-          {/* Master Balance Display */}
           <div className="py-2.5 sm:py-3">
             <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
               {loading ? (
@@ -258,7 +249,6 @@ export default function FinancialOverviewCard({
           </div>
         </div>
 
-        {/* Income vs Expense Split */}
         <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-gray-100 dark:border-slate-800">
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-lg p-2 sm:p-2.5 border border-gray-100 dark:border-slate-800/60">
             <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-slate-400 mb-0.5">
@@ -282,7 +272,6 @@ export default function FinancialOverviewCard({
         </div>
       </section>
 
-      {/* PIN Setup Prompt Modal */}
       <AnimatePresence>
         {showSetupPrompt && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -365,7 +354,6 @@ export default function FinancialOverviewCard({
         )}
       </AnimatePresence>
 
-      {/* PinPad Verification Modal */}
       <AnimatePresence>
         {showPinPad && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

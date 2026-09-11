@@ -16,7 +16,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useFontSize } from '../contexts/FontSizeContext';
 
-
 interface AccountProfileProps {
   userRole?: 'admin' | 'user' | null;
   actualRole?: 'admin' | 'user' | null;
@@ -50,7 +49,6 @@ export default function AccountProfile({
   const { language, setLanguage, t } = useLanguage();
   const { fontSize, setFontSize } = useFontSize();
 
-  // Instant local profile resolution so user never sees a blocking loading screen
   const getInitialProfile = () => {
     if (currentUser) return currentUser;
     try {
@@ -78,7 +76,6 @@ export default function AccountProfile({
   const [phoneNumber, setPhoneNumber] = useState(cachedProfile?.phone_number || '');
   const [email, setEmail] = useState(cachedProfile?.email || '');
 
-  // Generate User Code from Date of Birth: e.g. WSD-1008-2 (10=day, 08=month, 2=tail of year)
   const generateUserCodeFromDob = (dob: string | null | undefined): string | null => {
     if (!dob || typeof dob !== 'string' || dob.trim() === '') return null;
     const clean = dob.trim();
@@ -114,7 +111,6 @@ export default function AccountProfile({
   const initialDobCode = generateUserCodeFromDob(cachedProfile?.date_of_birth);
   const [userCode, setUserCode] = useState(cachedProfile?.user_code || initialDobCode || (cachedProfile?.id ? `WSD-${cachedProfile.id.replace(/-/g, '').substring(0, 4).toUpperCase()}` : 'WSD-0810'));
 
-  // PIN states
   const [hasBalancePin, setHasBalancePin] = useState(!!cachedProfile?.has_balance_pin);
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [pinSetupStep, setPinSetupStep] = useState<'verify_current' | 'enter_new' | 'confirm_new' | 'forgot_pin_verify'>('enter_new');
@@ -153,10 +149,8 @@ export default function AccountProfile({
     } catch {}
   }, [isSettingView]);
 
-  // Incomplete profile check: if user has not completed personal info yet
   const isProfileIncomplete = !dateOfBirth || !phoneNumber || !address;
   
-  // Display name toggles based on current language: Latin name in English, Khmer name in Khmer
   const displayName = language === 'en' 
     ? (latinName || fullName || 'Wat Snay Duoc') 
     : (fullName || latinName || 'វត្តស្នាយដួច');
@@ -320,7 +314,6 @@ export default function AccountProfile({
     }
   };
 
-
   const fetchProfile = async () => {
     try {
       const profile = await api.getMe();
@@ -435,7 +428,6 @@ export default function AccountProfile({
     }
   };
 
-  // --- EDIT PROFILE VIEW ---
   if (isEditingView) {
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-10 overflow-y-auto">
@@ -455,7 +447,6 @@ export default function AccountProfile({
 
         <div className="sm:p-6 w-full max-w-2xl mx-auto my-2 sm:my-0">
           <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 overflow-hidden">
-            {/* Header with Avatar and Name */}
             <div className="p-5 sm:p-8 border-b border-gray-200/80 dark:border-slate-800/80">
               <div className="flex items-center space-x-6">
                 <div className="relative w-[88px] h-[88px] rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 flex-shrink-0 group">
@@ -499,7 +490,6 @@ export default function AccountProfile({
                 </div>
               )}
 
-              {/* Incomplete profile warning */}
               {isProfileIncomplete && (
                 <div className="mb-6 flex items-start gap-2.5 p-3.5 rounded-xl border border-amber-200/80 bg-amber-50/70 dark:bg-amber-950/30 dark:border-amber-900/60 text-amber-700 dark:text-amber-400 text-[13.5px] font-battambang">
                   <AlertCircle className="w-5 h-5 shrink-0 text-amber-500 stroke-[2.5] mt-0.5" />
@@ -512,7 +502,6 @@ export default function AccountProfile({
               <h4 className="text-[16px] text-gray-900 dark:text-white mb-6 font-battambang">{t('profile_personal_details')}</h4>
               
               <div className="space-y-4">
-                {/* Khmer Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_khmer_name')}</label>
                   <div className="w-full">
@@ -524,7 +513,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Latin Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_latin_name')}</label>
                   <div className="w-full">
@@ -536,7 +524,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Family Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_family_name')}</label>
                   <div className="w-full">
@@ -548,7 +535,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Given Name */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_given_name')}</label>
                   <div className="w-full">
@@ -560,7 +546,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Date of Birth */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_dob')}</label>
                   <div className="w-full relative">
@@ -577,7 +562,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Gender */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_gender')}</label>
                   <div className="w-full relative">
@@ -594,7 +578,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Address (ទីលំនៅ) */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_address')}</label>
                   <div className="w-full">
@@ -606,7 +589,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Email */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_email')}</label>
                   <div className="w-full">
@@ -618,7 +600,6 @@ export default function AccountProfile({
                   </div>
                 </div>
 
-                {/* Phone Number */}
                 <div className="flex flex-col sm:grid sm:grid-cols-[130px_1fr] sm:items-center gap-1.5 sm:gap-4">
                   <label className="text-[13px] text-gray-400 dark:text-slate-400 font-battambang">{t('profile_phone')}</label>
                   <div className="w-full">
@@ -657,11 +638,9 @@ export default function AccountProfile({
     );
   }
 
-  // --- PASSWORD & SECURITY VIEW ---
   if (isSecurityView) {
     return (
       <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
-        {/* Sticky Top Header */}
         <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => {
@@ -676,7 +655,6 @@ export default function AccountProfile({
           <h2 className="text-lg font-medium text-gray-900 dark:text-white font-battambang">{t('sec_title')}</h2>
         </div>
 
-        {/* Center Content Card */}
         <div className="sm:p-6 w-full max-w-md mx-auto my-2 sm:my-auto flex flex-col justify-center">
           {message && (
             <div className={`mb-4 -mx-3.5 sm:mx-0 rounded-none sm:rounded-xl p-3.5 text-sm font-medium border-y sm:border ${
@@ -688,7 +666,6 @@ export default function AccountProfile({
             </div>
           )}
 
-          {/* Main Card */}
           <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200/80 dark:border-slate-800 p-5 sm:p-8">
             
             <h3 className="text-center text-[19px] sm:text-[21px] font-semibold text-gray-900 dark:text-white mb-5 font-battambang">
@@ -697,7 +674,6 @@ export default function AccountProfile({
             
             <hr className="border-gray-200 dark:border-slate-800 mb-5" />
 
-            {/* Section 1: Password */}
             <div className="py-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-red-500 font-bold text-sm leading-none">*</span>
@@ -721,7 +697,6 @@ export default function AccountProfile({
 
             <hr className="border-gray-200 dark:border-slate-800 my-4" />
 
-            {/* Section 2: PIN */}
             <div className="py-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-red-500 font-bold text-sm leading-none">*</span>
@@ -750,7 +725,6 @@ export default function AccountProfile({
 
             <hr className="border-gray-200 dark:border-slate-800 my-4" />
 
-            {/* Section 3: Email */}
             <div className="py-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-red-500 font-bold text-sm leading-none">*</span>
@@ -773,7 +747,6 @@ export default function AccountProfile({
 
             <hr className="border-gray-200 dark:border-slate-800 my-4" />
 
-            {/* Section 4: Phone Number */}
             <div className="py-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-red-500 font-bold text-sm leading-none">*</span>
@@ -793,7 +766,6 @@ export default function AccountProfile({
                 {phoneNumber || '016 759 264'}
               </p>
 
-              {/* Contact: admin */}
               <div className="mt-5 text-[13.5px] text-gray-600 dark:text-slate-400 flex items-center gap-1.5">
                 <span className="font-battambang">{t('sec_contact_label')}</span>
                 <button
@@ -809,7 +781,6 @@ export default function AccountProfile({
           </div>
         </div>
 
-        {/* PIN Setup Modal */}
         {showPinSetup && (
           <div>
             <motion.div
@@ -850,7 +821,6 @@ export default function AccountProfile({
           </div>
         )}
 
-        {/* Change Password Modal */}
         <AnimatePresence>
         {showPasswordModal && (
           <motion.div 
@@ -924,7 +894,6 @@ export default function AccountProfile({
         )}
         </AnimatePresence>
 
-        {/* Change Email Modal */}
         <AnimatePresence>
         {showEmailModal && (
           <motion.div 
@@ -987,7 +956,6 @@ export default function AccountProfile({
         )}
         </AnimatePresence>
 
-        {/* Change Phone Modal */}
         <AnimatePresence>
         {showPhoneModal && (
           <motion.div 
@@ -1050,7 +1018,6 @@ export default function AccountProfile({
         )}
         </AnimatePresence>
 
-        {/* Contact Admin Modal */}
         <AnimatePresence>
         {showAdminContactModal && (
           <motion.div 
@@ -1126,9 +1093,7 @@ export default function AccountProfile({
     );
   }
 
-  // --- SETTING VIEW ---
   
-  // --- SYSTEM LOGS VIEW ---
   if (isSystemLogsView) {
     return <SystemLogs onBack={() => setIsSystemLogsView(false)} />;
   }
@@ -1136,7 +1101,6 @@ export default function AccountProfile({
   if (isSettingView) {
     return (
       <div className="w-full max-w-5xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 font-battambang">
-        {/* Top Header */}
         <div className="flex items-center justify-between pb-4 sm:pb-6 mb-5 sm:mb-6 border-b border-gray-200/80 dark:border-slate-800">
           <div className="flex items-center gap-3 sm:gap-4">
             <button 
@@ -1159,9 +1123,7 @@ export default function AccountProfile({
           </div>
         </div>
 
-        {/* Settings Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-          {/* Card 1: ភាសា (Language) */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2.5 mb-4">
@@ -1171,7 +1133,6 @@ export default function AccountProfile({
                 </h3>
               </div>
               <div className="space-y-3">
-                {/* Khmer */}
                 <div 
                   onClick={() => setLanguage('km')}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
@@ -1204,7 +1165,6 @@ export default function AccountProfile({
                   </span>
                 </div>
 
-                {/* English */}
                 <div 
                   onClick={() => setLanguage('en')}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
@@ -1240,7 +1200,6 @@ export default function AccountProfile({
             </div>
           </div>
 
-          {/* Card 2: ស្បែក / រចនាប័ទ្ម (Theme) */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2.5 mb-4">
@@ -1250,7 +1209,6 @@ export default function AccountProfile({
                 </h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Dark Mode */}
                 <div 
                   onClick={() => setCurrentTheme('dark')}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-3 ${
@@ -1279,7 +1237,6 @@ export default function AccountProfile({
                   </p>
                 </div>
 
-                {/* Light Mode */}
                 <div 
                   onClick={() => setCurrentTheme('light')}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-3 ${
@@ -1311,7 +1268,6 @@ export default function AccountProfile({
             </div>
           </div>
 
-          {/* Card 3: ទំហំអក្សរ (Font Size) - Spans 2 columns on desktop */}
           <div className="md:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
@@ -1324,9 +1280,7 @@ export default function AccountProfile({
               </span>
             </div>
 
-            {/* 4 Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Small */}
               <div 
                 onClick={() => setFontSize('sm')}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
@@ -1357,7 +1311,6 @@ export default function AccountProfile({
                 </p>
               </div>
 
-              {/* Medium */}
               <div 
                 onClick={() => setFontSize('md')}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
@@ -1388,7 +1341,6 @@ export default function AccountProfile({
                 </p>
               </div>
 
-              {/* Large */}
               <div 
                 onClick={() => setFontSize('lg')}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
@@ -1419,7 +1371,6 @@ export default function AccountProfile({
                 </p>
               </div>
 
-              {/* Extra Large */}
               <div 
                 onClick={() => setFontSize('xl')}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between gap-2 ${
@@ -1452,7 +1403,6 @@ export default function AccountProfile({
             </div>
           </div>
 
-          {/* Card 4: តួនាទីអ្នកប្រើប្រាស់ (User Role) */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2.5 mb-4">
@@ -1462,7 +1412,6 @@ export default function AccountProfile({
                 </h3>
               </div>
               <div className="space-y-3">
-                {/* Admin */}
                 <div 
                   onClick={() => {
                     if (actualRole === 'admin' && onViewModeChange) {
@@ -1501,7 +1450,6 @@ export default function AccountProfile({
                   </span>
                 </div>
 
-                {/* User */}
                 <div 
                   onClick={() => {
                     if (onViewModeChange) {
@@ -1541,7 +1489,6 @@ export default function AccountProfile({
             </div>
           </div>
 
-          {/* Card 5: អង្គចងចាំប្រព័ន្ធ (System Storage) - Only for Admin */}
           {userRole === 'admin' && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 p-5 sm:p-6 flex flex-col justify-between">
               <div>
@@ -1614,16 +1561,13 @@ export default function AccountProfile({
     );
   }
 
-  // --- MAIN ACCOUNT VIEW ---
   const isAdmin = userRole === 'admin';
 
   return (
     <div className={`w-full ${isAdmin ? 'max-w-5xl' : 'max-w-3xl'} mx-auto pb-16 font-battambang transition-colors duration-200`}>
       <div className={isAdmin ? "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" : "w-full"}>
-        {/* Left Column: Profile & Navigation Card */}
         <div className={isAdmin ? "lg:col-span-7 xl:col-span-7" : "w-full"}>
           <div className="bg-white dark:bg-slate-900 -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl overflow-hidden transition-all border-y sm:border border-gray-200/80 dark:border-slate-800">
-            {/* Top Header */}
             <div className="p-5 sm:p-8 flex items-center gap-4 sm:gap-6">
               <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-800">
                 {avatarUrl ? (
@@ -1639,7 +1583,6 @@ export default function AccountProfile({
                   />
                 )}
                 
-                {/* Bottom translucent camera bar overlay */}
                 <label className="absolute bottom-0 inset-x-0 h-6 sm:h-7 bg-white/40 dark:bg-black/30 hover:bg-white/60 dark:hover:bg-black/50 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-colors border-t border-white/20">
                   <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-800 dark:text-gray-200" />
                   <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
@@ -1656,7 +1599,6 @@ export default function AccountProfile({
               </div>
             </div>
 
-            {/* Status Message */}
             {message && (
               <div className="px-5 sm:px-8 pb-4">
                 <div className={`rounded-xl p-3.5 text-sm font-medium border ${
@@ -1669,7 +1611,6 @@ export default function AccountProfile({
               </div>
             )}
 
-            {/* Mobile View: Financial Overview placed below Profile (Admin only) - Full Width Edge-to-Edge */}
             {isAdmin && (
               <div className="block lg:hidden w-full border-t border-gray-100 dark:border-slate-800">
                 <FinancialOverviewCard 
@@ -1681,14 +1622,10 @@ export default function AccountProfile({
               </div>
             )}
 
-            {/* Top Separator Line */}
             <div className="h-[1px] bg-gray-200 dark:bg-slate-800 w-full" />
 
-        {/* Menu Items */}
         <div className="py-1">
-          {/* SECTION 1: គណនី & ពាក្យសម្ងាត់ និងសុវត្ថិភាព & ការកំណត់ */}
           <div>
-            {/* គណនី */}
             <button
               onClick={() => setIsEditingView(true)}
               className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
@@ -1714,7 +1651,6 @@ export default function AccountProfile({
               </div>
             </button>
 
-            {/* ពាក្យសម្ងាត់ និងសុវត្ថិភាព */}
             <button
               onClick={() => setIsSecurityView(true)}
               className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
@@ -1728,7 +1664,6 @@ export default function AccountProfile({
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" />
             </button>
 
-            {/* ការកំណត់ (Setting) */}
             <button
               onClick={() => setIsSettingView(true)}
               className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
@@ -1743,17 +1678,14 @@ export default function AccountProfile({
             </button>
           </div>
 
-          {/* Separator */}
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
-          {/* SECTION 2: ការគ្រប់គ្រង: */}
           <div className="px-6 pt-2 pb-1">
             <span className="text-[13.5px] text-[#028090] dark:text-teal-400 font-battambang">
               {t('profile_mgmt_heading')}
             </span>
           </div>
 
-          {/* លិខិតផ្សេងៗ */}
           <button
             onClick={onCertificates}
             className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
@@ -1767,7 +1699,6 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
-          {/* ផ្ទាំងគ្រប់គ្រង Admin (Admin Panel) */}
           <button
             onClick={onManageUsers}
             className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
@@ -1781,7 +1712,6 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
-          {/* បម្រុងទុកទិន្នន័យ (Data Backup) */}
           {userRole === 'admin' && (
             <button
               onClick={() => setShowBackupModal(true)}
@@ -1797,11 +1727,8 @@ export default function AccountProfile({
             </button>
           )}
 
-          {/* Separator */}
           <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
 
-          {/* SECTION 3: អំពីកម្មវិធី & ចាកចេញ */}
-          {/* ការណែនាំដំឡើង App (Introduced) */}
           <button
             onClick={() => {
               setAboutModalTab('introduced');
@@ -1819,7 +1746,6 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
-          {/* អំពីកម្មវិធី */}
           <button
             onClick={() => {
               setAboutModalTab('about');
@@ -1836,7 +1762,6 @@ export default function AccountProfile({
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
           </button>
 
-                    {/* System Logs */}
           {userRole === 'admin' && (
             <button
               onClick={() => setIsSystemLogsView(true)}
@@ -1852,7 +1777,6 @@ export default function AccountProfile({
             </button>
           )}
 
-          {/* ចាកចេញពីគណនី */}
           <button
             onClick={onLogout}
             className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-red-50/70 dark:hover:bg-red-950/20 transition-colors text-left group"
@@ -1869,7 +1793,6 @@ export default function AccountProfile({
       </div>
     </div>
 
-        {/* Desktop View: Financial Overview placed on the right of Profile (Admin only) */}
         {isAdmin && (
           <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
             <FinancialOverviewCard 
@@ -1897,7 +1820,6 @@ export default function AccountProfile({
             onClick={(e) => e.stopPropagation()}
             className="bg-white dark:bg-slate-900 transition-colors duration-200 rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col border border-gray-200/80 dark:border-slate-800 overflow-hidden shadow-2xl"
           >
-            {/* Modal Header */}
             <div className="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between flex-shrink-0">
               <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
                 {aboutModalTab === 'about' ? t('about_tab_info') : t('about_tab_introduced')}
@@ -1911,7 +1833,6 @@ export default function AccountProfile({
               </button>
             </div>
 
-            {/* Top Navigation Tabs */}
             <div className="flex border-b border-gray-100 dark:border-slate-800 w-full px-5 pt-2 flex-shrink-0">
               <button
                 onClick={() => setAboutModalTab('about')}
@@ -1938,10 +1859,8 @@ export default function AccountProfile({
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-5 sm:p-6 flex flex-col overflow-y-auto space-y-4">
               {aboutModalTab === 'about' ? (
-                /* About Tab Content */
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-2.5 flex items-center justify-center flex-shrink-0">
                     <Info className="w-10 h-10 text-[#028090] dark:text-teal-400" />
@@ -1978,9 +1897,7 @@ export default function AccountProfile({
                   </div>
                 </div>
               ) : (
-                /* Installation Guide Content */
                 <div className="space-y-4 text-left">
-                  {/* Refined Segmented Control */}
                   <div className="bg-gray-100 dark:bg-slate-800/70 p-1 rounded-xl flex gap-1">
                     <button
                       onClick={() => setIntroducedPlatformTab('android')}
@@ -2008,7 +1925,6 @@ export default function AccountProfile({
                   </div>
 
                   {introducedPlatformTab === 'android' ? (
-                    /* Android Section */
                     <div className="space-y-4">
                       {isInstalled ? (
                         <div className="flex items-center gap-2.5 text-emerald-600 dark:text-emerald-400 py-1">
@@ -2021,7 +1937,6 @@ export default function AccountProfile({
                             {t('install_android_desc')}
                           </p>
 
-                          {/* Direct Install Button */}
                           <Button
                             onClick={async () => {
                               setIsInstallingPWA(true);
@@ -2039,7 +1954,6 @@ export default function AccountProfile({
                         </div>
                       )}
 
-                      {/* Android Steps */}
                       <div className="border-t border-gray-100 dark:border-slate-800 pt-3.5 space-y-2.5">
                         <h5 className="text-[13px] font-semibold text-gray-900 dark:text-white">
                           {t('install_android_steps_title')}
@@ -2065,7 +1979,6 @@ export default function AccountProfile({
                       </div>
                     </div>
                   ) : (
-                    /* iOS Section */
                     <div className="space-y-4">
                       <p className="text-[13.5px] text-gray-600 dark:text-slate-300 leading-relaxed">
                         {t('install_ios_desc')}
@@ -2135,7 +2048,6 @@ export default function AccountProfile({
         </motion.div>
       )}
 
-      {/* Data Backup Modal */}
       <DataBackupModal
         isOpen={showBackupModal}
         onClose={() => setShowBackupModal(false)}

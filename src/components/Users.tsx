@@ -25,7 +25,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'list' | 'advanced'>('list');
 
-  // Role Change Confirmation State
   const [pendingRoleChange, setPendingRoleChange] = useState<{
     user: UserProfile;
     newRole: 'admin' | 'user';
@@ -33,7 +32,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
-  // Password Reset State
   const [resettingUser, setResettingUser] = useState<UserProfile | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [isResetting, setIsResetting] = useState(false);
@@ -158,7 +156,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
         </div>
       )}
 
-      {/* Tabs / Sub-Controls */}
       <div className="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-slate-800 pb-1">
         <div className="flex items-center gap-4 sm:gap-6">
           <button
@@ -189,14 +186,12 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
           </button>
         </div>
 
-        {/* Count badge */}
         <div className="text-xs text-gray-500 dark:text-slate-400 font-battambang flex items-center gap-1.5">
           <span>{language === 'km' ? 'សរុប' : 'Total'}:</span>
           <span className="font-rajdhani font-bold text-gray-900 dark:text-white text-sm">{users.length}</span>
         </div>
       </div>
 
-      {/* Mobile Card List View (< sm) */}
       <div className="block sm:hidden space-y-3 mb-6">
         {users.length === 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-8 text-center text-gray-500 font-battambang text-sm">
@@ -220,7 +215,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
                         </span>
                       )}
                     </div>
-                    {/* Status dot */}
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800"></span>
                   </div>
 
@@ -234,7 +228,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
                   </div>
                 </div>
 
-                {/* Role Badge - clean border without filled box */}
                 <div className="shrink-0">
                   {user.role === 'admin' ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-battambang font-medium border border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400">
@@ -250,13 +243,11 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
                 </div>
               </div>
 
-              {/* Meta row */}
               <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-rajdhani text-gray-400 dark:text-slate-500">
                 <span>ID: #{index + 1} ({user.id.substring(0, 8)})</span>
                 <span>{new Date(user.created_at).toLocaleDateString(language === 'km' ? 'km-KH' : 'en-GB')}</span>
               </div>
 
-              {/* Advanced Controls on Mobile */}
               {activeTab === 'advanced' && (
                 <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
@@ -302,7 +293,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
         )}
       </div>
 
-      {/* User List Table (Tablet & Desktop screens >= sm) */}
       <div className="hidden sm:block bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden w-full">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 font-battambang">
@@ -428,7 +418,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
         </div>
       </div>
 
-      {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -456,7 +445,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
         )}
       </AnimatePresence>
 
-      {/* Role Change Confirmation Modal */}
       <AnimatePresence>
         {pendingRoleChange && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -547,7 +535,6 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
         )}
       </AnimatePresence>
       
-      {/* Password Reset Modal */}
       <>
         {resettingUser && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">

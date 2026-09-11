@@ -6,7 +6,6 @@ import { requireAuth, requireAdmin } from '../auth/dependencies';
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Helper to upload buffer to Supabase Storage
 async function uploadToStorage(bucket: string, path: string, fileBuffer: Buffer, mimetype: string) {
   const { data, error } = await supabaseAdmin.storage
     .from(bucket)
@@ -18,7 +17,6 @@ async function uploadToStorage(bucket: string, path: string, fileBuffer: Buffer,
   return publicUrlData.publicUrl;
 }
 
-// POST /api/upload/avatar
 router.post('/avatar', requireAuth, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ detail: 'No file uploaded' });
@@ -28,7 +26,6 @@ router.post('/avatar', requireAuth, upload.single('file'), async (req, res) => {
     
     const publicUrl = await uploadToStorage('avatars', fileName, req.file.buffer, req.file.mimetype);
     
-    // Update profile automatically
     await supabaseAdmin
       .from('profiles')
       .update({ avatar_url: publicUrl })
@@ -40,7 +37,6 @@ router.post('/avatar', requireAuth, upload.single('file'), async (req, res) => {
   }
 });
 
-// POST /api/upload/post-images
 router.post('/post-images', requireAuth, requireAdmin, upload.array('files', 10), async (req, res) => {
   try {
     if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {

@@ -25,7 +25,6 @@ export default function InstallPrompt() {
   const { t } = useLanguage();
 
   useEffect(() => {
-    // If running in standalone (installed app), never show prompt
     if (isInstalled) {
       setShowPrompt(false);
       return;
@@ -36,14 +35,11 @@ export default function InstallPrompt() {
       return;
     }
 
-    // Android: Enforce installation prompt whenever opened in browser
     if (isAndroid) {
-      // For Android, prompt directly without 7-day cooldown
       setShowPrompt(true);
       return;
     }
 
-    // iOS: Check 3-day cooldown so it doesn't overly annoy iOS users while reminding them
     if (isIOS) {
       const dismissedStr = localStorage.getItem('pwa_ios_prompt_dismissed');
       if (dismissedStr) {
@@ -57,7 +53,6 @@ export default function InstallPrompt() {
       return;
     }
 
-    // Desktop/Other browsers with installability
     if (isInstallable) {
       setShowPrompt(true);
     }
@@ -79,7 +74,6 @@ export default function InstallPrompt() {
     if (isIOS) {
       localStorage.setItem('pwa_ios_prompt_dismissed', Date.now().toString());
     }
-    // For Android, temporary close for this session only (not 7 days), enforcing re-prompt
     sessionStorage.setItem('pwa_android_prompt_session_dismissed', 'true');
     setShowPrompt(false);
   };
@@ -97,7 +91,6 @@ export default function InstallPrompt() {
   return (
     <AnimatePresence>
       {isInAppBrowser ? (
-        /* In-App Browser Modal (Facebook, Telegram, etc.) */
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
@@ -168,7 +161,6 @@ export default function InstallPrompt() {
           </motion.div>
         </div>
       ) : isAndroid ? (
-        /* Android Modal - Enforced / Direct Installation Prompt */
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
@@ -208,7 +200,6 @@ export default function InstallPrompt() {
             </div>
 
             <div className="p-5 space-y-3.5">
-              {/* Force Install Primary Button */}
               <Button
                 onClick={handleInstallClick}
                 disabled={isInstalling}
@@ -217,7 +208,6 @@ export default function InstallPrompt() {
                 <span>{isInstalling ? 'កំពុងរៀបចំ...' : 'ដំឡើងកម្មវិធី'}</span>
               </Button>
 
-              {/* Instructions if already prompted or Chrome 3-dot */}
               <div className="border border-gray-100 dark:border-slate-800 rounded-xl p-3 text-left">
                 <p className="text-[11.5px] text-gray-500 dark:text-slate-400 mb-1.5 font-medium">
                   វិធីដំឡើងដោយផ្ទាល់ (Google Chrome / Samsung):
@@ -244,7 +234,6 @@ export default function InstallPrompt() {
           </motion.div>
         </div>
       ) : isIOS ? (
-        /* iOS Modal View - Add to Home Screen Instructions */
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
@@ -328,7 +317,6 @@ export default function InstallPrompt() {
           </motion.div>
         </div>
       ) : (
-        /* Desktop or generic web banner */
         <motion.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

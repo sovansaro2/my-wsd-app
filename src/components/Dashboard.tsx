@@ -83,7 +83,6 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
 
   if (loading) return <LoadingScreen />;
 
-  // Aggregation
   let totalIncome = 0;
   let totalExpense = 0;
 
@@ -92,7 +91,6 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
     if (record.type === 'expense') totalExpense += record.amount;
   });
 
-  // Calculate metrics for the latest seil period (to display in KPI cards)
   let latestIncome = 0;
   let latestExpense = 0;
   let previousBalance = 0;
@@ -111,7 +109,6 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
     previousBalance = latestSeil.previous_balance || 0;
     balance = previousBalance + latestIncome - latestExpense;
     
-    // Get the absolute starting balance from the oldest seil
     startingBalance = seils[seils.length - 1].previous_balance || 0;
   } else {
     balance = totalIncome - totalExpense;
@@ -130,12 +127,10 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
         </div>
       )}
 
-      {/* Top Banner */}
       <div className="w-full">
         <ImageSlider />
       </div>
 
-      {/* List Status and Overview Section */}
       <div className="w-full">
         <ListSummaryCard 
           seils={seils} 
@@ -145,7 +140,6 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
         />
       </div>
 
-      {/* 100k+ Donors Section */}
       <section className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/70 dark:border-slate-800 shadow-2xs overflow-hidden">
         <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -199,7 +193,6 @@ export default function Dashboard({ onNavigateTab }: { onNavigateTab?: (tab: 're
         </div>
       </section>
 
-      {/* Global Donor Search Modal */}
       <GlobalDonorSearch
         isOpen={showDonorSearch}
         onClose={() => setShowDonorSearch(false)}

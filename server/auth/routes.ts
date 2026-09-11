@@ -4,12 +4,10 @@ import { supabaseAdmin, createAuthClient } from '../database';
 
 const router = Router();
 
-// POST /api/auth/signup
 router.post('/signup', async (req, res) => {
   try {
     const data = SignupSchema.parse(req.body);
     
-    // Try using admin.createUser if service role key is available to bypass email confirmation
     const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -22,7 +20,6 @@ router.post('/signup', async (req, res) => {
     });
 
     if (signUpError) {
-      // Fallback to normal signUp using isolated auth client
       const authClient = createAuthClient();
       const { data: fallbackData, error: fallbackError } = await authClient.auth.signUp({
         email: data.email,
@@ -73,7 +70,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// POST /api/auth/verify-otp
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -89,7 +85,6 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(401).json({ detail: 'លេខកូដមិនត្រឹមត្រូវ ឬផុតកំណត់។' });
     }
     
-    // Fetch profile to get role
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -107,12 +102,10 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const data = LoginSchema.parse(req.body);
     
-    // Use dedicated isolated auth client so admin client session is never tainted
     const authClient = createAuthClient();
     const { data: authData, error: signInError } = await authClient.auth.signInWithPassword({
       email: data.email,
@@ -124,7 +117,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ detail: 'អុីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ' });
     }
 
-    // Fetch profile to get role using admin client
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -142,7 +134,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/refresh
 router.post('/refresh', async (req, res) => {
   try {
     const refreshToken = req.body?.refresh_token || req.headers['x-refresh-token'];
@@ -174,7 +165,6 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
-// GET /api/auth/me
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -208,8 +198,6 @@ router.get('/me', async (req, res) => {
 
 export default router;
 
-
-// POST /api/auth/verify-password
 router.post('/verify-password', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -223,7 +211,6 @@ router.post('/verify-password', async (req, res) => {
     const { password } = req.body;
     if (!password) return res.status(400).json({ detail: 'Password required' });
 
-    // Verify password by attempting to sign in using isolated auth client
     const authClient = createAuthClient();
     const { data, error: signInError } = await authClient.auth.signInWithPassword({
       email: user.email!,

@@ -9,7 +9,6 @@ if (typeof (globalThis as any).WebSocket === 'undefined') {
 
 const serviceRoleKey = config.SUPABASE_SERVICE_ROLE_KEY || DEFAULT_SERVICE_ROLE_KEY;
 
-// Dedicated Admin Client that strictly bypasses Row Level Security (RLS)
 export const supabaseAdmin = createClient(config.SUPABASE_URL, serviceRoleKey, {
   auth: {
     autoRefreshToken: false,
@@ -23,8 +22,6 @@ export const supabaseAdmin = createClient(config.SUPABASE_URL, serviceRoleKey, {
   },
 });
 
-// Dedicated Auth Client for user-facing authentication (signIn, signUp, refresh, verifyOtp)
-// Must NOT be supabaseAdmin, because signInWithPassword mutates the client's internal auth state!
 export const createAuthClient = (): SupabaseClient => {
   return createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY, {
     auth: {
@@ -34,7 +31,6 @@ export const createAuthClient = (): SupabaseClient => {
   });
 };
 
-// Fallback direct admin client guaranteed to use the master service_role key
 export const getDirectAdminClient = (): SupabaseClient => {
   return createClient(config.SUPABASE_URL, DEFAULT_SERVICE_ROLE_KEY, {
     auth: {
@@ -64,5 +60,4 @@ export const getAuthClient = (token: string) => {
 export const getClient = (_req?: Request) => {
   return supabaseAdmin;
 };
-
 

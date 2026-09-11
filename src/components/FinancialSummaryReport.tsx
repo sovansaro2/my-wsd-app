@@ -77,7 +77,6 @@ export default function FinancialSummaryReport() {
 
   return (
     <div className="space-y-4 font-battambang">
-      {/* Controls Bar: Year & Quarter Selector */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
           <div className="flex flex-col xs:flex-row xs:items-center gap-2 sm:gap-2.5">
@@ -87,7 +86,6 @@ export default function FinancialSummaryReport() {
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
-              {/* Year Select */}
               <select
                 value={selectedYear}
                 onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
@@ -104,7 +102,6 @@ export default function FinancialSummaryReport() {
                 )}
               </select>
 
-              {/* Quarter Select */}
               <select
                 value={selectedQuarter}
                 onChange={e => setSelectedQuarter(e.target.value)}
@@ -129,7 +126,6 @@ export default function FinancialSummaryReport() {
             </div>
           </div>
 
-          {/* Print Button */}
           <button
             onClick={handlePrint}
             className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 rounded-xl transition-colors cursor-pointer whitespace-nowrap"
@@ -149,9 +145,7 @@ export default function FinancialSummaryReport() {
 
       {!loading && data && (
         <div className="space-y-4">
-          {/* Key Metrics Row (2x2 grid on mobile for clean orderly dashboard, 4 on desktop) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
-            {/* Beginning Balance Card */}
             <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
@@ -171,7 +165,6 @@ export default function FinancialSummaryReport() {
               </div>
             </div>
 
-            {/* Total Income Card */}
             <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
@@ -189,7 +182,6 @@ export default function FinancialSummaryReport() {
               </div>
             </div>
 
-            {/* Total Expense Card */}
             <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
@@ -207,7 +199,6 @@ export default function FinancialSummaryReport() {
               </div>
             </div>
 
-            {/* Ending True Balance Card */}
             <div className="p-3 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-sm text-gray-500 dark:text-slate-400 font-medium truncate pr-1">
@@ -230,7 +221,6 @@ export default function FinancialSummaryReport() {
             </div>
           </div>
 
-          {/* Period In-Flow Performance Badge/Strip & Seil Carried Adjustment */}
           <div className="space-y-2">
             {typeof data.period_net === 'number' && (
               <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col xs:flex-row xs:items-center justify-between gap-1 sm:gap-2 text-xs">
@@ -263,9 +253,7 @@ export default function FinancialSummaryReport() {
             )}
           </div>
 
-          {/* Top Incomes & Top Expenses Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {/* Top Incomes */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 sm:p-5">
               <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-slate-800">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
@@ -300,7 +288,6 @@ export default function FinancialSummaryReport() {
               </div>
             </div>
 
-            {/* Top Expenses */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 sm:p-5">
               <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-slate-800">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
@@ -336,7 +323,6 @@ export default function FinancialSummaryReport() {
             </div>
           </div>
 
-          {/* Breakdown Section: Monthly vs Seil Periods Table */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-3 sm:p-5 overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 sm:pb-3 border-b border-gray-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
@@ -346,7 +332,6 @@ export default function FinancialSummaryReport() {
                 </h4>
               </div>
 
-              {/* Clean Transparent Tabs (No background boxes, Single-line labels) */}
               <div className="flex items-center gap-1 overflow-x-auto scrollbar-none text-xs sm:text-sm">
                 <button
                   onClick={() => setActiveTableTab('monthly')}
@@ -488,7 +473,6 @@ export default function FinancialSummaryReport() {
                         {language === 'en' ? 'Final Cash In Hand (Latest Seil)' : 'សមតុល្យជាក់ស្ដែងសល់ក្នុងដៃ (សីលចុងក្រោយ)'}
                       </td>
                       <td className="py-3 px-2 text-right text-sky-600 dark:text-sky-400">
-                        {/* Initial starting balance */}
                         {(data.initial_starting_balance || 1700000).toLocaleString()}
                       </td>
                       <td className="py-3 px-2 text-right text-emerald-600 dark:text-emerald-400">

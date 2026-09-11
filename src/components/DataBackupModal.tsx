@@ -85,7 +85,6 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
         className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Database className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
@@ -101,7 +100,6 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-4 sm:p-6 space-y-4">
           {statusMessage && (
             <div className="flex items-center gap-2 p-3 text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 rounded-xl">
@@ -117,9 +115,7 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
             </div>
           )}
 
-          {/* Backup Option Cards (No background container colors, clean & direct) */}
           <div className="space-y-3 pt-2">
-            {/* Excel (.xlsx) Option */}
             <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3 min-w-0">
                 <FileSpreadsheet className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -154,7 +150,6 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
               </button>
             </div>
 
-            {/* JSON (.json) Raw Option */}
             <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3 min-w-0">
                 <FileCode className="w-6 h-6 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
@@ -191,7 +186,6 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 border-t border-gray-100 dark:border-slate-800 flex justify-end">
           <button
             onClick={onClose}

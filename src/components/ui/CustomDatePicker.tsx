@@ -123,7 +123,6 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute z-[100] top-full right-0 mt-2 w-[280px] max-w-[calc(100vw-32px)] bg-white dark:bg-slate-800 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.18)] border border-gray-200 dark:border-slate-700 overflow-hidden origin-top-right"
           >
-            {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-gray-100/80 dark:border-slate-700/80 bg-gray-50/50 dark:bg-slate-800/50">
               <button type="button" onClick={handlePrevMonth} className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors focus:outline-none">
                 <ChevronLeft className="w-4 h-4" />
@@ -157,7 +156,6 @@ export default function CustomDatePicker({ value, onChange, placeholder = 'DD/MM
               renderYears()
             )}
             
-            {/* Footer Actions */}
             <div className="px-3 py-2.5 border-t border-gray-100 dark:border-slate-700 flex justify-between bg-gray-50/50 dark:bg-slate-800/50">
               <button 
                 type="button" 

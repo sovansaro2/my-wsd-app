@@ -118,8 +118,6 @@ export const systemLogger = {
   }
 };
 
-// Automatic Console Interception to ensure all console.error and console.warn calls
-// appear in the in-app System Logs / Console Log viewer
 let isConsoleIntercepted = false;
 
 export function initConsoleCapture() {
@@ -144,7 +142,6 @@ export function initConsoleCapture() {
         return String(arg);
       }).join(' ');
 
-      // Ignore noise
       if (
         message.includes('WebSocket') || 
         message.includes('vite') || 
@@ -155,9 +152,7 @@ export function initConsoleCapture() {
       }
 
       systemLogger.log('ERROR', message);
-    } catch {
-      // Avoid recursive loops
-    }
+    } catch {}
   };
 
   console.warn = function (...args: any[]) {
@@ -184,13 +179,10 @@ export function initConsoleCapture() {
       }
 
       systemLogger.log('WARN', message);
-    } catch {
-      // Avoid recursive loops
-    }
+    } catch {}
   };
 }
 
-// Auto-run on module import in browser
 if (typeof window !== 'undefined') {
   initConsoleCapture();
 }

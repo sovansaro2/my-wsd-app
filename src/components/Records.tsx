@@ -57,7 +57,6 @@ interface PeriodCardProps {
   onEdit: (period: SeilPeriod, e: React.MouseEvent) => void;
 }
 
-// Memoized Period Card to prevent re-rendering when parent state changes
 const PeriodCard = React.memo(function PeriodCard({
   period,
   isAdmin,
@@ -70,7 +69,6 @@ const PeriodCard = React.memo(function PeriodCard({
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 190px' }}
       className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 cursor-pointer group text-center overflow-hidden"
     >
-      {/* Full Card Lock Overlay with White Lock Icon */}
       {!isAdmin && (
         <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
           <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
@@ -92,7 +90,6 @@ const PeriodCard = React.memo(function PeriodCard({
         </button>
       )}
 
-      {/* Main iOS Folder Graphic */}
       <div className="pt-2 pb-1 sm:pt-3 sm:pb-2 flex items-center justify-center">
         <IOSFolder 
           className="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-300 group-hover:scale-105" 
@@ -100,7 +97,6 @@ const PeriodCard = React.memo(function PeriodCard({
         />
       </div>
 
-      {/* Title and Date Below Folder */}
       <div className="w-full mt-2 flex flex-col items-center min-w-0">
         <h4 className="w-full font-normal text-gray-900 dark:text-white text-sm sm:text-[15px] leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors font-battambang text-center truncate whitespace-nowrap" title={period.name}>
           {period.name}
@@ -140,11 +136,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     setSelectedPeriod(period);
   }, [userRole]);
 
-  // Dynamic Image States
   const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
-  // Seil Modal State
   const [isSeilModalOpen, setIsSeilModalOpen] = useState(false);
   const [isEditSeilModalOpen, setIsEditSeilModalOpen] = useState(false);
   const [seilName, setSeilName] = useState('');
@@ -153,10 +147,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [editingSeil, setEditingSeil] = useState<SeilPeriod | null>(null);
   const [isSavingSeil, setIsSavingSeil] = useState(false);
 
-  // Add Record Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
-  // Edit Record Modal State
   const [isEditRecordModalOpen, setIsEditRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -174,7 +166,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // Certificate State
   const [certificateRecord, setCertificateRecord] = useState<FinancialRecord | null>(null);
   const certificateRef = useRef<HTMLDivElement>(null);
 
@@ -320,7 +311,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     if (!reportRef.current || !selectedPeriod) return;
     setIsDownloading(true);
     try {
-      // Ensure all images are completely loaded and decoded before capture
       const images = Array.from(reportRef.current.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(
         images.map((img) => {
@@ -332,7 +322,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         })
       );
       
-      await new Promise(resolve => setTimeout(resolve, 500)); // wait a bit longer to ensure render
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const reportWidth = reportRef.current.scrollWidth || 800;
       const reportHeight = reportRef.current.scrollHeight;
@@ -365,7 +355,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         setTimeout(() => setShowSuccessPopup(false), 3000);
 
       } catch (e) {
-        // Fallback to classic download if anything fails
         const link = document.createElement('a');
         link.download = `របាយការណ៍បច្ច័យ_${selectedPeriod.name}.png`;
         link.href = dataUrl;
@@ -442,7 +431,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
       console.error('Error toggling high level:', err);
     }
   };
-
 
   const openEditRecordModal = (record: FinancialRecord) => {
     setEditingRecord(record);
@@ -528,7 +516,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
       await api.createFinancialRecord(recordData);
       
-      // Auto-add to Roof Fund if toggled
       if (newRecordType === 'income' && addToRoofFund) {
         try {
           const categories = await api.getNameListCategories();
@@ -593,7 +580,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     return (
       <>
       <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang relative">
-        {/* Header */}
         <div className="bg-white dark:bg-slate-950 px-4 pt-4 pb-3 border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
           <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
             <div>
@@ -612,7 +598,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -635,7 +620,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
         </div>
       </div>
-{/* Seil Modals */}
       <>
         {isSeilModalOpen && (
           <div>
@@ -805,7 +789,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         )}
       </>
 
-      {/* Locked / Access Denied Modal */}
       {showLockedModal && (
         <div>
           <motion.div
@@ -859,7 +842,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang">
-      {/* Detail Header */}
       <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
           <div className="flex items-center justify-between">
@@ -909,9 +891,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
           </div>
 
-        {/* Summary Overview */}
         <div className="grid grid-cols-2 gap-2.5 mt-2">
-          {/* Previous Balance */}
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="w-2 h-2 rounded-full bg-slate-400"></span>
@@ -920,7 +900,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             <p className="text-base sm:text-lg  text-gray-800 dark:text-slate-200 ">{formatCurrency(previousBalance)}</p>
           </div>
           
-          {/* Current Balance */}
           <div className="bg-gray-50/80 dark:bg-slate-800/40 rounded-xl p-3 border border-gray-100 dark:border-slate-800 flex flex-col justify-center">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="w-2 h-2 rounded-full bg-[#028090]"></span>
@@ -932,8 +911,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         </div>
       </div>
 
-
-      {/* Tabs */}
       <div className="flex px-4 pt-3 pb-1 gap-2 max-w-6xl mx-auto w-full">
         <button 
           onClick={() => setActiveTab('income')}
@@ -959,7 +936,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         </button>
       </div>
 
-      {/* List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-6xl mx-auto w-full">
         <div className="space-y-3 bg-transparent p-0">
           <div className="hidden" />
@@ -1069,24 +1045,20 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </>
         </div>
 
-      {/* Hidden Report Container for Image Generation */}
       <div className="absolute top-0 left-[-9999px] opacity-0 pointer-events-none">
         <div ref={reportRef} className="bg-white p-10 font-battambang text-gray-900 w-[800px] shadow-none">
-          {/* Header */}
           <div className="text-center mb-8 border-b-2 border-gray-800 pb-6">
             <h1 className="text-3xl mb-2 text-gray-900" style={{ fontFamily: 'Koulen, "Khmer OS Kulen", sans-serif' }}>វត្តវារីបាការាម (ស្នាយដួច)</h1>
             <h2 className="text-3xl font-moul mb-3 text-[#028090]">របាយការណ៍បច្ច័យ</h2>
             <p className="text-xl ">{selectedPeriod?.name} {selectedPeriod?.date_range_text ? `(${selectedPeriod.date_range_text})` : ''}</p>
           </div>
 
-          {/* Previous Balance */}
           <div className="flex justify-between items-center bg-gray-100 p-4 rounded-xl mb-8">
             <span className=" text-xl">បច្ច័យសល់ពីសីលមុន៖</span>
             <span className=" text-xl">{formatCurrency(previousBalance)}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-8 mb-8">
-            {/* Income Section */}
             <div className="flex flex-col">
               <h3 className=" text-lg text-emerald-700 border-b-2 border-emerald-200 pb-2 mb-4">ប្រភពចំណូលបញ្ចី (+)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
@@ -1103,7 +1075,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               </div>
             </div>
 
-            {/* Expense Section */}
             <div className="flex flex-col">
               <h3 className=" text-lg text-rose-700 border-b-2 border-rose-200 pb-2 mb-4">ប្រភពចំណាយបញ្ចី (-)</h3>
               <div className="space-y-3 mb-4 min-h-[200px] flex-1">
@@ -1121,13 +1092,11 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
           </div>
 
-          {/* Current Balance */}
           <div className="flex justify-between items-center bg-teal-50 border-2 border-[#028090] p-6 rounded-2xl">
             <span className=" text-2xl text-[#005F73]">បច្ច័យសល់ជាក់ស្ដែង៖</span>
             <span className=" text-3xl text-[#028090]">{formatCurrency(currentBalance)}</span>
           </div>
           
-          {/* Footer Signature Area */}
           <div className="mt-16 flex justify-end px-12 text-center text-gray-900">
             <div className="flex flex-col items-center">
               <p className="mb-4 text-md font-medium">ធ្វើនៅ វត្តស្នាយដួច {getKhmerDate()}</p>
@@ -1151,7 +1120,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
       </div>
 
-      {/* Add Record Modal */}
       <>
         {isAddModalOpen && (
           <div>
@@ -1182,7 +1150,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <div className="p-5 pb-24 overflow-y-auto">
                 <form onSubmit={handleSaveRecord} className="space-y-4">
                   
-                  {/* Type Toggle */}
                   <div className="flex bg-gray-100 dark:bg-slate-800/80 p-1 rounded-2xl">
                     <button
                       type="button"
@@ -1260,7 +1227,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                     </div>
                   </div>
 
-                  {/* High Level Budget Checkbox */}
                   {newRecordType === 'income' && (
                     <div className="flex flex-col gap-2 mt-2">
                       <div className="flex items-center gap-3 p-4 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
@@ -1328,7 +1294,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         )}
       </>
 
-            {/* Edit Record Modal */}
       <>
         {isEditRecordModalOpen && editingRecord && (
           <motion.div
@@ -1479,7 +1444,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         )}
       </>
 
-      {/* Certificate Modal */}
       <>
         {certificateRecord && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
@@ -1501,10 +1465,8 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               </div>
 
               <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#f0f2f5]">
-                {/* Responsive scaling wrapper */}
                 <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-xl">
-                    {/* Certificate Container (Fixed A5 Landscape Size: 794x559 px) */}
                     <div 
                       ref={certificateRef}
                       className="w-[794px] h-[559px] bg-white flex flex-col p-6 sm:p-8 border-[12px] border-orange-50/50 relative"
@@ -1512,20 +1474,16 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         backgroundColor: '#ffffff'
                       }}
                     >
-                    {/* Decorative Borders */}
                   <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-orange-500/80"></div>
                   <div className="absolute top-[12px] left-[12px] right-[12px] bottom-[12px] border border-orange-300/60"></div>
                   
-                  {/* Corner Ornaments */}
                   <div className="absolute top-1 left-1 w-10 h-10 border-t-4 border-l-4 border-orange-600"></div>
                   <div className="absolute top-1 right-1 w-10 h-10 border-t-4 border-r-4 border-orange-600"></div>
                   <div className="absolute bottom-1 left-1 w-10 h-10 border-b-4 border-l-4 border-orange-600"></div>
                   <div className="absolute bottom-1 right-1 w-10 h-10 border-b-4 border-r-4 border-orange-600"></div>
 
                   <div className="relative z-10 flex flex-col h-full text-center px-4 py-0 justify-between">
-                    {/* Header */}
                     <div className="relative mb-2 mt-2 w-full flex justify-center">
-                      {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
                          <div 
                            className="w-[65px] h-[65px] mb-1 drop-shadow-none"
@@ -1540,7 +1498,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                          <span className="text-[11px] font-moul text-orange-900 leading-normal">(ស្នាយដួច)</span>
                       </div>
 
-                      {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
                         <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-normal " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
@@ -1551,7 +1508,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       </div>
                     </div>
 
-                    {/* Content */}
                     <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
                       <p className="text-[17px] font-battambang leading-normal mb-2 mt-4 text-orange-900">
                         អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
@@ -1579,13 +1535,11 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                         <br/>ដើម្បីចូលរួមកសាងទីអារាម និងទ្រទ្រង់វិស័យព្រះពុទ្ធសាសនា។
                       </p>
 
-                      {/* Blessing */}
                       <p className="text-[14px] font-battambang italic leading-normal max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
                         សូមបួងសួងដល់គុណព្រះរតនត្រ័យ និងវត្ថុស័ក្តិសិទ្ធិក្នុងលោក សូមជួយប្រោះព្រំសព្ទសាធុការពរជ័យ បវរសួស្ដី សិរីមង្គល វិបុលសុខ មហាប្រសើរ ជូនដល់ម្ចាស់ទាន ព្រមទាំងក្រុមគ្រួសារ សូមប្រកបដោយពុទ្ធពរទាំង ៤ ប្រការគឺ អាយុ វណ្ណៈ សុខៈ និងពលៈ កុំបីឃ្លៀងឃ្លាតឡើយ។
                       </p>
                     </div>
 
-                    {/* Footer */}
                     <div className="w-full flex justify-between items-end px-8 mb-2">
                       <div className="text-left pb-2">
                         <p className="text-[15px] font-medium text-gray-800 font-battambang">{getKhmerDate()}</p>
@@ -1611,7 +1565,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 sm:rounded-b-3xl rounded-b-2xl flex flex-col sm:flex-row gap-3 justify-end relative z-10 shrink-0">
                 <button
                   onClick={handleShareCertificate}
@@ -1634,7 +1587,6 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
         )}
       </>
-      {/* Success Popup */}
       <>
         {showSuccessPopup && (
           <motion.div

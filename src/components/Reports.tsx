@@ -16,7 +16,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
   const [showAccessDenied, setShowAccessDenied] = useState(false);
   const [showBackupModal, setShowBackupModal] = useState(false);
 
-  // Image preview state
   const [previewReport, setPreviewReport] = useState<SavedReport | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
@@ -24,7 +23,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     loadReports();
   }, []);
 
-  // Clean up object URL when component unmounts or preview changes
   useEffect(() => {
     return () => {
       if (previewImageUrl && previewImageUrl.startsWith('blob:')) {
@@ -127,7 +125,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
 
   return (
     <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-3 sm:space-y-4">
-      {/* Top Header & Tab Navigation */}
       <div className="flex items-center justify-between gap-2 pb-1 sm:pb-2 border-b border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto scrollbar-none">
           <button
@@ -160,7 +157,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
           </button>
         </div>
 
-        {/* Data Backup Button for Admin */}
         {userRole === 'admin' && (
           <button
             onClick={() => setShowBackupModal(true)}
@@ -172,12 +168,10 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         )}
       </div>
 
-      {/* Tab 1: Financial Summary & Analytics */}
       {activeTab === 'summary' && (
         <FinancialSummaryReport />
       )}
 
-      {/* Tab 2: Saved Archives */}
       {activeTab === 'saved' && (
         <div className="relative">
           {userRole !== 'admin' && (
@@ -212,7 +206,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                       </div>
                     </div>
                     
-                    {/* Action buttons: No background container colors, clean & direct */}
                     <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                       <button 
                         onClick={() => handleDownload(report)} 
@@ -237,13 +230,11 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         </div>
       )}
 
-      {/* Data Backup Modal */}
       <DataBackupModal
         isOpen={showBackupModal}
         onClose={() => setShowBackupModal(false)}
       />
 
-      {/* Image Preview Modal (Lightbox) */}
       <AnimatePresence>
         {previewReport && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6">
@@ -260,7 +251,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               exit={{ opacity: 0, scale: 0.96 }}
               className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden z-10"
             >
-              {/* Header */}
               <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-200 dark:border-slate-800 shrink-0">
                 <div className="flex items-center gap-3 min-w-0 pr-3">
                   <div className="shrink-0">{getIcon(previewReport.type)}</div>
@@ -292,7 +282,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
                 </div>
               </div>
 
-              {/* Image Preview Body */}
               <div className="flex-1 overflow-auto p-3 sm:p-6 flex items-center justify-center bg-gray-50/50 dark:bg-slate-950/50 min-h-[250px]">
                 {previewImageUrl ? (
                   <img
@@ -321,7 +310,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         )}
       </AnimatePresence>
 
-      {/* Access Denied Modal */}
       <AnimatePresence>
         {showAccessDenied && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -356,7 +344,6 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {reportToDelete && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

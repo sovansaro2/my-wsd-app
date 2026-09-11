@@ -47,7 +47,6 @@ export default function App() {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
 
-  // Restore previous tab from localStorage on refresh
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     try {
       const saved = localStorage.getItem('active_tab') as Tab;
@@ -74,21 +73,18 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   
-  // Track activeTab changes in localStorage
   useEffect(() => {
     try {
       localStorage.setItem('active_tab', activeTab);
     } catch {}
   }, [activeTab]);
 
-  // Double-tap tracker on mobile bottom navigation to trigger app/page refresh
   const lastTabClickRef = useRef<{ tab: Tab; time: number }>({ tab: activeTab, time: 0 });
 
   const handleMobileTabClick = (tab: Tab) => {
     const now = Date.now();
     const isDoubleClick = lastTabClickRef.current.tab === tab && (now - lastTabClickRef.current.time) < 500;
     
-    // Ensure active tab is saved before any potential reload
     try {
       localStorage.setItem('active_tab', tab);
     } catch {}
@@ -107,7 +103,6 @@ export default function App() {
     setActiveTab(tab);
   };
   
-  // Notifications State
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -150,11 +145,9 @@ export default function App() {
       fetchUserRole();
       fetchNotifications();
       
-      // Auto refresh on focus
       const onFocus = () => fetchNotifications();
       window.addEventListener('focus', onFocus);
       
-      // Background refresh every 3 minutes
       const interval = setInterval(fetchNotifications, 180000);
       
       return () => {
@@ -291,7 +284,6 @@ export default function App() {
     );
   }
 
-  // Sidebar navigation items
   const navItems = [
     { id: 'home' as Tab, label: t('nav_home'), icon: Home },
     { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
@@ -319,11 +311,7 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
       
-      {/* ========================================================================= */}
-      {/* DESKTOP SIDEBAR (Visible on md and larger screens) */}
-      {/* ========================================================================= */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
-        {/* Brand Header */}
         <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-[#028090] dark:bg-slate-900 text-white">
           <img 
             src="/logo.png" 
@@ -340,7 +328,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Navigation Links */}
         <div className="flex-1 overflow-y-auto py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -364,7 +351,6 @@ export default function App() {
           })}
         </div>
 
-        {/* Quick Language & Theme Controls */}
         <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
           <button
             onClick={toggleLanguage}
@@ -395,9 +381,6 @@ export default function App() {
         </div>
       </aside>
 
-      {/* ========================================================================= */}
-      {/* DESKTOP TOP NAVBAR (Visible on md and larger screens) */}
-      {/* ========================================================================= */}
       <header className="hidden md:flex fixed top-0 right-0 left-64 lg:left-72 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 z-30 px-6 items-center justify-between transition-colors duration-200 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]">
         <div className="flex items-center gap-2">
           <h2 className="text-base lg:text-lg font-bold text-gray-900 dark:text-white font-battambang">
@@ -409,7 +392,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Global Donor Search */}
           <button
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer"
@@ -418,7 +400,6 @@ export default function App() {
             <Search className="w-5 h-5 text-gray-700 dark:text-slate-300" />
           </button>
 
-          {/* Quick System Logs for Admin */}
           {actualRole === 'admin' && (
             <button
               onClick={() => {
@@ -432,7 +413,6 @@ export default function App() {
             </button>
           )}
 
-          {/* Notifications Button */}
           <button 
             onClick={handleOpenNotifications}
             className="relative p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -448,9 +428,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* ========================================================================= */}
-      {/* MOBILE TOP NAVBAR (Visible ONLY on mobile screens < md) */}
-      {/* ========================================================================= */}
       <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
         <h1 className={`text-white select-none pt-0.5 truncate mr-2 ${
           language === 'en'
@@ -460,7 +437,6 @@ export default function App() {
           {t('app_title_mobile')}
         </h1>
         <div className="relative shrink-0 flex items-center gap-1">
-          {/* Global Donor Search */}
           <button
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
@@ -496,7 +472,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Notifications Slide-over Drawer */}
       <AnimatePresence>
         {showNotifications && (
           <div>
@@ -581,7 +556,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Notification Detail Dialog Modal */}
       <AnimatePresence>
         {selectedNotification && (
           <div>
@@ -658,9 +632,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* ========================================================================= */}
-      {/* MAIN CONTENT CONTAINER (Responsive on both Desktop and Mobile) */}
-      {/* ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0 md:pl-64 lg:pl-72 pt-16 md:pt-16 pb-24 md:pb-8 transition-all duration-200">
         <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-4`}>
           <motion.div
@@ -704,7 +675,6 @@ export default function App() {
               <Certificates userRole={userRole} onBack={() => setActiveTab('account')} />
             )}
 
-            {/* Admin Management Views (Admin Panel with Users and Invitation Letter tabs) */}
             {(activeTab === 'admin_panel' || activeTab === 'users') && actualRole === 'admin' && (
               <AdminPanel 
                 initialTab="users"
@@ -716,9 +686,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* ========================================================================= */}
-      {/* MOBILE BOTTOM NAVIGATION (Visible ONLY on mobile screens < md) */}
-      {/* ========================================================================= */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
@@ -808,10 +775,8 @@ export default function App() {
         </div>
       </nav>
       
-      {/* PWA Install Prompt */}
       <InstallPrompt />
 
-      {/* Global Donor Search Modal */}
       <GlobalDonorSearch
         isOpen={showGlobalDonorSearch}
         onClose={() => setShowGlobalDonorSearch(false)}

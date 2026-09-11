@@ -51,7 +51,6 @@ interface CategoryCardProps {
   onEdit: (cat: ListCategory, e: React.MouseEvent) => void;
 }
 
-// Memoized Category Card with lazy rendering
 const CategoryCard = React.memo(function CategoryCard({
   category,
   isAdmin,
@@ -71,7 +70,6 @@ const CategoryCard = React.memo(function CategoryCard({
           : 'border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60'
       } hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden`}
     >
-      {/* Full Card Lock Overlay with White Lock Icon */}
       {!isAdmin && (
         <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
           <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
@@ -138,7 +136,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setSelectedCategory(cat);
   }, [userRole]);
 
-  // Modals state
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ListCategory | null>(null);
   const [catName, setCatName] = useState('');
@@ -156,7 +153,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const certificateRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
   
-  // Form state
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -167,7 +163,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [is100kDonor, setIs100kDonor] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Dynamic Image States
   const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
@@ -255,7 +250,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       
       if (data && data.length > 0) {
         setCategories(data);
-        // Do not auto-select category anymore, user starts in Grid view.
       }
     } catch (e) {
       console.error('Error fetching categories:', e);
@@ -311,7 +305,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     setTraiLiang(record.metadata?.trai_liang || '');
     setOthers(record.metadata?.others || '');
     setNotifyPublic(false);
-    setIs100kDonor(record.is_100k_donor || false); // Notifications usually only on create, or optional on edit
+    setIs100kDonor(record.is_100k_donor || false);
     setIsRecordModalOpen(true);
   };
 
@@ -415,7 +409,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         setShowSuccessPopup(true);
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (e) {
-        // Fallback for download
         const link = document.createElement('a');
         link.download = `${certificateRecord.name}.png`;
         link.href = dataUrl;
@@ -474,7 +467,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           });
         } catch (shareErr: any) {
           console.warn('Share failed, falling back to download:', shareErr);
-          // If the user cancelled, AbortError is thrown. We shouldn't download then.
           if (shareErr.name !== 'AbortError') {
              const link = document.createElement('a');
              link.download = `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`;
@@ -483,7 +475,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           }
         }
       } else {
-        // Fallback for browsers that don't support file sharing
         const link = document.createElement('a');
         link.download = `អនុមោទនាប័ត្រ_${certificateRecord.name}.png`;
         link.href = dataUrl;
@@ -591,7 +582,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const isKathina = selectedCategory?.name?.includes('កឋិន');
   const hasAnyNote = filteredRecords.some(r => r.note || r.metadata?.trai_liang || r.metadata?.others);
 
-
   const getCategoryIcon = (name: string) => {
     return (
       <IOSFolder className="w-8 h-7 transition-transform group-hover:scale-105" variant="blue" />
@@ -619,8 +609,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     }
     return null;
   };
-
-
 
   if (!selectedCategory || userRole !== 'admin') {
     const roofCat = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
@@ -654,7 +642,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 onClick={() => handleCategoryClick(roofCat)}
                 className="w-full text-left bg-gradient-to-r from-[#028090] to-[#005F73] rounded-2xl p-5 shadow-lg shadow-[#028090]/20 relative overflow-hidden transition-transform active:scale-95"
               >
-                {/* Full Card Lock Overlay with White Lock Icon */}
                 {userRole !== 'admin' && (
                   <div className="absolute inset-0 z-30 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex items-center justify-center pointer-events-none transition-all">
                     <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
@@ -733,7 +720,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         </div>
       </div>
 
-      {/* Category Modals */}
       <>
         {isCatModalOpen && (
           <div>
@@ -829,7 +815,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         )}
       </>
 
-      {/* Locked / Access Denied Modal */}
       {showLockedModal && (
         <div>
           <motion.div
@@ -876,7 +861,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative overflow-x-hidden w-full">
       <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
         <div className="max-w-7xl mx-auto w-full flex flex-col gap-4">
-          {/* Detail View Header */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setSelectedCategory(null)} 
@@ -911,7 +895,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-7xl mx-auto w-full space-y-3">
-          {/* Header Row: Date & Total */}
           <div className="flex items-center justify-between mb-3 px-2 sm:px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
             <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
               {selectedCategory?.description ? (
@@ -1126,7 +1109,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         </div>
       )}
 
-      {/* Add/Edit Modal (Bottom Sheet on Mobile) */}
       <>
       {isRecordModalOpen && (
         <motion.div
@@ -1219,9 +1201,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
               
 
-
-
-              {/* Checkbox for 100k Donor */}
               <div className="flex items-center gap-3 p-4 mt-2 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
                 <input 
                   type="checkbox" 
@@ -1281,7 +1260,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
       )}
       </>
 
-      {/* Certificate Modal */}
       <>
         {certificateRecord && (
           <motion.div
@@ -1308,7 +1286,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </div>
 
               <div className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#f0f2f5]">
-                {/* Responsive scaling wrapper */}
                 <div className="relative w-[340px] h-[240px] sm:w-[794px] sm:h-[559px] mx-auto shrink-0 transition-all duration-300 flex justify-center">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 origin-top scale-[0.42] sm:scale-100 shadow-none border border-gray-200/80">
                     {isKathina ? (
@@ -1319,7 +1296,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           backgroundColor: '#fdfaf0'
                         }}
                       >
-                        {/* Complex Outer Border Kbach */}
                         <div className="absolute inset-0 border-[16px] border-[#991b1b] z-10 pointer-events-none shadow-[inset_0_0_12px_rgba(0,0,0,0.4)]"></div>
                         <div className="absolute inset-[16px] border-[4px] border-[#fdfaf0] z-10 pointer-events-none"></div>
                         <div className="absolute inset-[20px] border-[6px] border-[#d4af37] z-10 pointer-events-none shadow-sm"></div>
@@ -1327,7 +1303,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <div className="absolute inset-[29px] border-[2px] border-[#991b1b] z-10 pointer-events-none"></div>
                         <div className="absolute inset-[36px] border-[1px] border-dashed border-[#d4af37] z-10 pointer-events-none opacity-70"></div>
                         
-                        {/* Corner Ornaments (Khmer Style SVG) */}
                         <div className="absolute top-[8px] left-[8px] z-20 pointer-events-none">
                           <svg width="75" height="75" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
                             <path d="M 0 0 L 100 0 Q 80 20 60 40 Q 80 60 40 60 Q 60 80 0 100 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
@@ -1361,7 +1336,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </svg>
                         </div>
 
-                        {/* Edge Midpoint Accents (Khmer Star/Diamond) */}
                         <div className="absolute top-[8px] left-1/2 -translate-x-1/2 z-20 pointer-events-none">
                           <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
                             <path d="M50 0 C65 25 75 35 100 50 C75 65 65 75 50 100 C35 75 25 65 0 50 C25 35 35 25 50 0 Z" fill="#d4af37" stroke="#991b1b" strokeWidth="2"/>
@@ -1395,7 +1369,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </svg>
                         </div>
 
-                        {/* Background Watermark */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none overflow-hidden -z-10">
                           <svg width="450" height="450" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                             <g fill="none" stroke="#d4af37" strokeWidth="0.6">
@@ -1415,7 +1388,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         </div>
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#fff8dc_0%,_transparent_80%)] -z-10 pointer-events-none"></div>
 
-                        {/* Tevoda Left */}
                         <img 
                           src="/tevoda.png" 
                           alt="ទេវតា" 
@@ -1426,7 +1398,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           }}
                         />
 
-                        {/* Tevoda Right */}
                         <img 
                           src="/tevoda.png" 
                           alt="ទេវតា" 
@@ -1437,7 +1408,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           }}
                         />
 
-                        {/* Tray Left */}
                         <div className="absolute top-[75px] left-[155px] w-[75px] h-[105px] z-20">
                           <img 
                             src="/Tray.png" 
@@ -1452,7 +1422,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           
                         </div>
 
-                        {/* Tray Right */}
                         <div className="absolute top-[75px] right-[155px] w-[75px] h-[105px] z-20">
                           <img 
                             src="/Tray.png" 
@@ -1467,7 +1436,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           
                         </div>
 
-                        {/* Top Section */}
                         <div className="relative z-30 flex flex-col items-center mt-2 mb-0 space-y-1 text-center">
                           <div className="flex items-center justify-center space-x-3 mb-1">
                             <svg width="24" height="12" viewBox="0 0 30 15" fill="none"><path d="M30 7.5 C20 7.5 15 15 15 15 C15 15 10 7.5 0 7.5 C10 7.5 15 0 15 0 C15 0 20 7.5 30 7.5 Z" fill="#d4af37"/></svg>
@@ -1481,7 +1449,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             វត្តវារីបាការាម (ស្នាយដួច)
                           </h3>
                           
-                          {/* Elegant Divider */}
                           <div className="flex items-center justify-center w-full max-w-[250px] my-1 opacity-90">
                             <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
                             <div className="mx-2 rotate-45 w-[5px] h-[5px] bg-[#991b1b] border-[1px] border-[#d4af37]"></div>
@@ -1493,21 +1460,17 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </p>
                         </div>
 
-                        {/* Center Section - Name */}
                         <div className="relative z-30 flex-1 flex flex-col items-center justify-center my-1 w-full px-2">
                           <div className="w-full max-w-[98%] bg-gradient-to-b from-[#fffbeb] to-[#fdfaf0] border-[4px] border-double border-[#d4af37] rounded-2xl py-4 px-4 flex flex-col items-center justify-center relative min-h-[135px]">
-                            {/* Small Inner Box Corner Ornaments */}
                             <svg className="absolute top-1.5 left-1.5 w-6 h-6 opacity-70" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute top-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute bottom-1.5 left-1.5 w-6 h-6 opacity-70 transform scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
                             <svg className="absolute bottom-1.5 right-1.5 w-6 h-6 opacity-70 transform scale-x-[-1] scale-y-[-1]" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2"><path d="M2 14 Q 14 14 14 2" /><circle cx="4" cy="4" r="1.5" fill="#991b1b" stroke="none"/></svg>
 
-                            {/* Top label */}
                             <div className="absolute -top-[14px] bg-[#991b1b] px-6 py-[2px] rounded-full border-2 border-[#d4af37] flex items-center justify-center">
                               <span className="text-[#fdfaf0] font-battambang text-[14px]">ឈ្មោះម្ចាស់ត្រៃលៀង</span>
                             </div>
                             
-                            {/* Centered Donor Name */}
                             <div className="w-full flex-1 flex items-center justify-center my-auto px-4 py-2">
                               <h1 
                                 className="text-[#1e3a8a] leading-[1.7] py-0.5 text-center whitespace-pre-line break-words" 
@@ -1523,7 +1486,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                               </h1>
                             </div>
                             
-                            {/* Bottom attached box on the bottom line */}
                             {(certificateRecord.metadata?.trai_liang || certificateRecord.metadata?.others || (certificateRecord.amount && certificateRecord.amount > 0)) && (
                               <div className="absolute -bottom-[14px] flex justify-center items-center gap-2.5 font-battambang z-20">
                                 {certificateRecord.metadata?.trai_liang && (
@@ -1548,7 +1510,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </div>
                         </div>
 
-                        {/* Ornate Divider Bottom */}
                         <div className="relative z-30 w-full px-12 flex items-center justify-center mt-0 mb-1 opacity-90">
                           <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-[#d4af37] to-[#d4af37]"></div>
                           <svg width="40" height="12" viewBox="0 0 40 12" className="mx-2">
@@ -1559,7 +1520,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           <div className="h-[2px] flex-1 bg-gradient-to-l from-transparent via-[#d4af37] to-[#d4af37]"></div>
                         </div>
 
-                        {/* Bottom Section - Event & Contact */}
                         <div className="relative z-30 flex justify-between items-end pb-0 px-8 font-battambang">
                           <div className="text-left">
                             <h4 className="text-[#991b1b] mb-2 text-[14px] font-moul">កម្មវិធីបុណ្យ</h4>
@@ -1585,20 +1545,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         backgroundColor: '#ffffff'
                       }}
                     >
-                    {/* Decorative Borders */}
                   <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-orange-500/80"></div>
                   <div className="absolute top-[12px] left-[12px] right-[12px] bottom-[12px] border border-orange-300/60"></div>
                   
-                  {/* Corner Ornaments */}
                   <div className="absolute top-1 left-1 w-10 h-10 border-t-4 border-l-4 border-orange-600"></div>
                   <div className="absolute top-1 right-1 w-10 h-10 border-t-4 border-r-4 border-orange-600"></div>
                   <div className="absolute bottom-1 left-1 w-10 h-10 border-b-4 border-l-4 border-orange-600"></div>
                   <div className="absolute bottom-1 right-1 w-10 h-10 border-b-4 border-r-4 border-orange-600"></div>
 
                   <div className="relative z-10 flex flex-col h-full text-center px-4 py-0 justify-between">
-                    {/* Header */}
                     <div className="relative mb-2 mt-2 w-full flex justify-center">
-                      {/* Logo & Temple Name - Top Left */}
                       <div className="absolute left-2 -top-1 flex flex-col items-center">
                          <div 
                            className="w-[65px] h-[65px] mb-1 drop-shadow-none"
@@ -1613,7 +1569,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                          <span className="text-xs font-moul text-orange-900 leading-normal">(ស្នាយដួច)</span>
                       </div>
 
-                      {/* Title - Center */}
                       <div className="flex flex-col items-center pt-3">
                         <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-normal " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
@@ -1624,7 +1579,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       </div>
                     </div>
 
-                    {/* Content */}
                     <div className="flex flex-col items-center justify-center flex-1 w-full text-gray-800 my-1">
                       <p className="text-[17px] font-battambang leading-normal mb-2 mt-4 text-orange-900">
                         អាត្មាភាព សូមថ្លែងអំណរគុណយ៉ាងជ្រាលជ្រោះចំពោះញោមម្ចាស់សទ្ធា៖
@@ -1652,13 +1606,11 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         <br/>ដើម្បីចូលរួមកសាងទីអារាម និងទ្រទ្រង់វិស័យព្រះពុទ្ធសាសនា។
                       </p>
 
-                      {/* Blessing */}
                       <p className="text-[14px] font-battambang italic leading-normal max-w-[700px] mx-auto text-gray-600 mt-3 px-4">
                         សូមបួងសួងដល់គុណព្រះរតនត្រ័យ និងវត្ថុស័ក្តិសិទ្ធិក្នុងលោក សូមជួយប្រោះព្រំសព្ទសាធុការពរជ័យ បវរសួស្ដី សិរីមង្គល វិបុលសុខ មហាប្រសើរ ជូនដល់ម្ចាស់ទាន ព្រមទាំងក្រុមគ្រួសារ សូមប្រកបដោយពុទ្ធពរទាំង ៤ ប្រការគឺ អាយុ វណ្ណៈ សុខៈ និងពលៈ កុំបីឃ្លៀងឃ្លាតឡើយ។
                       </p>
                     </div>
 
-                    {/* Footer */}
                     <div className="w-full flex justify-between items-end px-8 mb-2">
                       <div className="text-left pb-2">
                         <p className="text-[15px] font-medium text-gray-800 font-battambang">{getKhmerDate()}</p>
@@ -1684,7 +1636,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 </div>
                   </div>
                 </div>
-              {/* Action Buttons */}
               <div className="p-4 sm:p-6 bg-white border-t border-gray-200 shrink-0 flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 z-10 relative shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
                 <button
                   onClick={handleShareCertificate}
@@ -1744,7 +1695,6 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         )}
       </>
 
-      {/* Print Section (Hidden on screen) */}
       <div ref={printRef} className="print-section fixed -left-[9999px] top-0 w-[559px] bg-white p-8 opacity-0 pointer-events-none -z-50">
         <div className="text-center font-moul mb-6">
           <h1 className="text-xl">វត្តវារីបាការាម(ហៅស្នាយដួច)</h1>

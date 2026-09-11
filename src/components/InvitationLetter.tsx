@@ -45,56 +45,45 @@ const toKhmerNum = (num: number | string): string => {
 };
 
 interface InvitationData {
-  // National Motto
   countryName: string;
   nationalMotto: string;
 
-  // Temple / Organization Header
   templeName: string;
   templeAddress: string;
   letterNumber: string;
 
-  // Letter Title & Salutation
   letterTitle: string;
-  salutationPrefix: string; // e.g., "សូមគោរពអញ្ជើញ" or "សូមនិមន្ត និងគោរពអញ្ជើញ"
+  salutationPrefix: string;
   recipientName: string;
 
-  // Administrative Subject & Reference
-  subject: string; // កម្មវត្ថុ (គ្មានពាក្យ "ស្ដីពី" ឡើយ)
+  subject: string;
   showReference: boolean;
-  referenceText: string; // យោង
+  referenceText: string;
 
-  // Body Content
-  bodyIntro: string; // សេចក្តីដូចមានចែងក្នុងកម្មវត្ថុ...
+  bodyIntro: string;
   
-  // Meeting Details
   lunarDate: string;
   solarDate: string;
   meetingTime: string;
   location: string;
   agenda: string;
 
-  // Concluding paragraph
-  therefore: string; // អាស្រ័យហេតុនេះ...
+  therefore: string;
 
-  // Distribution List (កន្លែងទទួល)
   showDistribution: boolean;
   distributionText: string;
 
-  // Signer & Date
   issuingPlace: string;
   signingDateLunar: string;
   signingDateSolar: string;
   signerRole: string;
 
-  // Header adjustments & administrative standards
   showTempleAddressInHeader?: boolean;
   symbolSize?: 'xs' | 'sm' | 'md' | 'lg';
   showHigherOrg?: boolean;
   higherOrgName?: string;
   logoPosition?: 'beside' | 'above';
 
-  // Bottom Note
   showNote: boolean;
   noteText: string;
 }
@@ -119,7 +108,6 @@ export default function InvitationLetter() {
   const [viewingLetter, setViewingLetter] = useState<SavedInvitationLetter | null>(null);
   const [saveToastMessage, setSaveToastMessage] = useState<string | null>(null);
 
-  // Load saved letters from IndexedDB on component mount
   const loadSavedLetters = async () => {
     try {
       const list = await getSavedInvitationLetters();
@@ -133,7 +121,6 @@ export default function InvitationLetter() {
     loadSavedLetters();
   }, []);
 
-  // Compute current default dates
   const now = new Date();
   const monthsKhmer = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
   const dayStr = toKhmerNum(now.getDate().toString().padStart(2, '0'));
@@ -149,8 +136,8 @@ export default function InvitationLetter() {
     templeAddress: 'ឃុំរោងដំរី ស្រុកបាភ្នំ ខេត្តព្រៃវែង',
     letterNumber: '..... / ..... វ.ស.ដ',
 
-    showTempleAddressInHeader: false, // តាមក្បួនរដ្ឋបាលផ្លូវការ អាសយដ្ឋានមិនដាក់ក្នុងក្បាលលិខិតទេ
-    symbolSize: 'sm', // ទំហំតូចសមាមាត្រ 13px (មិនធំជ្រុល)
+    showTempleAddressInHeader: false,
+    symbolSize: 'sm',
     showHigherOrg: false,
     higherOrgName: 'សាលាអនុគណស្រុកបាភ្នំ',
     logoPosition: 'beside',
@@ -192,7 +179,6 @@ export default function InvitationLetter() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // If user has old single-point agenda, migrate to the updated 3-point agenda
         if (
           !parsed.agenda ||
           parsed.agenda === 'ពិភាក្សាលើប្លង់ស្ថាបត្យកម្ម ប៉ាន់ប្រមាណថវិកា និងបង្កើតគណៈកម្មការទទួលបន្ទុកការងារ'
@@ -205,7 +191,6 @@ export default function InvitationLetter() {
     return defaultData;
   });
 
-  // Auto-save to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
@@ -225,7 +210,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Print function
   const handlePrint = () => {
     setIsPrinting(true);
     setTimeout(() => {
@@ -234,7 +218,6 @@ export default function InvitationLetter() {
     }, 150);
   };
 
-  // Helper to capture letter node with base64 fonts embedded
   const captureLetterImage = async (pixelRatio = 2.5): Promise<string> => {
     if (!letterRef.current) {
       throw new Error('Letter element not found');
@@ -269,7 +252,6 @@ export default function InvitationLetter() {
     });
   };
 
-  // Helper to create A5 PDF with proper proportional height
   const createLetterPdf = (dataUrl: string): jsPDF => {
     const targetNode = letterRef.current;
     const targetHeight = targetNode ? Math.max(targetNode.scrollHeight, targetNode.offsetHeight, 792) : 792;
@@ -285,7 +267,6 @@ export default function InvitationLetter() {
     return pdf;
   };
 
-  // Download as PDF function (Standard A5 Portrait) with automatic in-app archiving
   const handleDownloadPdf = async () => {
     if (!letterRef.current) return;
     setIsExportingPdf(true);
@@ -295,7 +276,6 @@ export default function InvitationLetter() {
       const filename = `លិខិតអញ្ជើញ_វត្តស្នាយដួច_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(filename);
 
-      // Automatically also save a copy into the app's internal archive
       try {
         const pdfBlob = pdf.output('blob');
         const sizeInKb = (pdfBlob.size / 1024).toFixed(0);
@@ -323,7 +303,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Explicit Save to App (without downloading to disk immediately)
   const handleSaveToApp = async () => {
     if (!letterRef.current) return;
     setIsSavingToApp(true);
@@ -355,7 +334,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Delete saved letter
   const handleDeleteSavedLetter = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (window.confirm('តើលោកអ្នកពិតជាចង់លុបលិខិតនេះចេញពីបណ្ណសារកម្មវិធីមែនទេ?')) {
@@ -369,7 +347,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Load saved letter back into editor
   const handleLoadSavedLetterToForm = (letter: SavedInvitationLetter) => {
     if (letter.formData) {
       if (window.confirm('តើលោកអ្នកចង់បើកទិន្នន័យលិខិតនេះមកកែសម្រួលឡើងវិញមែនទេ?')) {
@@ -381,7 +358,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Download directly to PC or Phone from saved record
   const handleDownloadSavedLetterDirectly = async (letter: SavedInvitationLetter, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (letter.pdfBlob) {
@@ -391,7 +367,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Download image function
   const handleDownloadImage = async () => {
     if (!letterRef.current) return;
     setIsExporting(true);
@@ -409,7 +384,6 @@ export default function InvitationLetter() {
     }
   };
 
-  // Copy full text
   const handleCopyText = () => {
     const text = `${formData.countryName}
 ${formData.nationalMotto}
@@ -449,7 +423,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
 
   return (
     <div className="w-full">
-      {/* Print Specific CSS for A5 Portrait */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @media print {
@@ -480,9 +453,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         `
       }} />
 
-      {/* Top Header Controls Bar - Responsive & Clean */}
       <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 sticky top-16 z-20">
-        {/* View toggle for Mobile (3 Equal Segments - Never Wraps) */}
         <div className="grid grid-cols-3 w-full lg:hidden border border-gray-200 dark:border-slate-700 rounded-xl p-1 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
           <button
             onClick={() => setActiveView('edit')}
@@ -522,7 +493,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           </button>
         </div>
 
-        {/* View toggle for Desktop (Lg screens) */}
         <div className="hidden lg:flex items-center border border-gray-200 dark:border-slate-700 rounded-xl p-0.5 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
           <button
             onClick={() => setActiveView('both')}
@@ -570,7 +540,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           </button>
         </div>
 
-        {/* Action Buttons: Clean horizontal scrollable row with no wrapping */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto py-0.5">
           <button
             onClick={handleDownloadPdf}
@@ -613,14 +582,9 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         </div>
       </div>
 
-      {/* Main Workspace: Editor Left, Live A5 Preview Right, OR Dedicated Archive */}
       <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
-        {/* ========================================================================= */}
-        {/* DEDICATED ARCHIVE VIEW (Saved Letters in App) */}
-        {/* ========================================================================= */}
         {activeView === 'archive' ? (
           <div className="max-w-6xl mx-auto flex flex-col gap-6">
-            {/* Header banner */}
             <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <FolderArchive className="w-6 h-6 text-[#028090] dark:text-teal-400 mt-1 shrink-0" />
@@ -644,7 +608,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               </div>
             </div>
 
-            {/* Saved Letters List */}
             {savedLetters.length === 0 ? (
               <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-10 sm:p-14 text-center flex flex-col items-center justify-center">
                 <FolderArchive className="w-16 h-16 text-gray-300 dark:text-slate-700 mb-4 stroke-1" />
@@ -669,9 +632,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-[#028090] dark:hover:border-teal-500 transition-all shadow-xs group"
                   >
                     <div>
-                      {/* Top Row: Thumbnail + Info */}
                       <div className="flex gap-3.5 items-start">
-                        {/* Clickable Thumbnail */}
                         <div
                           onClick={() => setViewingLetter(letter)}
                           className="w-20 h-28 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden shrink-0 cursor-pointer shadow-xs group-hover:shadow transition-shadow relative"
@@ -693,7 +654,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           </div>
                         </div>
 
-                        {/* Details */}
                         <div className="flex-1 min-w-0 flex flex-col gap-1">
                           <div className="flex items-center justify-between gap-1">
                             <span className="font-koulen text-xs sm:text-sm text-gray-900 dark:text-white tracking-wide truncate">
@@ -725,7 +685,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       </div>
                     </div>
 
-                    {/* Action Buttons Bar */}
                     <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <button
@@ -774,15 +733,10 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         ) : (
         <div className={`grid gap-6 ${activeView === 'both' ? 'lg:grid-cols-12' : 'grid-cols-1'}`}>
           
-          {/* ========================================================================= */}
-          {/* LEFT COLUMN: EDIT FORM & CONTROLS (Hide when preview only) */}
-          {/* ========================================================================= */}
           {(activeView === 'both' || activeView === 'edit') && (
             <div className={`no-print ${activeView === 'both' ? 'lg:col-span-5' : 'max-w-3xl mx-auto w-full'} flex flex-col gap-5`}>
               
-              {/* Input Forms: Organized in Clean, Logical Sections */}
               <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-6 shadow-xs">
-                {/* Form Header */}
                 <div className="border-b border-gray-100 dark:border-slate-800 pb-3 flex items-center justify-between">
                   <div>
                     <h2 className="text-sm sm:text-base font-koulen text-gray-900 dark:text-white tracking-wide">
@@ -805,16 +759,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   </div>
                 </div>
 
-                {/* ========================================================================= */}
-                {/* 1. ព័ត៌មានក្បាលលិខិត និង វត្តអារាម */}
-                {/* ========================================================================= */}
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
                     <Landmark className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>១. ក្បាលលិខិត និង ព័ត៌មានវត្តអារាម</span>
                   </div>
 
-                  {/* Row 1: Temple Name & Letter Admin Number (2 columns) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
@@ -840,7 +790,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     </div>
                   </div>
 
-                  {/* Row 2: Temple Address (Full width so long commune/district/province is 100% visible) */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       អាសយដ្ឋានវត្ត (ឃុំ ស្រុក ខេត្ត)
@@ -854,7 +803,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Row 3: Symbol size & Header Checkboxes */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
@@ -915,16 +863,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   )}
                 </div>
 
-                {/* ========================================================================= */}
-                {/* 2. អ្នកទទួល និង កម្មវត្ថុ */}
-                {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
                     <UserCheck className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>២. អ្នកទទួល និង កម្មវត្ថុ</span>
                   </div>
 
-                  {/* Salutation Prefix */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
@@ -957,7 +901,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Recipient Name: Full Width & Generous Height so Moul font doesn't get clipped! */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
@@ -980,7 +923,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Subject: Full Width */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1 font-semibold">
                       កម្មវត្ថុ (គ្មានពាក្យ «ស្ដីពី» ឡើយ)
@@ -993,7 +935,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Reference (យោង) */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-battambang text-gray-600 dark:text-slate-400 font-semibold">
@@ -1020,16 +961,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   </div>
                 </div>
 
-                {/* ========================================================================= */}
-                {/* 3. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែង */}
-                {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
                     <Calendar className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>៣. កាលបរិច្ឆេទ ពេលវេលា និង ទីកន្លែងប្រជុំ</span>
                   </div>
 
-                  {/* Row 1: Meeting Time & Solar Date (2 columns - shorter text) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
@@ -1055,7 +992,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     </div>
                   </div>
 
-                  {/* Row 2: Lunar Date - FULL WIDTH so long Buddhist lunar calendar doesn't get clipped! */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       កាលបរិច្ឆេទ (ចន្ទគតិ)
@@ -1069,7 +1005,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Row 3: Meeting Location - FULL WIDTH */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       ទីកន្លែងប្រជុំ
@@ -1084,16 +1019,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   </div>
                 </div>
 
-                {/* ========================================================================= */}
-                {/* 4. ខ្លឹមសារលិខិត របៀបវារៈ និង សេចក្តីបញ្ចប់ */}
-                {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
                     <FileText className="w-4 h-4 text-[#028090] dark:text-teal-400" />
                     <span>៤. ខ្លឹមសារលិខិត និង របៀបវារៈ</span>
                   </div>
 
-                  {/* Body Intro: rows=4, leading-[1.8], min-h-[96px], resize-y -> NO VERTICAL SLICING OF KHMER GLYPHS! */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       ខ្លឹមសារសេចក្តីផ្តើម (កថាខណ្ឌទី១)
@@ -1106,7 +1037,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Agenda: rows=4, leading-[1.8], min-h-[96px], resize-y */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
@@ -1131,7 +1061,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     />
                   </div>
 
-                  {/* Conclusion (អាស្រ័យហេតុនេះ) */}
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
                       សេចក្ដីបញ្ចប់ (អាស្រ័យហេតុនេះ)
@@ -1145,9 +1074,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   </div>
                 </div>
 
-                {/* ========================================================================= */}
-                {/* 5. ការចុះហត្ថលេខា និង កន្លែងទទួល */}
-                {/* ========================================================================= */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2 text-xs font-koulen text-[#028090] dark:text-teal-400 tracking-wide">
                     <PenTool className="w-4 h-4 text-[#028090] dark:text-teal-400" />
@@ -1204,7 +1130,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     </div>
                   </div>
 
-                  {/* Distribution List (កន្លែងទទួល) */}
                   <div className="pt-2 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-2 text-xs font-battambang">
                     <div className="flex items-center justify-between">
                       <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -1229,7 +1154,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                     )}
                   </div>
 
-                  {/* Toggle for Bottom Note */}
                   <div className="pt-2 border-t border-gray-100 dark:border-slate-800 flex flex-col gap-2 text-xs font-battambang">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
@@ -1251,7 +1175,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   </div>
                 </div>
 
-                {/* Mobile Jump to Preview Button */}
                 <div className="lg:hidden pt-4 border-t border-gray-100 dark:border-slate-800 flex justify-center">
                   <button
                     type="button"
@@ -1266,9 +1189,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             </div>
           )}
 
-          {/* ========================================================================= */}
-          {/* RIGHT COLUMN: LIVE A5 PORTRAIT SHEET PREVIEW (Print target) */}
-          {/* ========================================================================= */}
           <div
             className={`${
               activeView === 'both' ? 'lg:col-span-7' : 'max-w-4xl mx-auto w-full'
@@ -1278,9 +1198,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                 : 'flex'
             } flex-col items-center`}
           >
-            {/* Paper Visual Stage with Mobile Responsive Scale */}
             <div className="w-full flex justify-center py-2 sm:py-4 overflow-x-auto">
-              {/* Responsive container for mobile screen fit */}
               <div className="relative w-[340px] h-[510px] sm:w-[560px] sm:h-auto mx-auto shrink-0 transition-all duration-300 flex justify-center">
                 <div className="absolute sm:relative top-0 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 origin-top scale-[0.59] sm:scale-100">
                   <div
@@ -1291,11 +1209,8 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                       boxSizing: 'border-box'
                     }}
                   >
-                    {/* Outer subtle boundary border fitting official A5 document sheet */}
                     <div>
-                      {/* Top Letterhead: Pagoda Info Left | National Motto Right (Official Cambodian Administrative Standard - No Full-width Border Line) */}
                       <div className="flex items-start justify-between gap-3 mb-5">
-                        {/* Left: Temple info & logo */}
                         <div className="flex items-start gap-2.5">
                           <img 
                             src={logoBase64 || "/logo.png"} 
@@ -1322,7 +1237,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           </div>
                         </div>
 
-                        {/* Right: National Motto */}
                         <div className="text-center">
                           <div className="font-moul text-[12.5px] text-gray-900 leading-tight">
                             {formData.countryName}
@@ -1330,7 +1244,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           <div className="font-moul text-[11.5px] text-gray-800 mt-1">
                             {formData.nationalMotto}
                           </div>
-                          {/* Tacteing Ornament Symbol rr2ss: Proportional, delicate administrative size */}
                           <div 
                             className={`font-tacteing text-gray-950 select-none tracking-normal leading-none mt-1 ${
                               formData.symbolSize === 'xs' ? 'text-[11px]' :
@@ -1344,14 +1257,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         </div>
                       </div>
 
-                      {/* Document Title: លិខិតអញ្ជើញ */}
                       <div className="text-center my-3.5">
                         <h2 className="font-moul text-[19px] text-gray-950 tracking-wider inline-block border-b-2 border-gray-900 pb-0.5 px-3">
                           {formData.letterTitle}
                         </h2>
                       </div>
 
-                      {/* Salutation: សូមអញ្ជើញ (Font Battambang Bold) + ឈ្មោះអ្នកទទួល (Font Moul ធំច្បាស់លេចធ្លោ) */}
                       <div className="mb-2.5 text-[12px] leading-relaxed">
                         <span className="font-battambang font-bold text-gray-950 mr-2 inline-block">
                           {formData.salutationPrefix} ៖
@@ -1361,7 +1272,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         </span>
                       </div>
 
-                      {/* Administrative Items: កម្មវត្ថុ និង យោង (គ្មានពាក្យ «ស្ដីពី» ឡើយ) */}
                       <div className="table w-full border-spacing-y-1 mb-2.5 text-[12px]">
                         <div className="table-row">
                           <div className="table-cell font-bold text-gray-950 w-20 align-top whitespace-nowrap pr-2">
@@ -1383,14 +1293,11 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                         )}
                       </div>
 
-                      {/* Body text paragraphs */}
                       <div className="space-y-2 text-justify leading-[1.7]">
-                        {/* Body Intro (Indented) */}
                         <p className="leading-relaxed indent-7">
                           {formData.bodyIntro}
                         </p>
 
-                        {/* Meeting Information Block (Clean Administrative Listing, Table layout for SVG stability) */}
                         <div className="my-2 pl-6 sm:pl-8 text-[11.5px] leading-relaxed table w-full border-spacing-y-1">
                           <div className="table-row">
                             <div className="table-cell font-bold text-gray-950 w-28 align-top whitespace-nowrap pr-2">
@@ -1432,17 +1339,14 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           )}
                         </div>
 
-                        {/* Concluding Paragraph (Indented) */}
                         <p className="leading-relaxed indent-7">
                           {formData.therefore}
                         </p>
                       </div>
                     </div>
 
-                    {/* Sign-off, Distribution & Footer Section */}
                     <div className="mt-3 pt-2 table w-full">
                       <div className="table-row">
-                        {/* Left: កន្លែងទទួល (Distribution List) */}
                         <div className="table-cell w-1/2 align-bottom text-left pr-2">
                           {formData.showDistribution && (
                             <div className="text-[10px] text-gray-700 leading-snug">
@@ -1454,7 +1358,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           )}
                         </div>
 
-                        {/* Right: Date, Signer Title & Blank Space for Manual Signing/Stamping */}
                         <div className="table-cell w-1/2 align-bottom text-center">
                           <div className="flex flex-col items-center">
                             <p className="text-[11px] text-gray-700 font-battambang">
@@ -1471,16 +1374,13 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                               {formData.signerRole}
                             </p>
 
-                            {/* Blank spacious area strictly for manual handwriting signature & pagoda stamp */}
                             <div className="w-44 h-24 my-1 flex items-center justify-center pointer-events-none">
-                              {/* Blank space for handwriting signature & official stamp */}
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Bottom Note (if enabled) */}
                     {formData.showNote && (
                       <div className="mt-2 pt-1 border-t border-gray-200 text-[9.5px] text-gray-500 font-battambang text-center leading-relaxed">
                         {formData.noteText}
@@ -1491,7 +1391,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               </div>
             </div>
 
-            {/* Mobile Back to Edit Button */}
             {activeView === 'preview' && (
               <div className="lg:hidden mt-3 sm:mt-4 pb-8 flex justify-center w-full">
                 <button
@@ -1509,13 +1408,9 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         )}
       </div>
 
-      {/* ========================================================================= */}
-      {/* MODAL: FULL PREVIEW FOR PC OR PHONE */}
-      {/* ========================================================================= */}
       {viewingLetter && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
-            {/* Modal Header */}
             <div className="px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-white dark:bg-slate-900 shrink-0">
               <div className="min-w-0">
                 <h3 className="font-koulen text-sm sm:text-base text-gray-900 dark:text-white truncate">
@@ -1545,7 +1440,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               </div>
             </div>
 
-            {/* Modal Letter Preview Body */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-100 dark:bg-slate-950 flex justify-center">
               {viewingLetter.previewImage ? (
                 <img
@@ -1560,7 +1454,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="px-4 py-2.5 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-between text-xs font-battambang text-gray-500 dark:text-slate-400 shrink-0">
               <span className="font-rajdhani text-[11px]">
                 កាលបរិច្ឆេទរក្សាទុក ៖ {new Date(viewingLetter.date).toLocaleDateString('en-GB')}
@@ -1589,7 +1482,6 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         </div>
       )}
 
-      {/* Floating Save Toast Notification */}
       {saveToastMessage && (
         <div className="fixed bottom-5 right-5 z-50 bg-gray-950 text-white text-xs font-battambang px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />

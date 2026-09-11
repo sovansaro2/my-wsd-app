@@ -32,7 +32,6 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-font-size', fontSize);
     document.documentElement.style.setProperty('--app-font-size', config.rootPx);
 
-    // Apply zoom on html element for clean, proportional scaling across all viewport dimensions
     if (typeof CSS !== 'undefined' && CSS.supports && CSS.supports('zoom', '1')) {
       (document.documentElement.style as any).zoom = String(config.zoom);
     } else {

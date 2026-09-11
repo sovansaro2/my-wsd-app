@@ -12,28 +12,22 @@ export function isHighTierIndividualDonor(name: string, categoryName?: string): 
   if (!name) return false;
   const n = name.trim();
 
-  // 1. Non-donor keywords or withdrawals/loans
   if (n === 'ខ្ចី' || n === 'មិនស្គាល់ឈ្មោះ') return false;
   if (categoryName === 'លុយជាងដក') return false;
   if (n.startsWith('ជាងអ៊ុំ')) return false;
 
-  // 2. Exclude groups (ឈ្មោះក្រុម)
   if (n.includes('ក្រុម')) return false;
 
-  // 3. Exclude pagodas/temples (ឈ្មោះវត្ត)
   if (n.includes('វត្ត')) return false;
 
-  // 4. Exclude villages / localities (ឈ្មោះភូមិ)
   if (n.includes('ភូមិ') || n.includes('មេភូមិ') || n.includes('បរិស័ទភូមិ')) return false;
   if (KNOWN_VILLAGES_OR_AREAS.has(n)) return false;
 
-  // 5. Exclude ceremonies or generic collective funds
   if (n.startsWith('បច្ច័យ') || n.startsWith('បុណ្យ') || n.includes('ញាតិញោម')) return false;
 
   return true;
 }
 
-// --- 100k+ Donors ---
 router.get('/donors-100k', async (req, res) => {
   try {
     const { data: categories, error: catError } = await supabaseAdmin.from('name_list_categories').select('id, name');
@@ -46,7 +40,6 @@ router.get('/donors-100k', async (req, res) => {
 
     const donorsMap = new Map<string, any>();
 
-    // 1. Fetch NameList records where amount >= 100,000 or is_100k_donor is true
     const { data: records, error: recError } = await supabaseAdmin
       .from('name_list_records')
       .select('*')
@@ -69,7 +62,6 @@ router.get('/donors-100k', async (req, res) => {
       }
     }
 
-    // 2. Fetch Financial records (income only) where amount >= 100,000
     const { data: finRecords, error: finError } = await supabaseAdmin
       .from('financial_records')
       .select('*')
@@ -95,7 +87,6 @@ router.get('/donors-100k', async (req, res) => {
     }
 
     const result = Array.from(donorsMap.values());
-    // Sort by amount descending
     result.sort((a, b) => b.amount - a.amount);
 
     res.json(result);
@@ -104,12 +95,10 @@ router.get('/donors-100k', async (req, res) => {
   }
 });
 
-// --- Search Donors Across System ---
 router.get('/search-donors', async (req, res) => {
   try {
     const q = ((req.query.q as string) || '').trim().toLowerCase();
 
-    // 1. Fetch categories and seil periods to map names
     const [catRes, seilRes] = await Promise.all([
       supabaseAdmin.from('name_list_categories').select('id, name'),
       supabaseAdmin.from('seil_periods').select('id, name, date_range_text')
@@ -121,7 +110,6 @@ router.get('/search-donors', async (req, res) => {
     const seilMap: Record<string, string> = {};
     seilRes.data?.forEach(s => { seilMap[s.id] = s.date_range_text ? `${s.name} (${s.date_range_text})` : s.name; });
 
-    // 2. Fetch name list records and financial income records
     const [nameRecRes, finRecRes] = await Promise.all([
       supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false }),
       supabaseAdmin.from('financial_records').select('*').eq('type', 'income').order('created_at', { ascending: false })
@@ -167,7 +155,6 @@ router.get('/search-donors', async (req, res) => {
       });
     });
 
-    // Group by normalized donor name
     const grouped = new Map<string, any>();
     allItems.forEach(item => {
       const key = item.name.toLowerCase();
@@ -192,7 +179,6 @@ router.get('/search-donors', async (req, res) => {
       locations: Array.from(d.locations)
     }));
 
-    // Sort by total amount descending
     donors.sort((a, b) => b.total_amount - a.total_amount);
 
     res.json({
@@ -206,7 +192,6 @@ router.get('/search-donors', async (req, res) => {
   }
 });
 
-// --- Name List Categories ---
 router.get('/categories', async (req, res) => {
   const { data, error } = await supabaseAdmin.from('name_list_categories').select('*').order('created_at', { ascending: false });
   if (error) return res.status(400).json({ detail: error.message });
@@ -234,7 +219,6 @@ router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => 
   res.json({ success: true });
 });
 
-// --- Name List Records ---
 router.get('/records', async (req, res) => {
   const category_id = req.query.category_id as string;
   let query = supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false });
@@ -258,7 +242,6 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
     error = retry.error;
   }
 
-  // Auto-recovery if RLS error occurs
   if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
     console.warn('[Name List Records] RLS policy error detected, retrying with direct admin client...');
     const directAdmin = getDirectAdminClient();
@@ -306,7 +289,6 @@ router.put('/records/:id', requireAuth, requireAdmin, async (req, res) => {
     }
   }
 
-  // Auto-recovery if RLS error occurs
   if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
     console.warn('[Name List Records Update] RLS policy error detected, retrying with direct admin client...');
     const directAdmin = getDirectAdminClient();

@@ -67,7 +67,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
     }
   };
 
-  // Debounced search
   useEffect(() => {
     if (!isOpen) return;
     const timer = setTimeout(() => {
@@ -111,7 +110,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
         className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header & Search Bar */}
         <div className="p-4 sm:p-5 border-b border-gray-200/80 dark:border-slate-800 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -129,7 +127,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
             </button>
           </div>
 
-          {/* Search Input Box */}
           <div className="relative flex items-center">
             <Search className="w-5 h-5 text-gray-400 dark:text-slate-500 absolute left-3.5 pointer-events-none" />
             <input
@@ -150,7 +147,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
             )}
           </div>
 
-          {/* Clean Stat Counters (No background boxes) */}
           <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 dark:text-slate-400 pt-1">
             <div className="flex items-center gap-2">
               <span>{language === 'en' ? 'Donors found:' : 'រកឃើញសប្បុរសជន៖'}</span>
@@ -171,7 +167,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
           </div>
         </div>
 
-        {/* Results Scroll Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 divide-y divide-gray-100 dark:divide-slate-800/80">
           {loading && !data && (
             <div className="py-14 text-center flex flex-col items-center justify-center">
@@ -199,7 +194,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
 
             return (
               <div key={donor.name} className="py-3.5 first:pt-0 last:pb-0">
-                {/* Donor Header Row */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -214,7 +208,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
                       )}
                     </div>
 
-                    {/* Meta info: count */}
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
                       <span>{language === 'en' ? 'Total contributions:' : 'ចូលរួមចំនួន៖'}</span>
                       <span className="font-rajdhani font-semibold text-gray-800 dark:text-slate-200">
@@ -223,7 +216,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
                     </div>
                   </div>
 
-                  {/* Total Amount & Controls */}
                   <div className="flex flex-col sm:flex-row sm:items-center items-end gap-2 shrink-0">
                     <div className="text-right">
                       <span className="font-rajdhani font-bold text-lg sm:text-xl text-emerald-600 dark:text-emerald-400 block leading-tight">
@@ -251,7 +243,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
                   </div>
                 </div>
 
-                {/* Expanded Detailed Contributions */}
                 {isExpanded && (
                   <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800/80 space-y-2">
                     <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
@@ -292,7 +283,6 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
           })}
         </div>
 
-        {/* Footer */}
         <div className="p-3 sm:p-4 border-t border-gray-200/80 dark:border-slate-800 flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
           <span>{language === 'en' ? 'Live database search across Seils and Name Lists' : 'ទិន្នន័យស្វែងរកផ្ទាល់ចេញពីបញ្ជីសីល និងបញ្ជីផ្សេងៗ'}</span>
           <button

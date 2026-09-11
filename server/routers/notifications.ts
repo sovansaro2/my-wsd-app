@@ -3,10 +3,9 @@ import { supabaseAdmin } from '../database';
 
 const router = Router();
 
-// In-memory cache for ultra-fast response (<5ms)
 let cachedNotifications: any[] = [];
 let lastFetchedTime = 0;
-const CACHE_TTL_MS = 15000; // 15 seconds
+const CACHE_TTL_MS = 15000;
 
 export const invalidateNotificationsCache = () => {
   lastFetchedTime = 0;
@@ -20,13 +19,11 @@ export const appendCachedNotification = (notif: any) => {
 router.get('/', async (req, res) => {
   const now = Date.now();
 
-  // Return cached data immediately if still fresh
   if (now - lastFetchedTime < CACHE_TTL_MS && cachedNotifications.length > 0) {
     return res.json(cachedNotifications);
   }
 
   try {
-    // 4-second hard timeout for Supabase call so it never hangs the HTTP response
     const fetchPromise = supabaseAdmin
       .from('app_notifications')
       .select('*')
@@ -40,7 +37,6 @@ router.get('/', async (req, res) => {
     const { data: notifications, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
     if (error) {
-      // If error or timeout, return existing cache or empty array gracefully
       if (cachedNotifications.length > 0) {
         return res.json(cachedNotifications);
       }
@@ -57,7 +53,6 @@ router.get('/', async (req, res) => {
 
     res.json(cachedNotifications);
   } catch (e: any) {
-    // Fallback to cache or empty list
     res.json(cachedNotifications || []);
   }
 });

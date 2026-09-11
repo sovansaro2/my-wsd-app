@@ -70,7 +70,6 @@ export default function OfficialReportPrintModal({
   const [includeSignatureImage, setIncludeSignatureImage] = useState(true);
   const [includeTopHighlights, setIncludeTopHighlights] = useState(true);
 
-  // Initialize lunar and solar dates
   const now = new Date();
   const monthsKhmer = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
   const dayStr = toKhmerNum(now.getDate().toString().padStart(2, '0'));
@@ -85,7 +84,6 @@ export default function OfficialReportPrintModal({
 
   if (!isOpen || !data) return null;
 
-  // Compute period text
   const getPeriodText = () => {
     const yearKhmer = toKhmerNum(selectedYear);
     if (selectedQuarter === '1') return `ប្រចាំត្រីមាសទី ១ ឆ្នាំ ${yearKhmer} (ខែមករា ដល់ ខែមីនា)`;
@@ -103,13 +101,11 @@ export default function OfficialReportPrintModal({
     if (!reportRef.current) return;
     setIsDownloading(true);
     try {
-      // Small delay to ensure all assets are loaded
       await new Promise(r => setTimeout(r, 200));
 
       const reportWidth = reportRef.current.scrollWidth || 794;
       const reportHeight = reportRef.current.scrollHeight || 1123;
 
-      // Warmup renders
       await toPng(reportRef.current, { backgroundColor: '#ffffff', width: reportWidth, height: reportHeight, pixelRatio: 2.5, fontEmbedCSS: FONT_EMBED_CSS }).catch(() => {});
       const dataUrl = await toPng(reportRef.current, {
         backgroundColor: '#ffffff',
@@ -132,7 +128,6 @@ export default function OfficialReportPrintModal({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/70 backdrop-blur-sm overflow-y-auto">
-      {/* Top Action Toolbar (Hidden during print) */}
       <div className="sticky top-0 z-20 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3 shadow-md flex flex-wrap items-center justify-between gap-3 no-print">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base font-battambang">
@@ -179,7 +174,6 @@ export default function OfficialReportPrintModal({
         </div>
       </div>
 
-      {/* Edit Controls Panel (Optional drawer) */}
       {showEditControls && (
         <div className="bg-teal-50/50 dark:bg-slate-800/95 border-b border-teal-100 dark:border-slate-700 p-4 font-battambang text-xs no-print">
           <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -255,7 +249,6 @@ export default function OfficialReportPrintModal({
         </div>
       )}
 
-      {/* Main Preview Container */}
       <div className="flex-1 flex justify-center p-2 sm:p-6 md:p-8">
         <div
           ref={reportRef}
@@ -263,11 +256,7 @@ export default function OfficialReportPrintModal({
           className="print-section bg-white text-gray-900 w-full max-w-[820px] shadow-2xl rounded-none sm:rounded-sm p-8 sm:p-12 font-battambang relative print:shadow-none print:m-0 print:p-8"
           style={{ minHeight: '1123px', backgroundColor: '#ffffff', color: '#111827' }}
         >
-          {/* ========================================================= */}
-          {/* HEADER SECTION (ក្បាលលិខិតផ្លូវការ)                      */}
-          {/* ========================================================= */}
           <div className="grid grid-cols-2 gap-4 items-start pb-2 border-b border-gray-800/20">
-            {/* ផ្នែកខាងឆ្វេង៖ Logo វត្ត + ឈ្មោះវត្ត */}
             <div className="flex flex-col items-start text-left">
               <div className="flex items-center gap-3">
                 <img
@@ -289,7 +278,6 @@ export default function OfficialReportPrintModal({
               </div>
             </div>
 
-            {/* ផ្នែកខាងស្ដាំ៖ ព្រះរាជាណាចក្រកម្ពុជា ជាតិ សាសនា ព្រះមហាក្សត្រ + Symbol Tactieng (rr2ss) */}
             <div className="flex flex-col items-center text-center">
               <span className="font-moul text-[14px] text-gray-900 leading-normal tracking-wide">
                 ព្រះរាជាណាចក្រកម្ពុជា
@@ -298,7 +286,6 @@ export default function OfficialReportPrintModal({
                 ជាតិ សាសនា ព្រះមហាក្សត្រ
               </span>
 
-              {/* Symbol Tactieng (rr2ss) */}
               <div className="mt-1 flex flex-col items-center justify-center">
                 <svg
                   className="w-36 h-5 text-gray-900"
@@ -306,7 +293,6 @@ export default function OfficialReportPrintModal({
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Left flourishes (rr) */}
                   <path
                     d="M12 11 C 22 3, 34 19, 46 11 C 54 5, 62 14, 70 11"
                     stroke="currentColor"
@@ -324,7 +310,6 @@ export default function OfficialReportPrintModal({
                     strokeLinecap="round"
                   />
 
-                  {/* Center Lotus / Knot Emblem (2) */}
                   <path
                     d="M80 3 C 83 8, 86 12, 80 19 C 74 12, 77 8, 80 3 Z"
                     fill="currentColor"
@@ -339,7 +324,6 @@ export default function OfficialReportPrintModal({
                     fill="none"
                   />
 
-                  {/* Right flourishes (ss) */}
                   <path
                     d="M148 11 C 138 3, 126 19, 114 11 C 106 5, 98 14, 90 11"
                     stroke="currentColor"
@@ -361,9 +345,6 @@ export default function OfficialReportPrintModal({
             </div>
           </div>
 
-          {/* ========================================================= */}
-          {/* CENTER TITLE SECTION (ចំណងជើងរបាយការណ៍កណ្ដាល)              */}
-          {/* ========================================================= */}
           <div className="text-center my-6">
             <h1 className="font-moul text-[16px] sm:text-[18px] text-gray-900 leading-relaxed">
               របាយការណ៍សង្ខេបស្ថានភាពហិរញ្ញវត្ថុ ចំណូល-ចំណាយ
@@ -373,11 +354,7 @@ export default function OfficialReportPrintModal({
             </p>
           </div>
 
-          {/* ========================================================= */}
-          {/* SECTION 1: KEY FINANCIAL METRICS OVERVIEW                */}
-          {/* ========================================================= */}
           <div className="grid grid-cols-4 gap-2 my-4">
-            {/* Beginning Balance */}
             <div className="border border-gray-300 p-2.5 text-center">
               <span className="text-[10px] text-gray-600 block">
                 សមតុល្យដើមគ្រា (Beginning)
@@ -390,7 +367,6 @@ export default function OfficialReportPrintModal({
               </span>
             </div>
 
-            {/* Total Income */}
             <div className="border border-gray-300 p-2.5 text-center">
               <span className="text-[10px] text-gray-600 block">
                 ចំណូលក្នុងគ្រា (Total Income)
@@ -403,7 +379,6 @@ export default function OfficialReportPrintModal({
               </span>
             </div>
 
-            {/* Total Expense */}
             <div className="border border-gray-300 p-2.5 text-center">
               <span className="text-[10px] text-gray-600 block">
                 ចំណាយក្នុងគ្រា (Total Expense)
@@ -416,7 +391,6 @@ export default function OfficialReportPrintModal({
               </span>
             </div>
 
-            {/* Ending Net Balance */}
             <div className="border border-gray-400 p-2.5 text-center bg-gray-50/50">
               <span className="text-[10px] text-gray-700 block font-medium">
                 សមតុល្យជាក់ស្ដែង (Ending)
@@ -430,9 +404,6 @@ export default function OfficialReportPrintModal({
             </div>
           </div>
 
-          {/* ========================================================= */}
-          {/* SECTION 2: MONTHLY BREAKDOWN TABLE                       */}
-          {/* ========================================================= */}
           <div className="my-4">
             <h2 className="font-semibold text-[12px] text-gray-900 mb-1.5 font-battambang">
               តារាងសង្ខេបលម្អិតលំហូរសាច់ប្រាក់ប្រចាំខែ
@@ -501,12 +472,8 @@ export default function OfficialReportPrintModal({
             </table>
           </div>
 
-          {/* ========================================================= */}
-          {/* SECTION 3: TOP HIGHLIGHTS (Optional)                      */}
-          {/* ========================================================= */}
           {includeTopHighlights && (
             <div className="grid grid-cols-2 gap-4 my-2.5 pt-0.5">
-              {/* Top Incomes */}
               <div className="border border-gray-300 p-2">
                 <span className="font-semibold text-[11px] block border-b border-gray-300 pb-1 mb-1 font-battambang">
                   ចំណូលចម្បងៗក្នុងគ្រានេះ (+)
@@ -527,7 +494,6 @@ export default function OfficialReportPrintModal({
                 )}
               </div>
 
-              {/* Top Expenses */}
               <div className="border border-gray-300 p-2">
                 <span className="font-semibold text-[11px] block border-b border-gray-300 pb-1 mb-1 font-battambang">
                   ចំណាយចម្បងៗក្នុងគ្រានេះ (-)
@@ -550,9 +516,6 @@ export default function OfficialReportPrintModal({
             </div>
           )}
 
-          {/* ========================================================= */}
-          {/* SECTION 4: SIGNATURE SECTION (កន្លែងចុះហត្ថលេខា)           */}
-          {/* ========================================================= */}
           <div className="mt-3 pt-1 flex justify-end items-start font-battambang">
             <div className="w-64 sm:w-72 text-center flex flex-col items-center">
               <div className="text-[11px] sm:text-[12px] text-gray-800 leading-normal font-battambang">
@@ -564,7 +527,6 @@ export default function OfficialReportPrintModal({
                 {signerTitle}
               </span>
 
-              {/* Signature Graphic or space */}
               <div className="h-14 w-36 flex items-center justify-center my-0.5">
                 {includeSignatureImage ? (
                   <img

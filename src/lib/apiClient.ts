@@ -1,6 +1,4 @@
-/// <reference types="vite/client" />
 
-// ប្រើប្រាស់ VITE_API_BASE_URL នៅពេល Deploy ទៅ Netlify ដាច់ដោយឡែកពី Backend
 const API_BASE_URL = ''; 
 
 async function apiFetch(path: string, options: RequestInit = {}, retries = 1): Promise<any> {
@@ -27,12 +25,10 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
       const errorData = await res.json().catch(() => ({}));
       const errorMsg = errorData.detail || `Request failed with status ${res.status}`;
 
-      // Handle token expiration / unauthorized
       if (res.status === 401) {
         const refreshToken = localStorage.getItem('refresh_token');
         const isAuthEndpoint = path.startsWith('/api/auth/login') || path.startsWith('/api/auth/refresh');
 
-        // Attempt silent session refresh if we have a refresh token and aren't already refreshing/logging in
         if (refreshToken && !isAuthEndpoint && retries > 0) {
           try {
             const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
@@ -49,22 +45,17 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
                   localStorage.setItem('refresh_token', refreshData.refresh_token);
                 }
                 clearTimeout(timeoutId);
-                // Retry request with the new access token
                 return apiFetch(path, options, 0);
               }
             }
-          } catch {
-            // Silently fall through to token cleanup
-          }
+          } catch {}
         }
 
-        // Token expired or invalid and cannot be refreshed: clean up local state
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('cached_user_profile');
         window.dispatchEvent(new CustomEvent('auth-token-expired'));
 
-        // Log as warning rather than error for expected session expiration
         console.warn(`[API 401] ${options.method || 'GET'} ${path}: ${errorMsg}`);
         throw new Error(errorMsg);
       }
@@ -91,11 +82,9 @@ async function apiFetch(path: string, options: RequestInit = {}, retries = 1): P
 }
 
 export const api = {
-  // Generic HTTP helpers
   get: <T = any>(path: string): Promise<T> => apiFetch(path, { method: 'GET' }),
   post: <T = any>(path: string, body?: any): Promise<T> => apiFetch(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined }),
 
-  // Auth
   login: (email: string, password: string) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   signup: (email: string, password: string, full_name: string, latin_name?: string) => apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ email, password, full_name, latin_name }) }),
   verifyOtp: (email: string, otp: string) => apiFetch('/api/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp }) }),
@@ -114,7 +103,6 @@ export const api = {
   getNotifications: () => apiFetch('/api/notifications'),
   clearNotifications: () => apiFetch('/api/notifications', { method: 'DELETE' }),
 
-  // Financial
   getSeilPeriods: () => apiFetch('/api/seil-periods'),
   createSeilPeriod: (data: any) => apiFetch('/api/seil-periods', { method: 'POST', body: JSON.stringify(data) }),
   getFinancialRecords: (seil_id: string) => apiFetch(`/api/financial-records?seil_id=${seil_id}`),
@@ -123,7 +111,6 @@ export const api = {
   updateFinancialRecord: (id: string, data: any) => apiFetch(`/api/financial-records/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateSeilPeriod: (id: string, data: any) => apiFetch(`/api/seil-periods/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
-  // Name Lists
   get100kDonors: () => apiFetch('/api/name-lists/donors-100k'),
   getNameListCategories: () => apiFetch('/api/name-lists/categories'),
   createNameListCategory: (data: any) => apiFetch('/api/name-lists/categories', { method: 'POST', body: JSON.stringify(data) }),
@@ -134,7 +121,6 @@ export const api = {
   deleteNameListRecord: (id: string) => apiFetch(`/api/name-lists/records/${id}`, { method: 'DELETE' }),
   updateNameListRecord: (id: string, data: any) => apiFetch(`/api/name-lists/records/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
-  // Profile
   getUsers: () => apiFetch('/api/profiles'),
   updateUserRole: (id: string, role: string) => apiFetch(`/api/profiles/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
   resetUserPassword: (id: string, password: string) => apiFetch(`/api/profiles/${id}/reset-password`, { method: 'PUT', body: JSON.stringify({ password }) }),
@@ -144,8 +130,6 @@ export const api = {
   updateBalancePin: (new_pin: string, current_pin?: string) => apiFetch('/api/profiles/me/balance-pin', { method: 'PUT', body: JSON.stringify({ new_pin, current_pin }) }),
   resetBalancePin: (new_pin: string, password: string) => apiFetch('/api/profiles/me/reset-balance-pin', { method: 'PUT', body: JSON.stringify({ new_pin, password }) }),
 
-
-  // Uploads
   uploadAvatar: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);

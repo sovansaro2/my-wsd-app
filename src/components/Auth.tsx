@@ -16,12 +16,10 @@ import {
 const generateEmailFromUsername = (identifier: string) => {
   const normalized = identifier.trim().toLowerCase();
   
-  // If the user entered an actual email address, use it directly
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
     return normalized;
   }
   
-  // Otherwise, treat it as a custom username and encode it
   const spaced = normalized.replace(/\s+/g, ' ');
   const hex = Array.from(new TextEncoder().encode(spaced))
     .map(b => b.toString(16).padStart(2, '0'))
@@ -66,7 +64,6 @@ const ONBOARDING_SLIDES: SlideItem[] = [
 ];
 
 export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | 'user') => void }) {
-  // Check if user has seen onboarding previously
   const [showMobileOnboarding, setShowMobileOnboarding] = useState(() => {
     try {
       return localStorage.getItem('has_seen_welcome_v1') !== 'true';
@@ -80,7 +77,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   
-  // Login fields
   const [loginIdentifier, setLoginIdentifier] = useState(() => {
     try {
       return localStorage.getItem('saved_login_identifier') || '';
@@ -89,19 +85,16 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     }
   });
   
-  // Sign up fields
   const [khmerName, setKhmerName] = useState('');
   const [latinName, setLatinName] = useState('');
   const [email, setEmail] = useState('');
   
-  // Shared field
   const [password, setPassword] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Auto-advance desktop onboarding slides every 6.5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % ONBOARDING_SLIDES.length);
@@ -143,7 +136,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
     
     try {
       if (isLogin) {
-        // Login Flow
         if (loginIdentifier.trim().length < 2) {
           setError('សូមបញ្ចូលអ៊ីម៉ែល ឬឈ្មោះអ្នកប្រើប្រាស់ឱ្យបានត្រឹមត្រូវ។');
           setIsLoading(false);
@@ -174,7 +166,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
 
         onLogin((data.user?.role) || 'user');
       } else {
-        // Sign Up Flow
         if (khmerName.trim().length < 2) {
           setError('ឈ្មោះខ្មែរត្រូវមានយ៉ាងហោចណាស់ ២ តួអក្សរ។');
           setIsLoading(false);
@@ -220,17 +211,11 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
 
   return (
     <div className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center">
-      {/* ========================================================================= */}
-      {/* 1. MOBILE ONBOARDING VIEW (Shown on small screens before landing on Auth) */}
-      {/* ========================================================================= */}
       {showMobileOnboarding && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col bg-[#028090] text-white overflow-hidden">
-          {/* Top Visual Area (Gradient, Header, Isometric Illustration) */}
           <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-[#005F73] via-[#028090] to-[#0A9396] select-none">
-            {/* Ambient subtle glow overlay */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
             
-            {/* Top Navigation Bar */}
             <div className="relative z-10 flex items-center justify-between pt-2">
               {currentSlide > 0 ? (
                 <button
@@ -245,7 +230,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 <div className="w-8" />
               )}
 
-              {/* Skip Button */}
               <button
                 type="button"
                 onClick={finishOnboarding}
@@ -255,21 +239,17 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               </button>
             </div>
 
-            {/* Center Isometric Illustration */}
             <div className="relative z-10 my-auto flex items-center justify-center py-4">
               <div className="transition-all duration-500 transform">
                 {currentSlideData.illustration}
               </div>
             </div>
 
-            {/* Subtle spacer */}
             <div className="h-2" />
           </div>
 
-          {/* Bottom Card (White Sheet with Rounded Top Corners) */}
           <div className="relative z-20 bg-white text-zinc-900 rounded-t-[32px] p-6 sm:p-8 flex flex-col justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.12)]">
             <div>
-              {/* Slide Title */}
               <h2 className="font-title text-[22px] leading-tight text-zinc-900 text-center mb-1 tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
                 {currentSlideData.title}
               </h2>
@@ -277,14 +257,12 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 {currentSlideData.tagline}
               </p>
 
-              {/* Description */}
               <p className="text-zinc-600 text-center text-[14px] leading-relaxed font-battambang max-w-sm mx-auto mb-6">
                 {currentSlideData.description}
               </p>
             </div>
 
             <div>
-              {/* Dots Indicator */}
               <div className="flex items-center justify-center gap-2 mb-6">
                 {ONBOARDING_SLIDES.map((slide, idx) => (
                   <button
@@ -300,7 +278,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 ))}
               </div>
 
-              {/* Primary Action Button */}
               <button
                 type="button"
                 onClick={handleNextSlide}
@@ -314,19 +291,13 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 2. MAIN SPLIT DESKTOP & AUTH VIEW                                         */}
-      {/* ========================================================================= */}
       <div className="w-full max-w-6xl mx-auto md:p-6 lg:p-8 min-h-[100dvh] md:min-h-0 flex items-center justify-center">
         <div className="w-full bg-white md:rounded-[32px] md:shadow-sm md:border md:border-zinc-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[100dvh] md:min-h-[640px]">
           
-          {/* LEFT SIDE: Onboarding Showcase (Visible on Desktop / Tablets) */}
           <div className="hidden md:flex md:col-span-6 lg:col-span-7 bg-gradient-to-br from-[#005F73] via-[#028090] to-[#014F5A] text-white p-8 lg:p-12 flex-col justify-between relative overflow-hidden select-none">
-            {/* Ambient Background Decorative Effects */}
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#00E5FF]/10 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Header: Pagoda Crest & Title */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3.5">
                 <img 
@@ -344,20 +315,16 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 </div>
               </div>
 
-              {/* Version */}
               <div className="text-white/70 text-[13px] font-rajdhani tracking-wider">
                 <span>v1.2.0</span>
               </div>
             </div>
 
-            {/* Center Area: Current Slide Artwork & Information */}
             <div className="relative z-10 my-auto py-8">
-              {/* Illustration */}
               <div className="mb-6 flex items-center justify-center">
                 {currentSlideData.illustration}
               </div>
 
-              {/* Text Info */}
               <div className="text-center max-w-md mx-auto">
                 <h2 className="font-title text-2xl lg:text-3xl text-white mb-2 leading-tight tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
                   {currentSlideData.title}
@@ -369,7 +336,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                   {currentSlideData.description}
                 </p>
 
-                {/* Feature Highlights List */}
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                   {currentSlideData.highlights.map((item, i) => (
                     <span 
@@ -383,9 +349,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               </div>
             </div>
 
-            {/* Bottom Controls: Carousel Indicators & Arrows */}
             <div className="relative z-10 flex items-center justify-between pt-4 border-t border-white/10">
-              {/* Dots */}
               <div className="flex items-center gap-2">
                 {ONBOARDING_SLIDES.map((slide, idx) => (
                   <button
@@ -401,7 +365,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 ))}
               </div>
 
-              {/* Previous / Next Arrow Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -424,10 +387,8 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
             </div>
           </div>
 
-          {/* RIGHT SIDE: Authentication Portal (Matching Screen 3 in Mockup) */}
           <div className="col-span-1 md:col-span-6 lg:col-span-5 p-6 sm:p-8 lg:p-10 flex flex-col justify-between bg-white">
             
-            {/* Top Bar for Mobile to reopen tour if needed */}
             <div className="flex items-center justify-between md:justify-end pb-2">
               <div className="md:hidden flex items-center gap-2">
                 <img src="/logo.png" alt="វត្តស្នាយដួច" className="w-8 h-8 object-contain" />
@@ -445,10 +406,8 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               </button>
             </div>
 
-            {/* Centered Auth Card Content */}
             <div className="my-auto py-4 max-w-sm w-full mx-auto">
               
-              {/* App / Temple Logo & Welcome Title */}
               <div className="text-center mb-6">
                 <div className="inline-block p-1 mb-2.5">
                   <img 
@@ -466,7 +425,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 </p>
               </div>
 
-              {/* Segmented Tab Bar (Matching Mockup Screen 3: [ ចូលគណនី ] [ ចុះឈ្មោះ ]) */}
               <div className="p-1 bg-zinc-100 rounded-2xl flex items-center mb-6">
                 <button
                   type="button"
@@ -492,7 +450,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 </button>
               </div>
 
-              {/* Notification Banners */}
               {error && (
                 <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-[13.5px] leading-relaxed font-battambang">
                   {error}
@@ -504,10 +461,8 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 </div>
               )}
 
-              {/* Form Body */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 {isLogin ? (
-                  /* ================= LOGIN FIELDS ================= */
                   <>
                     <div>
                       <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
@@ -549,7 +504,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                       </div>
                     </div>
 
-                    {/* Remember me & Forgot password row */}
                     <div className="flex items-center justify-between pt-1">
                       <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
@@ -572,7 +526,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                     </div>
                   </>
                 ) : (
-                  /* ================= SIGN UP FIELDS ================= */
                   <>
                     <div>
                       <label className="block text-[13.5px] font-medium text-zinc-700 mb-1.5 font-battambang">
@@ -641,7 +594,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                   </>
                 )}
 
-                {/* Submit Action Button */}
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -658,7 +610,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                 </button>
               </form>
 
-              {/* Telegram Support Link */}
               <div className="mt-5 text-center">
                 <a 
                   href="https://t.me/sovansaro" 
@@ -672,7 +623,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
               </div>
             </div>
 
-            {/* Footer Disclaimer */}
             <div className="pt-4 border-t border-zinc-100 text-center text-xs text-zinc-400 font-battambang leading-relaxed">
               ប្រព័ន្ធគ្រប់គ្រងផ្ទៃក្នុង វត្តស្នាយដួច · សម្រាប់តែអ្នកទទួលសិទ្ធិប្រើប្រាស់
             </div>

@@ -54,7 +54,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
   const handleClearLogs = () => {
     if (!showClearConfirm) {
       setShowClearConfirm(true);
-      setTimeout(() => setShowClearConfirm(false), 3000); // reset after 3s
+      setTimeout(() => setShowClearConfirm(false), 3000);
       return;
     }
     systemLogger.clearLogs();
@@ -63,7 +63,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
     setShowClearConfirm(false);
   };
 
-  // មុខងារទី ២៖ Copy Logs ទាំងអស់
   const handleCopyAll = async () => {
     try {
       const logsJson = JSON.stringify(logs, null, 2);
@@ -75,7 +74,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
     }
   };
 
-  // មុខងារ Copy Log នីមួយៗ
   const handleCopySingle = async (log: LogEntry) => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(log, null, 2));
@@ -86,7 +84,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
     }
   };
 
-  // មុខងារ Export Logs ជាឯកសារ .json
   const handleExportJson = () => {
     try {
       const logsJson = JSON.stringify(logs, null, 2);
@@ -114,7 +111,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
     }
   };
 
-  // Filter & Search Logic
   const filteredLogs = logs.filter(log => {
     const matchesLevel = levelFilter === 'ALL' || log.level === levelFilter;
     const q = searchQuery.toLowerCase().trim();
@@ -126,7 +122,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden font-battambang -mx-3.5 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-gray-200 dark:border-slate-800">
-      {/* Top Header */}
       <div className="flex flex-wrap items-center justify-between p-3.5 sm:p-4 border-b border-gray-200 dark:border-slate-800 shrink-0 gap-2 bg-white dark:bg-slate-900 z-10">
         <div className="flex items-center space-x-2.5">
           <button 
@@ -149,9 +144,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
           </div>
         </div>
         
-        {/* Actions Bar */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Refresh */}
           <button
             onClick={refreshLogs}
             className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-xs"
@@ -160,7 +153,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             <RefreshCw className={`w-4 h-4 ${isReloading ? 'animate-spin text-[#028090] dark:text-teal-400' : ''}`} />
           </button>
 
-          {/* Device Info Toggle */}
           <button
             onClick={() => setShowDeviceSpecs(!showDeviceSpecs)}
             className={`flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg transition-colors font-sans border ${
@@ -174,7 +166,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             <span className="hidden sm:inline">Specs</span>
           </button>
 
-          {/* Copy All */}
           {logs.length > 0 && (
             <button
               onClick={handleCopyAll}
@@ -186,7 +177,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             </button>
           )}
 
-          {/* Export JSON */}
           {logs.length > 0 && (
             <button
               onClick={handleExportJson}
@@ -198,7 +188,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
             </button>
           )}
 
-          {/* Clear Logs (មុខងារទី ៣ Clear Spec/Storage) */}
           {logs.length > 0 && (
             <button
               onClick={handleClearLogs}
@@ -216,7 +205,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
         </div>
       </div>
 
-      {/* Device Specs Banner (ចំណុចទី ៤៖ Device Info) */}
       {showDeviceSpecs && (
         <div className="p-3 bg-blue-50/70 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900/50 text-xs font-mono text-slate-700 dark:text-slate-300 grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div>
@@ -240,7 +228,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
         </div>
       )}
 
-      {/* Search and Filter Bar */}
       <div className="px-3 sm:px-4 py-2 bg-gray-50 dark:bg-slate-900/60 border-b border-gray-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
         <div className="relative flex-1 min-w-[180px] max-w-sm">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -261,7 +248,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
           )}
         </div>
 
-        {/* Level Filters */}
         <div className="flex items-center gap-1 text-[11px] font-mono">
           {(['ALL', 'ERROR', 'WARN', 'INFO'] as const).map((lvl) => (
             <button
@@ -279,7 +265,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
         </div>
       </div>
 
-      {/* Terminal Display Area */}
       <div className="flex-1 p-3 sm:p-4 bg-[#0d1117] overflow-y-auto w-full select-text">
         {filteredLogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-500 py-12">
@@ -296,7 +281,6 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
                 key={log.id} 
                 className="hover:bg-white/[0.04] p-2.5 rounded-lg border border-white/5 transition-all group relative bg-black/20"
               >
-                {/* Single Log Copy Button */}
                 <button
                   onClick={() => handleCopySingle(log)}
                   className="absolute right-2 top-2 p-1 text-gray-500 hover:text-gray-200 bg-gray-800/80 hover:bg-gray-700 rounded transition-colors opacity-0 group-hover:opacity-100"
@@ -317,14 +301,12 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
                   </span>
                 </div>
 
-                {/* Details / Stack trace */}
                 {log.details && (
                   <div className="mt-1.5 pl-2 border-l-2 border-gray-700/60 text-gray-400 text-[11.5px] overflow-x-auto whitespace-pre-wrap break-all py-1">
                     {typeof log.details === 'object' ? JSON.stringify(log.details, null, 2) : log.details.toString()}
                   </div>
                 )}
 
-                {/* Device tag if captured */}
                 {log.device && (
                   <div className="mt-1 flex items-center gap-2 text-[10px] text-gray-500 opacity-60 group-hover:opacity-100 transition-opacity font-mono">
                     <span>📱 {log.device.platform}</span>

@@ -3,7 +3,6 @@ import path from 'path';
 
 const DB_FILE = path.join(process.cwd(), 'db.json');
 
-// Initial default structure
 let data = {
   seil_periods: [],
   financial_records: [],
@@ -11,7 +10,6 @@ let data = {
   name_list_records: [],
 };
 
-// Load from file if exists
 if (fs.existsSync(DB_FILE)) {
   try {
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
@@ -21,7 +19,6 @@ if (fs.existsSync(DB_FILE)) {
   }
 }
 
-// Save to file helper
 const saveDb = () => {
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));

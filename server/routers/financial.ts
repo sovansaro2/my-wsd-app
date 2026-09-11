@@ -4,7 +4,6 @@ import { requireAuth, requireAdmin } from '../auth/dependencies';
 
 const router = Router();
 
-// --- Seil Periods ---
 router.get('/seil-periods', async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin.from('seil_periods').select('*').order('created_at', { ascending: false });
@@ -41,7 +40,6 @@ router.put('/seil-periods/:id', requireAuth, requireAdmin, async (req, res) => {
   res.json(data[0]);
 });
 
-// --- Financial Records ---
 router.get('/financial-records', async (req, res) => {
   try {
     const seil_id = req.query.seil_id as string;
@@ -66,7 +64,6 @@ router.post('/financial-records', requireAuth, requireAdmin, async (req, res) =>
     error = retry.error;
   }
 
-  // Auto-recovery if RLS error occurs
   if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
     console.warn('[Financial Records] RLS policy error detected, retrying with direct admin client...');
     const directAdmin = getDirectAdminClient();
@@ -114,7 +111,6 @@ router.put('/financial-records/:id', requireAuth, requireAdmin, async (req, res)
     }
   }
 
-  // Auto-recovery if RLS error occurs
   if (error && (error.code === '42501' || error.message?.includes('row-level security policy'))) {
     console.warn('[Financial Records Update] RLS policy error detected, retrying with direct admin client...');
     const directAdmin = getDirectAdminClient();
@@ -143,7 +139,6 @@ router.delete('/financial-records/:id', requireAuth, requireAdmin, async (req, r
   res.json({ success: true });
 });
 
-// Helper to resolve date of financial record accurately
 const KHMER_MONTHS_MAP: [string, number][] = [
   ['មករា', 1], ['កុម្ភៈ', 2], ['មីនា', 3], ['មេសា', 4],
   ['ឧសភា', 5], ['មិថុនា', 6], ['កក្កដា', 7], ['សីហា', 8],
@@ -164,7 +159,6 @@ function resolveFinancialRecordDate(f: any, seil: any): { year: number; month: n
     }
   }
 
-  // Infer from seil date_range_text if record_date is null
   if (seil && seil.date_range_text) {
     const text = seil.date_range_text;
     for (const [mName, mNum] of KHMER_MONTHS_MAP) {
@@ -201,7 +195,6 @@ function resolveFinancialRecordDate(f: any, seil: any): { year: number; month: n
   };
 }
 
-// --- Annual & Quarterly Financial Summary ---
 router.get('/financial-summary', async (req, res) => {
   try {
     const [seilsRes, finRes] = await Promise.all([
@@ -215,10 +208,8 @@ router.get('/financial-summary', async (req, res) => {
     const seilMap: Record<string, any> = {};
     seils.forEach(s => { seilMap[s.id] = s; });
 
-    // Initial starting balance from the earliest seil
     const initialStartingBalance = seils.length > 0 ? (Number(seils[0].previous_balance) || 0) : 0;
 
-    // Attach resolved date to every financial record
     const enrichedFinancials = financials.map(f => {
       const s = seilMap[f.seil_id];
       const resolved = resolveFinancialRecordDate(f, s);
@@ -232,7 +223,6 @@ router.get('/financial-summary', async (req, res) => {
       };
     });
 
-    // Determine all distinct years
     const yearsSet = new Set<number>();
     enrichedFinancials.forEach(f => {
       if (f.resolved_year) yearsSet.add(f.resolved_year);
@@ -246,13 +236,11 @@ router.get('/financial-summary', async (req, res) => {
     const selectedYear = req.query.year ? parseInt(req.query.year as string, 10) : availableYears[0];
     const selectedQuarter = req.query.quarter ? (req.query.quarter as string) : 'all';
 
-    // Khmer months names
     const khmerMonths = [
       'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា',
       'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'
     ];
 
-    // Compute exact financial metrics for each Seil period
     const detailedSeils = seils.map((s, idx) => {
       const sFins = enrichedFinancials.filter(f => f.seil_id === s.id);
       const inc = sFins.filter(f => f.type === 'income').reduce((sum, f) => sum + (Number(f.amount) || 0), 0);
@@ -260,14 +248,14 @@ router.get('/financial-summary', async (req, res) => {
       const prev = Number(s.previous_balance) || 0;
       const end = prev + inc - exp;
       
-      let monthIdx = 7; // default August
+      let monthIdx = 7;
       const text = s.date_range_text || '';
-      if (text.includes('ឧសភា')) monthIdx = 4; // May
-      else if (text.includes('មិថុនា')) monthIdx = 5; // June
-      else if (text.includes('កក្កដា')) monthIdx = 6; // July
+      if (text.includes('ឧសភា')) monthIdx = 4;
+      else if (text.includes('មិថុនា')) monthIdx = 5;
+      else if (text.includes('កក្កដា')) monthIdx = 6;
       else if (text.includes('សីហា')) {
-        if (idx === 10 || text.includes('ដល់')) monthIdx = 8; // Late Aug into Sept
-        else monthIdx = 7; // August
+        if (idx === 10 || text.includes('ដល់')) monthIdx = 8;
+        else monthIdx = 7;
       }
 
       return {
@@ -286,7 +274,6 @@ router.get('/financial-summary', async (req, res) => {
       };
     });
 
-    // Compute monthly breakdown with accurate opening and cumulative ending balances
     let rollingBalance = initialStartingBalance;
     const monthlyData = khmerMonths.map((mName, mIdx) => {
       const mSeils = detailedSeils.filter(s => s.month_idx === mIdx);
@@ -311,7 +298,6 @@ router.get('/financial-summary', async (req, res) => {
       };
     });
 
-    // Calculate Quarter opening and ending balances based on Seil authoritative positions
     let beginningBalance = initialStartingBalance;
     let endingBalance = initialStartingBalance;
     let periodIncome = 0;
@@ -322,7 +308,6 @@ router.get('/financial-summary', async (req, res) => {
 
     if (selectedQuarter === 'all') {
       beginningBalance = initialStartingBalance;
-      // Ending balance of the entire year is the ending balance of the latest active Seil
       endingBalance = detailedSeils.length > 0 ? detailedSeils[detailedSeils.length - 1].ending_balance : initialStartingBalance;
     } else {
       const qNum = parseInt(selectedQuarter, 10);
@@ -349,22 +334,18 @@ router.get('/financial-summary', async (req, res) => {
     });
 
     const periodNet = periodIncome - periodExpense;
-    // Difference between cash flow in period and actual cash in hand
     const carriedAdjustment = endingBalance - (beginningBalance + periodNet);
 
-    // Top Expenses in the filtered period
     const topExpenses = [...filteredRecords]
       .filter(f => f.type === 'expense')
       .sort((a, b) => Number(b.amount) - Number(a.amount))
       .slice(0, 5);
 
-    // Top Incomes in the filtered period
     const topIncomes = [...filteredRecords]
       .filter(f => f.type === 'income')
       .sort((a, b) => Number(b.amount) - Number(a.amount))
       .slice(0, 5);
 
-    // Filter detailed seils by selected quarter if applicable
     const filteredSeils = selectedQuarter === 'all' 
       ? detailedSeils 
       : detailedSeils.filter(s => s.quarter === parseInt(selectedQuarter, 10));
@@ -374,13 +355,13 @@ router.get('/financial-summary', async (req, res) => {
       selected_quarter: selectedQuarter,
       available_years: availableYears,
       initial_starting_balance: initialStartingBalance,
-      beginning_balance: beginningBalance, // ថវិកាសល់ពីគ្រាមុន / ត្រីមាសមុន
-      total_income: periodIncome,          // ចំណូលក្នុងគ្រា
-      total_expense: periodExpense,        // ចំណាយក្នុងគ្រា
-      period_net: periodNet,              // ចំណេញ/ខាត ក្នុងគ្រា (ចំណូល - ចំណាយ)
-      carried_adjustment: carriedAdjustment, // ថវិកាកែតម្រូវ/បំពេញបន្ថែមតាមបញ្ជីសីល
-      net_balance: endingBalance,         // សមតុល្យសរុបជាក់ស្ដែងសល់ក្នុងដៃ
-      ending_balance: endingBalance,       // សមតុល្យសរុបជាក់ស្ដែងចុងគ្រា (2,892,000 ៛)
+      beginning_balance: beginningBalance,
+      total_income: periodIncome,
+      total_expense: periodExpense,
+      period_net: periodNet,
+      carried_adjustment: carriedAdjustment,
+      net_balance: endingBalance,
+      ending_balance: endingBalance,
       income_count: incomeCount,
       expense_count: expenseCount,
       top_expenses: topExpenses,

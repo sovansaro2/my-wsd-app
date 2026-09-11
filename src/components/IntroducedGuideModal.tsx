@@ -31,7 +31,6 @@ export default function IntroducedGuideModal({
   const { isInstallable, isInstalled, isIOS, isAndroid, install } = usePWAInstall();
   const { t } = useLanguage();
   
-  // Choose initial tab based on device, or prop
   const [platformTab, setPlatformTab] = useState<'ios' | 'android'>(
     initialTab || (isIOS ? 'ios' : 'android')
   );
@@ -58,7 +57,6 @@ export default function IntroducedGuideModal({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -67,7 +65,6 @@ export default function IntroducedGuideModal({
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         />
 
-        {/* Modal Window */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0, y: 15 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -76,7 +73,6 @@ export default function IntroducedGuideModal({
           onClick={(e) => e.stopPropagation()}
           className="relative bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md max-h-[92vh] flex flex-col border border-gray-200/80 dark:border-slate-800 shadow-2xl overflow-hidden z-10 font-battambang"
         >
-          {/* Header */}
           <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Smartphone className="w-6 h-6 text-[#028090] dark:text-teal-400" />
@@ -98,7 +94,6 @@ export default function IntroducedGuideModal({
             </button>
           </div>
 
-          {/* Platform Toggle Tabs */}
           <div className="px-5 pt-4 pb-2 border-b border-gray-100 dark:border-slate-800 flex items-center gap-2">
             <button
               onClick={() => setPlatformTab('android')}
@@ -125,12 +120,9 @@ export default function IntroducedGuideModal({
             </button>
           </div>
 
-          {/* Body Content */}
           <div className="p-5 overflow-y-auto space-y-5 text-left">
             {platformTab === 'android' ? (
-              /* Android Tab Content */
               <div className="space-y-4">
-                {/* Status or Force Action */}
                 {isInstalled ? (
                   <div className="border border-emerald-500/80 rounded-xl p-3.5 flex items-center gap-3">
                     <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -154,7 +146,6 @@ export default function IntroducedGuideModal({
                       </p>
                     </div>
 
-                    {/* Direct Install Button */}
                     <Button
                       onClick={handleAndroidInstall}
                       disabled={installing}
@@ -165,7 +156,6 @@ export default function IntroducedGuideModal({
                   </div>
                 )}
 
-                {/* Android Manual Steps */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-4 space-y-3">
                   <h5 className="text-[13px] font-semibold text-gray-800 dark:text-slate-200">
                     ការណែនាំដំឡើងតាម Chrome / Samsung Internet:
@@ -211,7 +201,6 @@ export default function IntroducedGuideModal({
                 </div>
               </div>
             ) : (
-              /* iOS Tab Content */
               <div className="space-y-4">
                 <div className="border border-gray-200 dark:border-slate-800 rounded-xl p-3.5">
                   <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -223,7 +212,6 @@ export default function IntroducedGuideModal({
                   </p>
                 </div>
 
-                {/* Steps for iOS */}
                 <ol className="space-y-3.5 text-[13.5px] text-gray-700 dark:text-slate-300 leading-relaxed">
                   <li className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
@@ -262,7 +250,6 @@ export default function IntroducedGuideModal({
                   </li>
                 </ol>
 
-                {/* Copy Link for iOS */}
                 <div className="border-t border-gray-100 dark:border-slate-800 pt-3">
                   <button
                     onClick={handleCopyLink}
@@ -287,7 +274,6 @@ export default function IntroducedGuideModal({
             )}
           </div>
 
-          {/* Footer */}
           <div className="p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900/50">
             <button
               onClick={onClose}

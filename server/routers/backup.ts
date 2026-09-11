@@ -5,7 +5,6 @@ import ExcelJS from 'exceljs';
 
 const router = Router();
 
-// GET /api/backup/data (Admin Only) - Full JSON dump
 router.get('/data', requireAuth, requireAdmin, async (req, res) => {
   try {
     const [seils, financials, categories, nameLists, profiles] = await Promise.all([
@@ -43,7 +42,6 @@ router.get('/data', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// GET /api/backup/excel (Admin Only) - Generates clean multi-tab Excel backup
 router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
   try {
     const [seilsRes, finRes, catRes, nameListRes, profilesRes] = await Promise.all([
@@ -70,7 +68,6 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
     workbook.creator = 'Wat Snay Duoc App';
     workbook.created = new Date();
 
-    // 1. Overview Sheet
     const wsOverview = workbook.addWorksheet('ព័ត៌មានទូទៅ');
     wsOverview.columns = [
       { header: 'មុខទំនិញ / Information', key: 'key', width: 35 },
@@ -87,7 +84,6 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
       { key: 'ចំនួនគណនីក្នុងប្រព័ន្ធ', value: profiles.length }
     ]);
 
-    // 2. Financial Records Sheet
     const wsFin = workbook.addWorksheet('ចំណូល-ចំណាយ');
     wsFin.columns = [
       { header: 'ល.រ', key: 'index', width: 8 },
@@ -110,7 +106,6 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
       });
     });
 
-    // 3. Name List Records Sheet
     const wsDonors = workbook.addWorksheet('បញ្ជីសប្បុរសជន');
     wsDonors.columns = [
       { header: 'ល.រ', key: 'index', width: 8 },
@@ -133,7 +128,6 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
       });
     });
 
-    // 4. Seil Periods Sheet
     const wsSeils = workbook.addWorksheet('បញ្ជីសីល');
     wsSeils.columns = [
       { header: 'ល.រ', key: 'index', width: 8 },
@@ -152,7 +146,6 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
       });
     });
 
-    // Set Response Headers
     const nowStr = new Date().toISOString().split('T')[0];
     const filename = `WSD_Backup_${nowStr}.xlsx`;
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

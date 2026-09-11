@@ -72,7 +72,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-950 pb-20 font-battambang">
-      {/* Header */}
       <div className="px-4 pt-4 pb-3 sm:px-6 sticky top-0 z-10 bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2.5">
@@ -92,7 +91,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
           </div>
         </div>
         
-        {/* Search Bar */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
           <input
@@ -131,7 +129,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 border border-gray-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-2.5 hover:border-blue-200 dark:hover:border-slate-700 transition-colors"
               >
-                {/* Image Preview / Click to view */}
                 {cert.blob && (
                   <div 
                     onClick={() => setPreviewCert(cert)}
@@ -161,7 +158,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
                 </div>
 
                 <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-gray-100 dark:border-slate-800/80">
-                  {/* View Button */}
                   <button
                     onClick={() => setPreviewCert(cert)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-xl transition-colors font-battambang active:scale-95"
@@ -171,7 +167,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
                     <span>{t('cert_btn_view')}</span>
                   </button>
 
-                  {/* Admin Only Actions (Download & Delete) */}
                   {isAdmin && (
                     <div className="flex items-center gap-1">
                       <button
@@ -197,7 +192,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
         )}
       </div>
 
-      {/* Image Preview Modal */}
       <AnimatePresence>
         {previewCert && previewCert.blob && (
           <div 
@@ -212,7 +206,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
               onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-900 dark:text-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
             >
-              {/* Modal Top Bar */}
               <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm flex-shrink-0">
                 <div className="min-w-0 flex-1 pr-3">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang truncate" title={previewCert.title}>
@@ -243,7 +236,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
                 </div>
               </div>
 
-              {/* Modal Image Body */}
               <div className="p-3 sm:p-6 overflow-auto flex items-center justify-center bg-gray-50/70 dark:bg-slate-950/60 min-h-[250px] max-h-[calc(90vh-70px)]">
                 <img
                   src={URL.createObjectURL(previewCert.blob)}
@@ -256,7 +248,6 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation */}
       <AnimatePresence>
         {certToDelete && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">

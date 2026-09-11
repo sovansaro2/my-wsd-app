@@ -22,7 +22,6 @@ export default function ImageSlider() {
     setCurrentIndex((prev) => (prev - 1 + SLIDE_IMAGES.length) % SLIDE_IMAGES.length);
   }, []);
 
-  // 5-second auto slide interval
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -61,7 +60,6 @@ export default function ImageSlider() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Render all images to ensure they are preloaded and cached */}
       {SLIDE_IMAGES.map((image, idx) => {
         const isActive = currentIndex === idx;
         return (
@@ -88,13 +86,11 @@ export default function ImageSlider() {
               }}
               className="w-full h-full object-cover object-center"
             />
-            {/* Subtle gradient overlay at the bottom for dot visibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
           </div>
         );
       })}
 
-      {/* Prev / Next Navigation Arrows */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -117,7 +113,6 @@ export default function ImageSlider() {
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* Indicator dots & Counter */}
       <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-between px-3 z-10 pointer-events-none">
         <div className="flex items-center gap-1.5 pointer-events-auto bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-full">
           {SLIDE_IMAGES.map((_, idx) => (
