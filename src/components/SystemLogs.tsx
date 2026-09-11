@@ -309,7 +309,7 @@ export default function SystemLogs({ onBack }: SystemLogsProps) {
 
                 {log.device && (
                   <div className="mt-1 flex items-center gap-2 text-[10px] text-gray-500 opacity-60 group-hover:opacity-100 transition-opacity font-mono">
-                    <span>📱 {log.device.platform}</span>
+                    <span className="flex items-center gap-1"><Smartphone className="w-3 h-3 text-gray-400" /> {log.device.platform}</span>
                     <span>• {log.device.screenWidth}x{log.device.screenHeight}</span>
                     <span>• {log.device.isOnline ? 'Online' : 'Offline'}</span>
                   </div>

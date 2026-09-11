@@ -626,10 +626,10 @@ export default function Users({ onBack, hideHeader = false }: UsersProps) {
                         className="flex-1 px-4 py-3 bg-[#028090] hover:bg-[#005F73] text-white rounded-xl font-medium transition-colors font-battambang disabled:opacity-70 flex items-center justify-center gap-2 shadow-sm shadow-[#028090]/25"
                       >
                         {isResetting ? (
-                          <div>
+                          <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            {t('common_saving')}
-                          </div>
+                            <span>{t('common_saving')}</span>
+                          </>
                         ) : (
                           t('list_save')
                         )}

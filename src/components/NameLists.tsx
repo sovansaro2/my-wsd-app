@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock } from 'lucide-react';
+import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock, Landmark } from 'lucide-react';
 import { IOSFolder } from './ui/IOSFolder';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -662,7 +662,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 <div className="absolute left-0 bottom-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-10 -mb-10"></div>
                 <div className="relative z-10 flex items-center gap-4">
                   <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 border border-white/20">
-                    <span className="text-2xl">🏗️</span>
+                    <Landmark className="w-7 h-7 text-white" />
                   </div>
                   <div>
                     <h4 className="text-lg sm:text-xl font-normal text-white mb-1  font-battambang">{roofCat.name}</h4>
@@ -735,10 +735,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
+                className="bg-white dark:bg-slate-900 w-full max-w-md sm:max-w-lg md:max-w-xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border border-gray-100 dark:border-slate-800"
               >
-                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-slate-800">
-                  <h3 className="text-lg  text-gray-900 dark:text-white">
+                <div className="flex items-center justify-between p-5 md:p-6 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-battambang font-medium text-gray-900 dark:text-white">
                     {editingCategory ? 'កែប្រែបញ្ជី' : 'បន្ថែមបញ្ជីថ្មី'}
                   </h3>
                   <button
@@ -748,9 +748,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <form onSubmit={saveCategory} className="p-4 sm:p-5 space-y-4">
+                <form onSubmit={saveCategory} className="p-5 md:p-6 space-y-4">
                   <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium font-battambang text-gray-700 dark:text-slate-300 mb-1.5">
                       ឈ្មោះបញ្ជី <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -758,23 +758,23 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       required
                       value={catName}
                       onChange={(e) => setCatName(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-battambang"
                       placeholder="បញ្ចូលឈ្មោះបញ្ជី"
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-gray-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium font-battambang text-gray-700 dark:text-slate-300 mb-1.5">
                       ការពិពណ៌នា
                     </label>
                     <textarea
                       value={catDesc}
                       onChange={(e) => setCatDesc(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm h-24 resize-none"
+                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm h-28 resize-none font-battambang"
                       placeholder="បញ្ចូលការពិពណ៌នាបញ្ជី"
                     />
                   </div>
                   {catErrorMessage && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-battambang">
+                    <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-battambang">
                       {catErrorMessage}
                     </div>
                   )}
@@ -784,7 +784,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                         type="button"
                         disabled={isSavingCat}
                         onClick={handleDeleteCategory}
-                        className={`flex items-center justify-center py-3 sm:py-3.5 px-4 rounded-xl  text-sm sm:text-[15px] transition-colors disabled:opacity-70 ${
+                        className={`flex items-center justify-center py-3 px-4 rounded-xl text-sm sm:text-[15px] font-battambang transition-colors disabled:opacity-70 ${
                           confirmingCatDeleteId === editingCategory.id 
                             ? 'bg-red-600 text-white hover:bg-red-700 flex-1' 
                             : 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40'
@@ -796,7 +796,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <button
                       type="submit"
                       disabled={isSavingCat}
-                      className="flex-1 flex items-center justify-center bg-[#028090] hover:bg-[#005F73] text-white py-3 sm:py-3.5 rounded-xl text-sm sm:text-[15px] transition-colors disabled:opacity-70"
+                      className="flex-1 flex items-center justify-center bg-[#028090] hover:bg-[#005F73] text-white py-3 px-4 rounded-xl text-sm sm:text-[15px] font-battambang transition-colors disabled:opacity-70"
                     >
                       {isSavingCat ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -1124,23 +1124,23 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             exit={{ y: "100%", opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl w-full max-w-lg md:max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
           >
             <div className="bg-white dark:bg-slate-900 p-5 flex justify-between items-center border-b border-gray-200 dark:border-slate-800">
-              <h3 className=" text-xl text-gray-900 dark:text-white">
+              <h3 className="text-lg sm:text-xl font-battambang font-medium text-gray-900 dark:text-white">
                 {editingRecord ? `${t('list_edit_title')} - ${selectedCategory?.name}` : `${t('list_add_title')} - ${selectedCategory?.name}`}
               </h3>
               <button 
                 onClick={() => setIsRecordModalOpen(false)}
-                className="p-2 bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 dark:text-slate-500 rounded-full transition-colors focus:outline-none"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 rounded-full transition-colors focus:outline-none"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-4 space-y-4">
+            <div className="p-5 md:p-6 space-y-4 overflow-y-auto flex-1">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
                   {t('list_name')}
                 </label>
                 <textarea
@@ -1153,9 +1153,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </div>
 
               {isKathina && (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
                       ត្រៃ/លៀង
                     </label>
                     <input
@@ -1163,11 +1163,11 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       value={traiLiang}
                       onChange={(e) => setTraiLiang(e.target.value)}
                       className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang"
-                      placeholder="ឧ. ១ត្រៃ ២លៀង..."
+                      placeholder="បញ្ជាក់ត្រៃ ឬលៀង..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
                       ផ្សេងៗ
                     </label>
                     <input
@@ -1182,26 +1182,23 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               )}
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 font-battambang">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
                   {isKathina ? 'ថវិកា / ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount')}
                 </label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => {
-                        const val = e.target.value;
-                        setAmount(val);
-                        if (Number(val) >= 100000) setIs100kDonor(true);
-                      }}
-                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang"
+                    const val = e.target.value;
+                    setAmount(val);
+                    if (Number(val) >= 100000) setIs100kDonor(true);
+                  }}
+                  className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-rajdhani font-semibold text-base"
                   placeholder={t('list_amount_ph')}
                 />
               </div>
-              
 
-              
-
-              <div className="flex items-center gap-3 p-4 mt-2 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-100 dark:border-teal-500/20">
+              <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-transparent">
                 <input 
                   type="checkbox" 
                   id="is100kDonor" 
@@ -1209,19 +1206,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   onChange={(e) => setIs100kDonor(e.target.checked)}
                   className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
                 />
-                <label htmlFor="is100kDonor" className="text-[14px] font-battambang text-teal-800 dark:text-teal-300 select-none cursor-pointer">
-                  ✅ ថវិកាកម្រិតខ្ពស់
+                <label htmlFor="is100kDonor" className="text-[14px] font-battambang text-gray-700 dark:text-slate-200 select-none cursor-pointer">
+                  ថវិកាកម្រិតខ្ពស់
                 </label>
               </div>
 
               {!editingRecord && (
-                <div className="flex items-center gap-3 p-4 mt-2 bg-blue-50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
+                <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-transparent">
                   <div className="flex-shrink-0">
-                    <Bell className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                    <Bell className="w-5 h-5 text-gray-500 dark:text-slate-400" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-sm sm:text-[15px]  text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
-                    <p className="text-[12px] text-gray-600 dark:text-gray-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
+                    <h4 className="text-sm sm:text-[15px] font-battambang text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
+                    <p className="text-[12px] font-battambang text-gray-500 dark:text-slate-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -1230,23 +1227,23 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                       checked={notifyPublic}
                       onChange={(e) => setNotifyPublic(e.target.checked)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#028090]"></div>
                   </label>
                 </div>
               )}
             </div>
             
-            <div className="p-5 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3 pb-24 sm:pb-5">
+            <div className="p-5 border-t border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-3">
               <button
                 onClick={() => setIsRecordModalOpen(false)}
-                className="flex-1 py-3.5 px-4 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-2xl  text-[15px] hover:bg-gray-50 dark:bg-slate-800/50 transition-colors focus:outline-none"
+                className="flex-1 py-3 px-4 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 rounded-xl text-[15px] font-battambang hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none"
               >
                 {t('list_cancel')}
               </button>
               <button
                 onClick={handleSaveRecord}
                 disabled={isSaving || !name.trim() || (!isKathina && !amount.trim())}
-                className="flex-1 py-3.5 px-4 bg-[#028090] text-white rounded-2xl text-[15px] hover:bg-[#005F73] shadow-md shadow-[#028090]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
+                className="flex-1 py-3 px-4 bg-[#028090] text-white rounded-xl text-[15px] font-battambang hover:bg-[#005F73] shadow-md shadow-[#028090]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
               >
                 {isSaving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -1446,7 +1443,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                           </div>
                           
                           <h3 className="text-[22px] text-[#1e3a8a] font-moul leading-normal mt-1">
-                            វត្តវារីបាការាម (ស្នាយដួច)
+                            វត្តវារីបាការាម ហៅ វត្តស្នាយដួច
                           </h3>
                           
                           <div className="flex items-center justify-center w-full max-w-[250px] my-1 opacity-90">
@@ -1566,14 +1563,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                            }}
                          />
                          <span className="text-xs font-moul text-orange-900 leading-normal mb-[2px]">វត្តវារីបាការាម</span>
-                         <span className="text-xs font-moul text-orange-900 leading-normal">(ស្នាយដួច)</span>
+                         <span className="text-xs font-moul text-orange-900 leading-normal">ហៅ វត្តស្នាយដួច</span>
                       </div>
 
                       <div className="flex flex-col items-center pt-3">
                         <h1 className="text-[42px] text-orange-700 mb-2 drop-shadow-none leading-normal " style={{ fontFamily: '"Khmer OS Kulen", Koulen, cursive' }}>លិខិតថ្លែងអំណរគុណ</h1>
                         <div className="flex items-center justify-center space-x-3">
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
-                          <span className="text-orange-500 text-xl ">៙ ❖ ៚</span>
+                          <span className="text-orange-500 text-xl font-moul">៙ ៚</span>
                           <div className="h-[2px] bg-orange-400/50 w-20 rounded-full"></div>
                         </div>
                       </div>

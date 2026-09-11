@@ -1563,6 +1563,73 @@ export default function AccountProfile({
 
   const isAdmin = userRole === 'admin';
 
+  const renderAppSystemMenuItems = () => (
+    <>
+      <button
+        onClick={() => {
+          setAboutModalTab('introduced');
+          setIntroducedPlatformTab(isIOS ? 'ios' : 'android');
+          setIsAboutModalOpen(true);
+        }}
+        className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+      >
+        <div className="flex items-center gap-3.5">
+          <Smartphone className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+          <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+            {t('profile_introduced')}
+          </span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </button>
+
+      <button
+        onClick={() => {
+          setAboutModalTab('about');
+          setIsAboutModalOpen(true);
+        }}
+        className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+      >
+        <div className="flex items-center gap-3.5">
+          <Info className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+          <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+            {t('profile_about')}
+          </span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      </button>
+
+      {userRole === 'admin' && (
+        <button
+          onClick={() => setIsSystemLogsView(true)}
+          className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+        >
+          <div className="flex items-center gap-3.5">
+            <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+            <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+              {t('profile_syslog_menu')}
+            </span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+        </button>
+      )}
+
+      <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1" />
+
+      <button
+        onClick={onLogout}
+        className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-red-50/70 dark:hover:bg-red-950/20 transition-colors text-left group"
+      >
+        <div className="flex items-center gap-3.5">
+          <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
+          <span className="text-[15px] text-red-600 dark:text-red-400 font-battambang">
+            {t('profile_logout')}
+          </span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-red-400 group-hover:text-red-600 transition-colors" />
+      </button>
+    </>
+  );
+
   return (
     <div className={`w-full ${isAdmin ? 'max-w-5xl' : 'max-w-3xl'} mx-auto pb-16 font-battambang transition-colors duration-200`}>
       <div className={isAdmin ? "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" : "w-full"}>
@@ -1729,78 +1796,24 @@ export default function AccountProfile({
             </button>
           )}
 
-          <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
-
-          <button
-            onClick={() => {
-              setAboutModalTab('introduced');
-              setIntroducedPlatformTab(isIOS ? 'ios' : 'android');
-              setIsAboutModalOpen(true);
-            }}
-            className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-          >
-            <div className="flex items-center gap-3.5">
-              <Smartphone className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-              <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {t('profile_introduced')}
-              </span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-          </button>
-
-          <button
-            onClick={() => {
-              setAboutModalTab('about');
-              setIsAboutModalOpen(true);
-            }}
-            className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-          >
-            <div className="flex items-center gap-3.5">
-              <Info className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-              <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                {t('profile_about')}
-              </span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-          </button>
-
-          {userRole === 'admin' && (
-            <button
-              onClick={() => setIsSystemLogsView(true)}
-              className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-            >
-              <div className="flex items-center gap-3.5">
-                <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
-                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                  {t('profile_syslog_menu')}
-                </span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-            </button>
-          )}
-
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-red-50/70 dark:hover:bg-red-950/20 transition-colors text-left group"
-          >
-            <div className="flex items-center gap-3.5">
-              <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <span className="text-[15px]  text-red-600 dark:text-red-400 font-battambang">
-                {t('profile_logout')}
-              </span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-red-400 group-hover:text-red-600 transition-colors" />
-          </button>
+          <div className={isAdmin ? "lg:hidden" : "block"}>
+            <div className="h-[1px] bg-gray-200/80 dark:bg-slate-800 w-full my-1.5" />
+            {renderAppSystemMenuItems()}
+          </div>
         </div>
       </div>
     </div>
 
         {isAdmin && (
-          <div className="hidden lg:block lg:col-span-5 xl:col-span-5">
+          <div className="hidden lg:flex lg:flex-col gap-6 lg:col-span-5 xl:col-span-5">
             <FinancialOverviewCard 
               userRole={userRole}
               onNavigateToSecurity={() => setIsSecurityView(true)}
             />
+
+            <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all border border-gray-200/80 dark:border-slate-800 py-1">
+              {renderAppSystemMenuItems()}
+            </div>
           </div>
         )}
       </div>
@@ -1882,7 +1895,7 @@ export default function AccountProfile({
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>
                       <p className="text-[12px] text-gray-500 dark:text-slate-400 font-medium mb-1">{t('about_dev')}</p>
-                      <p className="text-[15px] font-title text-[#028090] dark:text-teal-400">ភិក្ខុ សុវណ្ណសរោ រីម រ៉ាវី</p>
+                      <p className="text-[15px] font-title text-[#028090] dark:text-teal-400">សុវណ្ណសរោ រីម រ៉ាវី</p>
                     </div>
                     <div className="h-px bg-gray-100 dark:bg-slate-800 w-full"></div>
                     <div>

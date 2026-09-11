@@ -331,8 +331,8 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
       
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 border-r border-gray-200/80 dark:border-slate-800 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
-        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/80 bg-[#028090] dark:bg-slate-900 text-white">
+      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
+        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-200/80 dark:border-slate-800 bg-[#028090] dark:bg-slate-900 text-white">
           <img 
             src="/logo.png" 
             alt="WSD Logo" 
@@ -348,55 +348,57 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
+        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200/80 dark:border-slate-800">
+          <div className="flex-1 overflow-y-auto py-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center px-4 py-3.5 text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 ${
+                    isActive
+                      ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
+                      : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
+                    isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
+                  }`} />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
+              title={t('profile_change_lang')}
+            >
+              <Globe className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+              <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
+            </button>
+
+            <div className="flex items-center gap-1">
               <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center px-4 py-3.5 text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 ${
-                  isActive
-                    ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
-                    : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
-                }`}
+                onClick={toggleTheme}
+                className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
               >
-                <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
-                  isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
-                }`} />
-                <span className="truncate">{item.label}</span>
+                {theme === 'dark' ? <Sun className="w-4 h-4 text-gray-400 dark:text-slate-300" /> : <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400" />}
               </button>
-            );
-          })}
-        </div>
 
-        <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
-            title={t('profile_change_lang')}
-          >
-            <Globe className="w-4 h-4 text-gray-500 dark:text-slate-400" />
-            <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
-          </button>
-
-          <div className="flex items-center gap-1">
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-              title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-gray-400 dark:text-slate-300" /> : <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400" />}
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-              title={t('profile_logout')}
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                title={t('profile_logout')}
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>

@@ -140,6 +140,49 @@
   }
 }
 
+/* =========================================================
+   CYBER DARK MODE BORDER THEME (#19E2FF with softened opacity)
+   ========================================================= */
+@media screen {
+  .dark {
+    --cyber-border: rgba(25, 226, 255, 0.35);
+    --cyber-border-glow: rgba(25, 226, 255, 0.6);
+    --cyber-divider: rgba(25, 226, 255, 0.2);
+    --tw-border-color: rgba(25, 226, 255, 0.35);
+    border-color: rgba(25, 226, 255, 0.35);
+  }
+
+  /* Softened Cyber border for cards, sidebars, headers, modals, and tables */
+  .dark [class*="border"]:not([class~="border-transparent"]):not([class~="border-0"]):not([class~="border-none"]):not([class*="border-black"]):not([class*="border-slate-950"]):not([class*="border-red-"]):not([class*="border-emerald-"]):not([class*="border-green-"]):not([class*="border-rose-"]):not([class*="border-amber-"]):not([class*="border-yellow-"]):not([class*="border-orange-"]):not([class*="border-t-white"]):not([class*="after:border-"]):not([class*="before:border-"]) {
+    border-color: rgba(25, 226, 255, 0.35) !important;
+  }
+
+  /* Active indicator or thick left-border accent */
+  .dark [class*="border-l-4"]:not([class~="border-transparent"]) {
+    border-color: rgba(25, 226, 255, 0.85) !important;
+  }
+
+  /* Subtle hover glow for interactive borders */
+  .dark button[class*="border"]:hover:not([class~="border-transparent"]),
+  .dark [class*="hover:border-"]:hover {
+    border-color: rgba(25, 226, 255, 0.65) !important;
+  }
+
+  /* Softened Cyber list & table dividers */
+  .dark [class*="divide-"]:not([class~="divide-transparent"]):not([class*="divide-black"]):not([class*="divide-red-"]):not([class*="divide-emerald-"]) > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(25, 226, 255, 0.2) !important;
+  }
+
+  /* Softened horizontal dividers inside cards and sections */
+  .dark div[class*="h-[1px]"][class*="dark:bg-slate-800"],
+  .dark div[class*="h-[1px]"][class*="dark:bg-slate-700"],
+  .dark div[class*="h-px"][class*="dark:bg-slate-800"],
+  .dark div[class*="h-px"][class*="dark:bg-slate-700"],
+  .dark hr:not(.no-cyber) {
+    background-color: rgba(25, 226, 255, 0.2) !important;
+  }
+}
+
 @media print {
   html {
     zoom: 1 !important;
