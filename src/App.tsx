@@ -59,7 +59,8 @@ export default function App() {
         'manage_financials', 
         'manage_name_lists', 
         'certificates', 
-        'users'
+        'users',
+        'admin_panel'
       ];
       if (saved && validTabs.includes(saved)) {
         return saved;
@@ -142,6 +143,18 @@ export default function App() {
 
     const token = localStorage.getItem('access_token');
     if (token) {
+      try {
+        const cached = localStorage.getItem('cached_user_profile');
+        if (cached) {
+          const profile = JSON.parse(cached);
+          if (profile?.role) {
+            setActualRole(profile.role as Role);
+            setUserRole(profile.role as Role);
+            setCurrentUser(profile);
+          }
+        }
+      } catch {}
+
       fetchUserRole();
       fetchNotifications();
       
@@ -179,7 +192,7 @@ export default function App() {
       try {
         localStorage.setItem('cached_user_profile', JSON.stringify(data));
       } catch {}
-      const role = data?.role as Role || 'user';
+      const role = (data?.role as Role) || 'user';
       setActualRole(role);
       setUserRole(role);
     } catch {
@@ -275,10 +288,17 @@ export default function App() {
     return <LoadingScreen />;
   }
 
+  const handleLogin = (role: 'admin' | 'user') => {
+    setUserRole(role);
+    setActualRole(role);
+    fetchUserRole();
+    fetchNotifications();
+  };
+
   if (!userRole) {
     return (
       <>
-        <AuthComponent onLogin={(role) => setUserRole(role)} />
+        <AuthComponent onLogin={handleLogin} />
         <InstallPrompt />
       </>
     );
@@ -290,7 +310,7 @@ export default function App() {
     { id: 'categories' as Tab, label: t('nav_list'), icon: List },
     { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
     { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
-    ...(actualRole === 'admin' ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
+    ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
     { id: 'account' as Tab, label: t('nav_account'), icon: User },
   ];
 
@@ -675,12 +695,40 @@ export default function App() {
               <Certificates userRole={userRole} onBack={() => setActiveTab('account')} />
             )}
 
-            {(activeTab === 'admin_panel' || activeTab === 'users') && actualRole === 'admin' && (
-              <AdminPanel 
-                initialTab="users"
-                onNavigateTab={(tab) => setActiveTab(tab as Tab)}
-                onBack={() => setActiveTab('account')}
-              />
+            {(activeTab === 'admin_panel' || activeTab === 'users') && (
+              (actualRole === 'admin' || userRole === 'admin') ? (
+                <AdminPanel 
+                  initialTab="users"
+                  onNavigateTab={(tab) => setActiveTab(tab as Tab)}
+                  onBack={() => setActiveTab('account')}
+                />
+              ) : (
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 sm:p-12 text-center max-w-lg mx-auto shadow-sm border border-gray-100 dark:border-slate-800 my-8">
+                  <Shield className="w-12 h-12 text-amber-600 dark:text-amber-400 mx-auto mb-3.5" />
+                  <h3 className="font-title text-xl text-gray-900 dark:text-white mb-2">
+                    {language === 'en' ? 'Administrator Access Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង (Admin)'}
+                  </h3>
+                  <p className="text-gray-600 dark:text-slate-400 text-sm font-battambang mb-6 leading-relaxed">
+                    {language === 'en'
+                      ? 'You do not have administrative permissions to view or manage this section. Please sign in with an administrator account.'
+                      : 'គណនីរបស់អ្នកមិនទាន់មានសិទ្ធិជាអ្នកគ្រប់គ្រង (Admin) ដើម្បីចូលមើល ឬគ្រប់គ្រងផ្នែកនេះទេ។ សូមចូលប្រើដោយគណនី Admin។'}
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => setActiveTab('home')}
+                      className="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 font-battambang text-sm transition-colors"
+                    >
+                      {language === 'en' ? 'Back to Home' : 'ត្រឡប់ទៅទំព័រដើម'}
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('account')}
+                      className="px-5 py-2.5 rounded-xl bg-[#028090] hover:bg-[#005F73] text-white font-battambang text-sm transition-colors shadow-sm"
+                    >
+                      {language === 'en' ? 'Go to Account' : 'ទៅកាន់គណនី'}
+                    </button>
+                  </div>
+                </div>
+              )
             )}
           </motion.div>
         </main>
@@ -760,7 +808,7 @@ export default function App() {
             onClick={() => handleMobileTabClick('account')}
             aria-label={t('nav_account')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
-              ['account', 'users', 'certificates'].includes(activeTab) 
+              ['account', 'users', 'certificates', 'admin_panel'].includes(activeTab) 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
