@@ -872,7 +872,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                        ពាក្យអញ្ជើញ <span className="text-[#028090] dark:text-teal-400 font-semibold">(Battambang Bold)</span>
+                        ពាក្យអញ្ជើញ
                       </label>
                       <div className="flex items-center gap-1.5 text-[11px] font-battambang text-gray-500">
                         <button
@@ -904,14 +904,14 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400">
-                        ឈ្មោះអ្នកទទួល <span className="text-[#028090] dark:text-teal-400 font-bold">(Font Moul ធំច្បាស់)</span>
+                        ឈ្មោះអ្នកទទួល៖
                       </label>
                       <button
                         type="button"
                         onClick={() => handleChange('recipientName', '...........................................................................')}
                         className="text-[11px] font-battambang text-[#028090] hover:underline cursor-pointer"
                       >
-                        + ដាក់ចន្លោះសរសេរដៃ
+                        + ដាក់ចន្លោះសរសេរដៃ៖
                       </button>
                     </div>
                     <textarea
@@ -925,7 +925,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
 
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1 font-semibold">
-                      កម្មវត្ថុ (គ្មានពាក្យ «ស្ដីពី» ឡើយ)
+                      កម្មវត្ថុ៖
                     </label>
                     <textarea
                       rows={2}
@@ -938,7 +938,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-battambang text-gray-600 dark:text-slate-400 font-semibold">
-                        យោង (តាមស្តង់ដារលិខិតរដ្ឋបាល)
+                        យោងតាម៖
                       </label>
                       <label className="flex items-center gap-1.5 cursor-pointer text-xs font-battambang">
                         <input
@@ -947,7 +947,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           onChange={(e) => handleChange('showReference', e.target.checked)}
                           className="w-3.5 h-3.5 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
-                        <span className="text-gray-500 dark:text-slate-400">បង្ហាញ «យោង»</span>
+                        <span className="text-gray-500 dark:text-slate-400">បង្ហាញ</span>
                       </label>
                     </div>
                     {formData.showReference && (
@@ -1063,7 +1063,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
 
                   <div>
                     <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                      សេចក្ដីបញ្ចប់ (អាស្រ័យហេតុនេះ)
+                      សេចក្ដីបញ្ចប់៖
                     </label>
                     <textarea
                       rows={3}
@@ -1083,7 +1083,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-battambang text-gray-600 dark:text-slate-400 mb-1">
-                        ធ្វើនៅ (ទីកន្លែងចេញលិខិត)
+                        ធ្វើនៅ៖
                       </label>
                       <input
                         type="text"

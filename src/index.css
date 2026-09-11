@@ -152,34 +152,53 @@
     border-color: rgba(25, 226, 255, 0.35);
   }
 
-  /* Softened Cyber border for cards, sidebars, headers, modals, and tables */
-  .dark [class*="border"]:not([class~="border-transparent"]):not([class~="border-0"]):not([class~="border-none"]):not([class*="border-black"]):not([class*="border-slate-950"]):not([class*="border-red-"]):not([class*="border-emerald-"]):not([class*="border-green-"]):not([class*="border-rose-"]):not([class*="border-amber-"]):not([class*="border-yellow-"]):not([class*="border-orange-"]):not([class*="border-t-white"]):not([class*="after:border-"]):not([class*="before:border-"]) {
+  /* Softened Cyber border for cards, sidebars, headers, modals, and tables (excluding official paper documents & print sections) */
+  .dark [class*="border"]:not([class~="border-transparent"]):not([class~="border-0"]):not([class~="border-none"]):not([class*="border-black"]):not([class*="border-slate-950"]):not([class*="border-red-"]):not([class*="border-emerald-"]):not([class*="border-green-"]):not([class*="border-rose-"]):not([class*="border-amber-"]):not([class*="border-yellow-"]):not([class*="border-orange-"]):not([class*="border-t-white"]):not([class*="after:border-"]):not([class*="before:border-"]):not(.print-section):not(.print-section *):not(#invitation-letter-a5):not(#invitation-letter-a5 *):not(.document-paper):not(.document-paper *) {
     border-color: rgba(25, 226, 255, 0.35) !important;
   }
 
   /* Active indicator or thick left-border accent */
-  .dark [class*="border-l-4"]:not([class~="border-transparent"]) {
+  .dark [class*="border-l-4"]:not([class~="border-transparent"]):not(.print-section):not(.print-section *) {
     border-color: rgba(25, 226, 255, 0.85) !important;
   }
 
   /* Subtle hover glow for interactive borders */
-  .dark button[class*="border"]:hover:not([class~="border-transparent"]),
-  .dark [class*="hover:border-"]:hover {
+  .dark button[class*="border"]:hover:not([class~="border-transparent"]):not(.print-section):not(.print-section *),
+  .dark [class*="hover:border-"]:hover:not(.print-section):not(.print-section *) {
     border-color: rgba(25, 226, 255, 0.65) !important;
   }
 
   /* Softened Cyber list & table dividers */
-  .dark [class*="divide-"]:not([class~="divide-transparent"]):not([class*="divide-black"]):not([class*="divide-red-"]):not([class*="divide-emerald-"]) > :not([hidden]) ~ :not([hidden]) {
+  .dark [class*="divide-"]:not([class~="divide-transparent"]):not([class*="divide-black"]):not([class*="divide-red-"]):not([class*="divide-emerald-"]):not(.print-section):not(.print-section *) > :not([hidden]) ~ :not([hidden]) {
     border-color: rgba(25, 226, 255, 0.2) !important;
   }
 
   /* Softened horizontal dividers inside cards and sections */
-  .dark div[class*="h-[1px]"][class*="dark:bg-slate-800"],
-  .dark div[class*="h-[1px]"][class*="dark:bg-slate-700"],
-  .dark div[class*="h-px"][class*="dark:bg-slate-800"],
-  .dark div[class*="h-px"][class*="dark:bg-slate-700"],
-  .dark hr:not(.no-cyber) {
+  .dark div[class*="h-[1px]"][class*="dark:bg-slate-800"]:not(.print-section *),
+  .dark div[class*="h-[1px]"][class*="dark:bg-slate-700"]:not(.print-section *),
+  .dark div[class*="h-px"][class*="dark:bg-slate-800"]:not(.print-section *),
+  .dark div[class*="h-px"][class*="dark:bg-slate-700"]:not(.print-section *),
+  .dark hr:not(.no-cyber):not(.print-section *):not(#invitation-letter-a5 *) {
     background-color: rgba(25, 226, 255, 0.2) !important;
+  }
+
+  /* Strict preservation for official letter documents, certificates, and print templates */
+  .dark .print-section,
+  .dark .print-section *,
+  .dark #invitation-letter-a5,
+  .dark #invitation-letter-a5 *,
+  .dark .document-paper,
+  .dark .document-paper * {
+    --cyber-border: initial;
+    --tw-border-color: initial;
+  }
+  .dark #invitation-letter-a5 .border-gray-900,
+  .dark #invitation-letter-a5 .border-b-2 {
+    border-color: #111827 !important;
+  }
+  .dark #invitation-letter-a5 .border-gray-200,
+  .dark #invitation-letter-a5 .border-gray-300 {
+    border-color: #d1d5db !important;
   }
 }
 
