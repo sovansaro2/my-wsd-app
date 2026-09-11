@@ -112,6 +112,7 @@ export const api = {
   updateSeilPeriod: (id: string, data: any) => apiFetch(`/api/seil-periods/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   get100kDonors: () => apiFetch('/api/name-lists/donors-100k'),
+  getTopBenefactors: () => apiFetch('/api/name-lists/top-benefactors'),
   getNameListCategories: () => apiFetch('/api/name-lists/categories'),
   createNameListCategory: (data: any) => apiFetch('/api/name-lists/categories', { method: 'POST', body: JSON.stringify(data) }),
   deleteNameListCategory: (id: string) => apiFetch(`/api/name-lists/categories/${id}`, { method: 'DELETE' }),
@@ -144,5 +145,10 @@ export const api = {
         throw new Error(errorData.detail || 'Upload failed');
     }
     return res.json();
-  }
+  },
+
+  getEvents: () => apiFetch('/api/events'),
+  createEvent: (data: any) => apiFetch('/api/events', { method: 'POST', body: JSON.stringify(data) }),
+  updateEvent: (id: string, data: any) => apiFetch(`/api/events/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteEvent: (id: string) => apiFetch(`/api/events/${id}`, { method: 'DELETE' })
 };

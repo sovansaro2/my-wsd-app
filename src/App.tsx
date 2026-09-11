@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   AlertTriangle,
   Terminal,
-  Search
+  Search,
+  CalendarDays
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -26,6 +27,7 @@ import { systemLogger } from './lib/logger';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
+import BuddhistCalendar from './components/BuddhistCalendar';
 
 import AccountProfile from './components/AccountProfile';
 import Certificates from './components/Certificates';
@@ -40,7 +42,7 @@ import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel' | 'calendar';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -60,7 +62,8 @@ export default function App() {
         'manage_name_lists', 
         'certificates', 
         'users',
-        'admin_panel'
+        'admin_panel',
+        'calendar'
       ];
       if (saved && validTabs.includes(saved)) {
         return saved;
@@ -306,6 +309,7 @@ export default function App() {
 
   const navItems = [
     { id: 'home' as Tab, label: t('nav_home'), icon: Home },
+    { id: 'calendar' as Tab, label: language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិន & កាលវិភាគបុណ្យ', icon: CalendarDays },
     { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
     { id: 'categories' as Tab, label: t('nav_list'), icon: List },
     { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
@@ -317,6 +321,7 @@ export default function App() {
   const getActiveTabTitle = () => {
     switch (activeTab) {
       case 'home': return t('nav_home');
+      case 'calendar': return language === 'en' ? 'Buddhist Calendar & Events' : 'ប្រតិទិន & កាលវិភាគបុណ្យ';
       case 'records': return t('nav_finance');
       case 'categories': return t('nav_list');
       case 'reports': return t('nav_reports');
@@ -665,7 +670,16 @@ export default function App() {
             className="h-full"
           >
             {activeTab === 'home' && (
-              <Dashboard onNavigateTab={(tab) => setActiveTab(tab)} />
+              <Dashboard 
+                onNavigateTab={(tab) => setActiveTab(tab)} 
+                userRole={userRole}
+              />
+            )}
+            {activeTab === 'calendar' && (
+              <BuddhistCalendar 
+                userRole={userRole} 
+                onBackToHome={() => setActiveTab('home')}
+              />
             )}
             {activeTab === 'records' && (
               <RecordsComponent 
@@ -752,6 +766,23 @@ export default function App() {
             </div>
             <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-medium' : 'font-normal'}`}>
               {t('nav_home')}
+            </span>
+          </button>
+
+          <button
+            onClick={() => handleMobileTabClick('calendar')}
+            aria-label={language === 'en' ? 'Calendar' : 'ប្រតិទិន'}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
+              activeTab === 'calendar' 
+                ? 'text-[#028090] dark:text-teal-400' 
+                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-center w-11 h-8 transition-all">
+              <CalendarDays className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'calendar' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            </div>
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'calendar' ? 'font-medium' : 'font-normal'}`}>
+              {language === 'en' ? 'Calendar' : 'ប្រតិទិន'}
             </span>
           </button>
           

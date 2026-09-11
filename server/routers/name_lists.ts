@@ -5,83 +5,195 @@ import { requireAuth, requireAdmin } from '../auth/dependencies';
 const router = Router();
 
 const KNOWN_VILLAGES_OR_AREAS = new Set([
-  'ទ្រាលើ', 'ត្បាច', 'តាខូយ', 'ស្វាយពពារ', 'ក្បាលសំរោង', 'ត្រពាំងវិហារ'
+  'ទ្រាលើ', 'ត្បាច', 'តាខូយ', 'ស្វាយពពារ', 'ក្បាលសំរោង', 'ត្រពាំងវិហារ',
+  'ភូមិស្វាយចេក', 'ភូមិថ្មី', 'ភូមិស្មន់មុន្នី', 'ភូមិក្រាំងឡង', 'ភូមិព្រៃរបង'
 ]);
+
+export function normalizeDonorName(name: string): string {
+  if (!name) return '';
+  let clean = name.trim().replace(/\s+/g, ' ');
+
+  // Remove content in parentheses e.g. (ក្រាំងលៀវ), (Sing Sing), (កូនចៅ), (កំពង់ស្ពឺ), (កូនចៅកុងណា), (ថ្លៃដាក់គ្រឿង), (វណ្ណា)
+  clean = clean.replace(/\s*\([^)]*\)/g, '');
+
+  // Remove common family and group suffixes
+  clean = clean.replace(/\s+(ព្រមទាំងកូនចៅ|ព្រមទាំងបុត្រ|ព្រមទាំងបុត្រធីតា|ព្រមទាំងក្រុមគ្រួសារ|និងក្រុមគ្រួសារ|និងកូនចៅ|និងបុត្រ|ព្រមទាំងញាតិមិត្ត|កូនចៅ|និងភរិយា|ភរិយា)$/g, '');
+
+  // Remove polite titles, monk titles, elders, groups prefixes (run twice for compound prefixes)
+  const prefixRegex = /^(ក្រុមគ្រួសារលោកតា|ក្រុមគ្រួសារលោកយាយ|ក្រុមគ្រួសារលោក|ក្រុមគ្រួសារ|ក្រុមកូនចៅ\s*លោកយាយ|ក្រុមកូនចៅ\s*លោកតា|ក្រុមកូនចៅ|កូនចៅ\s*លោកយាយ|កូនចៅ\s*លោកតា|កូនចៅ|ក្រុមញាតិព្រះធម៌\s*លោកយាយ|ក្រុមញាតិព្រះធម៌\s*លោកតា|ក្រុមញាតិព្រះធម៌|ក្រុមឧបាសិកា|ក្រុមឧបាសក|ក្រុម|លោកយាយ|លោកតា|ឧបាសិកា|ឧបាសក|ព្រះតេជគុណ|ភិក្ខុ|លោកគ្រូ|អ្នកគ្រូ|គ្រូ|លោកស្រី|អ្នកស្រី|អ្នកមីង|មីង|ពូ|ញោម|លោក|យាយ|តា|កុង|ម៉ែ|ឪ|ពេទ្យ|ឧ\.ក|ឧ\.សិ)\s*/g;
+  clean = clean.replace(prefixRegex, '');
+  clean = clean.replace(prefixRegex, '');
+
+  // Remove location suffix if attached directly e.g. "ភូមិព្រៃស្មាច់"
+  clean = clean.replace(/\s+ភូមិ[\u1780-\u17D2]+$/g, '');
+
+  // Normalize silent vowels on same names: e.g. ប៊ុនរិទ្ធិ -> ប៊ុនរិទ្ធ
+  clean = clean.replace(/ប៊ុន\s*រិទ្ធិ?/g, 'ប៊ុនរិទ្ធ');
+
+  // If there are comma-separated names e.g. "ម៉ៅ ប៊ុនរិទ្ធ, កូន ម៉ៅ សំអាង", extract the first primary person
+  if (clean.includes(',')) {
+    const parts = clean.split(',').map(p => p.trim());
+    if (parts[0]) {
+      clean = parts[0];
+    }
+  }
+
+  return clean.trim().toLowerCase();
+}
+
+export function findCrossListedFinancialRecordIds(
+  nameRecords: any[],
+  finRecords: any[],
+  catMap: Record<string, string>,
+  seilMap: Record<string, string>
+) {
+  const matchedFinIds = new Set<string>();
+  const linkedDetails = new Map<string, {
+    fin_id: string;
+    seil_name: string;
+    fr_note: string;
+    fr_date: string;
+  }>();
+
+  nameRecords.forEach(nr => {
+    const nrNorm = normalizeDonorName(nr.name);
+    const nrAmt = Number(nr.amount);
+    if (!nrNorm || nrAmt <= 0) return;
+
+    const nrCat = catMap[nr.category_id] || '';
+    const isConstruction = nrCat.includes('កសាង');
+
+    const match = finRecords.find(fr => {
+      if (matchedFinIds.has(fr.id)) return false;
+      if (Number(fr.amount) !== nrAmt) return false;
+
+      const frNorm = normalizeDonorName(fr.description);
+      if (!frNorm) return false;
+
+      // Direct normalized match
+      if (frNorm === nrNorm) return true;
+
+      // Name containment match (at least 4 characters long)
+      if (nrNorm.length >= 4 && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
+
+      // Check specific known spelling variations
+      const n1 = (nr.name || '').replace(/\s+/g, '');
+      const n2 = (fr.description || '').replace(/\s+/g, '');
+      if (n1.includes('ឆេងប៉េងគុណ') && n2.includes('ឆេងប៉េងគុណ')) return true;
+      if (n1.includes('ស៊ីនួន') && n2.includes('ស៊ីនួន')) return true;
+      if (n1.includes('ឆេងស៊ុយ') && n2.includes('ឆេងស៊ុយ')) return true;
+      if (n1.includes('កុងសុក') && n2.includes('កុងសុភ')) return true;
+
+      const timeDiffDays = Math.abs(new Date(nr.created_at).getTime() - new Date(fr.created_at).getTime()) / (1000 * 60 * 60 * 24);
+      const frNote = (fr.note || '').toLowerCase();
+      const isFrConstruction = frNote.includes('កសាង') || (fr.description || '').includes('កសាង');
+
+      if (timeDiffDays <= 7 && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
+      if (isConstruction && isFrConstruction && (frNorm.includes(nrNorm) || nrNorm.includes(frNorm))) return true;
+      if (nr.note && fr.note && normalizeDonorName(nr.note) === normalizeDonorName(fr.note)) return true;
+
+      return false;
+    });
+
+    if (match) {
+      matchedFinIds.add(match.id);
+      linkedDetails.set(nr.id, {
+        fin_id: match.id,
+        seil_name: seilMap[match.seil_id] || 'បញ្ជីចំណូលចំណាយ',
+        fr_note: match.note || '',
+        fr_date: match.record_date || match.created_at
+      });
+    }
+  });
+
+  return { matchedFinIds, linkedDetails };
+}
 
 export function isHighTierIndividualDonor(name: string, categoryName?: string): boolean {
   if (!name) return false;
   const n = name.trim();
 
+  // Exclude loans and withdrawals
   if (n === 'ខ្ចី' || n === 'មិនស្គាល់ឈ្មោះ') return false;
   if (categoryName === 'លុយជាងដក') return false;
   if (n.startsWith('ជាងអ៊ុំ')) return false;
 
-  if (n.includes('ក្រុម')) return false;
+  // Exclude pure temple collection boxes
+  if (
+    n.startsWith('បច្ច័យប្រចាំសីល') ||
+    n.startsWith('បច្ច័យថ្ងៃសីល') ||
+    n.startsWith('បច្ច័យសល់') ||
+    n.includes('ចេតិយរួម')
+  ) {
+    return false;
+  }
 
-  if (n.includes('វត្ត')) return false;
+  // Exclude collective visitors with no personal or family name
+  if (n === 'ញាតិញោមមកពីភ្នំជីសូរ' || n === 'គេចូលតាមរយៈមេភូមិ') return false;
+  if (n === 'បុណ្យ១០០ថ្ងៃ') return false;
 
-  if (n.includes('ភូមិ') || n.includes('មេភូមិ') || n.includes('បរិស័ទភូមិ')) return false;
+  // Exclude other temples
+  if (n.startsWith('វត្ត ') || n.startsWith('វត្ត')) return false;
+
+  // Exclude pure village collective donations without individual names
   if (KNOWN_VILLAGES_OR_AREAS.has(n)) return false;
-
-  if (n.startsWith('បច្ច័យ') || n.startsWith('បុណ្យ') || n.includes('ញាតិញោម')) return false;
+  if (n.startsWith('បរិស័ទភូមិ') || n.startsWith('ពុទ្ធបរិស័ទ ភូមិ') || n.startsWith('ពុទ្ធបរិស័ទ')) return false;
 
   return true;
 }
 
 router.get('/donors-100k', async (req, res) => {
   try {
-    const { data: categories, error: catError } = await supabaseAdmin.from('name_list_categories').select('id, name');
-    if (catError) throw catError;
+    const [catRes, seilRes, recRes, finRes] = await Promise.all([
+      supabaseAdmin.from('name_list_categories').select('id, name'),
+      supabaseAdmin.from('seil_periods').select('id, name, date_range_text'),
+      supabaseAdmin.from('name_list_records').select('*').gte('amount', 100000),
+      supabaseAdmin.from('financial_records').select('*').eq('type', 'income').gte('amount', 100000)
+    ]);
 
     const catMap: Record<string, string> = {};
-    categories?.forEach(c => {
-      catMap[c.id] = c.name;
-    });
+    catRes.data?.forEach(c => { catMap[c.id] = c.name; });
+
+    const seilMap: Record<string, string> = {};
+    seilRes.data?.forEach(s => { seilMap[s.id] = s.date_range_text ? `${s.name} (${s.date_range_text})` : s.name; });
+
+    const records = recRes.data || [];
+    const finRecords = finRes.data || [];
+
+    const { matchedFinIds } = findCrossListedFinancialRecordIds(records, finRecords, catMap, seilMap);
 
     const donorsMap = new Map<string, any>();
 
-    const { data: records, error: recError } = await supabaseAdmin
-      .from('name_list_records')
-      .select('*')
-      .gte('amount', 100000);
-      
-    if (!recError && records) {
-      for (const r of records) {
-        const catName = catMap[r.category_id] || 'បញ្ជីផ្សេងៗ';
-        if (isHighTierIndividualDonor(r.name, catName)) {
-          const key = (r.name.trim() + '_' + r.amount).toLowerCase();
-          donorsMap.set(key, {
-            id: r.id,
-            name: r.name.trim(),
-            amount: Number(r.amount),
-            created_at: r.created_at,
-            category_name: catName,
-            note: r.note
-          });
-        }
+    for (const r of records) {
+      const catName = catMap[r.category_id] || 'បញ្ជីផ្សេងៗ';
+      if (isHighTierIndividualDonor(r.name, catName)) {
+        const norm = normalizeDonorName(r.name) || r.name.trim().toLowerCase();
+        const key = (norm + '_' + r.amount).toLowerCase();
+        donorsMap.set(key, {
+          id: r.id,
+          name: r.name.trim(),
+          amount: Number(r.amount),
+          created_at: r.created_at,
+          category_name: catName,
+          note: r.note
+        });
       }
     }
 
-    const { data: finRecords, error: finError } = await supabaseAdmin
-      .from('financial_records')
-      .select('*')
-      .eq('type', 'income')
-      .gte('amount', 100000);
-
-    if (!finError && finRecords) {
-      for (const f of finRecords) {
-        if (isHighTierIndividualDonor(f.description)) {
-          const key = (f.description.trim() + '_' + f.amount).toLowerCase();
-          if (!donorsMap.has(key)) {
-            donorsMap.set(key, {
-              id: f.id,
-              name: f.description.trim(),
-              amount: Number(f.amount),
-              created_at: f.created_at,
-              category_name: 'ចំណូលទូទៅ',
-              note: f.note
-            });
-          }
+    for (const f of finRecords) {
+      if (matchedFinIds.has(f.id)) continue; // Skip duplicate cross-listed record
+      if (isHighTierIndividualDonor(f.description)) {
+        const norm = normalizeDonorName(f.description) || f.description.trim().toLowerCase();
+        const key = (norm + '_' + f.amount).toLowerCase();
+        if (!donorsMap.has(key)) {
+          donorsMap.set(key, {
+            id: f.id,
+            name: f.description.trim(),
+            amount: Number(f.amount),
+            created_at: f.created_at,
+            category_name: seilMap[f.seil_id] || 'ចំណូលទូទៅ',
+            note: f.note
+          });
         }
       }
     }
@@ -92,6 +204,152 @@ router.get('/donors-100k', async (req, res) => {
     res.json(result);
   } catch (error: any) {
     res.status(400).json({ detail: error.message });
+  }
+});
+
+router.get('/top-benefactors', async (req, res) => {
+  try {
+    const [catRes, seilRes, nameRecRes, finRecRes] = await Promise.all([
+      supabaseAdmin.from('name_list_categories').select('id, name'),
+      supabaseAdmin.from('seil_periods').select('id, name, date_range_text'),
+      supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false }),
+      supabaseAdmin.from('financial_records').select('*').eq('type', 'income').order('created_at', { ascending: false })
+    ]);
+
+    const catMap: Record<string, string> = {};
+    catRes.data?.forEach(c => { catMap[c.id] = c.name; });
+
+    const seilMap: Record<string, string> = {};
+    seilRes.data?.forEach(s => { seilMap[s.id] = s.date_range_text ? `${s.name} (${s.date_range_text})` : s.name; });
+
+    const nameRecords = nameRecRes.data || [];
+    const finRecords = finRecRes.data || [];
+
+    // Find and pair duplicates between name_list_records and financial_records
+    const { matchedFinIds, linkedDetails } = findCrossListedFinancialRecordIds(
+      nameRecords,
+      finRecords,
+      catMap,
+      seilMap
+    );
+
+    const donorsMap = new Map<string, {
+      displayName: string;
+      total_amount: number;
+      contributions_count: number;
+      locations: Set<string>;
+      records: Array<{
+        id: string;
+        recorded_name?: string;
+        amount: number;
+        source_name: string;
+        source_id?: string;
+        source_type: 'category' | 'seil';
+        date: string;
+        note: string;
+        is_cross_listed?: boolean;
+        cross_listed_info?: string;
+      }>;
+    }>();
+
+    function getDonorEntry(rawName: string) {
+      const norm = normalizeDonorName(rawName) || rawName.trim().toLowerCase();
+      if (!donorsMap.has(norm)) {
+        donorsMap.set(norm, {
+          displayName: rawName.trim(),
+          total_amount: 0,
+          contributions_count: 0,
+          locations: new Set<string>(),
+          records: []
+        });
+      }
+      const d = donorsMap.get(norm)!;
+      // Preserve the most descriptive / complete display name
+      if (rawName.trim().length > d.displayName.length) {
+        d.displayName = rawName.trim();
+      }
+      return d;
+    }
+
+    // 1. Process name list records
+    nameRecords.forEach(r => {
+      const cleanName = (r.name || '').trim().replace(/\s+/g, ' ');
+      if (!isHighTierIndividualDonor(cleanName)) return;
+      const amt = Number(r.amount) || 0;
+      if (amt <= 0) return;
+
+      const d = getDonorEntry(cleanName);
+      d.total_amount += amt;
+      d.contributions_count += 1;
+      if (r.note && r.note.trim()) {
+        d.locations.add(r.note.trim());
+      }
+
+      const linked = linkedDetails.get(r.id);
+      if (linked?.fr_note) {
+        d.locations.add(linked.fr_note.trim());
+      }
+
+      d.records.push({
+        id: r.id,
+        recorded_name: cleanName,
+        amount: amt,
+        source_name: catMap[r.category_id] || 'បញ្ជីផ្សេងៗ',
+        source_id: r.category_id,
+        source_type: 'category',
+        date: r.created_at || new Date().toISOString(),
+        note: r.note ? r.note.trim() : '',
+        is_cross_listed: !!linked,
+        cross_listed_info: linked ? `មានកត់ត្រាក្នុង ${linked.seil_name} (រាប់តែម្ដង)` : undefined
+      });
+    });
+
+    // 2. Process financial records (excluding matched duplicates)
+    finRecords.forEach(f => {
+      if (matchedFinIds.has(f.id)) return; // Skip duplicate record to avoid double counting
+
+      const cleanName = (f.description || '').trim().replace(/\s+/g, ' ');
+      if (!isHighTierIndividualDonor(cleanName)) return;
+      const amt = Number(f.amount) || 0;
+      if (amt <= 0) return;
+
+      const d = getDonorEntry(cleanName);
+      d.total_amount += amt;
+      d.contributions_count += 1;
+      if (f.note && f.note.trim()) {
+        d.locations.add(f.note.trim());
+      }
+
+      d.records.push({
+        id: f.id,
+        recorded_name: cleanName,
+        amount: amt,
+        source_name: seilMap[f.seil_id] || 'ចំណូលទូទៅ',
+        source_id: f.seil_id,
+        source_type: 'seil',
+        date: f.record_date || f.created_at || new Date().toISOString(),
+        note: f.note ? f.note.trim() : '',
+        is_cross_listed: false
+      });
+    });
+
+    const donors = Array.from(donorsMap.values()).map(d => ({
+      name: d.displayName,
+      total_amount: d.total_amount,
+      contributions_count: d.contributions_count,
+      locations: Array.from(d.locations),
+      records: d.records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    }));
+
+    donors.sort((a, b) => b.total_amount - a.total_amount);
+
+    res.json({
+      total_donors: donors.length,
+      deduplicated_overlapping_count: matchedFinIds.size,
+      donors
+    });
+  } catch (error: any) {
+    res.status(500).json({ detail: error.message });
   }
 });
 
@@ -115,14 +373,25 @@ router.get('/search-donors', async (req, res) => {
       supabaseAdmin.from('financial_records').select('*').eq('type', 'income').order('created_at', { ascending: false })
     ]);
 
+    const nameRecords = nameRecRes.data || [];
+    const finRecords = finRecRes.data || [];
+
+    const { matchedFinIds, linkedDetails } = findCrossListedFinancialRecordIds(
+      nameRecords,
+      finRecords,
+      catMap,
+      seilMap
+    );
+
     const allItems: any[] = [];
 
-    (nameRecRes.data || []).forEach(r => {
+    nameRecords.forEach(r => {
       const name = (r.name || '').trim();
       if (!name) return;
       if (q && !name.toLowerCase().includes(q) && !(r.note || '').toLowerCase().includes(q)) {
         return;
       }
+      const linked = linkedDetails.get(r.id);
       allItems.push({
         id: r.id,
         name: name,
@@ -132,11 +401,15 @@ router.get('/search-donors', async (req, res) => {
         source_id: r.category_id,
         date: r.created_at,
         note: r.note || '',
-        referrer: r.referrer || ''
+        referrer: r.referrer || '',
+        is_cross_listed: !!linked,
+        cross_listed_info: linked ? `មានកត់ត្រាក្នុង ${linked.seil_name} (រាប់តែម្ដង)` : undefined
       });
     });
 
-    (finRecRes.data || []).forEach(f => {
+    finRecords.forEach(f => {
+      if (matchedFinIds.has(f.id)) return; // Skip duplicate cross-listed record
+
       const name = (f.description || '').trim();
       if (!name) return;
       if (q && !name.toLowerCase().includes(q) && !(f.note || '').toLowerCase().includes(q)) {
@@ -151,13 +424,14 @@ router.get('/search-donors', async (req, res) => {
         source_id: f.seil_id,
         date: f.record_date || f.created_at,
         note: f.note || '',
-        referrer: ''
+        referrer: '',
+        is_cross_listed: false
       });
     });
 
     const grouped = new Map<string, any>();
     allItems.forEach(item => {
-      const key = item.name.toLowerCase();
+      const key = normalizeDonorName(item.name) || item.name.toLowerCase();
       if (!grouped.has(key)) {
         grouped.set(key, {
           name: item.name,
@@ -168,6 +442,9 @@ router.get('/search-donors', async (req, res) => {
         });
       }
       const entry = grouped.get(key);
+      if (item.name.length > entry.name.length) {
+        entry.name = item.name;
+      }
       entry.total_amount += item.amount;
       entry.contributions_count += 1;
       if (item.note) entry.locations.add(item.note);

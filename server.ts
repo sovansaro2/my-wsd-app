@@ -13,6 +13,7 @@ import profilesRoutes from "./server/routers/profiles";
 import storageRoutes from "./server/routers/storage";
 import notificationsRoutes from "./server/routers/notifications";
 import backupRoutes from "./server/routers/backup";
+import eventsRoutes from "./server/routers/events";
 
 import "./server/types.d";
 
@@ -28,12 +29,13 @@ async function startServer() {
   app.use(express.json());
 
   app.use("/api/auth", authRoutes);    
-    app.use("/api", financialRoutes);
+  app.use("/api", financialRoutes);
   app.use("/api/name-lists", nameListsRoutes);
   app.use("/api/profiles", profilesRoutes);
   app.use("/api/upload", storageRoutes);
   app.use("/api/notifications", notificationsRoutes);
   app.use("/api/backup", backupRoutes);
+  app.use("/api/events", eventsRoutes);
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
