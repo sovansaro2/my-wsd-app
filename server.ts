@@ -25,7 +25,7 @@ async function startServer() {
   // Disable Express signature
   app.disable('x-powered-by');
 
-  // Security Headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Server, etc.)
+  // Security Headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, etc.)
   app.use((req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -33,8 +33,8 @@ async function startServer() {
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    res.setHeader('Server', 'Web');
     res.removeHeader('X-Powered-By');
+    res.removeHeader('Server');
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self' https: data: blob:; " +
@@ -55,6 +55,8 @@ async function startServer() {
 
   // Restrict CORS to explicit allowed origins instead of wildcard '*'
   const allowedOrigins = [
+    'https://watsnaydouch.site',
+    'http://watsnaydouch.site',
     'https://wsd-app.anajak.cloud',
     'https://sg1.anajak.cloud',
     'http://localhost:3000',
@@ -68,6 +70,7 @@ async function startServer() {
       }
       const isAllowed =
         allowedOrigins.includes(origin) ||
+        origin.endsWith('watsnaydouch.site') ||
         origin.endsWith('.anajak.cloud') ||
         origin.endsWith('.run.app') ||
         origin.endsWith('.google.com') ||

@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   base: './',
   server: {
-    allowedHosts: ['wsd-app.anajak.cloud', 'sg1.anajak.cloud', 'localhost'],
+    allowedHosts: ['watsnaydouch.site', 'wsd-app.anajak.cloud', 'sg1.anajak.cloud', 'localhost'],
   },
   build: {
     chunkSizeWarningLimit: 1200,
