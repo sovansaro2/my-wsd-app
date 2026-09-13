@@ -22,12 +22,19 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Security Headers (CSP, HSTS, X-Content-Type-Options, etc.)
+  // Disable Express signature
+  app.disable('x-powered-by');
+
+  // Security Headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Server, etc.)
   app.use((req, res, next) => {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.setHeader('Server', 'Web');
+    res.removeHeader('X-Powered-By');
     res.setHeader(
       'Content-Security-Policy',
       "default-src 'self' https: data: blob:; " +
@@ -46,10 +53,35 @@ async function startServer() {
   // Enable compression (gzip/deflate) to drastically reduce transfer size
   app.use(compression());
 
+  // Restrict CORS to explicit allowed origins instead of wildcard '*'
+  const allowedOrigins = [
+    'https://wsd-app.anajak.cloud',
+    'https://sg1.anajak.cloud',
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ];
+
   app.use(cors({
-    origin: '*',
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.anajak.cloud') ||
+        origin.endsWith('.run.app') ||
+        origin.endsWith('.google.com') ||
+        origin.includes('localhost');
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    maxAge: 86400
   }));
   app.use(express.json());
 
