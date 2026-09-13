@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import cors from "cors";
+import compression from "compression";
 import { createServer as createViteServer } from "vite";
 
 import authRoutes from "./server/auth/routes";
@@ -20,6 +21,30 @@ import "./server/types.d";
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Security Headers (CSP, HSTS, X-Content-Type-Options, etc.)
+  app.use((req, res, next) => {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self' https: data: blob:; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; " +
+      "font-src 'self' data: https://fonts.gstatic.com https:; " +
+      "img-src 'self' data: blob: https:; " +
+      "connect-src 'self' https: wss: ws: blob: data:; " +
+      "media-src 'self' data: blob: https:; " +
+      "frame-src 'self' https:; " +
+      "frame-ancestors 'self' https: http:;"
+    );
+    next();
+  });
+
+  // Enable compression (gzip/deflate) to drastically reduce transfer size
+  app.use(compression());
 
   app.use(cors({
     origin: '*',
@@ -45,7 +70,15 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+      maxAge: '1y',
+      immutable: true,
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      }
+    }));
     app.get('*all', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });

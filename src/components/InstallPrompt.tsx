@@ -178,6 +178,7 @@ export default function InstallPrompt() {
             <div className="p-6 flex flex-col items-center text-center border-b border-gray-100 dark:border-slate-800 relative">
               <button 
                 onClick={handleClose}
+                aria-label="បិទ"
                 className="absolute top-3.5 right-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -251,6 +252,7 @@ export default function InstallPrompt() {
             <div className="p-6 flex flex-col items-center text-center border-b border-gray-100 dark:border-slate-800 relative">
               <button 
                 onClick={handleClose}
+                aria-label="បិទ"
                 className="absolute top-3.5 right-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 transition-colors"
               >
                 <X className="w-5 h-5" />

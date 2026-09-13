@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { api } from '../lib/apiClient';
 import { playSuccessSound, playFailSound } from '../lib/sound';
 
@@ -25,9 +25,10 @@ import ImageSlider from './ImageSlider';
 import { ListSummaryCard } from './ListSummaryCard';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
-import GlobalDonorSearch from './GlobalDonorSearch';
 import { calculateKhmerLunar, getNextSeilDate, toKhmerNumber } from '../lib/khmerCalendar';
 import { MonasteryEvent } from '../types/calendar';
+
+const GlobalDonorSearch = lazy(() => import('./GlobalDonorSearch'));
 
 interface FinancialRecord {
   id: string;
@@ -824,13 +825,17 @@ export default function Dashboard({
         )}
       </section>
 
-      <GlobalDonorSearch
-        isOpen={showDonorSearch}
-        onClose={() => {
-          setShowDonorSearch(false);
-          fetchData();
-        }}
-      />
+      {showDonorSearch && (
+        <Suspense fallback={null}>
+          <GlobalDonorSearch
+            isOpen={showDonorSearch}
+            onClose={() => {
+              setShowDonorSearch(false);
+              fetchData();
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Edit Record Modal */}
       {editingRecord && (

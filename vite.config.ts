@@ -8,6 +8,24 @@ export default defineConfig({
   server: {
     allowedHosts: ['wsd-app.anajak.cloud', 'sg1.anajak.cloud', 'localhost'],
   },
+  build: {
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('logoBase64') || id.includes('fontEmbed') || id.includes('signBase64')) {
+            return 'heavy-embeds';
+          }
+          if (id.includes('node_modules')) {
+            if (id.includes('exceljs')) return 'vendor-exceljs';
+            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('html-to-image')) return 'vendor-export';
+            if (id.includes('lucide-react')) return 'vendor-lucide';
+            if (id.includes('motion')) return 'vendor-motion';
+          }
+        }
+      }
+    }
+  },
   plugins: [
     tailwindcss(),
     react(),

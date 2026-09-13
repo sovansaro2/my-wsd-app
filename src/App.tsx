@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { 
   Home, 
   List, 
@@ -27,17 +27,16 @@ import { systemLogger } from './lib/logger';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
-import BuddhistCalendar from './components/BuddhistCalendar';
-
-import AccountProfile from './components/AccountProfile';
-import Certificates from './components/Certificates';
-import RecordsComponent from './components/Records';
-import Reports from './components/Reports';
-import NameLists from './components/NameLists';
-import Users from './components/Users';
-import AdminPanel from './components/AdminPanel';
 import InstallPrompt from './components/InstallPrompt';
-import GlobalDonorSearch from './components/GlobalDonorSearch';
+
+const BuddhistCalendar = lazy(() => import('./components/BuddhistCalendar'));
+const AccountProfile = lazy(() => import('./components/AccountProfile'));
+const Certificates = lazy(() => import('./components/Certificates'));
+const RecordsComponent = lazy(() => import('./components/Records'));
+const Reports = lazy(() => import('./components/Reports'));
+const NameLists = lazy(() => import('./components/NameLists'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const GlobalDonorSearch = lazy(() => import('./components/GlobalDonorSearch'));
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
@@ -415,6 +414,7 @@ export default function App() {
                 onClick={toggleTheme}
                 className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
+                aria-label={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
               >
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-gray-400 dark:text-slate-300" /> : <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400" />}
               </button>
@@ -423,6 +423,7 @@ export default function App() {
                 onClick={handleLogout}
                 className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                 title={t('profile_logout')}
+                aria-label={t('profile_logout')}
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -446,6 +447,7 @@ export default function App() {
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer"
             title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
+            aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
           >
             <Search className="w-5 h-5 text-gray-700 dark:text-slate-300" />
           </button>
@@ -458,6 +460,7 @@ export default function App() {
               }}
               className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center"
               title="System Logs"
+              aria-label="System Logs"
             >
               <Terminal className="w-5 h-5 text-gray-700 dark:text-slate-300" />
             </button>
@@ -467,6 +470,7 @@ export default function App() {
             onClick={handleOpenNotifications}
             className="relative p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
             title="ការជូនដំណឹង"
+            aria-label="ការជូនដំណឹង"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -491,6 +495,7 @@ export default function App() {
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
             title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
+            aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
           >
             <Search className="w-5 h-5 text-white" />
           </button>
@@ -503,6 +508,7 @@ export default function App() {
               }}
               className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center"
               title="System Logs"
+              aria-label="System Logs"
             >
               <Terminal className="w-5 h-5 text-white" />
             </button>
@@ -510,6 +516,7 @@ export default function App() {
 
           <button 
             onClick={handleOpenNotifications}
+            aria-label="ការជូនដំណឹង"
             className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors"
           >
             <Bell className="w-6 h-6" />
@@ -553,12 +560,14 @@ export default function App() {
                       onClick={handleClearAllNotifications}
                       className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 rounded-full transition-colors flex items-center justify-center mr-1"
                       title="លុបទាំងអស់"
+                      aria-label="លុបទាំងអស់"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   )}
                   <button 
                     onClick={() => setShowNotifications(false)}
+                    aria-label="បិទ"
                     className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
                   >
                     <X className="w-5 h-5" />
@@ -692,7 +701,13 @@ export default function App() {
             transition={{ duration: 0.18 }}
             className="h-full"
           >
-            {activeTab === 'home' && (
+            <Suspense fallback={
+              <div className="py-24 flex flex-col items-center justify-center gap-3">
+                <div className="w-8 h-8 border-3 border-[#028090] border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-gray-400 font-battambang">កំពុងដំណើរការ...</span>
+              </div>
+            }>
+              {activeTab === 'home' && (
               <Dashboard 
                 onNavigateTab={(tab) => setActiveTab(tab)} 
                 userRole={userRole}
@@ -769,6 +784,7 @@ export default function App() {
                 </div>
               )
             )}
+            </Suspense>
           </motion.div>
         </main>
       </div>
@@ -881,10 +897,14 @@ export default function App() {
       
       <InstallPrompt />
 
-      <GlobalDonorSearch
-        isOpen={showGlobalDonorSearch}
-        onClose={() => setShowGlobalDonorSearch(false)}
-      />
+      {showGlobalDonorSearch && (
+        <Suspense fallback={null}>
+          <GlobalDonorSearch
+            isOpen={showGlobalDonorSearch}
+            onClose={() => setShowGlobalDonorSearch(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

@@ -219,7 +219,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
   const currentSlideData = ONBOARDING_SLIDES[currentSlide];
 
   return (
-    <div className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center">
+    <main id="main-content" className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center">
       {showMobileOnboarding && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col bg-[#028090] text-white overflow-hidden">
           <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-[#005F73] via-[#028090] to-[#0A9396] select-none">
@@ -594,6 +594,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? 'លាក់ពាក្យសម្ងាត់' : 'បង្ហាញពាក្យសម្ងាត់'}
                           className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
                         >
                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -639,6 +640,6 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
 
         </div>
       </div>
-    </div>
+    </main>
   );
 }
