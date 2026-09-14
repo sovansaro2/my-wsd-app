@@ -6,8 +6,13 @@
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS latin_name TEXT;
 
 -- 2. Update handle_new_user trigger function to populate latin_name and email
+-- Enforces strict 'user' role default and SET search_path = public
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   INSERT INTO public.profiles (id, full_name, latin_name, email, role)
   VALUES (
@@ -15,7 +20,7 @@ BEGIN
     new.raw_user_meta_data->>'full_name', 
     new.raw_user_meta_data->>'latin_name',
     new.email,
-    COALESCE(new.raw_user_meta_data->>'role', 'user')
+    'user'
   )
   ON CONFLICT (id) DO UPDATE SET
     full_name = COALESCE(EXCLUDED.full_name, public.profiles.full_name),
@@ -23,4 +28,4 @@ BEGIN
     email = COALESCE(EXCLUDED.email, public.profiles.email);
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;

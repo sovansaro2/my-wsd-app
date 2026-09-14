@@ -3,7 +3,7 @@ import React from 'react';
 export interface IOSFolderProps {
   size?: number | string;
   className?: string;
-  variant?: 'blue' | 'amber' | 'orange' | 'emerald' | 'purple' | 'slate' | 'teal';
+  variant?: 'blue' | 'amber' | 'orange' | 'emerald' | 'purple' | 'slate' | 'teal' | 'red';
   hasPaper?: boolean;
 }
 
@@ -92,6 +92,17 @@ export const IOSFolder = React.memo(function IOSFolder({
       frontShadow: 'rgba(30, 40, 60, 0.35)',
       paperBg: '#F8FAFC',
       paperLines: '#E2E8F0',
+    },
+    red: {
+      backTop: '#FF5C5C',
+      backBottom: '#D32F2F',
+      innerPocket: '#9B111E',
+      frontTop: '#FF4757',
+      frontBottom: '#B71C1C',
+      frontHighlight: 'rgba(255, 255, 255, 0.7)',
+      frontShadow: 'rgba(183, 28, 28, 0.45)',
+      paperBg: '#FFF5F5',
+      paperLines: '#FFCDD2',
     },
   };
 

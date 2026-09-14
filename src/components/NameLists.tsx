@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock, Landmark } from 'lucide-react';
+import { Plus, Pencil, Star, Edit2, Trash2, Loader2, X, Check, Bell, Award, Download, Share2, Lock, Landmark, Printer, Receipt } from 'lucide-react';
 import { IOSFolder } from './ui/IOSFolder';
 import { motion, AnimatePresence } from 'motion/react';
 import { LoadingScreen } from './ui/LoadingScreen';
@@ -12,6 +12,8 @@ import { getImageDataUrl } from '../lib/utils';
 import { jsPDF } from "jspdf";
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 import { playSuccessSound } from '../lib/sound';
+import CeremonyExpenseReportModal from './CeremonyExpenseReportModal';
+import { khmerNumberToWords } from '../lib/khmerNumberToWords';
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -47,7 +49,7 @@ interface NameRecord {
 interface CategoryCardProps {
   category: ListCategory;
   isAdmin: boolean;
-  variant: 'blue' | 'amber';
+  variant: 'blue' | 'amber' | 'red';
   onClick: (cat: ListCategory) => void;
   onEdit: (cat: ListCategory, e: React.MouseEvent) => void;
 }
@@ -60,13 +62,16 @@ const CategoryCard = React.memo(function CategoryCard({
   onEdit,
 }: CategoryCardProps) {
   const isAmber = variant === 'amber';
+  const isRed = variant === 'red';
 
   return (
     <button
       onClick={() => onClick(category)}
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 180px' }}
       className={`relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border ${
-        isAmber 
+        isRed
+          ? 'border-red-200/80 dark:border-red-900/50 hover:border-red-400 dark:hover:border-red-600'
+          : isAmber 
           ? 'border-amber-200/80 dark:border-amber-900/50 hover:border-amber-400 dark:hover:border-amber-600' 
           : 'border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60'
       } hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden`}
@@ -83,10 +88,12 @@ const CategoryCard = React.memo(function CategoryCard({
         <div 
           onClick={(e) => onEdit(category, e)}
           className={`absolute top-2.5 right-2.5 p-1.5 ${
-            isAmber 
-              ? 'text-amber-600/60 hover:text-amber-600 hover:bg-amber-50' 
-              : 'text-gray-400 hover:text-[#028090] hover:bg-teal-50'
-          } dark:hover:bg-slate-800 rounded-full transition-colors z-10`}
+            isRed
+              ? 'text-red-500 hover:text-red-700'
+              : isAmber 
+              ? 'text-amber-600/70 hover:text-amber-700' 
+              : 'text-gray-400 hover:text-[#028090]'
+          } rounded-full transition-colors z-10`}
         >
           <Pencil className="w-3.5 h-3.5" />
         </div>
@@ -101,7 +108,9 @@ const CategoryCard = React.memo(function CategoryCard({
 
       <div className="w-full mt-2 flex flex-col items-center min-w-0">
         <h4 className={`w-full font-normal ${
-          isAmber
+          isRed
+            ? 'text-red-900 dark:text-red-400 group-hover:text-red-600 dark:group-hover:text-red-300'
+            : isAmber
             ? 'text-amber-900 dark:text-amber-400 group-hover:text-amber-600 dark:group-hover:text-amber-300'
             : 'text-gray-800 dark:text-slate-200 group-hover:text-sky-600 dark:group-hover:text-white'
         } text-center text-sm sm:text-[15px] leading-snug font-battambang truncate whitespace-nowrap`} title={category.name}>
@@ -153,6 +162,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const certificateRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
+  const [showExpenseReportModal, setShowExpenseReportModal] = useState(false);
   
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -591,11 +601,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const closedLists = ['បញ្ជីឈ្មោះបុណ្យផ្កា', 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ', 'ទិញកម្រាលព្រំ (វគ្គ១)'];
   const isListClosed = closedLists.includes(selectedCategory?.name || '');
   const isKathina = selectedCategory?.name?.includes('កឋិន');
+  const isExpenseList = selectedCategory?.name?.includes('ចំណាយ') || selectedCategory?.name === 'បញ្ជីថវិការចំណាយក្នុងកម្មវិធីបុណ្យ';
   const hasAnyNote = filteredRecords.some(r => r.note || r.metadata?.trai_liang || r.metadata?.others);
 
   const getCategoryIcon = (name: string) => {
+    const isExp = name?.includes('ចំណាយ') || name === 'បញ្ជីថវិការចំណាយក្នុងកម្មវិធីបុណ្យ';
+    const isKath = name?.includes('កឋិន');
     return (
-      <IOSFolder className="w-8 h-7 transition-transform group-hover:scale-105" variant="blue" />
+      <IOSFolder className="w-8 h-7 transition-transform group-hover:scale-105" variant={isExp ? 'red' : isKath ? 'amber' : 'blue'} />
     );
   };
 
@@ -623,8 +636,10 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
   if (!selectedCategory || userRole !== 'admin') {
     const roofCat = categories.find((c: any) => c.name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ');
+    const expenseCats = categories.filter((c: any) => c.name.includes('ចំណាយ') || c.name === 'បញ្ជីថវិការចំណាយក្នុងកម្មវិធីបុណ្យ');
     const kathinaCats = categories.filter((c: any) => c.name.includes('កឋិន'));
-    const generalCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ' && !c.name.includes('កឋិន'));
+    const otherGeneralCats = categories.filter((c: any) => c.name !== 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ' && !c.name.includes('កឋិន') && !c.name.includes('ចំណាយ') && c.name !== 'បញ្ជីថវិការចំណាយក្នុងកម្មវិធីបុណ្យ');
+    const generalCats = [...kathinaCats, ...otherGeneralCats];
 
     return (
       <>
@@ -684,19 +699,19 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </div>
           )}
 
-          {kathinaCats.length > 0 && (
+          {expenseCats.length > 0 && (
             <div className="mb-8">
               <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                {t('lists_category_kathina')}
+                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                ថវិការចំណាយក្នុងកម្មវិធីបុណ្យ
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {kathinaCats.map(cat => (
+                {expenseCats.map(cat => (
                   <CategoryCard
                     key={cat.id}
                     category={cat}
                     isAdmin={userRole === 'admin'}
-                    variant="amber"
+                    variant="red"
                     onClick={handleCategoryClick}
                     onEdit={openEditCatModal}
                   />
@@ -716,7 +731,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                    key={cat.id}
                    category={cat}
                    isAdmin={userRole === 'admin'}
-                   variant="blue"
+                   variant={cat.name.includes('កឋិន') ? 'amber' : 'blue'}
                    onClick={handleCategoryClick}
                    onEdit={openEditCatModal}
                  />
@@ -886,11 +901,22 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </h2>
             
             <div className="flex items-center gap-2">
+              {isExpenseList && (
+                <button 
+                  onClick={() => setShowExpenseReportModal(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-medium font-battambang transition-colors shadow-sm cursor-pointer"
+                  title="ចេញរបាយការណ៍ចំណាយ"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span className="hidden sm:inline">ចេញរបាយការណ៍ចំណាយ</span>
+                  <span className="sm:hidden">របាយការណ៍</span>
+                </button>
+              )}
               {userRole === 'admin' && (
                 <button 
                   onClick={openAddModal}
-                  className="flex items-center justify-center bg-[#028090] text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none hover:bg-[#005F73] transition-colors focus:outline-none focus:ring-2 focus:ring-[#028090]/50 flex-shrink-0"
-                  title={t('list_add_new')}
+                  className={`flex items-center justify-center ${isExpenseList ? 'bg-red-600 hover:bg-red-700' : 'bg-[#028090] hover:bg-[#005F73]'} text-white w-10 h-10 rounded-xl shadow-none dark:shadow-none transition-colors focus:outline-none focus:ring-2 focus:ring-[#028090]/50 flex-shrink-0`}
+                  title={isExpenseList ? 'កត់ត្រាចំណាយ' : t('list_add_new')}
                 >
                   <Plus className="w-5 h-5" />
                 </button>
@@ -909,14 +935,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <div className="flex items-center justify-between mb-3 px-2 sm:px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
             <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
               {selectedCategory?.description ? (
-                <>{t('list_date')}៖ <span className="text-zinc-900 dark:text-white font-medium">{selectedCategory.description}</span></>
+                <>{isExpenseList ? 'ព័ត៌មាន' : t('list_date')}៖ <span className="text-zinc-900 dark:text-white font-medium">{selectedCategory.description}</span></>
               ) : (
-                <span>{t('list_total_records')}៖ <span className="text-zinc-900 dark:text-white font-medium">{filteredRecords.length}</span></span>
+                <span>{isExpenseList ? 'ចំនួនមុខចំណាយសរុប' : t('list_total_records')}៖ <span className="text-zinc-900 dark:text-white font-medium">{filteredRecords.length} មុខ</span></span>
               )}
             </div>
-            {(selectedCategory?.name === 'លុយចងដៃខ្ចី' || selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' || selectedCategory?.name === 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)') && (
+            {(selectedCategory?.name === 'លុយចងដៃខ្ចី' || selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' || selectedCategory?.name === 'ទិញកណ្ដឹងដាក់ដំបូលព្រះវិហារ' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ១)' || selectedCategory?.name === 'ទិញកម្រាលព្រំ (វគ្គ២)' || isExpenseList) && (
               <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
-                {t('list_total_amount')}៖ <span className="text-zinc-900 dark:text-white font-medium">{formatCurrency(totalAmount)}</span>
+                {isExpenseList ? 'សរុបការចំណាយ' : t('list_total_amount')}៖ <span className={`font-medium ${isExpenseList ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-zinc-900 dark:text-white'}`}>{formatCurrency(totalAmount)}</span>
               </div>
             )}
           </div>
@@ -945,7 +971,15 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <thead>
                       <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[12px] sm:text-[14px] font-battambang font-medium">
                         <th className="px-1 sm:px-3 py-2 sm:py-3 w-8 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
-                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 w-full">ឈ្មោះសប្បុរសជន</th>
+                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 w-full">
+                          {isExpenseList ? 'មុខទំនិញ / បរិយាយការចំណាយ' : 'ឈ្មោះសប្បុរសជន'}
+                        </th>
+                        {isExpenseList && (
+                          <>
+                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-24 sm:min-w-[130px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">អ្នកចាត់ចែង/អ្នកទិញ</th>
+                            <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-20 sm:w-32 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ទឹកប្រាក់</th>
+                          </>
+                        )}
                         {isKathina && (
                           <>
                             <th className="px-1 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[95px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
@@ -953,7 +987,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             <th className="px-1 sm:px-3 py-2 sm:py-3 w-20 sm:min-w-[150px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
                           </>
                         )}
-                        {!isKathina && (
+                        {!isKathina && !isExpenseList && (
                           <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-16 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
                         )}
                         <th className="px-1 sm:px-3 py-2 sm:py-3 w-[84px] sm:w-[115px] text-center whitespace-nowrap">សកម្មភាព</th>
@@ -972,7 +1006,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-teal-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
                             <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                              <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block">
+                              <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block font-rajdhani">
                                 {index + 1}
                               </span>
                             </td>
@@ -989,6 +1023,20 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 )}
                               </div>
                             </td>
+                            {isExpenseList && (
+                              <>
+                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang whitespace-nowrap">
+                                    {record.referrer || '-'}
+                                  </span>
+                                </td>
+                                <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[13px] sm:text-[15px] font-semibold text-red-600 dark:text-red-400 whitespace-nowrap font-rajdhani">
+                                    {formatCurrency(record.amount)}
+                                  </span>
+                                </td>
+                              </>
+                            )}
                             {isKathina && (
                               <>
                                 <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
@@ -1008,7 +1056,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                                 </td>
                               </>
                             )}
-                            {!isKathina && (
+                            {!isKathina && !isExpenseList && (
                               <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
                                 <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-battambang">
                                   {formatCurrency(record.amount)}
@@ -1017,7 +1065,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             )}
                             <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 align-middle text-center w-[84px] sm:w-[115px]">
                               <div className="flex items-center justify-center gap-1 sm:gap-1.5">
-                                {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && (
+                                {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && !isExpenseList && (
                                   <button 
                                     onClick={() => setCertificateRecord(record)}
                                     className="p-1 sm:p-1.5 text-[#028090] hover:text-[#005F73] dark:text-teal-400 dark:hover:text-teal-300 transition-colors focus:outline-none shrink-0"
@@ -1063,6 +1111,36 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               </motion.div>
             )}
           </>
+
+          {isExpenseList && filteredRecords.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-red-200 dark:border-red-900/50 p-4 sm:p-5 shadow-sm mt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Receipt className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300 font-battambang">
+                      សរុបការចំណាយក្នុងកម្មវិធីបុណ្យទាំងអស់ ({filteredRecords.length} មុខចំណាយ)
+                    </span>
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-rajdhani font-bold text-red-600 dark:text-red-400 mt-1">
+                    {formatCurrency(totalAmount)}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang mt-1">
+                    សមមូលជាអក្សរ៖ {khmerNumberToWords(totalAmount)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowExpenseReportModal(true)}
+                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium font-battambang transition-colors shadow-sm cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>ចេញរបាយការណ៍ចំណាយផ្លូវការ</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {selectedCategory?.name === 'បញ្ជីឈ្មោះបុណ្យផ្កា' && filteredRecords.length > 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-none dark:shadow-none border border-gray-200 dark:border-slate-700 overflow-hidden mt-6 mb-8">
@@ -1150,18 +1228,65 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             </div>
             
             <div className="p-5 md:p-6 space-y-4 overflow-y-auto flex-1">
+              {isExpenseList && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-slate-400 mb-1.5 font-battambang">
+                    ជ្រើសរើសមុខចំណាយរហ័ស (ចុចដើម្បីបំពេញស្វ័យប្រវត្តិ)៖
+                  </label>
+                  <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                    {[
+                      '🎪 ជួលរោង តុ កៅអី',
+                      '🍲 ចង្ហាន់ និងម្ហូបអាហារ',
+                      '🌸 ផ្កាស្រស់ ទៀន ធូប',
+                      '💡 ថ្លៃភ្លើង និងម៉ាស៊ីនភ្លើង',
+                      '🥤 ភេសជ្ជៈ និងទឹកសុទ្ធ',
+                      '🎶 ថ្លៃភ្លេងពិណពាទ្យ',
+                      '📜 បច្ច័យទេសនាគ្រែ២',
+                      '🚐 សោហ៊ុយធ្វើដំណើរ',
+                      '🧹 សម្អាត និងរៀបចំទីកន្លែង',
+                      '🎁 ទេយ្យទាន និងគ្រឿងសក្ការៈ',
+                      '📦 ចំណាយផ្សេងៗ',
+                    ].map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => setName(item.replace(/^[^\s]+\s/, ''))}
+                        className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-battambang cursor-pointer"
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
-                  {t('list_name')}
+                  {isExpenseList ? 'មុខទំនិញ ឬការចំណាយ' : t('list_name')}
                 </label>
                 <textarea
                   rows={2}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang text-[14.5px] leading-relaxed resize-y min-h-[58px]"
-                  placeholder={t('list_name_ph')}
+                  placeholder={isExpenseList ? 'ឧ. ជួលរោង តុ កៅអី, ថ្លៃចង្ហាន់...' : t('list_name_ph')}
                 />
               </div>
+
+              {isExpenseList && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
+                    អ្នកចាត់ចែង ឬអ្នកទិញ / អ្នកទទួលប្រាក់
+                  </label>
+                  <input
+                    type="text"
+                    value={referrer}
+                    onChange={(e) => setReferrer(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang text-[14.5px]"
+                    placeholder="ឧ. គណៈកម្មការវត្ត, លោកអាចារ្យ, ជាង..."
+                  />
+                </div>
+              )}
 
               {isKathina && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1194,7 +1319,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
-                  {isKathina ? 'ថវិកា / ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount')}
+                  {isExpenseList ? 'ចំនួនទឹកប្រាក់ចំណាយ (រៀល)' : (isKathina ? 'ថវិកា / ចំនួនទឹកប្រាក់ (រៀល) - បើមាន' : t('list_amount'))}
                 </label>
                 <input
                   type="number"
@@ -1202,7 +1327,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   onChange={(e) => {
                     const val = e.target.value;
                     setAmount(val);
-                    if (Number(val) >= 100000) setIs100kDonor(true);
+                    if (!isExpenseList && Number(val) >= 100000) setIs100kDonor(true);
                   }}
                   className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-rajdhani font-semibold text-base"
                   placeholder={t('list_amount_ph')}
@@ -1211,29 +1336,31 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5 font-battambang">
-                  ចំណាំ ឬទីលំនៅ (ភូមិ/ឃុំ/ស្រុក)
+                  {isExpenseList ? 'កំណត់សម្គាល់បន្ថែម ឬលេខប័ណ្ណទូទាត់' : 'ចំណាំ ឬទីលំនៅ (ភូមិ/ឃុំ/ស្រុក)'}
                 </label>
                 <input
                   type="text"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#028090] font-battambang text-[14.5px]"
-                  placeholder="ឧ. ច្រាត់, ត្រពាំងវិហារ, ភ្នំពេញ..."
+                  placeholder={isExpenseList ? 'ឧ. បង់ថ្លៃរួច, មានវិក្កយបត្រ...' : 'ឧ. ច្រាត់, ត្រពាំងវិហារ, ភ្នំពេញ...'}
                 />
               </div>
 
-              <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-transparent">
-                <input 
-                  type="checkbox" 
-                  id="is100kDonor" 
-                  checked={is100kDonor}
-                  onChange={(e) => setIs100kDonor(e.target.checked)}
-                  className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
-                />
-                <label htmlFor="is100kDonor" className="text-[14px] font-battambang text-gray-700 dark:text-slate-200 select-none cursor-pointer">
-                  ថវិកាកម្រិតខ្ពស់
-                </label>
-              </div>
+              {!isExpenseList && (
+                <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-transparent">
+                  <input 
+                    type="checkbox" 
+                    id="is100kDonor" 
+                    checked={is100kDonor}
+                    onChange={(e) => setIs100kDonor(e.target.checked)}
+                    className="w-5 h-5 rounded text-[#028090] focus:ring-[#028090] border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer"
+                  />
+                  <label htmlFor="is100kDonor" className="text-[14px] font-battambang text-gray-700 dark:text-slate-200 select-none cursor-pointer">
+                    ថវិកាកម្រិតខ្ពស់
+                  </label>
+                </div>
+              )}
 
               {!editingRecord && (
                 <div className="flex items-center gap-3 p-3.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-transparent">
@@ -1242,7 +1369,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                   </div>
                   <div className="flex-1">
                     <h4 className="text-sm sm:text-[15px] font-battambang text-gray-900 dark:text-white">ជូនដំណឹងជាសាធារណៈ</h4>
-                    <p className="text-[12px] font-battambang text-gray-500 dark:text-slate-400">អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ</p>
+                    <p className="text-[12px] font-battambang text-gray-500 dark:text-slate-400">
+                      {isExpenseList ? 'អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីការចំណាយនេះ' : 'អ្នកគ្រប់គ្នានឹងទទួលបានការជូនដំណឹងពីទិន្នន័យនេះ'}
+                    </p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input 
@@ -1775,6 +1904,15 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <p>ថ្ងៃខែឆ្នាំទាញយក៖ {getKhmerDate()}</p>
         </div>
       </div>
+
+      {showExpenseReportModal && selectedCategory && (
+        <CeremonyExpenseReportModal
+          isOpen={showExpenseReportModal}
+          onClose={() => setShowExpenseReportModal(false)}
+          categoryName={selectedCategory.name}
+          records={records as any}
+        />
+      )}
     </div>
   );
 }

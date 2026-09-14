@@ -115,6 +115,7 @@ export function isHighTierIndividualDonor(name: string, categoryName?: string): 
   // Exclude loans and withdrawals
   if (n === 'ខ្ចី' || n === 'មិនស្គាល់ឈ្មោះ') return false;
   if (categoryName === 'លុយជាងដក') return false;
+  if (categoryName?.includes('ចំណាយ') || categoryName?.includes('បញ្ជីថវិការចំណាយ')) return false;
   if (n.startsWith('ជាងអ៊ុំ')) return false;
 
   // Exclude pure temple collection boxes
@@ -535,8 +536,9 @@ router.post('/records', requireAuth, requireAdmin, async (req, res) => {
   if (notify_public) {
     try {
       const n = data[0];
+      const isExpenseCat = category_name?.includes('ចំណាយ');
       await supabaseAdmin.from('app_notifications').insert([{
-        title: 'ឈ្មោះថ្មីត្រូវបានបន្ថែមក្នុងបញ្ជី',
+        title: isExpenseCat ? 'ចំណាយថ្មីក្នុងកម្មវិធីបុណ្យ' : 'ឈ្មោះថ្មីត្រូវបានបន្ថែមក្នុងបញ្ជី',
         message: `${n.name} (${n.amount.toLocaleString()}៛) ក្នុង ${category_name || 'បញ្ជីឈ្មោះ'}`,
         type: 'name_list',
         target_tab: 'manage_name_lists'
