@@ -83,7 +83,7 @@ export default function CeremonyExpensesReportTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
               <h2 className="text-lg sm:text-xl font-battambang font-bold text-gray-900 dark:text-white">
                 របាយការណ៍ថវិការចំណាយក្នុងកម្មវិធីបុណ្យ
               </h2>
