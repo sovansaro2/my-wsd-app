@@ -111,10 +111,10 @@ export default function CeremonyExpensesReportTab() {
             <button
               onClick={() => setShowReportModal(true)}
               disabled={records.length === 0}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-medium font-battambang transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs sm:text-sm font-medium font-battambang transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>ចេញរបាយការណ៍ផ្លូវការ (A4 / PDF / Excel)</span>
+              <span>ចេញរបាយការណ៍បច្ច័យ (ស្លឹក A5)</span>
             </button>
           </div>
         </div>
