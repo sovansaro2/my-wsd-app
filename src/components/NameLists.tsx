@@ -964,33 +964,39 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mt-1"
+                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden mt-1 shadow-sm"
               >
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse table-auto">
+                {isKathina && (
+                  <div className="sm:hidden px-3 py-1.5 bg-slate-50 dark:bg-slate-800/60 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between text-[11px] text-gray-500 dark:text-slate-400 font-battambang">
+                    <span>តារាងឈ្មោះកឋិន (អាចអូសឆ្វេង-ស្ដាំដើម្បីមើលពេញលេញ)</span>
+                    <span className="font-rajdhani font-semibold">← →</span>
+                  </div>
+                )}
+                <div className="overflow-x-auto scrollbar-thin">
+                  <table className={`w-full text-left border-collapse ${isKathina ? 'min-w-[620px] sm:min-w-[720px]' : (isExpenseList ? 'min-w-[580px]' : 'min-w-[460px]')}`}>
                     <thead>
                       <tr className="bg-slate-100/90 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 text-[12px] sm:text-[14px] font-battambang font-medium">
-                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-8 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
-                        <th className="px-1.5 sm:px-4 py-2 sm:py-3 border-r border-gray-200 dark:border-slate-700 w-full">
+                        <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-10 sm:w-12 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ល.រ</th>
+                        <th className={`px-3 sm:px-4 py-2.5 sm:py-3 border-r border-gray-200 dark:border-slate-700 ${isKathina ? 'min-w-[240px] sm:min-w-[300px]' : 'w-full min-w-[180px]'}`}>
                           {isExpenseList ? 'មុខទំនិញ / បរិយាយការចំណាយ' : 'ឈ្មោះសប្បុរសជន'}
                         </th>
                         {isExpenseList && (
                           <>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-24 sm:min-w-[130px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">អ្នកចាត់ចែង/អ្នកទិញ</th>
-                            <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-20 sm:w-32 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ទឹកប្រាក់</th>
+                            <th className="px-2 sm:px-3 py-2.5 sm:py-3 w-24 sm:min-w-[130px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">អ្នកចាត់ចែង/អ្នកទិញ</th>
+                            <th className="px-2.5 sm:px-4 py-2.5 sm:py-3 w-24 sm:w-32 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ទឹកប្រាក់</th>
                           </>
                         )}
                         {isKathina && (
                           <>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[95px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
-                            <th className="px-1.5 sm:px-3 py-2 sm:py-3 w-16 sm:min-w-[105px] text-right whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
-                            <th className="px-1 sm:px-3 py-2 sm:py-3 w-20 sm:min-w-[150px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
+                            <th className="px-2.5 sm:px-3 py-2.5 sm:py-3 w-24 sm:w-28 text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ត្រៃ/លៀង</th>
+                            <th className="px-2.5 sm:px-3 py-2.5 sm:py-3 w-24 sm:w-28 text-right whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
+                            <th className="px-2.5 sm:px-3 py-2.5 sm:py-3 w-28 sm:min-w-[140px] text-center whitespace-nowrap border-r border-gray-200 dark:border-slate-700">ផ្សេងៗ</th>
                           </>
                         )}
                         {!isKathina && !isExpenseList && (
-                          <th className="px-1.5 sm:px-4 py-2 sm:py-3 w-16 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
+                          <th className="px-2 sm:px-4 py-2.5 sm:py-3 w-20 sm:w-28 whitespace-nowrap text-right border-r border-gray-200 dark:border-slate-700">ថវិកា</th>
                         )}
-                        <th className="px-1 sm:px-3 py-2 sm:py-3 w-[84px] sm:w-[115px] text-center whitespace-nowrap">សកម្មភាព</th>
+                        <th className="px-1.5 sm:px-3 py-2.5 sm:py-3 w-20 sm:w-24 text-center whitespace-nowrap">សកម្មភាព</th>
                       </tr>
                     </thead>
                     <tbody className="font-battambang">
@@ -1005,18 +1011,18 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             key={record.id}
                             className="odd:bg-white even:bg-slate-50/70 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 hover:bg-teal-50/70 dark:hover:bg-slate-800/80 transition-colors group border-b border-gray-200/80 dark:border-slate-800/80"
                           >
-                            <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                            <td className="px-2 sm:px-3 py-2 sm:py-3 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
                               <span className="text-[12px] sm:text-[13px] font-medium text-gray-500 dark:text-slate-400 inline-block font-rajdhani">
                                 {index + 1}
                               </span>
                             </td>
-                            <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle border-r border-gray-200/80 dark:border-slate-800">
+                            <td className={`px-3 sm:px-4 py-2 sm:py-3 align-middle border-r border-gray-200/80 dark:border-slate-800 ${isKathina ? 'min-w-[240px] sm:min-w-[300px]' : ''}`}>
                               <div className="flex flex-col justify-center">
-                                <span className="font-normal text-[13.5px] sm:text-[15px] text-gray-900 dark:text-white leading-snug font-battambang whitespace-pre-line">
+                                <span className="font-normal text-[14px] sm:text-[15px] text-gray-900 dark:text-white leading-relaxed font-battambang break-words">
                                   {record.name}
                                 </span>
                                 {record.note && (
-                                  <span className="text-[11px] sm:text-[12px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 font-battambang">
+                                  <span className="text-[11px] sm:text-[12px] text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-1.5 font-battambang">
                                     <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0"></span>
                                     <span className="line-clamp-1">{record.note}</span>
                                   </span>
@@ -1025,12 +1031,12 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             </td>
                             {isExpenseList && (
                               <>
-                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                <td className="px-2 sm:px-3 py-2 sm:py-3 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
                                   <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang whitespace-nowrap">
                                     {record.referrer || '-'}
                                   </span>
                                 </td>
-                                <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
+                                <td className="px-2.5 sm:px-4 py-2 sm:py-3 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
                                   <span className="text-[13px] sm:text-[15px] font-semibold text-red-600 dark:text-red-400 whitespace-nowrap font-rajdhani">
                                     {formatCurrency(record.amount)}
                                   </span>
@@ -1039,31 +1045,31 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                             )}
                             {isKathina && (
                               <>
-                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang whitespace-nowrap">
+                                <td className="px-2.5 sm:px-3 py-2 sm:py-3 text-center align-middle border-r border-gray-200/80 dark:border-slate-800 whitespace-nowrap">
+                                  <span className="text-[13px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
                                     {record.metadata?.trai_liang || '-'}
                                   </span>
                                 </td>
-                                <td className="px-1.5 sm:px-3 py-1.5 sm:py-2.5 text-right align-middle border-r border-gray-200/80 dark:border-slate-800">
-                                  <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-battambang">
-                                    {record.amount > 0 ? formatCurrency(record.amount) : '-'}
+                                <td className="px-2.5 sm:px-3 py-2 sm:py-3 text-right align-middle border-r border-gray-200/80 dark:border-slate-800 whitespace-nowrap">
+                                  <span className="text-[13px] sm:text-[15px] font-semibold text-[#028090] dark:text-teal-400 font-rajdhani">
+                                    {record.amount > 0 ? `${record.amount.toLocaleString()} ៛` : '-'}
                                   </span>
                                 </td>
-                                <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 text-center align-middle border-r border-gray-200/80 dark:border-slate-800 max-w-[200px] sm:max-w-none">
-                                  <span className="text-[12.5px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang block sm:inline-block sm:whitespace-nowrap truncate sm:overflow-visible">
+                                <td className="px-2.5 sm:px-3 py-2 sm:py-3 text-center align-middle border-r border-gray-200/80 dark:border-slate-800">
+                                  <span className="text-[13px] sm:text-[14px] text-gray-800 dark:text-slate-200 font-battambang">
                                     {record.metadata?.others || '-'}
                                   </span>
                                 </td>
                               </>
                             )}
                             {!isKathina && !isExpenseList && (
-                              <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
-                                <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-battambang">
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 align-middle text-right border-r border-gray-200/80 dark:border-slate-800">
+                                <span className="text-[13px] sm:text-[15px] font-medium text-[#028090] dark:text-teal-400 whitespace-nowrap font-rajdhani">
                                   {formatCurrency(record.amount)}
                                 </span>
                               </td>
                             )}
-                            <td className="px-1 sm:px-3 py-1.5 sm:py-2.5 align-middle text-center w-[84px] sm:w-[115px]">
+                            <td className="px-1.5 sm:px-3 py-2 sm:py-3 align-middle text-center w-20 sm:w-24">
                               <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                                 {userRole === 'admin' && selectedCategory?.name !== 'លុយជាងដក' && !isExpenseList && (
                                   <button 
@@ -1862,14 +1868,14 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <thead>
             <tr className="border-b-2 border-black font-moul text-[13px]">
               <th className="py-2 px-2 text-left border border-black w-12 text-center">ល.រ</th>
-              <th className="py-2 px-4 text-left border border-black">ឈ្មោះសប្បុរសជន</th>
+              <th className="py-2 px-4 text-left border border-black min-w-[180px]">ឈ្មោះសប្បុរសជន</th>
               {isKathina && (
                 <>
-                  <th className="py-2 px-3 text-center border border-black">ត្រៃ/លៀង</th>
-                  <th className="py-2 px-3 text-center border border-black">ផ្សេងៗ</th>
+                  <th className="py-2 px-3 text-center border border-black w-24">ត្រៃ/លៀង</th>
+                  <th className="py-2 px-3 text-center border border-black w-28">ផ្សេងៗ</th>
                 </>
               )}
-              <th className="py-2 px-4 text-right border border-black">បច្ច័យ</th>
+              <th className="py-2 px-4 text-right border border-black w-28">បច្ច័យ</th>
               {hasAnyNote && <th className="py-2 px-4 text-left border border-black">កំណត់សម្គាល់</th>}
             </tr>
           </thead>
@@ -1877,7 +1883,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             {filteredRecords.map((r, i) => (
               <tr key={r.id} className="border-b border-black/50 text-[13px]">
                 <td className="py-2 px-2 border border-black text-center">{toKhmerNum(i + 1)}</td>
-                <td className="py-2 px-4 border border-black whitespace-pre-line">{r.name}</td>
+                <td className="py-2 px-4 border border-black leading-relaxed">{r.name}</td>
                 {isKathina && (
                   <>
                     <td className="py-2 px-3 text-center border border-black">{r.metadata?.trai_liang || (r.note?.includes('ត្រៃ') || r.note?.includes('លៀង') ? r.note : '')}</td>
