@@ -20,7 +20,8 @@ import "./server/types.d";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  // Support dynamic PORT on Render while strictly adhering to port 3000 in AI Studio
+  const PORT = process.env.RENDER ? (Number(process.env.PORT) || 10000) : 3000;
 
   // Disable Express signature
   app.disable('x-powered-by');
@@ -74,6 +75,9 @@ async function startServer() {
         origin.endsWith('.anajak.cloud') ||
         origin.endsWith('.run.app') ||
         origin.endsWith('.google.com') ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.pages.dev') ||
+        origin.endsWith('.cloudflare.com') ||
         origin.includes('localhost');
 
       if (isAllowed) {
@@ -87,6 +91,11 @@ async function startServer() {
     maxAge: 86400
   }));
   app.use(express.json());
+
+  // Health Check for Render, Railway & monitoring services
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok", uptime: process.uptime(), timestamp: new Date().toISOString() });
+  });
 
   app.use("/api/auth", authRoutes);    
   app.use("/api", financialRoutes);

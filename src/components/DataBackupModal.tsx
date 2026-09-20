@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Database, FileSpreadsheet, FileCode, Download, Check, X, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
-import { api } from '../lib/apiClient';
+import { api, API_BASE_URL } from '../lib/apiClient';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface DataBackupModalProps {
@@ -24,7 +24,7 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
       setStatusMessage(null);
 
       const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/backup/excel', {
+      const response = await fetch(`${API_BASE_URL}/api/backup/excel`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

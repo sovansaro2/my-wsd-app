@@ -1,5 +1,5 @@
 
-const API_BASE_URL = ''; 
+export const API_BASE_URL = ((import.meta as any).env?.VITE_API_BASE_URL || '').replace(/\/$/, ''); 
 
 async function apiFetch(path: string, options: RequestInit = {}, retries = 1): Promise<any> {
   const token = localStorage.getItem('access_token');
