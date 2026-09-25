@@ -1723,7 +1723,7 @@ export default function AccountProfile({
                   <img 
                     src="/logo.png" 
                     alt="Avatar" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1.5"
                     onError={(e) => {
                       (e.target as HTMLElement).style.display = 'none';
                     }}

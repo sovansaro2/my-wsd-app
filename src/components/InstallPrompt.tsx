@@ -184,8 +184,8 @@ export default function InstallPrompt() {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="w-14 h-14 rounded-2xl overflow-hidden mb-3 border border-gray-200 dark:border-slate-700 shadow-sm">
-                <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
+              <div className="w-14 h-14 rounded-2xl overflow-hidden mb-3 border border-gray-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-1 bg-white dark:bg-slate-800">
+                <img src="/logo.png" alt="App Icon" className="w-full h-full object-contain" />
               </div>
 
               <div className="flex items-center gap-1.5 text-[#028090] dark:text-teal-400 text-xs font-semibold mb-1">
@@ -258,8 +258,8 @@ export default function InstallPrompt() {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="w-14 h-14 rounded-2xl overflow-hidden mb-3 border border-gray-200 dark:border-slate-700 shadow-sm">
-                <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
+              <div className="w-14 h-14 rounded-2xl overflow-hidden mb-3 border border-gray-200 dark:border-slate-700 shadow-sm flex items-center justify-center p-1 bg-white dark:bg-slate-800">
+                <img src="/logo.png" alt="App Icon" className="w-full h-full object-contain" />
               </div>
 
               <h3 className="text-gray-900 dark:text-white text-base font-semibold leading-snug">
@@ -327,8 +327,8 @@ export default function InstallPrompt() {
           className="fixed bottom-20 left-4 right-4 z-50 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 shadow-xl overflow-hidden font-battambang max-w-lg mx-auto"
         >
           <div className="p-4 flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shrink-0">
-              <img src="/icon.png" alt="App Icon" className="w-full h-full object-cover" />
+            <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shrink-0 flex items-center justify-center p-1 bg-white dark:bg-slate-800">
+              <img src="/logo.png" alt="App Icon" className="w-full h-full object-contain" />
             </div>
             
             <div className="flex-1">

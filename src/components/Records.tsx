@@ -11,6 +11,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { saveCertificate } from '../lib/certificateUtils';
 import { saveReport } from '../lib/reportUtils';
 import { getImageDataUrl } from '../lib/utils';
+import { logoBase64 } from '../lib/logoBase64';
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 import { playSuccessSound } from '../lib/sound';
 
@@ -137,7 +138,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     setSelectedPeriod(period);
   }, [userRole]);
 
-  const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
+  const [logoDataUrl, setLogoDataUrl] = useState<string>(logoBase64 || '/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
   const [isSeilModalOpen, setIsSeilModalOpen] = useState(false);

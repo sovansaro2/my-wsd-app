@@ -9,6 +9,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { toPng } from 'html-to-image';
 import { saveCertificate } from '../lib/certificateUtils';
 import { getImageDataUrl } from '../lib/utils';
+import { logoBase64 } from '../lib/logoBase64';
 import { jsPDF } from "jspdf";
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 import { playSuccessSound } from '../lib/sound';
@@ -174,7 +175,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [is100kDonor, setIs100kDonor] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [logoDataUrl, setLogoDataUrl] = useState<string>('/logo.png');
+  const [logoDataUrl, setLogoDataUrl] = useState<string>(logoBase64 || '/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
   useEffect(() => {
