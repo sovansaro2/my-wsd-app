@@ -20,8 +20,8 @@ import "./server/types.d";
 
 async function startServer() {
   const app = express();
-  // Support dynamic PORT on Render while strictly adhering to port 3000 in AI Studio
-  const PORT = process.env.RENDER ? (Number(process.env.PORT) || 10000) : 3000;
+  // Support dynamic PORT on Cloud Platforms (Koyeb, Render, Railway) while defaulting to 3000
+  const PORT = Number(process.env.PORT) || 3000;
 
   // Disable Express signature
   app.disable('x-powered-by');
