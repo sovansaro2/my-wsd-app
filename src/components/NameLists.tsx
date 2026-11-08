@@ -178,10 +178,25 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   const [logoDataUrl, setLogoDataUrl] = useState<string>(logoBase64 || '/logo.png');
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
+  const selectedCatRef = useRef<ListCategory | null>(null);
+  selectedCatRef.current = selectedCategory;
+
   useEffect(() => {
     fetchCategories();
     getImageDataUrl('/logo.png').then(setLogoDataUrl);
     getImageDataUrl('/Sign.png').then(setSignDataUrl);
+
+    const onDataRefreshed = () => {
+      fetchCategories();
+      if (selectedCatRef.current) {
+        fetchRecords(selectedCatRef.current.id);
+      }
+    };
+
+    window.addEventListener('wsd-data-refreshed', onDataRefreshed);
+    return () => {
+      window.removeEventListener('wsd-data-refreshed', onDataRefreshed);
+    };
   }, []);
 
   useEffect(() => {

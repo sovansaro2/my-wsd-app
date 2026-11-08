@@ -7,10 +7,15 @@ const router = Router();
 router.get('/seil-periods', async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin.from('seil_periods').select('*').order('created_at', { ascending: false });
-    if (error) return res.status(400).json({ detail: error.message });
+    if (error) {
+      if (error.message?.includes('fetch failed')) {
+        return res.json([]);
+      }
+      return res.status(400).json({ detail: error.message });
+    }
     res.json(data || []);
   } catch (e: any) {
-    res.status(500).json({ detail: e.message || 'Error fetching seil periods' });
+    res.json([]);
   }
 });
 
@@ -46,10 +51,15 @@ router.get('/financial-records', async (req, res) => {
     let query = supabaseAdmin.from('financial_records').select('*').order('created_at', { ascending: false });
     if (seil_id) query = query.eq('seil_id', seil_id);
     const { data, error } = await query;
-    if (error) return res.status(400).json({ detail: error.message });
+    if (error) {
+      if (error.message?.includes('fetch failed')) {
+        return res.json([]);
+      }
+      return res.status(400).json({ detail: error.message });
+    }
     res.json(data || []);
   } catch (e: any) {
-    res.status(500).json({ detail: e.message || 'Error fetching financial records' });
+    res.json([]);
   }
 });
 

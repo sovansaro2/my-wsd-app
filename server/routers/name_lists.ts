@@ -203,6 +203,7 @@ router.get('/donors-100k', async (req, res) => {
 
     res.json(result);
   } catch (error: any) {
+    if (error?.message?.includes('fetch failed')) return res.json([]);
     res.status(400).json({ detail: error.message });
   }
 });
@@ -351,6 +352,9 @@ router.get('/top-benefactors', async (req, res) => {
       donors
     });
   } catch (error: any) {
+    if (error?.message?.includes('fetch failed')) {
+      return res.json({ total_donors: 0, deduplicated_overlapping_count: 0, donors: [] });
+    }
     res.status(500).json({ detail: error.message });
   }
 });
@@ -474,9 +478,16 @@ router.get('/search-donors', async (req, res) => {
 });
 
 router.get('/categories', async (req, res) => {
-  const { data, error } = await supabaseAdmin.from('name_list_categories').select('*').order('created_at', { ascending: false });
-  if (error) return res.status(400).json({ detail: error.message });
-  res.json(data);
+  try {
+    const { data, error } = await supabaseAdmin.from('name_list_categories').select('*').order('created_at', { ascending: false });
+    if (error) {
+      if (error.message?.includes('fetch failed')) return res.json([]);
+      return res.status(400).json({ detail: error.message });
+    }
+    res.json(data || []);
+  } catch (e) {
+    res.json([]);
+  }
 });
 
 router.post('/categories', requireAuth, requireAdmin, async (req, res) => {
@@ -501,12 +512,19 @@ router.delete('/categories/:id', requireAuth, requireAdmin, async (req, res) => 
 });
 
 router.get('/records', async (req, res) => {
-  const category_id = req.query.category_id as string;
-  let query = supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false });
-  if (category_id) query = query.eq('category_id', category_id);
-  const { data, error } = await query;
-  if (error) return res.status(400).json({ detail: error.message });
-  res.json(data);
+  try {
+    const category_id = req.query.category_id as string;
+    let query = supabaseAdmin.from('name_list_records').select('*').order('created_at', { ascending: false });
+    if (category_id) query = query.eq('category_id', category_id);
+    const { data, error } = await query;
+    if (error) {
+      if (error.message?.includes('fetch failed')) return res.json([]);
+      return res.status(400).json({ detail: error.message });
+    }
+    res.json(data || []);
+  } catch (e) {
+    res.json([]);
+  }
 });
 
 router.post('/records', requireAuth, requireAdmin, async (req, res) => {

@@ -161,6 +161,15 @@ export default function Dashboard({
 
   useEffect(() => {
     fetchData();
+
+    const onDataRefreshed = () => {
+      fetchData();
+    };
+
+    window.addEventListener('wsd-data-refreshed', onDataRefreshed);
+    return () => {
+      window.removeEventListener('wsd-data-refreshed', onDataRefreshed);
+    };
   }, []);
 
   const fetchData = async () => {

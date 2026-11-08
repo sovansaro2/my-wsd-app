@@ -19,7 +19,8 @@ import {
   AlertTriangle,
   Terminal,
   Search,
-  CalendarDays
+  CalendarDays,
+  CheckCircle2
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -28,6 +29,9 @@ import { LoadingScreen } from './components/ui/LoadingScreen';
 import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
 import InstallPrompt from './components/InstallPrompt';
+import { NetworkStatusBadge } from './components/NetworkStatusBadge';
+import { OfflineOutboxModal } from './components/OfflineOutboxModal';
+import { syncEngine } from './lib/syncEngine';
 
 const BuddhistCalendar = lazy(() => import('./components/BuddhistCalendar'));
 const AccountProfile = lazy(() => import('./components/AccountProfile'));
@@ -112,6 +116,36 @@ export default function App() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
   const [showGlobalDonorSearch, setShowGlobalDonorSearch] = useState(false);
+  const [showOutboxModal, setShowOutboxModal] = useState(false);
+  const [syncToast, setSyncToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    const onSyncCompleted = (e: any) => {
+      const { success, failed } = e.detail || {};
+      if (success > 0 && failed === 0) {
+        setSyncToast({
+          message: language === 'en'
+            ? `Successfully synced ${success} item${success > 1 ? 's' : ''}`
+            : `បានបញ្ជូនទិន្នន័យ ${success} ទៅកាន់ម៉ាស៊ីនមេដោយជោគជ័យ`,
+          type: 'success'
+        });
+        setTimeout(() => setSyncToast(null), 4000);
+      } else if (failed > 0) {
+        setSyncToast({
+          message: language === 'en'
+            ? `Sync completed: ${success} synced, ${failed} failed`
+            : `បញ្ជូនទិន្នន័យ៖ ជោគជ័យ ${success}, មិនទាន់ជោគជ័យ ${failed}`,
+          type: 'error'
+        });
+        setTimeout(() => setSyncToast(null), 5000);
+      }
+    };
+
+    window.addEventListener('wsd-sync-completed', onSyncCompleted);
+    return () => {
+      window.removeEventListener('wsd-sync-completed', onSyncCompleted);
+    };
+  }, [language]);
 
   
   useEffect(() => {
@@ -159,6 +193,7 @@ export default function App() {
 
       fetchUserRole();
       fetchNotifications();
+      const stopSync = syncEngine.startBackgroundSyncListener();
       
       const onFocus = () => fetchNotifications();
       window.addEventListener('focus', onFocus);
@@ -169,6 +204,7 @@ export default function App() {
         window.removeEventListener('auth-token-expired', onAuthExpired);
         window.removeEventListener('focus', onFocus);
         clearInterval(interval);
+        stopSync();
       };
     } else {
       setIsInitializing(false);
@@ -182,6 +218,25 @@ export default function App() {
     try {
       const data = await api.getMe();
       if (!data) {
+        // Fallback to local profile cache if available
+        const cached = localStorage.getItem('cached_user_profile');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            setCurrentUser(parsed);
+            const role = (parsed?.role as Role) || 'user';
+            setActualRole(role);
+            setUserRole(role);
+            return;
+          } catch {}
+        }
+
+        // If offline, preserve the existing session and do not wipe credentials
+        if (!navigator.onLine) {
+          return;
+        }
+
+        // Only clear if online and user is genuinely unauthenticated
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('cached_user_profile');
@@ -198,6 +253,21 @@ export default function App() {
       setActualRole(role);
       setUserRole(role);
     } catch {
+      // In case of network errors or offline, restore cached profile
+      const cached = localStorage.getItem('cached_user_profile');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          setCurrentUser(parsed);
+          const role = (parsed?.role as Role) || 'user';
+          setActualRole(role);
+          setUserRole(role);
+          return;
+        } catch {}
+      }
+      if (!navigator.onLine) {
+        return;
+      }
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('cached_user_profile');
@@ -443,6 +513,7 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
+          <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
           <button
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer"
@@ -483,13 +554,16 @@ export default function App() {
       </header>
 
       <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
-        <h1 className={`text-white select-none pt-0.5 truncate mr-2 ${
-          language === 'en'
-            ? 'font-rajdhani font-bold text-lg sm:text-xl md:text-2xl tracking-wide uppercase'
-            : 'font-title font-normal text-lg sm:text-xl md:text-2xl tracking-normal'
-        }`}>
-          {t('app_title_mobile')}
-        </h1>
+        <div className="flex items-center gap-2 min-w-0 mr-2">
+          <h1 className={`text-white select-none pt-0.5 truncate ${
+            language === 'en'
+              ? 'font-rajdhani font-bold text-lg sm:text-xl tracking-wide uppercase'
+              : 'font-title font-normal text-lg sm:text-xl tracking-normal'
+          }`}>
+            {t('app_title_mobile')}
+          </h1>
+          <NetworkStatusBadge className="text-amber-200 dark:text-amber-300" onClick={() => setShowOutboxModal(true)} />
+        </div>
         <div className="relative shrink-0 flex items-center gap-1">
           <button
             onClick={() => setShowGlobalDonorSearch(true)}
@@ -896,6 +970,21 @@ export default function App() {
       </nav>
       
       <InstallPrompt />
+      <OfflineOutboxModal 
+        isOpen={showOutboxModal} 
+        onClose={() => setShowOutboxModal(false)} 
+      />
+
+      {syncToast && (
+        <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-xl border border-gray-200 dark:border-slate-800 animate-slide-up text-xs font-battambang select-none">
+          {syncToast.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+          ) : (
+            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+          )}
+          <span className="text-gray-900 dark:text-white font-medium">{syncToast.message}</span>
+        </div>
+      )}
 
       {showGlobalDonorSearch && (
         <Suspense fallback={null}>

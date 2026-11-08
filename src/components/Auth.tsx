@@ -461,7 +461,19 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
 
               {error && (
                 <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-[13.5px] leading-relaxed font-battambang">
-                  {error}
+                  <div>{error}</div>
+                  {error.includes('supabase.com') && (
+                    <div className="mt-2.5 pt-2 border-t border-rose-200/80">
+                      <a 
+                        href="https://supabase.com/dashboard" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="inline-flex items-center gap-1.5 font-medium text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors text-xs"
+                      >
+                        <span>👉 ចូលទៅកាន់ Supabase Dashboard (ចុច Restore Project)</span>
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
               {success && (

@@ -271,10 +271,25 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
     }
   };
 
+  const selectedPeriodRef = useRef<SeilPeriod | null>(null);
+  selectedPeriodRef.current = selectedPeriod;
+
   useEffect(() => {
     fetchPeriods();
     getImageDataUrl('/logo.png').then(setLogoDataUrl);
     getImageDataUrl('/Sign.png').then(setSignDataUrl);
+
+    const onDataRefreshed = () => {
+      fetchPeriods();
+      if (selectedPeriodRef.current) {
+        fetchRecords(selectedPeriodRef.current.id);
+      }
+    };
+
+    window.addEventListener('wsd-data-refreshed', onDataRefreshed);
+    return () => {
+      window.removeEventListener('wsd-data-refreshed', onDataRefreshed);
+    };
   }, []);
 
   useEffect(() => {
