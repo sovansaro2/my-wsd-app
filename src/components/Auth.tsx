@@ -160,6 +160,11 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
         if (data.refresh_token) {
           localStorage.setItem('refresh_token', data.refresh_token);
         }
+        if (data.user) {
+          try {
+            localStorage.setItem('cached_user_profile', JSON.stringify(data.user));
+          } catch {}
+        }
 
         if (rememberMe) {
           try {

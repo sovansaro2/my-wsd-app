@@ -53,13 +53,94 @@ export async function setCache<T = any>(key: string, data: T): Promise<void> {
 }
 
 /**
- * Retrieve cached data from IndexedDB
+ * Retrieve cached data from IndexedDB with intelligent cross-query fallback
  */
 export async function getCache<T = any>(key: string): Promise<T | null> {
   try {
     const envelope = await cacheStore.getItem<CacheEnvelope<T>>(key);
-    if (!envelope) return null;
-    return envelope.data;
+    if (envelope && envelope.data !== null && envelope.data !== undefined) {
+      return envelope.data;
+    }
+
+    // 1. Intelligent cross-query fallback for financial records by seil_id
+    if (key.startsWith('/api/financial-records')) {
+      const parts = key.split('seil_id=');
+      const seilId = parts.length > 1 ? parts[1].split('&')[0] : '';
+
+      // If specific seil requested but not cached, look in master financial-records list
+      if (seilId) {
+        const masterEnvelope = 
+          await cacheStore.getItem<CacheEnvelope<any[]>>('/api/financial-records?seil_id=') ||
+          await cacheStore.getItem<CacheEnvelope<any[]>>('/api/financial-records');
+        if (masterEnvelope?.data && Array.isArray(masterEnvelope.data)) {
+          const filtered = masterEnvelope.data.filter((r: any) => r.seil_id === seilId);
+          // Auto-cache this specific query for next time
+          setCache(key, filtered).catch(() => {});
+          return filtered as unknown as T;
+        }
+      } else {
+        // Master list was requested, but only individual seils may be cached.
+        // Reconstruct unified list from all cached financial records!
+        const merged: any[] = [];
+        const seenIds = new Set<string>();
+        await cacheStore.iterate<CacheEnvelope<any>, void>((val, k) => {
+          if (k.startsWith('/api/financial-records?seil_id=') && val?.data && Array.isArray(val.data)) {
+            for (const item of val.data) {
+              if (item?.id && !seenIds.has(item.id)) {
+                seenIds.add(item.id);
+                merged.push(item);
+              }
+            }
+          }
+        });
+        if (merged.length > 0) {
+          return merged as unknown as T;
+        }
+      }
+    }
+
+    // 2. Intelligent fallback for Name list records
+    if (key.startsWith('/api/name-lists/records')) {
+      const parts = key.split('category_id=');
+      const catId = parts.length > 1 ? parts[1].split('&')[0] : '';
+      if (!catId) {
+        const mergedCats: any[] = [];
+        const seenIds = new Set<string>();
+        await cacheStore.iterate<CacheEnvelope<any>, void>((val, k) => {
+          if (k.startsWith('/api/name-lists/records?category_id=') && val?.data && Array.isArray(val.data)) {
+            for (const item of val.data) {
+              if (item?.id && !seenIds.has(item.id)) {
+                seenIds.add(item.id);
+                mergedCats.push(item);
+              }
+            }
+          }
+        });
+        if (mergedCats.length > 0) return mergedCats as unknown as T;
+      }
+    }
+
+    // 3. Fallback to localStorage mirrors for critical top-level data
+    if (key === '/api/seil-periods') {
+      try {
+        const saved = localStorage.getItem('cached_seil_periods');
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    if (key === '/api/financial-records?seil_id=' || key === '/api/financial-records') {
+      try {
+        const saved = localStorage.getItem('cached_financial_records');
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    if (key === '/api/auth/me') {
+      try {
+        const saved = localStorage.getItem('cached_user_profile');
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+
+    return null;
   } catch (error) {
     console.warn(`[OfflineStore] Failed to read cached key "${key}":`, error);
     return null;
@@ -477,4 +558,101 @@ export async function queueOfflineMutation(
   });
 
   return synthesizedResponse;
+}
+
+/**
+ * Proactively fetches and caches all temple data from the server into IndexedDB
+ * so the entire application is 100% available offline, including all individual
+ * seil periods, donor lists, categories, and calendar events.
+ */
+let isPrewarming = false;
+export async function prewarmOfflineDatabase(): Promise<void> {
+  if (isPrewarming || !isBrowserOnline()) return;
+
+  isPrewarming = true;
+  try {
+    const API_BASE_URL = ((import.meta as any).env?.VITE_API_BASE_URL || '').replace(/\/$/, '');
+    const token = localStorage.getItem('access_token');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
+    // 1. Fetch & cache Seil periods
+    const seilsRes = await fetch(`${API_BASE_URL}/api/seil-periods`, { headers });
+    if (seilsRes.ok) {
+      const seils = await seilsRes.json();
+      await setCache('/api/seil-periods', seils);
+      try { localStorage.setItem('cached_seil_periods', JSON.stringify(seils)); } catch {}
+
+      // 2. Fetch all financial records in one shot
+      const finRes = await fetch(`${API_BASE_URL}/api/financial-records?seil_id=`, { headers });
+      if (finRes.ok) {
+        const allRecords = await finRes.json();
+        await setCache('/api/financial-records?seil_id=', allRecords);
+        await setCache('/api/financial-records', allRecords);
+        try { localStorage.setItem('cached_financial_records', JSON.stringify(allRecords)); } catch {}
+
+        // Slices and caches records for EVERY single Seil period into IndexedDB!
+        if (Array.isArray(allRecords) && Array.isArray(seils)) {
+          for (const s of seils) {
+            const periodRecords = allRecords.filter((r: any) => r.seil_id === s.id);
+            await setCache(`/api/financial-records?seil_id=${s.id}`, periodRecords);
+          }
+        }
+      }
+    }
+
+    // 3. Fetch & cache Name List categories and their records
+    const catRes = await fetch(`${API_BASE_URL}/api/name-lists/categories`, { headers });
+    if (catRes.ok) {
+      const categories = await catRes.json();
+      await setCache('/api/name-lists/categories', categories);
+
+      if (Array.isArray(categories)) {
+        for (const cat of categories) {
+          const catRecRes = await fetch(`${API_BASE_URL}/api/name-lists/records?category_id=${cat.id}`, { headers });
+          if (catRecRes.ok) {
+            const catRecords = await catRecRes.json();
+            await setCache(`/api/name-lists/records?category_id=${cat.id}`, catRecords);
+          }
+        }
+      }
+    }
+
+    // 4. Fetch 100k Donors
+    const d100Res = await fetch(`${API_BASE_URL}/api/name-lists/donors-100k`, { headers });
+    if (d100Res.ok) {
+      const d100 = await d100Res.json();
+      await setCache('/api/name-lists/donors-100k', d100);
+    }
+
+    // 5. Fetch Top Benefactors
+    const benefactorsRes = await fetch(`${API_BASE_URL}/api/name-lists/top-benefactors`, { headers });
+    if (benefactorsRes.ok) {
+      const benefactors = await benefactorsRes.json();
+      await setCache('/api/name-lists/top-benefactors', benefactors);
+    }
+
+    // 6. Fetch Buddhist Events
+    const eventsRes = await fetch(`${API_BASE_URL}/api/events`, { headers });
+    if (eventsRes.ok) {
+      const events = await eventsRes.json();
+      await setCache('/api/events', events);
+    }
+
+    // 7. Fetch User Profile if authenticated
+    if (token) {
+      const meRes = await fetch(`${API_BASE_URL}/api/auth/me`, { headers });
+      if (meRes.ok) {
+        const me = await meRes.json();
+        await setCache('/api/auth/me', me);
+        try { localStorage.setItem('cached_user_profile', JSON.stringify(me)); } catch {}
+      }
+    }
+  } catch (err) {
+    console.warn('[OfflineStore] Pre-warm notice:', err);
+  } finally {
+    isPrewarming = false;
+  }
 }

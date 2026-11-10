@@ -75,10 +75,47 @@ export default function App() {
     return 'home';
   });
 
-  const [actualRole, setActualRole] = useState<Role>(null);
-  const [userRole, setUserRole] = useState<Role>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [actualRole, setActualRole] = useState<Role>(() => {
+    try {
+      const cached = localStorage.getItem('cached_user_profile');
+      if (cached) {
+        const p = JSON.parse(cached);
+        return (p?.role as Role) || null;
+      }
+    } catch {}
+    return null;
+  });
+
+  const [userRole, setUserRole] = useState<Role>(() => {
+    try {
+      const cached = localStorage.getItem('cached_user_profile');
+      if (cached) {
+        const p = JSON.parse(cached);
+        return (p?.role as Role) || null;
+      }
+    } catch {}
+    return null;
+  });
+
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    try {
+      const cached = localStorage.getItem('cached_user_profile');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch {}
+    return null;
+  });
+
+  const [isInitializing, setIsInitializing] = useState(() => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const cached = localStorage.getItem('cached_user_profile');
+      if (token && cached) return false;
+      if (!token) return false;
+    } catch {}
+    return true;
+  });
   
   useEffect(() => {
     try {
@@ -177,20 +214,16 @@ export default function App() {
     };
     window.addEventListener('auth-token-expired', onAuthExpired);
 
+    // Proactively prewarm all offline tables into IndexedDB in the background immediately
+    api.prewarmOfflineDatabase().catch(() => {});
+
+    const handleOnlinePrewarm = () => {
+      api.prewarmOfflineDatabase().catch(() => {});
+    };
+    window.addEventListener('online', handleOnlinePrewarm);
+
     const token = localStorage.getItem('access_token');
     if (token) {
-      try {
-        const cached = localStorage.getItem('cached_user_profile');
-        if (cached) {
-          const profile = JSON.parse(cached);
-          if (profile?.role) {
-            setActualRole(profile.role as Role);
-            setUserRole(profile.role as Role);
-            setCurrentUser(profile);
-          }
-        }
-      } catch {}
-
       fetchUserRole();
       fetchNotifications();
       const stopSync = syncEngine.startBackgroundSyncListener();
@@ -202,6 +235,7 @@ export default function App() {
       
       return () => {
         window.removeEventListener('auth-token-expired', onAuthExpired);
+        window.removeEventListener('online', handleOnlinePrewarm);
         window.removeEventListener('focus', onFocus);
         clearInterval(interval);
         stopSync();
@@ -210,6 +244,7 @@ export default function App() {
       setIsInitializing(false);
       return () => {
         window.removeEventListener('auth-token-expired', onAuthExpired);
+        window.removeEventListener('online', handleOnlinePrewarm);
       };
     }
   }, []);
@@ -230,19 +265,6 @@ export default function App() {
             return;
           } catch {}
         }
-
-        // If offline, preserve the existing session and do not wipe credentials
-        if (!navigator.onLine) {
-          return;
-        }
-
-        // Only clear if online and user is genuinely unauthenticated
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('cached_user_profile');
-        setCurrentUser(null);
-        setActualRole(null);
-        setUserRole(null);
         return;
       }
       setCurrentUser(data);
@@ -253,7 +275,7 @@ export default function App() {
       setActualRole(role);
       setUserRole(role);
     } catch {
-      // In case of network errors or offline, restore cached profile
+      // In case of network errors or offline, retain cached profile
       const cached = localStorage.getItem('cached_user_profile');
       if (cached) {
         try {
@@ -262,18 +284,8 @@ export default function App() {
           const role = (parsed?.role as Role) || 'user';
           setActualRole(role);
           setUserRole(role);
-          return;
         } catch {}
       }
-      if (!navigator.onLine) {
-        return;
-      }
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('cached_user_profile');
-      setCurrentUser(null);
-      setActualRole(null);
-      setUserRole(null);
     } finally {
       setIsInitializing(false);
     }
@@ -365,6 +377,7 @@ export default function App() {
     setActualRole(role);
     fetchUserRole();
     fetchNotifications();
+    api.prewarmOfflineDatabase().catch(() => {});
   };
 
   if (!userRole) {

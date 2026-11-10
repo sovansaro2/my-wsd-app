@@ -8,6 +8,7 @@ import {
   getPendingOutboxCount,
   removeOutboxItem,
   clearCompletedOutboxItems,
+  prewarmOfflineDatabase,
   type OutboxMethod
 } from './offlineStore';
 
@@ -48,7 +49,8 @@ async function apiFetch(path: string, options: ApiFetchOptions = {}, retries = 1
   }
 
   const controller = new AbortController();
-  const timeoutMs = isBrowserOnline() ? 15000 : 3000;
+  // Fast timeout so offline or degraded networks do not stall UI
+  const timeoutMs = isBrowserOnline() ? 3500 : 1000;
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
@@ -119,11 +121,11 @@ async function apiFetch(path: string, options: ApiFetchOptions = {}, retries = 1
 
     return result;
   } catch (err: any) {
-    // If a GET request fails due to network/timeout, attempt fallback to IndexedDB cache
+    // If a GET request fails due to network/timeout, attempt fallback to IndexedDB cache IMMEDIATELY
     if (isGetOrHead) {
       const cached = await getCache(path);
       if (cached !== null && cached !== undefined) {
-        console.warn(`[apiClient] Network error for "${path}". Fallback to cached data.`);
+        console.warn(`[apiClient] Network error for "${path}". Instant fallback to cached data.`);
         return cached;
       }
     }
@@ -140,7 +142,7 @@ async function apiFetch(path: string, options: ApiFetchOptions = {}, retries = 1
 
     if (retries > 0 && isGetOrHead && isBrowserOnline() && (err.name === 'AbortError' || err.message?.includes('fetch') || err.message?.includes('network'))) {
       clearTimeout(timeoutId);
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 400));
       return apiFetch(path, options, retries - 1);
     }
     if (err.name === 'AbortError') {
@@ -257,5 +259,7 @@ export const api = {
   getPendingOutboxCount,
   removeOutboxItem,
   clearCompletedOutboxItems,
+  prewarmOfflineDatabase,
   rawFetch: (path: string, options: RequestInit = {}) => apiFetch(path, { ...options, skipOfflineQueue: true })
 };
+

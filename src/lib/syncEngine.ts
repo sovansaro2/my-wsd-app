@@ -5,6 +5,7 @@ import {
   getCache, 
   setCache, 
   isBrowserOnline,
+  prewarmOfflineDatabase,
   type OutboxItem 
 } from './offlineStore';
 import { api } from './apiClient';
@@ -111,6 +112,10 @@ class SyncEngine {
       window.dispatchEvent(new CustomEvent('wsd-sync-completed', { detail: result }));
       // Notify components to re-fetch live data from the server
       window.dispatchEvent(new CustomEvent('wsd-data-refreshed'));
+    }
+
+    if (result.success > 0 && isBrowserOnline()) {
+      prewarmOfflineDatabase().catch(() => {});
     }
 
     console.info(`[SyncEngine] Sync completed. Success: ${result.success}, Failed: ${result.failed}`);
