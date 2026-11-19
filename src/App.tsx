@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, type ComponentType } from 'react';
 import { 
   Home, 
   List, 
@@ -33,14 +33,57 @@ import { NetworkStatusBadge } from './components/NetworkStatusBadge';
 import { OfflineOutboxModal } from './components/OfflineOutboxModal';
 import { syncEngine } from './lib/syncEngine';
 
-const BuddhistCalendar = lazy(() => import('./components/BuddhistCalendar'));
-const AccountProfile = lazy(() => import('./components/AccountProfile'));
-const Certificates = lazy(() => import('./components/Certificates'));
-const RecordsComponent = lazy(() => import('./components/Records'));
-const Reports = lazy(() => import('./components/Reports'));
-const NameLists = lazy(() => import('./components/NameLists'));
-const AdminPanel = lazy(() => import('./components/AdminPanel'));
-const GlobalDonorSearch = lazy(() => import('./components/GlobalDonorSearch'));
+function lazyWithRetry<T extends ComponentType<any>>(
+  factory: () => Promise<{ default: T }>,
+  moduleName: string
+) {
+  return lazy(async () => {
+    const storageKey = `lazy_retry_reloaded_${moduleName}`;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const mod = await factory();
+        try {
+          sessionStorage.removeItem(storageKey);
+        } catch {}
+        return mod;
+      } catch (err) {
+        if (attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          continue;
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        const isChunkFetchError =
+          /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk|ChunkLoadError/i.test(
+            message
+          );
+        if (isChunkFetchError && typeof window !== 'undefined') {
+          let alreadyReloaded = false;
+          try {
+            alreadyReloaded = sessionStorage.getItem(storageKey) === '1';
+            if (!alreadyReloaded) {
+              sessionStorage.setItem(storageKey, '1');
+            }
+          } catch {}
+          if (!alreadyReloaded) {
+            window.location.reload();
+            return new Promise<{ default: T }>(() => {});
+          }
+        }
+        throw err;
+      }
+    }
+    return factory();
+  });
+}
+
+const BuddhistCalendar = lazyWithRetry(() => import('./components/BuddhistCalendar'), 'BuddhistCalendar');
+const AccountProfile = lazyWithRetry(() => import('./components/AccountProfile'), 'AccountProfile');
+const Certificates = lazyWithRetry(() => import('./components/Certificates'), 'Certificates');
+const RecordsComponent = lazyWithRetry(() => import('./components/Records'), 'Records');
+const Reports = lazyWithRetry(() => import('./components/Reports'), 'Reports');
+const NameLists = lazyWithRetry(() => import('./components/NameLists'), 'NameLists');
+const AdminPanel = lazyWithRetry(() => import('./components/AdminPanel'), 'AdminPanel');
+const GlobalDonorSearch = lazyWithRetry(() => import('./components/GlobalDonorSearch'), 'GlobalDonorSearch');
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
@@ -406,7 +449,7 @@ export default function App() {
       title: t('nav_section_admin'),
       items: [
         { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
-        ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin', icon: ShieldCheck }] : []),
+        ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង', icon: ShieldCheck }] : []),
         { id: 'account' as Tab, label: t('nav_account'), icon: User },
       ]
     }
@@ -420,8 +463,8 @@ export default function App() {
       case 'categories': return t('nav_list');
       case 'reports': return t('nav_reports');
       case 'certificates': return t('profile_certificates');
-      case 'admin_panel': return language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin';
-      case 'users': return language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin';
+      case 'admin_panel': return language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង';
+      case 'users': return language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង';
       case 'account': return t('nav_account');
       default: return t('app_title');
     }
@@ -847,12 +890,12 @@ export default function App() {
                 <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 sm:p-12 text-center max-w-lg mx-auto shadow-sm border border-gray-100 dark:border-slate-800 my-8">
                   <Shield className="w-12 h-12 text-amber-600 dark:text-amber-400 mx-auto mb-3.5" />
                   <h3 className="font-title text-xl text-gray-900 dark:text-white mb-2">
-                    {language === 'en' ? 'Administrator Access Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង (Admin)'}
+                    {language === 'en' ? 'Administrator Access Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង'}
                   </h3>
                   <p className="text-gray-600 dark:text-slate-400 text-sm font-battambang mb-6 leading-relaxed">
                     {language === 'en'
                       ? 'You do not have administrative permissions to view or manage this section. Please sign in with an administrator account.'
-                      : 'គណនីរបស់អ្នកមិនទាន់មានសិទ្ធិជាអ្នកគ្រប់គ្រង (Admin) ដើម្បីចូលមើល ឬគ្រប់គ្រងផ្នែកនេះទេ។ សូមចូលប្រើដោយគណនី Admin។'}
+                      : 'គណនីនេះគ្មានសិទ្ធិអ្នកគ្រប់គ្រងទេ។ សូមចូលប្រើដោយគណនីអ្នកគ្រប់គ្រង។'}
                   </p>
                   <div className="flex gap-3 justify-center">
                     <button

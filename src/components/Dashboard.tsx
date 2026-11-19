@@ -1080,12 +1080,12 @@ export default function Dashboard({
             </div>
 
             <h3 className="text-lg font-bold text-gray-900 dark:text-white font-battambang mb-2">
-              {language === 'km' ? 'តម្រូវឱ្យមានសិទ្ធិ Admin' : 'Admin Access Required'}
+              {language === 'km' ? 'តម្រូវឱ្យមានសិទ្ធិអ្នកគ្រប់គ្រង' : 'Admin Access Required'}
             </h3>
 
             <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 font-battambang mb-5 leading-relaxed">
               {language === 'km'
-                ? 'ដើម្បីកែប្រែ ឬលុបទិន្នន័យសប្បុរសជន សូមចូលគណនីជា Admin (អ្នកគ្រប់គ្រង) ជាមុនសិន។'
+                ? 'សូមចូលគណនីជាអ្នកគ្រប់គ្រង ដើម្បីកែប្រែ ឬលុបទិន្នន័យសប្បុរសជន។'
                 : 'To edit or delete donor contributions, please log in as an Admin.'}
             </p>
 

@@ -882,7 +882,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">
                 {language === 'en'
                   ? 'Regular users cannot open or view this list. Access permission is restricted to Administrator only.'
-                  : 'អ្នកប្រើប្រាស់ទូទៅមិនអាចបើកមើលទិន្នន័យបញ្ជីនេះបានទេ។ សិទ្ធិបើកមើលត្រូវបានកំណត់សម្រាប់តែ Admin (អ្នកគ្រប់គ្រង) ប៉ុណ្ណោះ។'}
+                  : 'អ្នកប្រើប្រាស់ទូទៅមិនអាចបើកមើលបញ្ជីនេះបានទេ។ សិទ្ធិបើកមើលសម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
               </p>
               <button
                 onClick={() => setShowLockedModal(false)}

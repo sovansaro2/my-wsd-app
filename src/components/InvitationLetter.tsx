@@ -460,11 +460,12 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
         `
       }} />
 
-      <div className="no-print bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 sticky top-16 z-20">
-        <div className="grid grid-cols-3 w-full lg:hidden border border-gray-200 dark:border-slate-700 rounded-xl p-1 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
+      <div className="no-print bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 rounded-xl px-3 sm:px-4 py-2.5 mb-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+        <div className="grid grid-cols-3 w-full lg:hidden border border-gray-200/80 dark:border-slate-700/80 rounded-lg p-0.5 text-xs font-battambang bg-gray-100/80 dark:bg-slate-800/70">
           <button
+            type="button"
             onClick={() => setActiveView('edit')}
-            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 ${
+            className={`py-1.5 px-2 text-center rounded-md transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer ${
               activeView === 'edit'
                 ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
                 : 'text-gray-600 dark:text-slate-400'
@@ -474,8 +475,9 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             <span>កែសម្រួល</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveView('preview')}
-            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 ${
+            className={`py-1.5 px-2 text-center rounded-md transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer ${
               activeView === 'preview'
                 ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
                 : 'text-gray-600 dark:text-slate-400'
@@ -485,8 +487,9 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
             <span>មើលគំរូ</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveView('archive')}
-            className={`py-1.5 px-2 text-center rounded-lg transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1 ${
+            className={`py-1.5 px-2 text-center rounded-md transition-colors font-medium whitespace-nowrap flex items-center justify-center gap-1 cursor-pointer ${
               activeView === 'archive'
                 ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 shadow-xs font-bold'
                 : 'text-gray-600 dark:text-slate-400'
@@ -500,47 +503,51 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
           </button>
         </div>
 
-        <div className="hidden lg:flex items-center border border-gray-200 dark:border-slate-700 rounded-xl p-0.5 text-xs font-battambang bg-gray-50/80 dark:bg-slate-800/60">
+        <div className="hidden lg:flex items-center border border-gray-200/80 dark:border-slate-700/80 rounded-lg p-0.5 text-xs font-battambang bg-gray-100/80 dark:bg-slate-800/70">
           <button
+            type="button"
             onClick={() => setActiveView('both')}
-            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-              activeView === 'both' 
-                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
-                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
+            className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              activeView === 'both'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
-            បង្ហាញទាំងពីរ
+            ទាំងពីរ
           </button>
           <button
+            type="button"
             onClick={() => setActiveView('edit')}
-            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-              activeView === 'edit' 
-                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
-                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
+            className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              activeView === 'edit'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             កែសម្រួល
           </button>
           <button
+            type="button"
             onClick={() => setActiveView('preview')}
-            className={`px-3.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-              activeView === 'preview' 
-                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
-                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
+            className={`px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+              activeView === 'preview'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             មើលគំរូ
           </button>
           <button
+            type="button"
             onClick={() => setActiveView('archive')}
-            className={`px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeView === 'archive' 
-                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs' 
-                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
+            className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+              activeView === 'archive'
+                ? 'bg-white dark:bg-slate-900 text-[#028090] dark:text-teal-400 font-bold shadow-xs'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <FolderArchive className="w-3.5 h-3.5 shrink-0" />
-            <span>បណ្ណសារ PDF</span>
+            <span>បណ្ណសារ</span>
             <span className="font-rajdhani text-[11px] font-bold text-[#028090] dark:text-teal-400">
               ({toKhmerNum(savedLetters.length)})
             </span>
@@ -549,42 +556,46 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
 
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto py-0.5">
           <button
+            type="button"
             onClick={handleDownloadPdf}
             disabled={isExportingPdf}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium font-battambang bg-[#028090] hover:bg-[#005F73] text-white rounded-xl shadow-xs transition-colors disabled:opacity-50 cursor-pointer shrink-0"
-            title="ទាញយកជាឯកសារ PDF A5 សម្រាប់ PC ឬ Phone"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium font-battambang bg-[#028090] hover:bg-[#005F73] text-white rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="ទាញយក PDF A5"
           >
             <FileDown className="w-3.5 h-3.5 shrink-0" />
-            <span className="whitespace-nowrap">{isExportingPdf ? 'កំពុងបង្កើត PDF...' : 'ទាញយកជា PDF'}</span>
+            <span className="whitespace-nowrap">{isExportingPdf ? 'កំពុងបង្កើត...' : 'ទាញយក PDF'}</span>
           </button>
 
           <button
+            type="button"
             onClick={handleDownloadImage}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer shrink-0"
-            title="ទាញយកជារូបភាព PNG"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="ទាញយក PNG"
           >
             <Download className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-            <span className="whitespace-nowrap">{isExporting ? 'កំពុងបង្កើត...' : 'ទាញយកជារូប'}</span>
+            <span className="whitespace-nowrap">{isExporting ? 'កំពុងបង្កើត...' : 'រូបភាព'}</span>
           </button>
 
           <button
+            type="button"
             onClick={handleSaveToApp}
             disabled={isSavingToApp}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors disabled:opacity-50 cursor-pointer shrink-0"
-            title="រក្សាទុកលិខិតនេះជា PDF ក្នុងកម្មវិធីនេះ"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+            title="រក្សាទុកក្នុងបណ្ណសារ"
           >
             <BookmarkPlus className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-            <span className="whitespace-nowrap">{isSavingToApp ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកក្នុងកម្មវិធី'}</span>
+            <span className="whitespace-nowrap">{isSavingToApp ? 'កំពុងរក្សាទុក...' : 'រក្សាទុក'}</span>
           </button>
 
           <button
+            type="button"
             onClick={handleCopyText}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs sm:text-sm font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-xl transition-colors cursor-pointer shrink-0"
-            title="ចម្លងអត្ថបទទាំងអស់"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium font-battambang border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 rounded-lg transition-colors cursor-pointer shrink-0"
+            title="ចម្លងអត្ថបទ"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Copy className="w-3.5 h-3.5 text-gray-500 shrink-0" />}
-            <span className="whitespace-nowrap">{copied ? 'បានចម្លង!' : 'ចម្លងអត្ថបទ'}</span>
+            <span className="whitespace-nowrap">{copied ? 'បានចម្លង' : 'ចម្លង'}</span>
           </button>
         </div>
       </div>
@@ -1147,7 +1158,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                           className="w-4 h-4 rounded text-[#028090] focus:ring-[#028090] border-gray-300"
                         />
                         <span className="text-gray-700 dark:text-slate-300 font-semibold">
-                          បង្ហាញ «កន្លែងទទួល» (Administrative Distribution)
+                          បង្ហាញ «កន្លែងទទួល»
                         </span>
                       </label>
                     </div>

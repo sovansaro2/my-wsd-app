@@ -645,7 +645,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                   className="text-[13px] text-zinc-500 hover:text-[#028090] transition-colors inline-flex items-center justify-center gap-1.5 font-battambang"
                 >
                   <span>ជំនួយបច្ចេកទេស ៖</span>
-                  <span className="text-[#2AABEE] font-medium hover:underline">ទាក់ទង Admin តាម Telegram</span>
+                  <span className="text-[#2AABEE] font-medium hover:underline">ទាក់ទងអ្នកគ្រប់គ្រងតាម Telegram</span>
                 </a>
               </div>
             </div>

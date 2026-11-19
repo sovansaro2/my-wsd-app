@@ -1854,7 +1854,7 @@ export default function AccountProfile({
               <div className="flex items-center gap-3.5">
                 <Shield className="w-5 h-5 text-gray-700 dark:text-slate-200" />
                 <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
-                  {language === 'en' ? 'Admin Panel' : 'ផ្ទាំងគ្រប់គ្រង Admin'}
+                  {language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង'}
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />

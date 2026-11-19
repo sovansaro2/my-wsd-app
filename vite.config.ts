@@ -6,7 +6,25 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   base: '/',
   server: {
+    hmr: false,
+    ws: false,
     allowedHosts: ['watsnaydouch.site', 'wsd-app.anajak.cloud', 'sg1.anajak.cloud', 'localhost'],
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-dom/client',
+      'lucide-react',
+      'motion/react',
+      'clsx',
+      'tailwind-merge',
+      'localforage',
+      'html-to-image',
+      'jspdf',
+      'exceljs',
+      '@thyrith/momentkh',
+    ],
   },
   build: {
     chunkSizeWarningLimit: 1200,
@@ -27,6 +45,34 @@ export default defineConfig({
     }
   },
   plugins: [
+    {
+      name: 'disable-vite-hmr-websocket',
+      apply: 'serve',
+      transform(code, id) {
+        if (id.includes('vite/dist/client/client.mjs')) {
+          return {
+            code: code
+              .replace(
+                'transport.connect(createHMRHandler(handleMessage));',
+                '/* HMR WebSocket disabled */'
+              )
+              .replace(
+                'throw new Error("send was called before connect");',
+                'return;'
+              )
+              .replace(
+                'throw new Error("invoke was called before connect");',
+                'return;'
+              )
+              .replace(
+                'ws.send(JSON.stringify(data));',
+                'if (ws) ws.send(JSON.stringify(data));'
+              ),
+            map: null,
+          };
+        }
+      },
+    },
     tailwindcss(),
     react(),
     VitePWA({

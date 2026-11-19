@@ -116,7 +116,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
           <p className="text-sm text-gray-500 dark:text-slate-400 font-battambang max-w-sm leading-relaxed">
             {language === 'en'
               ? 'This reports and analytics section is reserved for administrators only.'
-              : 'ទំព័ររបាយការណ៍ និងទិន្នន័យស្ថិតិនេះ ត្រូវបានកំណត់សម្រាប់តែអ្នកគ្រប់គ្រង (Admin) តែប៉ុណ្ណោះ។'}
+              : 'ទំព័ររបាយការណ៍ និងស្ថិតិនេះ កំណត់សម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
           </p>
         </div>
       </div>
