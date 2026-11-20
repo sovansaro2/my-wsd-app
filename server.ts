@@ -15,6 +15,7 @@ import storageRoutes from "./server/routers/storage";
 import notificationsRoutes from "./server/routers/notifications";
 import backupRoutes from "./server/routers/backup";
 import eventsRoutes from "./server/routers/events";
+import pushRoutes from "./server/routers/push";
 
 import "./server/types.d";
 
@@ -90,7 +91,7 @@ async function startServer() {
     credentials: true,
     maxAge: 86400
   }));
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
 
   // Health Check for Render, Railway & monitoring services
   app.get("/api/health", (req, res) => {
@@ -105,6 +106,7 @@ async function startServer() {
   app.use("/api/notifications", notificationsRoutes);
   app.use("/api/backup", backupRoutes);
   app.use("/api/events", eventsRoutes);
+  app.use("/api/push", pushRoutes);
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

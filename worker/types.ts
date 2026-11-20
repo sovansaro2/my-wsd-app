@@ -13,6 +13,10 @@ export interface WorkerEnv {
   VITE_SUPABASE_SERVICE_ROLE_KEY?: string;
   SERVICE_ROLE_KEY?: string;
   JWT_SECRET_KEY?: string;
+  VAPID_PUBLIC_KEY?: string;
+  VITE_VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_KEY?: string;
+  VAPID_SUBJECT?: string;
 }
 
 export interface AuthUser {

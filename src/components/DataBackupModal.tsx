@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { Database, FileSpreadsheet, FileCode, Download, Check, X, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, lazy, Suspense } from 'react';
+import { Database, FileSpreadsheet, FileCode, Download, Upload, Check, X, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 import { api, API_BASE_URL } from '../lib/apiClient';
 import { useLanguage } from '../contexts/LanguageContext';
+
+const ExcelImportModal = lazy(() => import('./ExcelImportModal'));
 
 interface DataBackupModalProps {
   isOpen: boolean;
@@ -12,10 +14,31 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
   const { language } = useLanguage();
   const [downloadingExcel, setDownloadingExcel] = useState(false);
   const [downloadingJson, setDownloadingJson] = useState(false);
+  const [showExcelImport, setShowExcelImport] = useState(false);
+  const [openWithReset, setOpenWithReset] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  if (showExcelImport) {
+    return (
+      <Suspense fallback={null}>
+        <ExcelImportModal
+          isOpen={true}
+          initialShowReset={openWithReset}
+          onClose={() => {
+            setShowExcelImport(false);
+            setOpenWithReset(false);
+          }}
+          defaultTarget="category"
+          onImportSuccess={() => {
+            window.dispatchEvent(new CustomEvent('wsd-data-refreshed'));
+          }}
+        />
+      </Suspense>
+    );
+  }
 
   const handleDownloadExcel = async () => {
     try {
@@ -181,6 +204,56 @@ export default function DataBackupModal({ isOpen, onClose }: DataBackupModalProp
                     <span>{language === 'en' ? 'Download JSON' : 'ទាញយក JSON'}</span>
                   </>
                 )}
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-gray-200 dark:border-slate-800 hover:border-[#028090] dark:hover:border-teal-500 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <Upload className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {language === 'en' ? 'Import Excel' : 'នាំចូលពី Excel'}
+                  </h4>
+                  <p className="text-xs font-rajdhani text-gray-500 dark:text-slate-400">
+                    .xlsb • .xlsx • .xls • .csv
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setOpenWithReset(false);
+                  setShowExcelImport(true);
+                }}
+                className="flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-[#028090] hover:bg-[#005F73] active:scale-98 rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                <span>{language === 'en' ? 'Import' : 'នាំចូល'}</span>
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-rose-200/80 dark:border-rose-900/50 hover:border-rose-500 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <Trash2 className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold text-rose-700 dark:text-rose-400">
+                    {language === 'en' ? 'Clear & Re-Import' : 'លុបទិន្នន័យចាស់ & នាំចូលថ្មី'}
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                    {language === 'en' ? 'Wipe old folders first' : 'សម្អាត Folder ចាស់មុននាំចូលថ្មី'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setOpenWithReset(true);
+                  setShowExcelImport(true);
+                }}
+                className="flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-800 hover:bg-rose-600 hover:text-white active:scale-98 rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>{language === 'en' ? 'Reset' : 'សម្អាត'}</span>
               </button>
             </div>
           </div>

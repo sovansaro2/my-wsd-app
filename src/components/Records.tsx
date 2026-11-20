@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { api } from '../lib/apiClient';
 
-import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, CalendarDays, Lock, Trash2 } from 'lucide-react';
+import { Pencil, Star, ArrowUpCircle, ArrowDownCircle, Plus, X, Check, Download, Loader2, Bell, Award, Share2, Landmark, CalendarDays, Lock, Trash2, FileSpreadsheet } from 'lucide-react';
 import { IOSFolder } from './ui/IOSFolder';
 import { toPng } from 'html-to-image';
 import { useRef } from 'react';
@@ -14,6 +14,8 @@ import { getImageDataUrl } from '../lib/utils';
 import { logoBase64 } from '../lib/logoBase64';
 import { FONT_EMBED_CSS } from '../lib/fontEmbed';
 import { playSuccessSound } from '../lib/sound';
+
+const ExcelImportModal = lazy(() => import('./ExcelImportModal'));
 
 const toKhmerNum = (num: number | string) => {
   const khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -142,6 +144,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const [signDataUrl, setSignDataUrl] = useState<string>('/Sign.png');
 
   const [isSeilModalOpen, setIsSeilModalOpen] = useState(false);
+  const [showExcelImport, setShowExcelImport] = useState(false);
   const [isEditSeilModalOpen, setIsEditSeilModalOpen] = useState(false);
   const [seilName, setSeilName] = useState('');
   const [seilDateRange, setSeilDateRange] = useState('');
@@ -618,13 +621,23 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">{t('records_total_periods', { count: periods.length })}</p>
             </div>
             {userRole === 'admin' && (
-              <button 
-                onClick={openAddSeilModal}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#028090] hover:bg-[#005F73] text-white text-xs sm:text-sm font-medium rounded-xl transition-colors shadow-sm cursor-pointer whitespace-nowrap shrink-0"
-              >
-                <Plus className="w-4 h-4" />
-                <span>{t('records_btn_add_new')}</span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setShowExcelImport(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 hover:border-emerald-500 rounded-xl transition-colors cursor-pointer whitespace-nowrap"
+                  title={language === 'en' ? 'Import from Excel (.xlsb / .xlsx / .xls / .csv)' : 'នាំចូលទិន្នន័យពី Excel (.xlsb / .xlsx / .xls)'}
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  <span className="hidden sm:inline">{language === 'en' ? 'Import Excel' : 'នាំចូល Excel'}</span>
+                </button>
+                <button 
+                  onClick={openAddSeilModal}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-[#028090] hover:bg-[#005F73] text-white text-xs sm:text-sm font-medium rounded-xl transition-colors shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{t('records_btn_add_new')}</span>
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -856,6 +869,17 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {showExcelImport && userRole === 'admin' && (
+        <Suspense fallback={null}>
+          <ExcelImportModal
+            isOpen={showExcelImport}
+            onClose={() => setShowExcelImport(false)}
+            defaultTarget="seil"
+            onImportSuccess={fetchPeriods}
+          />
+        </Suspense>
       )}
 
             </>

@@ -87,9 +87,11 @@ export default defineConfig({
         'maskable.png', 
         'logo.png', 
         'Sign.png',
+        'push-sw.js',
         'fonts/KhmerOS_muollight.ttf'
       ],
       workbox: {
+        importScripts: ['/push-sw.js'],
         maximumFileSizeToCacheInBytes: 10000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,mp3}'],
         globIgnores: ['**/logo-original.png'],

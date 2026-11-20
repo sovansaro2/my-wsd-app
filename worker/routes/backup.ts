@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
 import ExcelJS from 'exceljs';
 import type { HonoBindings } from '../types';
-import { getSupabaseAdmin } from '../lib/supabase';
+import { getDirectAdminClient, getSupabaseAdmin } from '../lib/supabase';
 import { requireAdmin, requireAuth } from '../middleware/auth';
+import { executeExcelImportBatch, executeResetFinancialData } from '../../server/excelImportEngine';
 
 const backupRoutes = new Hono<HonoBindings>();
 
@@ -170,6 +171,34 @@ backupRoutes.get('/excel', requireAuth, requireAdmin, async (c) => {
     });
   } catch (error: any) {
     return c.json({ detail: error.message }, 500);
+  }
+});
+
+backupRoutes.post('/import-excel', requireAuth, requireAdmin, async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = await executeExcelImportBatch(
+      getSupabaseAdmin(c.env),
+      getDirectAdminClient(c.env),
+      body
+    );
+    return c.json(result.body, result.status as any);
+  } catch (error: any) {
+    return c.json({ detail: error.message || 'Excel import failed' }, 500);
+  }
+});
+
+backupRoutes.post('/reset-all', requireAuth, requireAdmin, async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = await executeResetFinancialData(
+      getSupabaseAdmin(c.env),
+      getDirectAdminClient(c.env),
+      body
+    );
+    return c.json(result.body, result.status as any);
+  } catch (error: any) {
+    return c.json({ detail: error.message || 'Reset failed' }, 500);
   }
 });
 

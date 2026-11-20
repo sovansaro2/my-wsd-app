@@ -16,6 +16,7 @@ export const API_BASE_URL = ((import.meta as any).env?.VITE_API_BASE_URL || '').
 
 export interface ApiFetchOptions extends RequestInit {
   skipOfflineQueue?: boolean;
+  timeoutMs?: number;
 }
 
 async function apiFetch(path: string, options: ApiFetchOptions = {}, retries = 1): Promise<any> {
@@ -49,8 +50,8 @@ async function apiFetch(path: string, options: ApiFetchOptions = {}, retries = 1
   }
 
   const controller = new AbortController();
-  // Fast timeout so offline or degraded networks do not stall UI
-  const timeoutMs = isBrowserOnline() ? 3500 : 1000;
+  // Fast timeout so offline or degraded networks do not stall UI, with override for bulk imports
+  const timeoutMs = options.timeoutMs ?? (isBrowserOnline() ? 3500 : 1000);
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
@@ -253,6 +254,36 @@ export const api = {
   createEvent: (data: any) => apiFetch('/api/events', { method: 'POST', body: JSON.stringify(data) }),
   updateEvent: (id: string, data: any) => apiFetch(`/api/events/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteEvent: (id: string) => apiFetch(`/api/events/${id}`, { method: 'DELETE' }),
+
+  getPushConfig: () => apiFetch('/api/push/config', { skipOfflineQueue: true }),
+  subscribePush: (payload: any) =>
+    apiFetch('/api/push/subscribe', { method: 'POST', body: JSON.stringify(payload), skipOfflineQueue: true }),
+  unsubscribePush: (endpoint: string) =>
+    apiFetch('/api/push/unsubscribe', { method: 'POST', body: JSON.stringify({ endpoint }), skipOfflineQueue: true }),
+  sendTestPush: (payload: any) =>
+    apiFetch('/api/push/test', { method: 'POST', body: JSON.stringify(payload), skipOfflineQueue: true }),
+  triggerPushReminders: () =>
+    apiFetch('/api/push/send-reminders', { method: 'POST', skipOfflineQueue: true }),
+
+  importExcelBatch: (payload: any) =>
+    apiFetch('/api/backup/import-excel', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      skipOfflineQueue: true,
+      timeoutMs: 45000,
+    }),
+
+  resetFinancialData: (payload: {
+    scope: 'all' | 'name_lists' | 'financial_records';
+    confirmText: string;
+    confirmUnderstood: true;
+  }) =>
+    apiFetch('/api/backup/reset-all', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      skipOfflineQueue: true,
+      timeoutMs: 45000,
+    }),
 
   // Outbox & Offline Sync Helpers
   getOutboxItems,

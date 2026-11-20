@@ -33,6 +33,7 @@ import InstallPrompt from './components/InstallPrompt';
 import { NetworkStatusBadge } from './components/NetworkStatusBadge';
 import { OfflineOutboxModal } from './components/OfflineOutboxModal';
 import { syncEngine } from './lib/syncEngine';
+import { checkAndNotifyUpcomingLocally } from './lib/pushNotifications';
 
 function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
@@ -248,6 +249,50 @@ export default function App() {
       window.removeEventListener('wsd-sync-completed', onSyncCompleted);
     };
   }, [language]);
+
+  // Open Buddhist Calendar directly when user taps a Lock Screen notification
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('open') === 'calendar') {
+        setShowBuddhistCalendar(true);
+        params.delete('open');
+        const nextQuery = params.toString();
+        const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', nextUrl);
+      }
+    } catch {}
+
+    const handleSwMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'OPEN_CALENDAR') {
+        setShowBuddhistCalendar(true);
+      }
+    };
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', handleSwMessage);
+    }
+
+    // Quietly check today/tomorrow Seil & monastery events for local OS alerts if enabled
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+        api.getEvents()
+          .then((evList) => {
+            if (Array.isArray(evList)) {
+              checkAndNotifyUpcomingLocally(evList);
+            }
+          })
+          .catch(() => {});
+      }
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', handleSwMessage);
+      }
+    };
+  }, []);
 
   
   useEffect(() => {

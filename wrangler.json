@@ -9,5 +9,8 @@
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
+  },
+  "triggers": {
+    "crons": ["30 23 * * *", "30 11 * * *"]
   }
 }

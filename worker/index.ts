@@ -9,6 +9,8 @@ import storageRoutes from './routes/storage';
 import notificationsRoutes from './routes/notifications';
 import backupRoutes from './routes/backup';
 import eventsRoutes from './routes/events';
+import pushRoutes, { dispatchScheduledReminders } from './routes/push';
+import type { WorkerEnv } from './types';
 
 const app = new Hono<HonoBindings>();
 
@@ -84,6 +86,7 @@ app.route('/api/upload', storageRoutes);
 app.route('/api/notifications', notificationsRoutes);
 app.route('/api/backup', backupRoutes);
 app.route('/api/events', eventsRoutes);
+app.route('/api/push', pushRoutes);
 
 app.all('*', async (c) => {
   if (c.env.ASSETS) {
@@ -92,4 +95,13 @@ app.all('*', async (c) => {
   return c.text('Not Found', 404);
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(_controller: any, env: WorkerEnv, ctx: { waitUntil: (promise: Promise<any>) => void }) {
+    ctx.waitUntil(
+      dispatchScheduledReminders(env).catch((err) => {
+        console.error('[Cron Push Reminder Error]', err);
+      })
+    );
+  },
+};

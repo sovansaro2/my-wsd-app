@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../database';
+import { supabaseAdmin, getDirectAdminClient } from '../database';
 import { requireAuth, requireAdmin } from '../auth/dependencies';
 import ExcelJS from 'exceljs';
+import { executeExcelImportBatch, executeResetFinancialData } from '../excelImportEngine';
 
 const router = Router();
 
@@ -155,6 +156,24 @@ router.get('/excel', requireAuth, requireAdmin, async (req, res) => {
     res.end();
   } catch (error: any) {
     res.status(500).json({ detail: error.message });
+  }
+});
+
+router.post('/import-excel', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const result = await executeExcelImportBatch(supabaseAdmin, getDirectAdminClient(), req.body);
+    res.status(result.status).json(result.body);
+  } catch (error: any) {
+    res.status(500).json({ detail: error.message || 'Excel import failed' });
+  }
+});
+
+router.post('/reset-all', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const result = await executeResetFinancialData(supabaseAdmin, getDirectAdminClient(), req.body);
+    res.status(result.status).json(result.body);
+  } catch (error: any) {
+    res.status(500).json({ detail: error.message || 'Reset failed' });
   }
 });
 
