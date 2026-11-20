@@ -354,7 +354,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
                   {currentSlideData.highlights.map((item, i) => (
                     <span 
                       key={i}
-                      className="text-xs text-white/90 border border-white/20 rounded-full px-3 py-1 font-battambang backdrop-blur-sm"
+                      className="text-xs text-white/90 border border-white/25 rounded-full px-3 py-1 font-battambang"
                     >
                       • {item}
                     </span>

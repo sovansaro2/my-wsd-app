@@ -36,9 +36,10 @@ interface SearchResponse {
 interface GlobalDonorSearchProps {
   isOpen: boolean;
   onClose: () => void;
+  userRole?: 'admin' | 'user' | null;
 }
 
-export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearchProps) {
+export default function GlobalDonorSearch({ isOpen, onClose, userRole }: GlobalDonorSearchProps) {
   const { language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -246,7 +247,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 sm:pt-14 bg-slate-900/60 backdrop-blur-xs font-battambang animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 sm:pt-14 bg-slate-900/55 font-battambang">
       <div 
         className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
@@ -421,35 +422,37 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
                           </div>
 
                           <div className="shrink-0 flex items-center gap-2.5 sm:gap-3">
-                            <span className="font-rajdhani font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
+                            <span className="font-rajdhani font-semibold tabular-nums text-sm sm:text-base text-gray-900 dark:text-white">
                               {rec.amount.toLocaleString()} ៛
                             </span>
-                            <div className="flex items-center gap-1 pl-1.5 border-l border-gray-200 dark:border-slate-700">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOpenEdit(rec, donor.name);
-                                }}
-                                className="inline-flex items-center gap-1 text-xs text-[#028090] dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors p-1 cursor-pointer font-battambang"
-                                title={language === 'km' ? 'កែប្រែ' : 'Edit'}
-                              >
-                                <Pencil className="w-3.5 h-3.5" />
-                                <span>{language === 'km' ? 'កែប្រែ' : 'Edit'}</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOpenDelete(rec, donor.name);
-                                }}
-                                className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 transition-colors p-1 cursor-pointer font-battambang"
-                                title={language === 'km' ? 'លុប' : 'Delete'}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                                <span>{language === 'km' ? 'លុប' : 'Delete'}</span>
-                              </button>
-                            </div>
+                            {userRole === 'admin' && (
+                              <div className="flex items-center gap-1 pl-1.5 border-l border-gray-200 dark:border-slate-700">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenEdit(rec, donor.name);
+                                  }}
+                                  className="inline-flex items-center gap-1 text-xs text-[#028090] dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors p-1 cursor-pointer font-battambang"
+                                  title={language === 'km' ? 'កែប្រែ' : 'Edit'}
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                  <span>{language === 'km' ? 'កែ' : 'Edit'}</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenDelete(rec, donor.name);
+                                  }}
+                                  className="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 transition-colors p-1 cursor-pointer font-battambang"
+                                  title={language === 'km' ? 'លុប' : 'Delete'}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span>{language === 'km' ? 'លុប' : 'Delete'}</span>
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -462,7 +465,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
         </div>
 
         <div className="p-3 sm:p-4 border-t border-gray-200/80 dark:border-slate-800 flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
-          <span>{language === 'en' ? 'Live database search across Seils and Name Lists' : 'ទិន្នន័យស្វែងរកផ្ទាល់ចេញពីបញ្ជីសីល និងបញ្ជីផ្សេងៗ'}</span>
+          <span>{language === 'en' ? 'Search across all lists' : 'ស្វែងរកគ្រប់បញ្ជីទាំងអស់'}</span>
           <button
             onClick={onClose}
             className="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white cursor-pointer"
@@ -474,7 +477,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
 
       {/* Edit Record Modal */}
       {editingRecord && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/55">
           <div 
             className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
@@ -599,7 +602,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
 
       {/* Delete Record Confirmation Modal */}
       {deletingRecord && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/55">
           <div 
             className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 p-6 text-center"
             onClick={(e) => e.stopPropagation()}
@@ -661,7 +664,7 @@ export default function GlobalDonorSearch({ isOpen, onClose }: GlobalDonorSearch
 
       {/* Floating Success Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-70 flex items-center gap-2.5 px-4 py-2.5 bg-gray-900/90 text-white rounded-xl shadow-xl backdrop-blur-xs text-xs sm:text-sm font-battambang animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="fixed bottom-6 right-6 z-70 flex items-center gap-2.5 px-4 py-2.5 bg-gray-900 text-white rounded-xl shadow-lg text-xs sm:text-sm font-battambang">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

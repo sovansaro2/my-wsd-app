@@ -80,8 +80,8 @@ const CategoryCard = React.memo(function CategoryCard({
       } hover:shadow-md transition-all duration-200 active:scale-95 group text-center overflow-hidden`}
     >
       {!isAdmin && (
-        <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+        <div className="absolute inset-0 z-20 bg-slate-900/45 dark:bg-black/60 flex flex-col items-center justify-center pointer-events-none transition-all">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/35 flex items-center justify-center border border-white/35">
             <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
           </div>
         </div>
@@ -636,16 +636,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
     let statusText = '';
     let statusClass = '';
     if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ២' || name === 'លុយជាងដក' || name === 'បញ្ជីឈ្មោះកសាងព្រះវិហារ' || name === 'បញ្ជីឈ្មោះកសាងដំបូលព្រះវិហារ') {
-      statusText = 'កំពុងប្រតិបត្តិការ';
-      statusClass = 'bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50';
+      statusText = 'កំពុងបើក';
+      statusClass = 'text-emerald-600 dark:text-emerald-400';
     } else if (name === 'ឈ្មោះអ្នកទិញកម្រាលព្រំ វគ្គ១' || name === 'ឈ្មោះអ្នកទិញកណ្ដឹងដាក់ព្រះវិហារ' || name === 'បញ្ជីឈ្មោះបុណ្យផ្កា') {
-      statusText = 'បានបញ្ចប់';
-      statusClass = 'bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-slate-400 border-zinc-200 dark:border-slate-700';
+      statusText = 'បានបិទ';
+      statusClass = 'text-gray-500 dark:text-slate-400';
     }
     
     if (statusText) {
       return (
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full border shrink-0 w-fit ${statusClass}`}>
+        <span className={`text-xs font-medium shrink-0 whitespace-nowrap ${statusClass}`}>
           {statusText}
         </span>
       );
@@ -691,17 +691,16 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
         <div className="px-4 md:px-0 py-6 md:py-0 w-full">
           {roofCat && (
             <div className="mb-8">
-              <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#028090]"></span>
+              <h3 className="text-[14px] font-medium text-gray-600 dark:text-slate-400 mb-3.5 font-battambang">
                 {t('lists_category_roof')}
               </h3>
               <button 
                 onClick={() => handleCategoryClick(roofCat)}
-                className="w-full text-left bg-gradient-to-r from-[#028090] to-[#005F73] rounded-2xl p-5 shadow-lg shadow-[#028090]/20 relative overflow-hidden transition-transform active:scale-95"
+                className="w-full text-left bg-gradient-to-r from-[#028090] to-[#005F73] rounded-2xl p-5 shadow-md shadow-[#028090]/15 relative overflow-hidden transition-transform active:scale-[0.99] cursor-pointer"
               >
                 {userRole !== 'admin' && (
-                  <div className="absolute inset-0 z-30 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex items-center justify-center pointer-events-none transition-all">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+                  <div className="absolute inset-0 z-30 bg-slate-900/45 dark:bg-black/60 flex items-center justify-center pointer-events-none transition-all">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/35 flex items-center justify-center border border-white/35">
                       <Lock className="w-6 h-6 text-white drop-shadow-md" />
                     </div>
                   </div>
@@ -715,15 +714,13 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
                     <Pencil className="w-4 h-4" />
                   </div>
                 )}
-                <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                <div className="absolute left-0 bottom-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-10 -mb-10"></div>
                 <div className="relative z-10 flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 border border-white/20">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/25">
                     <Landmark className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg sm:text-xl font-normal text-white mb-1  font-battambang">{roofCat.name}</h4>
-                    <p className="text-teal-50 text-sm opacity-90  font-battambang">{roofCat.description || 'បញ្ជីសប្បុរសជនចូលកសាងដំបូលព្រះវិហារ'}</p>
+                    <h4 className="text-lg sm:text-xl font-normal text-white mb-0.5 font-battambang">{roofCat.name}</h4>
+                    <p className="text-teal-50 text-xs sm:text-sm opacity-90 font-battambang">{roofCat.description || 'បញ្ជីកសាងដំបូលព្រះវិហារ'}</p>
                   </div>
                 </div>
               </button>
@@ -732,8 +729,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
           {expenseCats.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+              <h3 className="text-[14px] font-medium text-gray-600 dark:text-slate-400 mb-3.5 font-battambang">
                 ថវិការចំណាយក្នុងកម្មវិធីបុណ្យ
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -752,8 +748,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           )}
 
           <div>
-             <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
-               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+             <h3 className="text-[14px] font-medium text-gray-600 dark:text-slate-400 mb-3.5 font-battambang">
                {t('lists_category_general')}
              </h3>
              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -785,7 +780,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsCatModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/45 z-50"
             />
             <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
               <motion.div
@@ -879,31 +874,31 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowLockedModal(false)}
-            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/55 z-[100]"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6 border border-gray-100 dark:border-slate-800"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border border-gray-200 dark:border-slate-800"
           >
             <div className="flex flex-col items-center text-center font-battambang">
-              <div className="flex items-center justify-center mb-3.5 text-gray-700 dark:text-slate-300">
-                <Lock className="w-10 h-10" strokeWidth={1.75} />
+              <div className="flex items-center justify-center mb-3 text-gray-700 dark:text-slate-300">
+                <Lock className="w-9 h-9" strokeWidth={1.75} />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                {language === 'en' ? 'List Locked' : 'បញ្ជីនេះត្រូវបានចាក់សោ'}
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1.5">
+                {language === 'en' ? 'Admin Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង'}
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-5 leading-relaxed">
                 {language === 'en'
-                  ? 'Regular users cannot open or view this list. Access permission is restricted to Administrator only.'
-                  : 'អ្នកប្រើប្រាស់ទូទៅមិនអាចបើកមើលបញ្ជីនេះបានទេ។ សិទ្ធិបើកមើលសម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
+                  ? 'Only administrators can view this list.'
+                  : 'សិទ្ធិបើកមើលបញ្ជីនេះសម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
               </p>
               <button
                 onClick={() => setShowLockedModal(false)}
-                className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 bg-gray-100 hover:bg-gray-200/90 dark:bg-slate-800 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 transition-colors active:scale-[0.98]"
+                className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 border border-gray-200 dark:border-slate-700 transition-colors cursor-pointer"
               >
-                {language === 'en' ? 'OK, Understood' : 'យល់ព្រម'}
+                {language === 'en' ? 'Close' : 'បិទ'}
               </button>
             </div>
           </motion.div>
@@ -1252,7 +1247,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setIsRecordModalOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <motion.div
             initial={{ y: "100%", opacity: 0, scale: 0.95 }}
@@ -1463,7 +1458,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-3 sm:p-4"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}

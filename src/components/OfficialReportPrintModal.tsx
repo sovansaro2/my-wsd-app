@@ -127,7 +127,7 @@ export default function OfficialReportPrintModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black/70 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/65 overflow-y-auto">
       <div className="sticky top-0 z-20 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3 shadow-md flex flex-wrap items-center justify-between gap-3 no-print">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base font-battambang">

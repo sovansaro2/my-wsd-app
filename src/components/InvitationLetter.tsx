@@ -108,6 +108,13 @@ export default function InvitationLetter() {
   const [savedLetters, setSavedLetters] = useState<SavedInvitationLetter[]>([]);
   const [viewingLetter, setViewingLetter] = useState<SavedInvitationLetter | null>(null);
   const [saveToastMessage, setSaveToastMessage] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    title: string;
+    message: string;
+    confirmLabel: string;
+    danger?: boolean;
+    onConfirm: () => void | Promise<void>;
+  } | null>(null);
 
   const loadSavedLetters = async () => {
     try {
@@ -203,12 +210,18 @@ export default function InvitationLetter() {
   };
 
   const handleReset = () => {
-    if (window.confirm('តើលោកអ្នកពិតជាចង់កំណត់ទម្រង់លិខិតអញ្ជើញនេះទៅជាទម្រង់ដើមវិញមែនទេ?')) {
-      setFormData(defaultData);
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch {}
-    }
+    setConfirmAction({
+      title: 'កំណត់លិខិតដើមវិញ',
+      message: 'តើអ្នកចង់កំណត់ទម្រង់លិខិតនេះទៅដើមវិញមែនទេ?',
+      confirmLabel: 'កំណត់ដើមវិញ',
+      danger: true,
+      onConfirm: () => {
+        setFormData(defaultData);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {}
+      },
+    });
   };
 
   const handlePrint = () => {
@@ -299,7 +312,8 @@ export default function InvitationLetter() {
       }
     } catch (err) {
       console.error('PDF generation error:', err);
-      alert('មិនអាចទាញយកជា PDF បានទេ។ សូមសាកល្បងម្តងទៀត!');
+      setSaveToastMessage('មិនអាចទាញយក PDF បានទេ។ សូមសាកល្បងម្តងទៀត');
+      setTimeout(() => setSaveToastMessage(null), 3500);
     } finally {
       setIsExportingPdf(false);
     }
@@ -331,7 +345,8 @@ export default function InvitationLetter() {
       setTimeout(() => setSaveToastMessage(null), 3500);
     } catch (err) {
       console.error('Save to app error:', err);
-      alert('មិនអាចរក្សាទុកក្នុងកម្មវិធីបានទេ។ សូមសាកល្បងម្តងទៀត!');
+      setSaveToastMessage('មិនអាចរក្សាទុកបានទេ។ សូមសាកល្បងម្តងទៀត');
+      setTimeout(() => setSaveToastMessage(null), 3500);
     } finally {
       setIsSavingToApp(false);
     }
@@ -339,25 +354,36 @@ export default function InvitationLetter() {
 
   const handleDeleteSavedLetter = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (window.confirm('តើលោកអ្នកពិតជាចង់លុបលិខិតនេះចេញពីបណ្ណសារកម្មវិធីមែនទេ?')) {
-      await deleteSavedInvitationLetter(id);
-      await loadSavedLetters();
-      if (viewingLetter?.id === id) {
-        setViewingLetter(null);
-      }
-      setSaveToastMessage('បានលុបលិខិតចេញពីបណ្ណសាររួចរាល់!');
-      setTimeout(() => setSaveToastMessage(null), 3000);
-    }
+    setConfirmAction({
+      title: 'លុបលិខិតអញ្ជើញ',
+      message: 'តើអ្នកចង់លុបលិខិតនេះចេញពីបណ្ណសារមែនទេ?',
+      confirmLabel: 'លុប',
+      danger: true,
+      onConfirm: async () => {
+        await deleteSavedInvitationLetter(id);
+        await loadSavedLetters();
+        if (viewingLetter?.id === id) {
+          setViewingLetter(null);
+        }
+        setSaveToastMessage('បានលុបលិខិតរួចរាល់');
+        setTimeout(() => setSaveToastMessage(null), 3000);
+      },
+    });
   };
 
   const handleLoadSavedLetterToForm = (letter: SavedInvitationLetter) => {
     if (letter.formData) {
-      if (window.confirm('តើលោកអ្នកចង់បើកទិន្នន័យលិខិតនេះមកកែសម្រួលឡើងវិញមែនទេ?')) {
-        setFormData(letter.formData);
-        setActiveView('edit');
-        setSaveToastMessage('បានផ្ទុកទិន្នន័យលិខិតមកកាន់ទម្រង់កែសម្រួលរួចរាល់!');
-        setTimeout(() => setSaveToastMessage(null), 3000);
-      }
+      setConfirmAction({
+        title: 'បើកមកកែសម្រួល',
+        message: 'តើអ្នកចង់ផ្ទុកលិខិតនេះមកកែសម្រួលមែនទេ?',
+        confirmLabel: 'យល់ព្រម',
+        onConfirm: () => {
+          setFormData(letter.formData!);
+          setActiveView('edit');
+          setSaveToastMessage('បានផ្ទុកលិខិតមកកែសម្រួលរួចរាល់');
+          setTimeout(() => setSaveToastMessage(null), 3000);
+        },
+      });
     }
   };
 
@@ -1427,7 +1453,7 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
       </div>
 
       {viewingLetter && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl">
             <div className="px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between gap-3 bg-white dark:bg-slate-900 shrink-0">
               <div className="min-w-0">
@@ -1495,6 +1521,49 @@ ${formData.showNote ? `\n${formData.noteText}` : ''}
                   បិទ
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmAction && (
+        <div
+          className="fixed inset-0 z-60 bg-black/55 flex items-center justify-center p-4 font-battambang"
+          onClick={() => setConfirmAction(null)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl w-full max-w-sm p-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1.5">
+              {confirmAction.title}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-slate-300 mb-5 leading-relaxed">
+              {confirmAction.message}
+            </p>
+            <div className="flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                className="px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white cursor-pointer"
+              >
+                បោះបង់
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const action = confirmAction.onConfirm;
+                  setConfirmAction(null);
+                  await action();
+                }}
+                className={`px-4 py-2 text-xs sm:text-sm font-medium text-white rounded-xl transition-colors cursor-pointer ${
+                  confirmAction.danger
+                    ? 'bg-rose-600 hover:bg-rose-700'
+                    : 'bg-[#028090] hover:bg-[#026c7a]'
+                }`}
+              >
+                {confirmAction.confirmLabel}
+              </button>
             </div>
           </div>
         </div>

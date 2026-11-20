@@ -39,6 +39,7 @@ export const OfflineOutboxModal: React.FC<OfflineOutboxModalProps> = ({
   const { language } = useLanguage();
   const [items, setItems] = useState<OutboxItem[]>([]);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [internalSyncing, setInternalSyncing] = useState<boolean>(syncEngine.isSyncing());
   const [syncProgress, setSyncProgress] = useState<{ current: number; total: number } | null>(null);
 
@@ -97,10 +98,13 @@ export const OfflineOutboxModal: React.FC<OfflineOutboxModalProps> = ({
   };
 
   const handleClearAll = async () => {
-    if (window.confirm(language === 'en' ? 'Remove all queued offline items?' : 'តើអ្នកប្រាកដជាចង់លុបទិន្នន័យរង់ចាំទាំងអស់ចោលមែនទេ?')) {
-      await clearAllOutbox();
-      await loadItems();
+    if (!confirmClearAll) {
+      setConfirmClearAll(true);
+      return;
     }
+    setConfirmClearAll(false);
+    await clearAllOutbox();
+    await loadItems();
   };
 
   const formatTime = (ts: number) => {
@@ -130,7 +134,7 @@ export const OfflineOutboxModal: React.FC<OfflineOutboxModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div 
         className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800 flex flex-col max-h-[85vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -141,15 +145,13 @@ export const OfflineOutboxModal: React.FC<OfflineOutboxModalProps> = ({
             <CloudOff className="w-5 h-5 text-amber-500" />
             <div>
               <h3 className="font-title text-base sm:text-lg text-gray-900 dark:text-white leading-tight">
-                {language === 'en' ? 'Offline Outbox Queue' : 'បញ្ជីទិន្នន័យរង់ចាំបញ្ជូន (Outbox)'}
+                {language === 'en' ? 'Offline Queue' : 'ទិន្នន័យរង់ចាំបញ្ជូន'}
               </h3>
               <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang">
-                {language === 'en' ? 'Stored locally in device' : 'រក្សាទុកក្នុងម៉ាស៊ីន រង់ចាំភ្ជាប់អ៊ីនធឺណិត'}
-                {' • '}
-                <span className="font-rajdhani font-semibold text-gray-700 dark:text-slate-300">
+                <span className="font-rajdhani font-semibold text-gray-700 dark:text-slate-300 tabular-nums">
                   {pendingCount}
                 </span>{' '}
-                {language === 'en' ? 'pending' : 'ទិន្នន័យ'}
+                {language === 'en' ? 'pending' : 'កំពុងរង់ចាំ'}
               </p>
             </div>
           </div>
@@ -239,15 +241,33 @@ export const OfflineOutboxModal: React.FC<OfflineOutboxModalProps> = ({
 
         {/* Modal Footer */}
         <div className="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-3">
-          <div>
+          <div className="flex items-center gap-2">
             {items.length > 0 && (
-              <button
-                onClick={handleClearAll}
-                disabled={isSyncing}
-                className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-battambang cursor-pointer disabled:opacity-40"
-              >
-                {language === 'en' ? 'Clear All' : 'លុបចោលទាំងអស់'}
-              </button>
+              confirmClearAll ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleClearAll}
+                    disabled={isSyncing}
+                    className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline font-battambang cursor-pointer disabled:opacity-40"
+                  >
+                    {language === 'en' ? 'Confirm Clear' : 'បញ្ជាក់លុប'}
+                  </button>
+                  <button
+                    onClick={() => setConfirmClearAll(false)}
+                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 font-battambang cursor-pointer"
+                  >
+                    {language === 'en' ? 'Cancel' : 'ទេ'}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleClearAll}
+                  disabled={isSyncing}
+                  className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-battambang cursor-pointer disabled:opacity-40"
+                >
+                  {language === 'en' ? 'Clear All' : 'លុបទាំងអស់'}
+                </button>
+              )
             )}
           </div>
 

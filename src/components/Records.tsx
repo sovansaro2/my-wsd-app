@@ -74,8 +74,8 @@ const PeriodCard = React.memo(function PeriodCard({
       className="relative flex flex-col items-center justify-between p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/80 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700/60 hover:shadow-md transition-all duration-200 cursor-pointer group text-center overflow-hidden"
     >
       {!isAdmin && (
-        <div className="absolute inset-0 z-20 bg-slate-900/40 dark:bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center pointer-events-none transition-all">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-lg">
+        <div className="absolute inset-0 z-20 bg-slate-900/45 dark:bg-black/60 flex flex-col items-center justify-center pointer-events-none transition-all">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/35 flex items-center justify-center border border-white/35">
             <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" />
           </div>
         </div>
@@ -672,7 +672,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSeilModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/45 z-50"
             />
             <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
               <motion.div
@@ -724,7 +724,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="number"
                       value={seilPreviousBalance}
                       onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-sans"
+                      className="w-full bg-transparent border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-rajdhani tabular-nums"
                       placeholder="0"
                     />
                   </div>
@@ -757,7 +757,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsEditSeilModalOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/45 z-50"
             />
             <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
               <motion.div
@@ -807,7 +807,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
                       type="number"
                       value={seilPreviousBalance}
                       onChange={(e) => setSeilPreviousBalance(e.target.value)}
-                      className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-sans"
+                      className="w-full bg-transparent border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#028090]/20 focus:border-[#028090] transition-all text-sm font-rajdhani tabular-nums"
                     />
                   </div>
                   <div className="pt-2">
@@ -840,31 +840,31 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowLockedModal(false)}
-            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/55 z-[100]"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6 border border-gray-100 dark:border-slate-800"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm z-[101] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border border-gray-200 dark:border-slate-800"
           >
             <div className="flex flex-col items-center text-center font-battambang">
-              <div className="flex items-center justify-center mb-3.5 text-gray-700 dark:text-slate-300">
-                <Lock className="w-10 h-10" strokeWidth={1.75} />
+              <div className="flex items-center justify-center mb-3 text-gray-700 dark:text-slate-300">
+                <Lock className="w-9 h-9" strokeWidth={1.75} />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                {language === 'en' ? 'List Locked' : 'បញ្ជីនេះត្រូវបានចាក់សោ'}
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1.5">
+                {language === 'en' ? 'Admin Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង'}
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mb-5 leading-relaxed">
                 {language === 'en'
-                  ? 'Regular users cannot open or view this list. Access permission is restricted to Administrator only.'
-                  : 'អ្នកប្រើប្រាស់ទូទៅមិនអាចបើកមើលបញ្ជីនេះបានទេ។ សិទ្ធិបើកមើលសម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
+                  ? 'Only administrators can view this list.'
+                  : 'សិទ្ធិបើកមើលបញ្ជីនេះសម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
               </p>
               <button
                 onClick={() => setShowLockedModal(false)}
-                className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 bg-gray-100 hover:bg-gray-200/90 dark:bg-slate-800 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-700 transition-colors active:scale-[0.98]"
+                className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 border border-gray-200 dark:border-slate-700 transition-colors cursor-pointer"
               >
-                {language === 'en' ? 'OK, Understood' : 'យល់ព្រម'}
+                {language === 'en' ? 'Close' : 'បិទ'}
               </button>
             </div>
           </motion.div>
@@ -1181,7 +1181,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55"
             onClick={(e) => {
               if (e.target === e.currentTarget) setIsAddModalOpen(false);
             }}
@@ -1359,7 +1359,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 sm:p-0"
+            className="fixed inset-0 bg-black/55 z-[100] flex items-center justify-center p-4 sm:p-0"
             onClick={(e) => {
               if (e.target === e.currentTarget) setIsEditRecordModalOpen(false);
             }}
@@ -1506,7 +1506,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
 
       <>
         {certificateRecord && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6 bg-black/55">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

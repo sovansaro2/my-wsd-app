@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, AlertTriangle, X, BarChart3, Database, Archive } from 'lucide-react';
+import { ArrowLeft, FileText, Download, Trash2, FileImage, FileSpreadsheet, File as FileIcon, AlertTriangle, X, BarChart3, Database, Archive } from 'lucide-react';
 import { getReports, deleteReport, SavedReport, shareOrDownloadFile } from '../lib/reportUtils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,7 +7,7 @@ import FinancialSummaryReport from './FinancialSummaryReport';
 import DataBackupModal from './DataBackupModal';
 import { LoadingScreen } from './ui/LoadingScreen';
 
-export default function Reports({ userRole }: { userRole: 'admin' | 'user' | null }) {
+export default function Reports({ userRole, onBack }: { userRole: 'admin' | 'user' | null; onBack?: () => void }) {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<'summary' | 'saved'>('summary');
   const [reports, setReports] = useState<SavedReport[]>([]);
@@ -107,17 +107,27 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
 
   if (userRole !== 'admin') {
     return (
-      <div className="max-w-xl mx-auto py-16 px-4 text-center">
-        <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 flex flex-col items-center">
-          <AlertTriangle className="w-12 h-12 text-[#028090] dark:text-teal-400 mb-4 stroke-[1.6]" />
-          <h2 className="text-xl font-bold font-title text-gray-900 dark:text-white mb-2">
-            {language === 'en' ? 'Access Restricted' : 'មិនមានសិទ្ធិអនុញ្ញាត'}
+      <div className="max-w-xl mx-auto py-12 px-4 text-center">
+        <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 flex flex-col items-center">
+          <AlertTriangle className="w-11 h-11 text-[#028090] dark:text-teal-400 mb-3.5 stroke-[1.6]" />
+          <h2 className="text-lg font-bold font-title text-gray-900 dark:text-white mb-1.5">
+            {language === 'en' ? 'Admin Only' : 'សម្រាប់តែអ្នកគ្រប់គ្រង'}
           </h2>
           <p className="text-sm text-gray-500 dark:text-slate-400 font-battambang max-w-sm leading-relaxed">
             {language === 'en'
-              ? 'This reports and analytics section is reserved for administrators only.'
-              : 'ទំព័ររបាយការណ៍ និងស្ថិតិនេះ កំណត់សម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
+              ? 'Reports are restricted to administrators.'
+              : 'ទំព័ររបាយការណ៍សម្រាប់តែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ។'}
           </p>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="mt-5 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-xl transition-colors font-battambang cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>{language === 'en' ? 'Back' : 'ត្រឡប់ក្រោយ'}</span>
+            </button>
+          )}
         </div>
       </div>
     );
@@ -127,6 +137,17 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
     <div className="w-full p-2 sm:p-4 md:p-0 space-y-3 sm:space-y-4">
       <div className="flex items-center justify-between gap-2 pb-1 sm:pb-2 border-b border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto scrollbar-none">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="p-1.5 -ml-1 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors cursor-pointer shrink-0"
+              aria-label={language === 'en' ? 'Back' : 'ត្រឡប់ក្រោយ'}
+              title={language === 'en' ? 'Back' : 'ត្រឡប់ក្រោយ'}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('summary')}
             className={`flex items-center gap-1.5 sm:gap-2 pb-2 text-xs sm:text-base font-title transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
@@ -243,7 +264,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closePreview}
-              className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/70"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
@@ -318,7 +339,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAccessDenied(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/55"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -352,7 +373,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setReportToDelete(null)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/55"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}

@@ -17,7 +17,6 @@ import {
   Shield,
   ShieldCheck,
   AlertTriangle,
-  Terminal,
   Search,
   CalendarDays,
   CheckCircle2,
@@ -511,7 +510,6 @@ export default function App() {
     { id: 'home', label: t('nav_home') },
     { id: 'records', label: t('nav_finance') },
     { id: 'categories', label: t('nav_list') },
-    { id: 'reports', label: t('nav_reports') },
   ];
 
   const isAdminUser = actualRole === 'admin' || userRole === 'admin';
@@ -568,9 +566,21 @@ export default function App() {
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={() => setShowGlobalDonorSearch(true)}
+              className={`relative h-full inline-flex items-center gap-1.5 text-[14px] lg:text-[15px] font-battambang whitespace-nowrap shrink-0 border-b-2 transition-colors cursor-pointer ${
+                showGlobalDonorSearch
+                  ? 'border-[#028090] dark:border-teal-400 text-[#028090] dark:text-teal-400 font-semibold'
+                  : 'border-transparent text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium'
+              }`}
+            >
+              <Search className="w-4 h-4 shrink-0" />
+              <span>{language === 'en' ? 'Search' : 'ស្វែងរក'}</span>
+            </button>
           </nav>
 
-          {/* Zone 3: Global Search, Notifications & Account Menu */}
+          {/* Zone 3: Calendar, Notifications & Account Menu */}
           <div className="flex items-center gap-2 lg:gap-3 shrink-0">
             <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
 
@@ -583,17 +593,6 @@ export default function App() {
             >
               <CalendarDays className="w-4 h-4 shrink-0 text-[#028090] dark:text-teal-400" />
               <span className="hidden lg:inline">{language === 'en' ? 'Calendar' : 'ប្រតិទិន'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowGlobalDonorSearch(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang"
-              title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-              aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-            >
-              <Search className="w-4 h-4 shrink-0" />
-              <span className="hidden lg:inline">{language === 'en' ? 'Search' : 'ស្វែងរក'}</span>
             </button>
 
             <button
@@ -618,7 +617,7 @@ export default function App() {
                 aria-expanded={showDesktopMenu}
                 aria-haspopup="menu"
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs lg:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang ${
-                  ['account', 'certificates', 'admin_panel', 'users'].includes(activeTab)
+                  ['account', 'certificates', 'reports', 'admin_panel', 'users'].includes(activeTab)
                     ? 'border-[#028090] text-[#028090] dark:border-teal-400 dark:text-teal-400'
                     : 'border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
                 }`}
@@ -654,6 +653,23 @@ export default function App() {
                     type="button"
                     role="menuitem"
                     onClick={() => {
+                      setActiveTab('reports');
+                      setShowDesktopMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer ${
+                      activeTab === 'reports'
+                        ? 'text-[#028090] dark:text-teal-400 font-semibold'
+                        : 'text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4 shrink-0" />
+                    <span>{t('nav_reports')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
                       setActiveTab('certificates');
                       setShowDesktopMenu(false);
                     }}
@@ -683,22 +699,6 @@ export default function App() {
                     >
                       <ShieldCheck className="w-4 h-4 shrink-0" />
                       <span>{language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង'}</span>
-                    </button>
-                  )}
-
-                  {actualRole === 'admin' && (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        setActiveTab('account');
-                        setOpenSystemLogsDirectly(true);
-                        setShowDesktopMenu(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
-                    >
-                      <Terminal className="w-4 h-4 shrink-0" />
-                      <span>System Logs</span>
                     </button>
                   )}
 
@@ -779,29 +779,6 @@ export default function App() {
             <CalendarDays className="w-5 h-5 text-white" />
           </button>
 
-          <button
-            onClick={() => setShowGlobalDonorSearch(true)}
-            className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
-            title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-            aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-          >
-            <Search className="w-5 h-5 text-white" />
-          </button>
-
-          {actualRole === 'admin' && (
-            <button
-              onClick={() => {
-                setActiveTab('account');
-                setOpenSystemLogsDirectly(true);
-              }}
-              className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center"
-              title="System Logs"
-              aria-label="System Logs"
-            >
-              <Terminal className="w-5 h-5 text-white" />
-            </button>
-          )}
-
           <button 
             onClick={handleOpenNotifications}
             aria-label="ការជូនដំណឹង"
@@ -837,8 +814,8 @@ export default function App() {
                 <h3 className="font-battambang text-lg text-gray-900 dark:text-white flex items-center gap-2">
                   ការជូនដំណឹង
                   {unreadCount > 0 && (
-                    <span className="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full font-sans">
-                      {unreadCount}
+                    <span className="text-red-500 text-xs font-bold font-rajdhani tabular-nums">
+                      ({unreadCount})
                     </span>
                   )}
                 </h3>
@@ -1003,7 +980,7 @@ export default function App() {
                 userRole={userRole} 
               />
             )}
-            {activeTab === 'reports' && <Reports userRole={userRole} />}
+            {activeTab === 'reports' && <Reports userRole={userRole} onBack={() => setActiveTab('account')} />}
             {activeTab === 'categories' && (
               <NameLists 
                 userRole={userRole}
@@ -1021,6 +998,7 @@ export default function App() {
                 onClearInitialSystemLogsOpen={() => setOpenSystemLogsDirectly(false)}
                 onManageUsers={() => setActiveTab('admin_panel')}
                 onCertificates={() => setActiveTab('certificates')}
+                onReports={() => setActiveTab('reports')}
               />
             )}
             
@@ -1195,19 +1173,19 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => handleMobileTabClick('reports')}
-            aria-label={t('nav_reports')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
-              activeTab === 'reports' 
+            onClick={() => setShowGlobalDonorSearch(true)}
+            aria-label={language === 'en' ? 'Search' : 'ស្វែងរក'}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative cursor-pointer ${
+              showGlobalDonorSearch
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
             <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <FileText className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'reports' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+              <Search className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${showGlobalDonorSearch ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'reports' ? 'font-medium' : 'font-normal'}`}>
-              {t('nav_reports')}
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${showGlobalDonorSearch ? 'font-medium' : 'font-normal'}`}>
+              {language === 'en' ? 'Search' : 'ស្វែងរក'}
             </span>
           </button>
           
@@ -1215,15 +1193,15 @@ export default function App() {
             onClick={() => handleMobileTabClick('account')}
             aria-label={t('nav_account')}
             className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
-              ['account', 'users', 'certificates', 'admin_panel'].includes(activeTab) 
+              ['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
             <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates'].includes(activeTab) ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates'].includes(activeTab) ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'font-medium' : 'font-normal'}`}>
               {t('nav_account')}
             </span>
           </button>
@@ -1251,6 +1229,7 @@ export default function App() {
         <Suspense fallback={null}>
           <GlobalDonorSearch
             isOpen={showGlobalDonorSearch}
+            userRole={userRole}
             onClose={() => setShowGlobalDonorSearch(false)}
           />
         </Suspense>

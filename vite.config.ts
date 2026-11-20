@@ -31,7 +31,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('logoBase64') || id.includes('fontEmbed') || id.includes('signBase64')) {
+          if (id.includes('logoBase64') || id.includes('fontEmbed')) {
             return 'heavy-embeds';
           }
           if (id.includes('node_modules')) {
@@ -94,7 +94,6 @@ export default defineConfig({
         importScripts: ['/push-sw.js'],
         maximumFileSizeToCacheInBytes: 10000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,mp3}'],
-        globIgnores: ['**/logo-original.png'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [

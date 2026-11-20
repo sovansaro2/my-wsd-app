@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database, Volume2, VolumeX } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, BarChart3, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database, Volume2, VolumeX, Terminal } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
@@ -31,6 +31,7 @@ interface AccountProfileProps {
   onManageNameLists?: () => void;
   onManageUsers?: () => void;
   onCertificates?: () => void;
+  onReports?: () => void;
 }
 
 export default function AccountProfile({ 
@@ -45,7 +46,8 @@ export default function AccountProfile({
   onManageFinancials, 
   onManageNameLists, 
   onManageUsers, 
-  onCertificates 
+  onCertificates,
+  onReports
 }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const { fontSize, setFontSize } = useFontSize();
@@ -446,7 +448,7 @@ export default function AccountProfile({
 
   if (isEditingView) {
     return (
-      <div className="flex flex-col h-full bg-transparent font-sans pb-10 overflow-y-auto">
+      <div className="flex flex-col h-full bg-transparent font-battambang pb-10 overflow-y-auto">
         <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => {
@@ -478,7 +480,7 @@ export default function AccountProfile({
                     </div>
                   )}
                   
-                  <label className="absolute bottom-0 inset-x-0 h-[19px] bg-slate-900/30 hover:bg-slate-900/45 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-colors z-10">
+                  <label className="absolute bottom-0 inset-x-0 h-[19px] bg-slate-900/45 hover:bg-slate-900/60 flex items-center justify-center cursor-pointer transition-colors z-10">
                     <Camera className="w-3 h-3 text-white drop-shadow-sm stroke-[2]" />
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                   </label>
@@ -656,7 +658,7 @@ export default function AccountProfile({
 
   if (isSecurityView) {
     return (
-      <div className="flex flex-col h-full bg-transparent font-sans pb-12 overflow-y-auto min-h-full">
+      <div className="flex flex-col h-full bg-transparent font-battambang pb-12 overflow-y-auto min-h-full">
         <div className="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-10 -mx-3.5 sm:mx-0 px-4 sm:px-4">
           <button 
             onClick={() => {
@@ -747,17 +749,17 @@ export default function AccountProfile({
                 <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_email_label')}</span>
                 <button
                   onClick={() => {
-                    setNewEmailInput(email || 'sovansaro2025@gmail.com');
+                    setNewEmailInput(email || '');
                     setEmailError('');
                     setShowEmailModal(true);
                   }}
-                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none cursor-pointer"
                 >
                   {t('sec_change_btn')}
                 </button>
               </div>
-              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-sans break-all">
-                {email || 'sovansaro2025@gmail.com'}
+              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-rajdhani font-medium break-all">
+                {email || '—'}
               </p>
             </div>
 
@@ -769,17 +771,17 @@ export default function AccountProfile({
                 <span className="font-semibold text-gray-800 dark:text-slate-100 text-[15px] font-battambang">{t('sec_phone_label')}</span>
                 <button
                   onClick={() => {
-                    setNewPhoneInput(phoneNumber || '016 759 264');
+                    setNewPhoneInput(phoneNumber || '');
                     setPhoneError('');
                     setShowPhoneModal(true);
                   }}
-                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none"
+                  className="text-[#2563eb] hover:text-blue-700 dark:text-blue-400 text-[14.5px] ml-2 font-normal hover:underline focus:outline-none cursor-pointer"
                 >
                   {t('sec_change_cap_btn')}
                 </button>
               </div>
-              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-sans">
-                {phoneNumber || '016 759 264'}
+              <p className="text-[14px] text-gray-700 dark:text-slate-300 mt-1.5 font-rajdhani font-medium tabular-nums">
+                {phoneNumber || '—'}
               </p>
 
               <div className="mt-5 text-[13.5px] text-gray-600 dark:text-slate-400 flex items-center gap-1.5">
@@ -810,7 +812,7 @@ export default function AccountProfile({
                 setCurrentPin('');
                 setPinSetupError('');
               }}
-              className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+              className="fixed inset-0 bg-black/55 z-[100]"
             />
             <motion.div
               initial={{ opacity: 0, y: "100%" }}
@@ -844,7 +846,7 @@ export default function AccountProfile({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowPasswordModal(false)}
-            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4"
           >
             <motion.div 
               initial={{ y: "100%" }}
@@ -882,7 +884,7 @@ export default function AccountProfile({
                       value={password}
                       placeholder={t('sec_modal_pwd_new_ph')}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-rajdhani"
                     />
                   </div>
                   <div>
@@ -892,7 +894,7 @@ export default function AccountProfile({
                       value={confirmPassword}
                       placeholder={t('sec_modal_pwd_confirm_ph')}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                      className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-rajdhani"
                     />
                   </div>
                 </div>
@@ -917,7 +919,7 @@ export default function AccountProfile({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowEmailModal(false)}
-            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4"
           >
             <motion.div 
               initial={{ y: "100%" }}
@@ -955,7 +957,7 @@ export default function AccountProfile({
                     placeholder={t('sec_modal_email_ph')}
                     required
                     onChange={(e) => setNewEmailInput(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-rajdhani"
                   />
                 </div>
                 
@@ -979,7 +981,7 @@ export default function AccountProfile({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowPhoneModal(false)}
-            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end sm:justify-center sm:p-4"
           >
             <motion.div 
               initial={{ y: "100%" }}
@@ -1017,7 +1019,7 @@ export default function AccountProfile({
                     placeholder={t('sec_modal_phone_ph')}
                     required
                     onChange={(e) => setNewPhoneInput(e.target.value)}
-                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 focus:bg-white dark:bg-slate-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-sans"
+                    className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent px-4 py-3 text-gray-900 dark:text-white focus:border-blue-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-rajdhani tabular-nums"
                   />
                 </div>
                 
@@ -1041,7 +1043,7 @@ export default function AccountProfile({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowAdminContactModal(false)}
-            className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm font-battambang"
+            className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 font-battambang"
           >
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 15 }}
@@ -1054,16 +1056,16 @@ export default function AccountProfile({
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('sec_modal_admin_title')}</h3>
                 <button 
                   onClick={() => setShowAdminContactModal(false)}
-                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="bg-blue-50/70 dark:bg-slate-800/80 rounded-2xl p-4 border border-blue-100 dark:border-slate-700/60 mb-5">
+              <div className="rounded-2xl p-4 border border-gray-200 dark:border-slate-700/60 mb-5">
                 <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">{t('sec_modal_admin_tg')}</p>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-[15px] text-blue-600 dark:text-blue-400 font-sans select-all">
+                  <span className="font-semibold text-[15px] text-blue-600 dark:text-blue-400 font-rajdhani select-all">
                     @wsd-data-management-admin
                   </span>
                   <button
@@ -1678,13 +1680,13 @@ export default function AccountProfile({
         <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
       </button>
 
-      {userRole === 'admin' && (
+      {(userRole === 'admin' || actualRole === 'admin') && (
         <button
           onClick={() => setIsSystemLogsView(true)}
-          className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+          className="w-full flex items-center justify-between px-6 py-3.5 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group cursor-pointer"
         >
           <div className="flex items-center gap-3.5">
-            <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+            <Terminal className="w-5 h-5 text-gray-700 dark:text-slate-200" />
             <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
               {t('profile_syslog_menu')}
             </span>
@@ -1730,7 +1732,7 @@ export default function AccountProfile({
                   />
                 )}
                 
-                <label className="absolute bottom-0 inset-x-0 h-6 sm:h-7 bg-white/40 dark:bg-black/30 hover:bg-white/60 dark:hover:bg-black/50 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-colors border-t border-white/20">
+                <label className="absolute bottom-0 inset-x-0 h-6 sm:h-7 bg-white/75 dark:bg-black/55 hover:bg-white/90 dark:hover:bg-black/70 flex items-center justify-center cursor-pointer transition-colors border-t border-white/20">
                   <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-800 dark:text-gray-200" />
                   <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                 </label>
@@ -1763,7 +1765,7 @@ export default function AccountProfile({
                 <FinancialOverviewCard 
                   userRole={userRole}
                   variant="embedded"
-                  className="rounded-none border-0 bg-gray-50/40 dark:bg-slate-800/30 px-4 py-3 sm:px-6 sm:py-4"
+                  className="rounded-none border-0 bg-transparent px-4 py-3 sm:px-6 sm:py-4"
                   onNavigateToSecurity={() => setIsSecurityView(true)}
                 />
               </div>
@@ -1833,9 +1835,24 @@ export default function AccountProfile({
             </span>
           </div>
 
+          {onReports && (
+            <button
+              onClick={onReports}
+              className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group cursor-pointer"
+            >
+              <div className="flex items-center gap-3.5">
+                <BarChart3 className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                  {t('nav_reports')}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </button>
+          )}
+
           <button
             onClick={onCertificates}
-            className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+            className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group cursor-pointer"
           >
             <div className="flex items-center gap-3.5">
               <FileText className="w-5 h-5 text-gray-700 dark:text-slate-200" />
@@ -1905,7 +1922,7 @@ export default function AccountProfile({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setIsAboutModalOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm font-battambang"
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 font-battambang"
         >
           <motion.div 
             initial={{ scale: 0.95, opacity: 0, y: 15 }}

@@ -141,7 +141,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white rounded-full p-2 backdrop-blur-sm shadow-md">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/65 text-white rounded-full p-2 shadow-md">
                         <Eye className="w-4 h-4" />
                       </div>
                     </div>
@@ -196,7 +196,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
         {previewCert && previewCert.blob && (
           <div 
             onClick={() => setPreviewCert(null)}
-            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/65 dark:bg-black/80"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.92, y: 10 }}
@@ -206,7 +206,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
               onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-900 dark:text-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
             >
-              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm flex-shrink-0">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
                 <div className="min-w-0 flex-1 pr-3">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white font-battambang truncate" title={previewCert.title}>
                     {previewCert.title}
@@ -250,7 +250,7 @@ export default function Certificates({ onBack, userRole = 'user' }: Certificates
 
       <AnimatePresence>
         {certToDelete && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

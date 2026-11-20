@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDE_IMAGES = [
-  { id: 3, src: '/slide/slide3.jpg', alt: 'Slide 3' },
-  { id: 4, src: '/slide/slide4.jpg', alt: 'Slide 4' },
-  { id: 5, src: '/slide/slide5.jpg', alt: 'Slide 5' },
-  { id: 6, src: '/slide/slide6.jpg', alt: 'Slide 6' },
+  { id: 3, src: '/slide/slide3.webp', alt: 'វត្តស្នាយដួច ១' },
+  { id: 4, src: '/slide/slide4.webp', alt: 'វត្តស្នាយដួច ២' },
+  { id: 5, src: '/slide/slide5.webp', alt: 'វត្តស្នាយដួច ៣' },
+  { id: 6, src: '/slide/slide6.webp', alt: 'វត្តស្នាយដួច ៤' },
 ];
 
 export default function ImageSlider() {
@@ -53,8 +52,8 @@ export default function ImageSlider() {
   };
 
   return (
-    <div 
-      className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xs border border-gray-200/70 dark:border-slate-800 bg-gray-900 group select-none aspect-[16/9] sm:aspect-[21/9] lg:aspect-auto lg:min-h-[360px]"
+    <div
+      className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 bg-gray-900 group select-none aspect-[16/9] max-h-[230px] sm:max-h-[280px] md:max-h-[320px] lg:max-h-[340px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -65,8 +64,8 @@ export default function ImageSlider() {
         return (
           <div
             key={image.id}
-            className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
-              isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0 pointer-events-none'
+            className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-out ${
+              isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
             }`}
           >
             <img
@@ -86,50 +85,53 @@ export default function ImageSlider() {
               }}
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
           </div>
         );
       })}
 
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           prevSlide();
         }}
         aria-label="Previous Slide"
-        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/65 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 cursor-pointer"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
 
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           nextSlide();
         }}
         aria-label="Next Slide"
-        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/65 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 cursor-pointer"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-between px-3 z-10 pointer-events-none">
-        <div className="flex items-center gap-1.5 pointer-events-auto bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-full">
+      <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-between px-3 z-20 pointer-events-none">
+        <div className="flex items-center gap-1.5 pointer-events-auto bg-black/45 px-2.5 py-1 rounded-full">
           {SLIDE_IMAGES.map((_, idx) => (
             <button
               key={idx}
+              type="button"
               onClick={() => setCurrentIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                currentIndex === idx 
-                  ? 'w-5 bg-[#028090]' 
-                  : 'w-1.5 bg-white/60 hover:bg-white/90'
+              className={`h-1.5 rounded-full transition-all duration-200 cursor-pointer ${
+                currentIndex === idx
+                  ? 'w-5 bg-[#028090]'
+                  : 'w-1.5 bg-white/65 hover:bg-white'
               }`}
             />
           ))}
         </div>
 
-        <div className="text-[11px] font-medium text-white/90 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full tracking-wider">
+        <div className="text-[11px] font-rajdhani font-semibold tabular-nums text-white bg-black/45 px-2 py-0.5 rounded-full tracking-wider">
           {currentIndex + 1} / {SLIDE_IMAGES.length}
         </div>
       </div>

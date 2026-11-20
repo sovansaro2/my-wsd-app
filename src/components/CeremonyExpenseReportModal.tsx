@@ -272,7 +272,7 @@ export default function CeremonyExpenseReportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/65 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 overflow-y-auto">
       {/* Print CSS specifically for standard A5 Sheet (148mm x 210mm) */}
       <style>{`
         @media print {
