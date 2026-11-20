@@ -124,7 +124,7 @@ export default function Reports({ userRole }: { userRole: 'admin' | 'user' | nul
   }
 
   return (
-    <div className="max-w-6xl mx-auto w-full p-2 sm:p-4 space-y-3 sm:space-y-4">
+    <div className="w-full p-2 sm:p-4 md:p-0 space-y-3 sm:space-y-4">
       <div className="flex items-center justify-between gap-2 pb-1 sm:pb-2 border-b border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-1 sm:gap-4 overflow-x-auto scrollbar-none">
           <button

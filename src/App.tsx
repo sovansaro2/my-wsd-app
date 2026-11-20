@@ -20,7 +20,8 @@ import {
   Terminal,
   Search,
   CalendarDays,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'motion/react';
@@ -197,7 +198,28 @@ export default function App() {
   const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
   const [showGlobalDonorSearch, setShowGlobalDonorSearch] = useState(false);
   const [showOutboxModal, setShowOutboxModal] = useState(false);
+  const [showDesktopMenu, setShowDesktopMenu] = useState(false);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
   const [syncToast, setSyncToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (desktopMenuRef.current && !desktopMenuRef.current.contains(event.target as Node)) {
+        setShowDesktopMenu(false);
+      }
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowDesktopMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   useEffect(() => {
     const onSyncCompleted = (e: any) => {
@@ -470,142 +492,244 @@ export default function App() {
     }
   };
 
+  const desktopPrimaryLinks: Array<{ id: Tab; label: string }> = [
+    { id: 'home', label: t('nav_home') },
+    { id: 'calendar', label: language === 'en' ? 'Calendar' : 'ប្រតិទិន' },
+    { id: 'records', label: t('nav_finance') },
+    { id: 'categories', label: t('nav_list') },
+    { id: 'reports', label: t('nav_reports') },
+  ];
+
+  const isAdminUser = actualRole === 'admin' || userRole === 'admin';
+  const accountDisplayName = currentUser?.full_name || currentUser?.username || t('nav_account');
+
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
       
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 lg:w-72 bg-white dark:bg-slate-900 z-40 select-none shadow-[1px_0_2px_0_rgba(0,0,0,0.05)] dark:shadow-[1px_0_2px_0_rgba(0,0,0,0.3)]">
-        <div className="h-16 px-4 flex items-center gap-3 border-b border-gray-200/80 dark:border-slate-800 bg-[#028090] dark:bg-slate-900 text-white">
-          <img 
-            src="/logo.png" 
-            alt="WSD Logo" 
-            className="w-12 h-12 object-contain shrink-0 drop-shadow-sm"
-          />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-white font-title text-base lg:text-lg leading-tight truncate">
-              {language === 'en' ? 'WSD Management' : 'វត្តស្នាយដួច'}
-            </h1>
-            <p className="text-[11px] text-teal-100 dark:text-slate-400 font-battambang truncate">
-              {language === 'en' ? 'Data Management System' : 'ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យ'}
-            </p>
-          </div>
-        </div>
+      {/* Desktop Website Top Navigation Bar */}
+      <header className="hidden md:block sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+          {/* Zone 1: Brand Wordmark */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-2.5 text-left whitespace-nowrap shrink-0 cursor-pointer group"
+          >
+            <img
+              src="/logo.png"
+              alt={t('app_title')}
+              className="w-9 h-9 object-contain shrink-0"
+            />
+            <span className={`text-gray-900 dark:text-white group-hover:text-[#028090] dark:group-hover:text-teal-400 transition-colors whitespace-nowrap shrink-0 ${
+              language === 'en'
+                ? 'font-rajdhani font-bold text-xl tracking-wide'
+                : 'font-title text-lg lg:text-xl pt-0.5'
+            }`}>
+              {language === 'en' ? 'Wat Snay Duoc' : 'វត្តស្នាយដួច'}
+            </span>
+          </button>
 
-        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200/80 dark:border-slate-800">
-          <div className="flex-1 overflow-y-auto py-2">
-            {navSections.map((section, sIndex) => (
-              <div key={section.id} className={sIndex > 0 ? 'mt-3.5 pt-2 border-t border-gray-100 dark:border-slate-800/80' : ''}>
-                <div className="px-4 pb-1.5 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider font-battambang">
-                    {section.title}
-                  </span>
-                </div>
-                <div className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveTab(item.id)}
-                        className={`w-full flex items-center px-4 py-3 text-[14px] lg:text-[14.5px] font-medium transition-colors font-battambang text-left border-l-4 cursor-pointer ${
-                          isActive
-                            ? 'bg-gray-100 dark:bg-slate-800 border-[#028090] dark:border-teal-400 text-gray-900 dark:text-white'
-                            : 'border-transparent text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
-                        }`}
-                      >
-                        <Icon className={`w-5 h-5 mr-3.5 shrink-0 ${
-                          isActive ? 'text-[#028090] dark:text-teal-400' : 'text-gray-500 dark:text-slate-400'
-                        }`} />
-                        <span className="truncate">{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Zone 2: Horizontal Website Navigation Links */}
+          <nav aria-label="Primary" className="flex items-center gap-5 lg:gap-7 h-full overflow-x-auto no-scrollbar">
+            {desktopPrimaryLinks.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`relative h-full inline-flex items-center text-[14px] lg:text-[15px] font-battambang whitespace-nowrap shrink-0 border-b-2 transition-colors cursor-pointer ${
+                    isActive
+                      ? 'border-[#028090] dark:border-teal-400 text-[#028090] dark:text-teal-400 font-semibold'
+                      : 'border-transparent text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
 
-          <div className="px-4 py-3 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+          {/* Zone 3: Global Search, Notifications & Account Menu */}
+          <div className="flex items-center gap-2 lg:gap-3 shrink-0">
+            <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
+
             <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-battambang"
-              title={t('profile_change_lang')}
+              type="button"
+              onClick={() => setShowGlobalDonorSearch(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang"
+              title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
+              aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
             >
-              <Globe className="w-4 h-4 text-gray-500 dark:text-slate-400" />
-              <span>{language === 'km' ? 'ភាសាខ្មែរ' : 'English'}</span>
+              <Search className="w-4 h-4 shrink-0" />
+              <span className="hidden lg:inline">{language === 'en' ? 'Search' : 'ស្វែងរក'}</span>
             </button>
 
-            <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleOpenNotifications}
+              className="relative p-2 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+              title="ការជូនដំណឹង"
+              aria-label="ការជូនដំណឹង"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-0.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-rajdhani font-bold px-1">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            <div className="relative" ref={desktopMenuRef}>
               <button
-                onClick={toggleTheme}
-                className="p-2 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                title={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
-                aria-label={theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
+                type="button"
+                onClick={() => setShowDesktopMenu((prev) => !prev)}
+                aria-expanded={showDesktopMenu}
+                aria-haspopup="menu"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs lg:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang ${
+                  ['account', 'certificates', 'admin_panel', 'users'].includes(activeTab)
+                    ? 'border-[#028090] text-[#028090] dark:border-teal-400 dark:text-teal-400'
+                    : 'border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
+                }`}
               >
-                {theme === 'dark' ? <Sun className="w-4 h-4 text-gray-400 dark:text-slate-300" /> : <Moon className="w-4 h-4 text-gray-500 dark:text-slate-400" />}
+                <User className="w-4 h-4 shrink-0" />
+                <span className="max-w-[120px] truncate">{accountDisplayName}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${showDesktopMenu ? 'rotate-180' : ''}`} />
               </button>
 
-              <button
-                onClick={handleLogout}
-                className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-                title={t('profile_logout')}
-                aria-label={t('profile_logout')}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              {showDesktopMenu && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-lg py-1.5 z-50 font-battambang"
+                >
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setActiveTab('account');
+                      setShowDesktopMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer ${
+                      activeTab === 'account'
+                        ? 'text-[#028090] dark:text-teal-400 font-semibold'
+                        : 'text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <User className="w-4 h-4 shrink-0" />
+                    <span>{t('nav_account')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setActiveTab('certificates');
+                      setShowDesktopMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer ${
+                      activeTab === 'certificates'
+                        ? 'text-[#028090] dark:text-teal-400 font-semibold'
+                        : 'text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <Award className="w-4 h-4 shrink-0" />
+                    <span>{t('profile_certificates')}</span>
+                  </button>
+
+                  {isAdminUser && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setActiveTab('admin_panel');
+                        setShowDesktopMenu(false);
+                      }}
+                      className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer ${
+                        activeTab === 'admin_panel' || activeTab === 'users'
+                          ? 'text-[#028090] dark:text-teal-400 font-semibold'
+                          : 'text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <ShieldCheck className="w-4 h-4 shrink-0" />
+                      <span>{language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង'}</span>
+                    </button>
+                  )}
+
+                  {actualRole === 'admin' && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setActiveTab('account');
+                        setOpenSystemLogsDirectly(true);
+                        setShowDesktopMenu(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                    >
+                      <Terminal className="w-4 h-4 shrink-0" />
+                      <span>System Logs</span>
+                    </button>
+                  )}
+
+                  <div className="my-1.5 border-t border-gray-100 dark:border-slate-800" />
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      toggleLanguage();
+                      setShowDesktopMenu(false);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-left text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Globe className="w-4 h-4 shrink-0" />
+                      <span>{t('profile_change_lang')}</span>
+                    </span>
+                    <span className="text-xs font-rajdhani font-semibold text-[#028090] dark:text-teal-400">
+                      {language === 'km' ? 'KM' : 'EN'}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      toggleTheme();
+                      setShowDesktopMenu(false);
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-left text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      {theme === 'dark' ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+                      <span>{theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}</span>
+                    </span>
+                  </button>
+
+                  <div className="my-1.5 border-t border-gray-100 dark:border-slate-800" />
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setShowDesktopMenu(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50/70 dark:hover:bg-rose-500/10 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4 shrink-0" />
+                    <span>{t('profile_logout')}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-      </aside>
-
-      <header className="hidden md:flex fixed top-0 right-0 left-64 lg:left-72 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 z-30 px-6 items-center justify-between transition-colors duration-200 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)]">
-        <div className="flex items-center gap-2">
-          <h2 className="text-base lg:text-lg font-bold text-gray-900 dark:text-white font-battambang">
-            {getActiveTabTitle()}
-          </h2>
-          <span className="text-xs text-gray-400 dark:text-slate-500 font-battambang">
-            • {t('app_title')}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
-          <button
-            onClick={() => setShowGlobalDonorSearch(true)}
-            className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer"
-            title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-            aria-label={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
-          >
-            <Search className="w-5 h-5 text-gray-700 dark:text-slate-300" />
-          </button>
-
-          {actualRole === 'admin' && (
-            <button
-              onClick={() => {
-                setActiveTab('account');
-                setOpenSystemLogsDirectly(true);
-              }}
-              className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center"
-              title="System Logs"
-              aria-label="System Logs"
-            >
-              <Terminal className="w-5 h-5 text-gray-700 dark:text-slate-300" />
-            </button>
-          )}
-
-          <button 
-            onClick={handleOpenNotifications}
-            className="relative p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
-            title="ការជូនដំណឹង"
-            aria-label="ការជូនដំណឹង"
-          >
-            <Bell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white font-bold px-1">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
         </div>
       </header>
 
@@ -821,8 +945,8 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 flex flex-col min-w-0 md:pl-64 lg:pl-72 pt-16 md:pt-16 pb-24 md:pb-8 transition-all duration-200">
-        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-4`}>
+      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 pb-24 md:pb-0 transition-all duration-200">
+        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-7`}>
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 8 }}
@@ -917,6 +1041,79 @@ export default function App() {
             </Suspense>
           </motion.div>
         </main>
+
+        {/* Desktop Website Footer */}
+        <footer className="hidden md:block border-t border-gray-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 mt-auto transition-colors duration-200">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-7">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt={t('app_title')} className="w-9 h-9 object-contain shrink-0" />
+                <div>
+                  <p className="font-title text-base text-gray-900 dark:text-white leading-tight">
+                    {language === 'en' ? 'Wat Snay Duoc' : 'វត្តស្នាយដួច'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang mt-0.5">
+                    {language === 'en'
+                      ? 'Temple financial records, donor directory & Buddhist calendar'
+                      : 'ប្រព័ន្ធគ្រប់គ្រងបច្ច័យ បញ្ជីសប្បុរសជន និងកាលវិភាគកម្មវិធីបុណ្យ'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs lg:text-sm font-battambang text-gray-600 dark:text-slate-300">
+                {desktopPrimaryLinks.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`hover:text-[#028090] dark:hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap ${
+                      activeTab === item.id ? 'text-[#028090] dark:text-teal-400 font-semibold' : ''
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('certificates');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`hover:text-[#028090] dark:hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap ${
+                    activeTab === 'certificates' ? 'text-[#028090] dark:text-teal-400 font-semibold' : ''
+                  }`}
+                >
+                  {t('profile_certificates')}
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-gray-400 dark:text-slate-500 font-battambang">
+              <span>
+                © <span className="font-rajdhani">{new Date().getFullYear()}</span> {language === 'en' ? 'Wat Snay Duoc' : 'វត្តស្នាយដួច'}
+              </span>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={toggleLanguage}
+                  className="hover:text-gray-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                >
+                  {language === 'km' ? 'ភាសាខ្មែរ · English' : 'English · ភាសាខ្មែរ'}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="hover:text-gray-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                >
+                  {theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">

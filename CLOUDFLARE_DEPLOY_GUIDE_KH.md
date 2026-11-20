@@ -1,18 +1,30 @@
-# សៀវភៅណែនាំអំពីការ Deploy និងប្រើប្រាស់ Cloudflare (Cloudflare Deployment Guide)
+# សៀវភៅណែនាំអំពីការ Deploy និងប្រើប្រាស់ Cloudflare (Full-Stack Cloudflare Workers & Pages)
 
-ការជ្រើសរើស **Cloudflare** គឺជាជម្រើសដ៏ល្អបំផុត ព្រោះ Cloudflare មានប្រព័ន្ធ **Edge Network (CDN)** នៅជិតប្រទេសកម្ពុជា (មាន Pop នៅភ្នំពេញ បាងកក សិង្ហបុរី) ដែលធ្វើឱ្យគេហទំព័របើកឡើងលឿនដូចផ្លេកបន្ទោរ មិនចេះ Sleep ហើយ **Free Tier ១០០% គ្មានដែនកំណត់ Bandwidth**។
+គម្រោងនេះត្រូវបានរៀបចំរួចរាល់ជា **Full-Stack Cloudflare Workers + Static Assets** (`wrangler.json` + `worker/index.ts`) ដែលអាចដំណើរការទាំង **Frontend (React)** និង **Backend API (`/api/*`)** នៅលើ Cloudflare តែមួយគត់ — **មិនចាំបាច់ពឹងលើ Render, មិនចេះ Sleep, គ្មានកំណត់ 750 ម៉ោង និងឥតគិតថ្លៃ ១០០%**។
 
 ---
 
-## ស្ថាបត្យកម្មដែលល្អ និងពេញនិយមបំផុត (Recommended Architecture)
+## របៀប Deploy លើ Cloudflare Workers (`my-wsd-app`) តាម GitHub (ណែនាំបំផុត)
 
-ដោយសារតែកម្មវិធីរបស់យើងមាន ២ ផ្នែក៖
-1. **Frontend (React + Vite + Tailwind):** ជាទំព័រ UI ដ៏ទំនើប
-2. **Backend API (Node.js Express + Supabase):** ជាអ្នកគ្រប់គ្រងទិន្នន័យ ការទាញយក Excel និងការបញ្ជាក់សិទ្ធិ
+1. ចូលទៅកាន់ Cloudflare Dashboard -> **Workers & Pages** -> ជ្រើសរើស Worker **`my-wsd-app`** (ដែលបានភ្ជាប់ជាមួយ GitHub `sovansaro2/my-wsd-app`)។
+2. ចូលទៅ **Settings** -> **Build** (Builds & Deployments) ហើយពិនិត្យមើល៖
+   - **Build command:** `npm run build`
+   - **Deploy command:** `npx wrangler deploy`
+   - **Root directory:** ទុកទទេ (ឬ `/`)
+3. ចូលទៅ **Settings** -> **Variables and Secrets** -> បន្ថែមអថេរខាងក្រោម (ជា Secret ឬ Text)៖
+   - `VITE_SUPABASE_URL` = `https://vstwhhuqgeimssqxfmij.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = *(Anon Key របស់អ្នក)*
+   - `SUPABASE_SERVICE_ROLE_KEY` = *(Service Role Key របស់អ្នក)*
+   - `JWT_SECRET_KEY` = `wsd-super-secret-jwt-key-2026`
+   *(ចំណាំ: កុំដាក់ `VITE_API_BASE_URL` ឬទុកឱ្យទទេ ដើម្បីឱ្យ Frontend ហៅ `/api/*` ទៅកាន់ Cloudflare Worker ដោយផ្ទាល់លើ Domain តែមួយ)*
+4. ចូលទៅ **Settings** -> **Domains & Routes** -> ចុច **Add** ដើម្បីភ្ជាប់ Custom Domain **`watsnaydouch.site`** (និង `www.watsnaydouch.site` បើត្រូវការ)។
+5. ចុច **Push កូដទៅ GitHub** ឬចុច **Retry deployment** នៅលើ Cloudflare នោះទាំង Frontend និង Backend នឹងដំណើរការលើ Cloudflare ទាំងស្រុង!
 
-👉 **វិធីល្អឥតខ្ចោះបំផុតគឺ៖**
-- **Frontend ដាក់លើ Cloudflare Pages (Free ១០០% មិនដែល Sleep):** ដំណើរការលឿនបំផុត គាំទ្រ Custom Domain (ឧ. `watsnaydouch.site`) និងមាន SSL ដោយស្វ័យប្រវត្ត។
-- **Backend API ដាក់លើ Cloud Server (ឧ. Render / VPS / Fly.io) ហើយចង្អុល Domain កាត់តាម Cloudflare (Orange Cloud Proxy):** ដើម្បីទទួលបានសុវត្ថិភាពខ្ពស់បំផុត និងល្បឿន Cache ពី Cloudflare។
+---
+
+## វិធីជំនួស៖ Deploy តែ Frontend ទៅ Cloudflare Pages + Backend ផ្សេង (ចាស់)
+
+ការជ្រើសរើស **Cloudflare** គឺជាជម្រើសដ៏ល្អបំផុត ព្រោះ Cloudflare មានប្រព័ន្ធ **Edge Network (CDN)** នៅជិតប្រទេសកម្ពុជា (មាន Pop នៅភ្នំពេញ បាងកក សិង្ហបុរី) ដែលធ្វើឱ្យគេហទំព័របើកឡើងលឿនដូចផ្លេកបន្ទោរ មិនចេះ Sleep ហើយ **Free Tier ១០០% គ្មានដែនកំណត់ Bandwidth**។
 
 ---
 

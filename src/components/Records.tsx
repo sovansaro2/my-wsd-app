@@ -610,17 +610,17 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   if (!selectedPeriod || userRole !== 'admin') {
     return (
       <>
-      <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang relative">
-        <div className="bg-white dark:bg-slate-950 px-4 pt-4 pb-3 border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
+      <div className="flex flex-col md:bg-transparent bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 md:pb-4 font-battambang relative">
+        <div className="bg-white dark:bg-slate-900 md:rounded-2xl md:border md:border-gray-200/80 dark:md:border-slate-800 px-4 sm:px-6 pt-4 pb-4 border-b border-gray-100 dark:border-slate-800 z-10 sticky top-0 md:static md:mb-6">
+          <div className="w-full flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-xl  text-gray-900 dark:text-white ">{t('records_title')}</h1>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{t('records_total_periods', { count: periods.length })}</p>
+              <h1 className="text-xl sm:text-2xl font-title text-gray-900 dark:text-white">{t('records_title')}</h1>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">{t('records_total_periods', { count: periods.length })}</p>
             </div>
             {userRole === 'admin' && (
               <button 
                 onClick={openAddSeilModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#028090] hover:bg-[#005F73] text-white text-xs font-medium rounded-xl transition-colors shadow-sm cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#028090] hover:bg-[#005F73] text-white text-xs sm:text-sm font-medium rounded-xl transition-colors shadow-sm cursor-pointer whitespace-nowrap shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>{t('records_btn_add_new')}</span>
@@ -629,9 +629,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="flex-1 md:overflow-visible overflow-y-auto px-4 md:px-0 py-4 md:py-0">
+          <div className="w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
               {periods.map(period => (
                 <PeriodCard
                   key={period.id}
@@ -872,9 +872,9 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
   const currentBalance = previousBalance + totalIncome - totalExpense;
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 font-battambang">
-      <div className="bg-white dark:bg-slate-950 px-4 pt-3.5 pb-3 border-b border-gray-100 dark:border-slate-800 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
+    <div className="flex flex-col md:bg-transparent bg-slate-50 dark:bg-slate-950 transition-colors duration-200 pb-24 md:pb-6 font-battambang">
+      <div className="bg-white dark:bg-slate-900 md:rounded-2xl md:border md:border-gray-200/80 dark:md:border-slate-800 px-4 sm:px-6 pt-3.5 pb-4 border-b border-gray-100 dark:border-slate-800 sticky top-0 md:static z-10 md:mb-4">
+        <div className="w-full flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => setSelectedPeriod(null)}
@@ -942,7 +942,7 @@ export default function Records({ userRole, onAddRecord }: RecordsProps = {}) {
         </div>
       </div>
 
-      <div className="flex px-4 pt-3 pb-1 gap-2 max-w-6xl mx-auto w-full">
+      <div className="flex px-4 md:px-0 pt-3 pb-1 gap-2 w-full">
         <button 
           onClick={() => setActiveTab('income')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all ${

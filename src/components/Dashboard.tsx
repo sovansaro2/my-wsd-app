@@ -414,10 +414,11 @@ export default function Dashboard({
     return d.name.toLowerCase().includes(q) || d.category_name.toLowerCase().includes(q);
   });
 
+  const upcomingEventsPreview = upcomingEventsList.slice(0, 2);
+
   return (
-    <div className="flex flex-col h-full pb-20 overflow-y-auto font-battambang transition-colors duration-200">
-      
-      <div className="max-w-6xl mx-auto w-full px-0 sm:px-4 pt-1 sm:pt-2 pb-6 space-y-3 sm:space-y-6">
+    <div className="flex flex-col pb-6 md:pb-2 font-battambang transition-colors duration-200">
+      <div className="w-full px-0 sm:px-0 pt-1 pb-4 space-y-4 sm:space-y-6">
 
       {error && (
         <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 p-3.5 rounded-xl text-sm border border-rose-200 dark:border-rose-500/20 shadow-2xs">
@@ -425,47 +426,74 @@ export default function Dashboard({
         </div>
       )}
 
-      <div className="w-full">
-        <ImageSlider />
-      </div>
+      {/* Desktop Hero Split: Gallery Showcase (8 cols) + Buddhist Calendar & Schedule (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
+        <div className="lg:col-span-8 flex">
+          <ImageSlider />
+        </div>
 
-      {/* Buddhist Calendar & Upcoming Events Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/70 dark:border-slate-800 p-4 sm:p-5 shadow-2xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
-              <h3 className="text-base sm:text-[17px] font-medium text-gray-900 dark:text-white font-battambang">
-                {language === 'en' ? 'Buddhist Calendar & Event Schedule' : 'ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ'}
-              </h3>
+        <div className="lg:col-span-4 flex">
+          <div className="w-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 p-4 sm:p-5 lg:p-6 shadow-2xs flex flex-col justify-between gap-4">
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <CalendarIcon className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
+                  <h3 className="text-base sm:text-[17px] font-semibold text-gray-900 dark:text-white font-battambang">
+                    {language === 'en' ? 'Buddhist Calendar & Schedule' : 'ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ'}
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-200 font-battambang leading-relaxed">
+                  ថ្ងៃ{todayLunar.dayOfWeekKhmer} {todayLunar.lunarDayStr} ខែ{todayLunar.lunarMonthStr} ឆ្នាំ{todayLunar.lunarYearStr} • ព.ស. <span className="font-rajdhani font-semibold tabular-nums">{todayLunar.buddhistEra}</span>
+                  {todayLunar.isSeil && (
+                    <span className="ml-2 font-semibold text-amber-600 dark:text-amber-400">({todayLunar.seilTitle})</span>
+                  )}
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-gray-100 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm font-battambang">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-gray-500 dark:text-slate-400 shrink-0">ថ្ងៃសីលបន្ទាប់</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-medium text-right">
+                    {nextSeil.lunar.seilTitle} ({nextSeil.daysRemaining === 0 ? 'ថ្ងៃនេះ' : nextSeil.daysRemaining === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextSeil.daysRemaining)} ថ្ងៃ`})
+                  </span>
+                </div>
+
+                {upcomingEventsPreview.length > 0 ? (
+                  <div className="pt-2 border-t border-gray-100 dark:border-slate-800 space-y-2">
+                    <p className="text-xs font-semibold text-gray-500 dark:text-slate-400">
+                      {language === 'en' ? 'Upcoming Ceremonies' : 'កម្មវិធីបុណ្យជិតមកដល់'}
+                    </p>
+                    {upcomingEventsPreview.map((ev) => {
+                      const p = ev.event_date.split('-');
+                      const evTime = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)).getTime();
+                      const diff = Math.ceil((evTime - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+                      return (
+                        <div key={ev.id} className="flex items-start justify-between gap-2 text-xs">
+                          <span className="text-gray-800 dark:text-slate-200 font-medium line-clamp-1">{ev.title}</span>
+                          <span className="text-[#028090] dark:text-teal-400 shrink-0 font-medium tabular-nums">
+                            {diff === 0 ? 'ថ្ងៃនេះ' : diff === 1 ? 'ថ្ងៃស្អែក' : `${toKhmerNumber(diff)} ថ្ងៃ`}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 dark:text-slate-500 pt-1">
+                    {language === 'en' ? 'No upcoming ceremonies scheduled' : 'មិនទាន់មានកម្មវិធីបុណ្យកំណត់ថ្មីទេ'}
+                  </p>
+                )}
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 font-battambang">
-              ថ្ងៃ{todayLunar.dayOfWeekKhmer} {todayLunar.lunarDayStr} ខែ{todayLunar.lunarMonthStr} ឆ្នាំ{todayLunar.lunarYearStr} • ព.ស. <span className="font-rajdhani font-medium">{todayLunar.buddhistEra}</span>
-              {todayLunar.isSeil && (
-                <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">({todayLunar.seilTitle})</span>
-              )}
-            </p>
-            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 pt-0.5 flex-wrap font-battambang">
-              <span className="text-amber-600 dark:text-amber-400 font-normal">
-                • ថ្ងៃសីលបន្ទាប់៖ {nextSeil.lunar.seilTitle} ({nextSeil.daysRemaining === 0 ? 'ថ្ងៃនេះ' : nextSeil.daysRemaining === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextSeil.daysRemaining)} ថ្ងៃ`})
-              </span>
-              {nextEvent && (
-                <span className="text-teal-600 dark:text-teal-400 font-normal flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  កម្មវិធីបន្ទាប់៖ {nextEvent.title} ({nextEventDaysDiff === 0 ? 'ថ្ងៃនេះ' : nextEventDaysDiff === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextEventDaysDiff || 0)} ថ្ងៃ`})
-                </span>
-              )}
-            </div>
+
+            <button
+              type="button"
+              onClick={() => onNavigateTab?.('calendar')}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-xs sm:text-sm font-medium text-[#028090] dark:text-teal-400 hover:border-[#028090] hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer font-battambang"
+            >
+              <span>{language === 'en' ? 'View Schedule' : 'មើលកាលវិភាគ & ប្រតិទិន'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => onNavigateTab?.('calendar')}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs sm:text-sm font-medium text-[#028090] dark:text-teal-400 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0 font-battambang self-start md:self-auto"
-          >
-            <span>{language === 'en' ? 'View Schedule' : 'មើលកាលវិភាគ & ប្រតិទិន'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
@@ -574,8 +602,8 @@ export default function Dashboard({
               </div>
             </div>
 
-            {/* Benefactors list */}
-            <div className="divide-y divide-gray-100 dark:divide-slate-800">
+            {/* Benefactors list: Mobile Rows */}
+            <div className="md:hidden divide-y divide-gray-100 dark:divide-slate-800">
               {filteredBenefactors.length === 0 ? (
                 <div className="py-10 text-center text-gray-400 dark:text-slate-500 text-sm font-battambang">
                   {t('common_no_data')}
@@ -590,7 +618,7 @@ export default function Dashboard({
                         className="flex items-center justify-between p-3.5 sm:p-4 cursor-pointer select-none"
                       >
                         <div className="flex items-center gap-3 min-w-0 pr-2">
-                          <span className="w-6 shrink-0 text-center text-sm font-semibold font-rajdhani text-gray-400 dark:text-slate-500">
+                          <span className="w-6 shrink-0 text-center text-sm font-semibold font-rajdhani tabular-nums text-gray-400 dark:text-slate-500">
                             {language === 'km' ? toKhmerNum(index + 1) : index + 1}
                           </span>
                           <div className="min-w-0">
@@ -599,7 +627,7 @@ export default function Dashboard({
                             </span>
                             <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500 dark:text-slate-400 font-battambang">
                               <span>
-                                ចូលរួម <span className="font-rajdhani font-semibold text-[#028090] dark:text-teal-400">{language === 'km' ? toKhmerNum(donor.contributions_count) : donor.contributions_count}</span> លើក
+                                ចូលរួម <span className="font-rajdhani font-semibold tabular-nums text-[#028090] dark:text-teal-400">{language === 'km' ? toKhmerNum(donor.contributions_count) : donor.contributions_count}</span> លើក
                               </span>
                               {donor.locations.length > 0 && (
                                 <>
@@ -613,7 +641,7 @@ export default function Dashboard({
 
                         <div className="flex items-center gap-2 sm:gap-3 shrink-0 text-right">
                           <div>
-                            <span className="text-sm sm:text-base font-semibold text-emerald-600 dark:text-emerald-400 font-battambang">
+                            <span className="text-sm sm:text-base font-semibold text-emerald-600 dark:text-emerald-400 font-battambang tabular-nums">
                               {language === 'km' ? `៛ ${toKhmerNum(donor.total_amount.toLocaleString())}` : `៛ ${donor.total_amount.toLocaleString()}`}
                             </span>
                             <span className="block text-[11px] text-gray-400 dark:text-slate-500 font-battambang">
@@ -646,7 +674,7 @@ export default function Dashboard({
                                     )}
                                   </p>
                                   <div className="flex items-center gap-2 text-[11px] text-gray-400 dark:text-slate-400 mt-0.5 flex-wrap">
-                                    <span className="font-rajdhani">{formatRecordDate(rec.date)}</span>
+                                    <span className="font-rajdhani tabular-nums">{formatRecordDate(rec.date)}</span>
                                     {rec.note && (
                                       <>
                                         <span>•</span>
@@ -664,7 +692,7 @@ export default function Dashboard({
                                   </div>
                                 </div>
                                 <div className="shrink-0 flex items-center gap-3">
-                                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-battambang">
+                                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-battambang tabular-nums">
                                     {language === 'km' ? `៛ ${toKhmerNum(rec.amount.toLocaleString())}` : `៛ ${rec.amount.toLocaleString()}`}
                                   </span>
                                   <div className="flex items-center gap-1.5 pl-2 border-l border-gray-200 dark:border-slate-700">
@@ -702,6 +730,139 @@ export default function Dashboard({
                     </div>
                   );
                 })
+              )}
+            </div>
+
+            {/* Benefactors list: Desktop Data Table */}
+            <div className="hidden md:block overflow-x-auto">
+              {filteredBenefactors.length === 0 ? (
+                <div className="py-12 text-center text-gray-400 dark:text-slate-500 text-sm font-battambang">
+                  {t('common_no_data')}
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse font-battambang">
+                  <thead>
+                    <tr className="border-b border-gray-200/80 dark:border-slate-800 text-xs font-semibold text-gray-500 dark:text-slate-400 bg-gray-50/70 dark:bg-slate-900/60">
+                      <th className="py-3 pl-5 pr-3 w-14 text-center">{language === 'km' ? 'ល.រ' : '#'}</th>
+                      <th className="py-3 px-4">{language === 'km' ? 'ឈ្មោះសប្បុរសជន' : 'Donor Name'}</th>
+                      <th className="py-3 px-4">{language === 'km' ? 'ទីតាំង / កំណត់សម្គាល់' : 'Locations / Notes'}</th>
+                      <th className="py-3 px-4 text-center whitespace-nowrap">{language === 'km' ? 'ចំនួនចូលរួម' : 'Contributions'}</th>
+                      <th className="py-3 px-4 text-right whitespace-nowrap">{language === 'km' ? 'បច្ច័យសរុប' : 'Total Amount'}</th>
+                      <th className="py-3 pl-3 pr-5 w-16 text-right">{language === 'km' ? 'លម្អិត' : 'Details'}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    {filteredBenefactors.slice(0, benefactorsDisplayLimit).map((donor, index) => {
+                      const isExpanded = expandedBenefactor === donor.name;
+                      return (
+                        <React.Fragment key={donor.name}>
+                          <tr
+                            onClick={() => setExpandedBenefactor(isExpanded ? null : donor.name)}
+                            className="cursor-pointer hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                          >
+                            <td className="py-3.5 pl-5 pr-3 text-center text-sm font-semibold font-rajdhani tabular-nums text-gray-400 dark:text-slate-500">
+                              {language === 'km' ? toKhmerNum(index + 1) : index + 1}
+                            </td>
+                            <td className="py-3.5 px-4 text-sm lg:text-[15px] text-gray-900 dark:text-white font-medium">
+                              {donor.name}
+                            </td>
+                            <td className="py-3.5 px-4 text-xs lg:text-sm text-gray-500 dark:text-slate-400 max-w-xs truncate">
+                              {donor.locations.length > 0 ? donor.locations.join(', ') : '—'}
+                            </td>
+                            <td className="py-3.5 px-4 text-center text-xs lg:text-sm whitespace-nowrap">
+                              <span className="font-rajdhani font-semibold tabular-nums text-[#028090] dark:text-teal-400">
+                                {language === 'km' ? toKhmerNum(donor.contributions_count) : donor.contributions_count}
+                              </span>{' '}
+                              <span className="text-gray-500 dark:text-slate-400">លើក</span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right text-sm lg:text-[15px] font-semibold text-emerald-600 dark:text-emerald-400 font-rajdhani tabular-nums whitespace-nowrap">
+                              {language === 'km' ? `៛ ${toKhmerNum(donor.total_amount.toLocaleString())}` : `៛ ${donor.total_amount.toLocaleString()}`}
+                            </td>
+                            <td className="py-3.5 pl-3 pr-5 text-right text-gray-400">
+                              <span className="inline-flex items-center justify-end">
+                                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              </span>
+                            </td>
+                          </tr>
+
+                          {isExpanded && (
+                            <tr className="bg-gray-50/60 dark:bg-slate-950/50">
+                              <td colSpan={6} className="px-6 py-4">
+                                <div className="divide-y divide-dashed divide-gray-200 dark:divide-slate-800">
+                                  {donor.records.map((rec, rIdx) => (
+                                    <div
+                                      key={rec.id || rIdx}
+                                      className="flex items-center justify-between gap-4 py-2.5 text-sm font-battambang"
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-gray-800 dark:text-slate-200 font-medium">
+                                          {rec.source_name}
+                                          {rec.recorded_name && rec.recorded_name !== donor.name && (
+                                            <span className="ml-2 text-xs text-gray-500 dark:text-slate-400 font-normal">
+                                              ({language === 'km' ? 'ឈ្មោះកត់ត្រា៖ ' : 'As: '}
+                                              <span className="font-medium text-gray-700 dark:text-slate-300">{rec.recorded_name}</span>)
+                                            </span>
+                                          )}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400 mt-0.5 flex-wrap">
+                                          <span className="font-rajdhani tabular-nums">{formatRecordDate(rec.date)}</span>
+                                          {rec.note && (
+                                            <>
+                                              <span>·</span>
+                                              <span>{rec.note}</span>
+                                            </>
+                                          )}
+                                          {rec.is_cross_listed && (
+                                            <>
+                                              <span>·</span>
+                                              <span className="text-[#028090] dark:text-teal-400">
+                                                {rec.cross_listed_info || (language === 'km' ? 'កត់ទាំងក្នុងចំណូលចំណាយ & បញ្ជីកសាង (រាប់តែម្ដង)' : 'Cross-listed in both lists (counted once)')}
+                                              </span>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="shrink-0 flex items-center gap-4">
+                                        <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-rajdhani tabular-nums">
+                                          {language === 'km' ? `៛ ${toKhmerNum(rec.amount.toLocaleString())}` : `៛ ${rec.amount.toLocaleString()}`}
+                                        </span>
+                                        <div className="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-slate-700">
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleOpenEdit(rec, donor.name);
+                                            }}
+                                            className="inline-flex items-center gap-1 text-xs text-[#028090] dark:text-teal-400 hover:underline p-1 cursor-pointer"
+                                          >
+                                            <Pencil className="w-3.5 h-3.5" />
+                                            <span>{language === 'km' ? 'កែប្រែ' : 'Edit'}</span>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleOpenDelete(rec, donor.name);
+                                            }}
+                                            className="inline-flex items-center gap-1 text-xs text-rose-500 hover:underline p-1 cursor-pointer"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                            <span>{language === 'km' ? 'លុប' : 'Delete'}</span>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
               )}
             </div>
 
@@ -746,7 +907,7 @@ export default function Dashboard({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0">
+            <div className="grid grid-cols-1 md:grid-cols-2">
               {filteredHighTier.length === 0 ? (
                 <div className="col-span-full py-10 text-center text-gray-400 dark:text-slate-500 text-sm sm:text-base font-battambang">
                   {t('common_no_data')}
@@ -755,7 +916,7 @@ export default function Dashboard({
                 filteredHighTier.slice(0, highTierDisplayLimit).map((donor, index) => (
                   <div 
                     key={donor.id || index} 
-                    className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors border-b border-gray-100 dark:border-slate-800 md:border-r md:border-b-0"
+                    className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors border-b border-gray-100 dark:border-slate-800 md:odd:border-r"
                   >
                     <div className="flex items-center gap-3 min-w-0 pr-2">
                       <span className="w-6 shrink-0 text-center text-sm font-semibold font-rajdhani text-gray-400 dark:text-slate-500">

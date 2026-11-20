@@ -659,21 +659,23 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
 
     return (
       <>
-            <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang overflow-y-auto">
-        <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-            <h2 className="text-2xl font-normal text-gray-900 dark:text-white font-battambang  leading-normal">{t('lists_main_title')}</h2>
+      <div className="flex flex-col md:bg-transparent bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 md:pb-4 font-battambang md:overflow-visible overflow-y-auto">
+        <div className="bg-white dark:bg-slate-900 md:rounded-2xl md:border md:border-gray-200/80 dark:md:border-slate-800 px-4 sm:px-6 py-4 sm:py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0 md:static md:mb-6">
+          <div className="w-full flex items-center justify-between gap-4">
+            <h2 className="text-xl sm:text-2xl font-title font-normal text-gray-900 dark:text-white leading-normal">{t('lists_main_title')}</h2>
             {userRole === 'admin' && (
               <button 
                 onClick={openAddCatModal}
-                className="flex items-center justify-center bg-transparent text-gray-400 hover:text-[#028090] hover:bg-teal-50 dark:hover:bg-slate-800 w-10 h-10 rounded-full transition-colors focus:outline-none"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-medium text-[#028090] dark:text-teal-400 border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-xl transition-colors focus:outline-none cursor-pointer"
+                title={t('lists_add_new_folder')}
               >
-                <Plus className="w-6 h-6" />
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{language === 'en' ? 'New Folder' : 'បង្កើត Folder ថ្មី'}</span>
               </button>
             )}
           </div>
         </div>
-        <div className="px-4 py-6 max-w-7xl mx-auto w-full">
+        <div className="px-4 md:px-0 py-6 md:py-0 w-full">
           {roofCat && (
             <div className="mb-8">
               <h3 className="text-[14px] font-normal text-gray-500 dark:text-slate-400 mb-4 font-battambang flex items-center gap-2">
@@ -900,9 +902,9 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 font-battambang relative overflow-x-hidden w-full">
-      <div className="bg-white dark:bg-slate-950 px-4 py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0">
-        <div className="max-w-7xl mx-auto w-full flex flex-col gap-4">
+    <div className="flex flex-col md:bg-transparent bg-[#FAFAFA] dark:bg-slate-950 transition-colors duration-200 pb-6 md:pb-4 font-battambang relative overflow-x-hidden w-full">
+      <div className="bg-white dark:bg-slate-900 md:rounded-2xl md:border md:border-gray-200/80 dark:md:border-slate-800 px-4 sm:px-6 py-4 sm:py-5 shadow-none dark:shadow-none border-b border-gray-200 dark:border-slate-800 z-10 sticky top-0 md:static md:mb-5">
+        <div className="w-full flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setSelectedCategory(null)} 
@@ -947,7 +949,7 @@ export default function NameLists({ userRole, onManageNameLists }: { userRole?: 
           <LoadingScreen className="h-64 bg-transparent" />
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-1 sm:px-6 py-2 sm:py-6 max-w-7xl mx-auto w-full space-y-3">
+        <div className="flex-1 md:overflow-visible overflow-y-auto overflow-x-hidden px-1 sm:px-4 md:px-0 py-2 sm:py-4 md:py-0 w-full space-y-3">
           <div className="flex items-center justify-between mb-3 px-2 sm:px-1 border-b border-gray-200 dark:border-slate-700/60 pb-2.5">
             <div className="text-[13.5px] font-medium text-zinc-600 dark:text-slate-400 font-battambang">
               {selectedCategory?.description ? (

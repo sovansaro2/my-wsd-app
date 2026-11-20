@@ -54,7 +54,7 @@ export default function ImageSlider() {
 
   return (
     <div 
-      className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xs border border-gray-200/70 dark:border-slate-800 bg-gray-900 group select-none aspect-[16/9] sm:aspect-[21/9]"
+      className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xs border border-gray-200/70 dark:border-slate-800 bg-gray-900 group select-none aspect-[16/9] sm:aspect-[21/9] lg:aspect-auto lg:min-h-[360px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}

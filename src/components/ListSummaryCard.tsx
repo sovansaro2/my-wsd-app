@@ -34,6 +34,7 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
   seils,
   categories,
   language = 'km',
+  onNavigateTab,
 }) => {
   const isKm = language === 'km';
   const formatNum = (n: number) => (isKm ? toKhmerNum(n) : n.toString());
@@ -51,100 +52,110 @@ export const ListSummaryCard: React.FC<ListSummaryCardProps> = ({
   const totalClosed = otherClosedCount + financeClosedCount;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 p-4 sm:p-5 font-battambang text-gray-800 dark:text-slate-200 shadow-xs transition-colors">
-      
-      <div className="pb-3.5 mb-3.5 border-b border-gray-100 dark:border-slate-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
-          <div className="flex items-center justify-between sm:justify-start sm:gap-2">
-            <span className="text-gray-600 dark:text-slate-400 font-medium">
-              {isKm ? 'បញ្ជីសរុប៖' : 'Total Lists:'}
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {formatNum(totalAll)} {isKm ? 'បញ្ជី' : 'lists'}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-start sm:gap-2">
-            <span className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-              {isKm ? 'បញ្ជីបើកសរុប៖' : 'Total Open:'}
-            </span>
-            <span className="font-semibold text-emerald-800 dark:text-emerald-400">
-              {formatNum(totalOpen)} {isKm ? 'បញ្ជី' : 'lists'}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-start sm:gap-2">
-            <span className="text-gray-600 dark:text-slate-400 font-medium">
-              {isKm ? 'បញ្ជីបិទសរុប៖' : 'Total Closed:'}
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {formatNum(totalClosed)} {isKm ? 'បញ្ជី' : 'lists'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 dark:divide-slate-800">
-        
-        <div className="pt-0 sm:pt-0 sm:pr-4">
-          <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white mb-2.5">
-            {isKm ? 'បញ្ជីផ្សេងៗ' : 'Other Lists'}
+    <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 p-4 sm:p-5 lg:p-6 font-battambang text-gray-800 dark:text-slate-200 shadow-2xs transition-colors">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-slate-800">
+        {/* Column 1: Overall Summary */}
+        <div className="md:pr-6">
+          <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+            {isKm ? 'ទិដ្ឋភាពទូទៅនៃបញ្ជី' : 'Lists Overview'}
           </h4>
-          <div className="space-y-1.5 text-xs sm:text-sm text-gray-700 dark:text-slate-300">
+          <div className="space-y-2 text-xs sm:text-sm text-gray-700 dark:text-slate-300">
             <div className="flex items-center justify-between">
-              <span>{isKm ? 'សរុប៖' : 'Total:'}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatNum(otherTotal)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'បញ្ជីសរុប៖' : 'Total Lists:'}</span>
+              <span className="font-semibold text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(totalAll)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
-                {isKm ? 'បញ្ជីបើក៖' : 'Open lists:'}
-              </span>
-              <span className="font-semibold text-emerald-800 dark:text-emerald-400">
-                {formatNum(otherActiveCount)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-emerald-700 dark:text-emerald-400 font-medium">{isKm ? 'បញ្ជីបើកសរុប៖' : 'Total Open:'}</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-rajdhani tabular-nums">
+                {formatNum(totalOpen)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>{isKm ? 'បានបិទ៖' : 'Closed:'}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatNum(otherClosedCount)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'បញ្ជីបិទសរុប៖' : 'Total Closed:'}</span>
+              <span className="font-medium text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(totalClosed)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="pt-4 sm:pt-0 sm:pl-6">
-          <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white mb-2.5">
-            {isKm ? 'បញ្ជីចំណូល-ចំណាយ' : 'Income & Expense Lists'}
-          </h4>
-          <div className="space-y-1.5 text-xs sm:text-sm text-gray-700 dark:text-slate-300">
+        {/* Column 2: Other Lists */}
+        <div className="pt-4 md:pt-0 md:px-6">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white">
+              {isKm ? 'បញ្ជីផ្សេងៗ' : 'Other Lists'}
+            </h4>
+            {onNavigateTab && (
+              <button
+                type="button"
+                onClick={() => onNavigateTab('categories')}
+                className="text-xs font-medium text-[#028090] dark:text-teal-400 hover:underline cursor-pointer"
+              >
+                {isKm ? 'បើកមើល →' : 'View →'}
+              </button>
+            )}
+          </div>
+          <div className="space-y-2 text-xs sm:text-sm text-gray-700 dark:text-slate-300">
             <div className="flex items-center justify-between">
-              <span>{isKm ? 'សរុប៖' : 'Total:'}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatNum(financeTotal)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'សរុប៖' : 'Total:'}</span>
+              <span className="font-medium text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(otherTotal)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
-                {isKm ? 'បញ្ជីបើក៖' : 'Open lists:'}
-              </span>
-              <span className="font-semibold text-emerald-800 dark:text-emerald-400">
-                {formatNum(financeActiveCount)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-emerald-700 dark:text-emerald-400 font-medium">{isKm ? 'បញ្ជីបើក៖' : 'Open lists:'}</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-rajdhani tabular-nums">
+                {formatNum(otherActiveCount)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>{isKm ? 'បានបិទ៖' : 'Closed:'}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatNum(financeClosedCount)} {isKm ? 'បញ្ជី' : 'lists'}
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'បានបិទ៖' : 'Closed:'}</span>
+              <span className="font-medium text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(otherClosedCount)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
               </span>
             </div>
           </div>
         </div>
 
+        {/* Column 3: Income & Expense Lists */}
+        <div className="pt-4 md:pt-0 md:pl-6">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm sm:text-[15px] font-semibold text-gray-900 dark:text-white">
+              {isKm ? 'បញ្ជីចំណូល-ចំណាយ' : 'Income & Expense Lists'}
+            </h4>
+            {onNavigateTab && (
+              <button
+                type="button"
+                onClick={() => onNavigateTab('records')}
+                className="text-xs font-medium text-[#028090] dark:text-teal-400 hover:underline cursor-pointer"
+              >
+                {isKm ? 'បើកមើល →' : 'View →'}
+              </button>
+            )}
+          </div>
+          <div className="space-y-2 text-xs sm:text-sm text-gray-700 dark:text-slate-300">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'សរុប៖' : 'Total:'}</span>
+              <span className="font-medium text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(financeTotal)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-emerald-700 dark:text-emerald-400 font-medium">{isKm ? 'បញ្ជីបើក៖' : 'Open lists:'}</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-rajdhani tabular-nums">
+                {formatNum(financeActiveCount)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500 dark:text-slate-400">{isKm ? 'បានបិទ៖' : 'Closed:'}</span>
+              <span className="font-medium text-gray-900 dark:text-white font-rajdhani tabular-nums">
+                {formatNum(financeClosedCount)} <span className="font-battambang font-normal">{isKm ? 'បញ្ជី' : 'lists'}</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
