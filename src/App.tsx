@@ -33,7 +33,6 @@ import InstallPrompt from './components/InstallPrompt';
 import { NetworkStatusBadge } from './components/NetworkStatusBadge';
 import { OfflineOutboxModal } from './components/OfflineOutboxModal';
 import { syncEngine } from './lib/syncEngine';
-import { checkAndNotifyUpcomingLocally } from './lib/pushNotifications';
 
 function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
@@ -273,18 +272,23 @@ export default function App() {
       navigator.serviceWorker.addEventListener('message', handleSwMessage);
     }
 
-    // Quietly check today/tomorrow Seil & monastery events for local OS alerts if enabled
+    // Quietly check today/tomorrow Seil & monastery events for local OS alerts if enabled (lazy-loaded)
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-        api.getEvents()
-          .then((evList) => {
+      if (
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        Notification.permission === 'granted' &&
+        localStorage.getItem('wsd_calendar_push_enabled') === '1'
+      ) {
+        Promise.all([api.getEvents(), import('./lib/pushNotifications')])
+          .then(([evList, pushMod]) => {
             if (Array.isArray(evList)) {
-              checkAndNotifyUpcomingLocally(evList);
+              pushMod.checkAndNotifyUpcomingLocally(evList);
             }
           })
           .catch(() => {});
       }
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearTimeout(timer);
@@ -324,8 +328,10 @@ export default function App() {
     };
     window.addEventListener('auth-token-expired', onAuthExpired);
 
-    // Proactively prewarm all offline tables into IndexedDB in the background immediately
-    api.prewarmOfflineDatabase().catch(() => {});
+    // Defer background offline prewarm until after initial UI settles so startup stays instant
+    const prewarmTimer = setTimeout(() => {
+      api.prewarmOfflineDatabase().catch(() => {});
+    }, 8000);
 
     const handleOnlinePrewarm = () => {
       api.prewarmOfflineDatabase().catch(() => {});
@@ -344,6 +350,7 @@ export default function App() {
       const interval = setInterval(fetchNotifications, 180000);
       
       return () => {
+        clearTimeout(prewarmTimer);
         window.removeEventListener('auth-token-expired', onAuthExpired);
         window.removeEventListener('online', handleOnlinePrewarm);
         window.removeEventListener('focus', onFocus);
@@ -353,6 +360,7 @@ export default function App() {
     } else {
       setIsInitializing(false);
       return () => {
+        clearTimeout(prewarmTimer);
         window.removeEventListener('auth-token-expired', onAuthExpired);
         window.removeEventListener('online', handleOnlinePrewarm);
       };
@@ -513,7 +521,7 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
       
       {/* Desktop Website Top Navigation Bar */}
-      <header className="hidden md:block sticky top-0 z-40 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200/80 dark:border-slate-800 transition-colors duration-200">
+      <header className="hidden md:block sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-gray-200/80 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
           {/* Zone 1: Brand Wordmark */}
           <button
@@ -750,7 +758,7 @@ export default function App() {
         </div>
       </header>
 
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 backdrop-blur-md shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 transition-colors duration-200 z-50 px-4 flex items-center justify-between">
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 z-50 px-4 flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0 mr-2">
           <h1 className={`text-white select-none pt-0.5 truncate ${
             language === 'en'
@@ -817,7 +825,7 @@ export default function App() {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setShowNotifications(false)}
-              className="fixed inset-0 bg-black/40 dark:bg-black/60 z-[60] backdrop-blur-sm"
+              className="fixed inset-0 bg-black/50 dark:bg-black/65 z-[60]"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: -20 }} 
@@ -903,7 +911,7 @@ export default function App() {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setSelectedNotification(null)}
-              className="fixed inset-0 bg-black/60 z-[80] backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 z-[80]"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }} 
@@ -975,16 +983,9 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 pb-24 md:pb-0 transition-all duration-200">
+      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 pb-24 md:pb-0">
         <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-7`}>
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            className="h-full"
-          >
+          <div className="h-full">
             <Suspense fallback={
               <div className="py-24 flex flex-col items-center justify-center gap-3">
                 <div className="w-8 h-8 border-3 border-[#028090] border-t-transparent rounded-full animate-spin" />
@@ -1063,7 +1064,7 @@ export default function App() {
               )
             )}
             </Suspense>
-          </motion.div>
+          </div>
         </main>
 
         {/* Desktop Website Footer */}
@@ -1140,7 +1141,7 @@ export default function App() {
         </footer>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 z-40 transition-colors duration-200 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200/80 dark:border-slate-800 z-40 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
           <button
             onClick={() => handleMobileTabClick('home')}

@@ -676,7 +676,7 @@ export default function BuddhistCalendar({ isOpen, onClose, userRole }: Buddhist
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60"
       role="dialog"
       aria-modal="true"
       aria-label="ប្រតិទិនខ្មែរ"
@@ -1030,9 +1030,14 @@ export default function BuddhistCalendar({ isOpen, onClose, userRole }: Buddhist
 
                         {/* Middle/Bottom: Lunar Day + Seil / Built-in Holiday / Saved Note */}
                         <div className="mt-1 space-y-0.5 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
+                            {cell.lunar.isSeil && (
+                              <span className="text-[9px] sm:text-[10px] font-battambang font-bold text-amber-600 dark:text-amber-400 leading-none sm:order-2 shrink-0">
+                                សីល
+                              </span>
+                            )}
                             <span
-                              className={`text-[10px] sm:text-[11px] font-battambang leading-tight truncate ${
+                              className={`text-[10px] sm:text-[11px] font-battambang leading-tight whitespace-nowrap sm:order-1 ${
                                 cell.lunar.isSeil
                                   ? 'text-amber-600 dark:text-amber-400 font-bold'
                                   : 'text-gray-500 dark:text-slate-400'
@@ -1040,11 +1045,6 @@ export default function BuddhistCalendar({ isOpen, onClose, userRole }: Buddhist
                             >
                               {cell.lunar.lunarDayStr}
                             </span>
-                            {cell.lunar.isSeil && (
-                              <span className="text-[9px] sm:text-[10px] font-battambang font-bold text-amber-600 dark:text-amber-400 shrink-0">
-                                សីល
-                              </span>
-                            )}
                           </div>
 
                           {cell.lunar.shortHoliday && (

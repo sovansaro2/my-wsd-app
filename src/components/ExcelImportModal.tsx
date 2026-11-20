@@ -529,7 +529,7 @@ export default function ExcelImportModal({
   return (
     <div
       onClick={() => !isImporting && !isParsing && !isResetting && handleResetAndClose()}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-xs font-battambang"
+      className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 font-battambang"
       role="dialog"
       aria-modal="true"
       aria-label={isEn ? 'Excel Import' : 'នាំចូល Excel'}

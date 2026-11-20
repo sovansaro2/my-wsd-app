@@ -26,10 +26,20 @@ export const toKhmerNumber = (num: number | string): string => {
     .join('');
 };
 
+const LUNAR_CACHE = new Map<string, KhmerLunarDate>();
+
 export function calculateKhmerLunar(date: Date): KhmerLunarDate {
   const year = date.getFullYear();
   const month = date.getMonth() + 1; // 1 to 12
   const day = date.getDate(); // 1 to 31
+
+  const yStr = String(year);
+  const mStr = String(month).padStart(2, '0');
+  const dStr = String(day).padStart(2, '0');
+  const solarDateStr = `${yStr}-${mStr}-${dStr}`;
+
+  const cached = LUNAR_CACHE.get(solarDateStr);
+  if (cached) return cached;
 
   const res = fromGregorian(year, month, day);
   const kh = res.khmer;
@@ -112,12 +122,7 @@ export function calculateKhmerLunar(date: Date): KhmerLunarDate {
     shortHoliday = 'សំពះព្រះខែ';
   }
 
-  const yStr = String(year);
-  const mStr = String(month).padStart(2, '0');
-  const dStr = String(day).padStart(2, '0');
-  const solarDateStr = `${yStr}-${mStr}-${dStr}`;
-
-  return {
+  const result: KhmerLunarDate = {
     solarDate: date,
     solarDateStr,
     dayOfWeekKhmer,
@@ -132,6 +137,12 @@ export function calculateKhmerLunar(date: Date): KhmerLunarDate {
     holidayName,
     shortHoliday
   };
+
+  if (LUNAR_CACHE.size > 1500) {
+    LUNAR_CACHE.clear();
+  }
+  LUNAR_CACHE.set(solarDateStr, result);
+  return result;
 }
 
 /**

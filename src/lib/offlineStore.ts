@@ -569,6 +569,16 @@ let isPrewarming = false;
 export async function prewarmOfflineDatabase(): Promise<void> {
   if (isPrewarming || !isBrowserOnline()) return;
 
+  // Avoid hammering network and IndexedDB on every page load (run at most once per 30 min)
+  const PREWARM_COOLDOWN_MS = 30 * 60 * 1000;
+  try {
+    const lastRun = Number(localStorage.getItem('wsd_last_prewarm_at') || '0');
+    if (lastRun > 0 && Date.now() - lastRun < PREWARM_COOLDOWN_MS) {
+      return;
+    }
+    localStorage.setItem('wsd_last_prewarm_at', String(Date.now()));
+  } catch {}
+
   isPrewarming = true;
   try {
     const API_BASE_URL = ((import.meta as any).env?.VITE_API_BASE_URL || '').replace(/\/$/, '');
