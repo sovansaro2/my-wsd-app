@@ -33,8 +33,9 @@ import {
 import { MonasteryEvent, EventType, ApproachingAlert } from '../types/calendar';
 
 interface BuddhistCalendarProps {
+  isOpen: boolean;
+  onClose: () => void;
   userRole?: 'admin' | 'user' | null;
-  onBackToHome?: () => void;
 }
 
 const KHMER_SOLAR_MONTHS = [
@@ -42,7 +43,7 @@ const KHMER_SOLAR_MONTHS = [
   'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'
 ];
 
-export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
+export default function BuddhistCalendar({ isOpen, onClose, userRole }: BuddhistCalendarProps) {
   const isAdmin = userRole === 'admin';
   const today = useMemo(() => new Date(), []);
   
@@ -63,6 +64,8 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingEvent, setEditingEvent] = useState<MonasteryEvent | null>(null);
+  const [confirmDeleteEvent, setConfirmDeleteEvent] = useState<MonasteryEvent | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [modalLoading, setModalLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>('');
 
@@ -85,10 +88,37 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
     return `${y}-${m}-${d}`;
   }, [today]);
 
-  // Load events
+  // Load events when modal opens
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (isOpen) {
+      fetchEvents();
+    }
+  }, [isOpen]);
+
+  // Handle Escape key & body scroll lock
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (confirmDeleteEvent) {
+          setConfirmDeleteEvent(null);
+        } else if (isModalOpen) {
+          setIsModalOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, isModalOpen, confirmDeleteEvent, onClose]);
 
   const fetchEvents = async () => {
     try {
@@ -344,14 +374,22 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
   };
 
   // Delete Event
-  const handleDeleteEvent = async (id: string) => {
-    if (!window.confirm('តើលោកអ្នកពិតជាចង់លុបកម្មវិធីនេះមែនទេ?')) return;
+  const handleDeleteEvent = (ev: MonasteryEvent) => {
+    setConfirmDeleteEvent(ev);
+  };
+
+  const handleConfirmDeleteEvent = async () => {
+    if (!confirmDeleteEvent) return;
+    setDeleteLoading(true);
     try {
-      await api.deleteEvent(id);
+      await api.deleteEvent(confirmDeleteEvent.id);
       playSuccessSound();
+      setConfirmDeleteEvent(null);
       await fetchEvents();
     } catch {
       playFailSound();
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -389,33 +427,58 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
     return events.filter(e => e.event_date === dateKey);
   }, [selectedDate, events]);
 
+  if (!isOpen) return null;
+
   return (
-    <div className="space-y-6 pb-12 w-full max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200/80 dark:border-slate-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <CalendarIcon className="w-6 h-6 text-[#028090] dark:text-teal-400" />
-            <h1 className="text-xl sm:text-2xl font-title text-gray-900 dark:text-white">
-              ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ
-            </h1>
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-xs"
+      role="dialog"
+      aria-modal="true"
+      aria-label="ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-5xl max-h-[92vh] bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden"
+      >
+        {/* Modal Header */}
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200/80 dark:border-slate-800 flex items-center justify-between gap-3 bg-white dark:bg-slate-900 shrink-0">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#028090] dark:text-teal-400 shrink-0" />
+              <h2 className="text-base sm:text-xl font-title text-gray-900 dark:text-white truncate">
+                ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ
+              </h2>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang mt-0.5 truncate">
+              ចន្ទគតិខ្មែរ ថ្ងៃសីល និងកាលវិភាគបុណ្យ
+            </p>
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 font-battambang">
-            ចន្ទគតិខ្មែរ ថ្ងៃសីល និងកាលវិភាគបុណ្យ
-          </p>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleOpenAddModal()}
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-[#028090] hover:bg-[#005F73] text-white font-battambang text-xs sm:text-sm font-semibold transition-colors shadow-sm cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">កត់ត្រាកម្មវិធីបុណ្យ</span>
+              <span className="sm:hidden">កត់ត្រា</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="បិទ"
+              title="បិទ"
+              className="p-2 text-gray-400 hover:text-gray-700 dark:text-slate-400 dark:hover:text-white rounded-lg transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleOpenAddModal()}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#028090] hover:bg-[#005F73] text-white font-battambang text-sm font-semibold transition-colors shadow-sm cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            កត់ត្រាកម្មវិធីបុណ្យ
-          </button>
-        </div>
-      </div>
+        {/* Scrollable Modal Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-gray-50/40 dark:bg-slate-950/30">
 
       {/* Approaching Events Alert Banner (លោតសារជូនដំណឹងជិតដល់ថ្ងៃ) */}
       {approachingAlerts.length > 0 && (
@@ -671,7 +734,7 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
                           {isAdmin && (
                             <button
                               type="button"
-                              onClick={() => handleDeleteEvent(ev.id)}
+                              onClick={() => handleDeleteEvent(ev)}
                               className="p-1.5 text-gray-400 hover:text-rose-600 transition-colors cursor-pointer"
                               title="លុប"
                             >
@@ -1102,7 +1165,7 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
                         {isAdmin && (
                           <button
                             type="button"
-                            onClick={() => handleDeleteEvent(ev.id)}
+                            onClick={() => handleDeleteEvent(ev)}
                             className="p-1.5 text-gray-400 hover:text-rose-600 cursor-pointer"
                             title="លុប"
                           >
@@ -1118,17 +1181,23 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
           </div>
         </div>
       )}
+        </div>
+      </div>
 
       {/* ========================================================================= */}
       {/* ADD / EDIT EVENT MODAL */}
       {/* ========================================================================= */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div
+            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
               className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl max-w-lg w-full overflow-hidden"
             >
               {/* Modal Header */}
@@ -1318,6 +1387,52 @@ export default function BuddhistCalendar({ userRole }: BuddhistCalendarProps) {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================================= */}
+      {/* DELETE CONFIRMATION MODAL */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {confirmDeleteEvent && (
+          <div
+            onClick={() => !deleteLoading && setConfirmDeleteEvent(null)}
+            className="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl max-w-sm w-full p-6 text-center font-battambang"
+            >
+              <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" />
+              <h3 className="font-title text-base sm:text-lg text-gray-900 dark:text-white mb-2">
+                បញ្ជាក់ការលុបកម្មវិធីបុណ្យ
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 mb-5 leading-relaxed">
+                តើលោកអ្នកពិតជាចង់លុបកម្មវិធី «<strong className="text-gray-900 dark:text-white">{confirmDeleteEvent.title}</strong>» មែនទេ?
+              </p>
+              <div className="flex items-center justify-center gap-2.5">
+                <button
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={() => setConfirmDeleteEvent(null)}
+                  className="px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                >
+                  បោះបង់
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={handleConfirmDeleteEvent}
+                  className="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {deleteLoading ? 'កំពុងលុប...' : 'លុបចេញ'}
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

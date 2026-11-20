@@ -5,10 +5,6 @@ import { playSuccessSound, playFailSound } from '../lib/sound';
 import { 
   Award, 
   Search, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  ArrowRight, 
-  BellRing,
   ChevronDown,
   ChevronUp,
   X,
@@ -25,8 +21,6 @@ import ImageSlider from './ImageSlider';
 import { ListSummaryCard } from './ListSummaryCard';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
-import { calculateKhmerLunar, getNextSeilDate, toKhmerNumber } from '../lib/khmerCalendar';
-import { MonasteryEvent } from '../types/calendar';
 
 const GlobalDonorSearch = lazy(() => import('./GlobalDonorSearch'));
 
@@ -103,7 +97,7 @@ export default function Dashboard({
   onNavigateTab,
   userRole 
 }: { 
-  onNavigateTab?: (tab: 'records' | 'categories' | 'calendar' | 'account') => void;
+  onNavigateTab?: (tab: 'records' | 'categories' | 'account') => void;
   userRole?: 'admin' | 'user' | null;
 }) {
   const { t, language } = useLanguage();
@@ -123,7 +117,6 @@ export default function Dashboard({
   const [highTierDisplayLimit, setHighTierDisplayLimit] = useState(25);
   const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
   const [showDonorSearch, setShowDonorSearch] = useState(false);
-  const [monasteryEvents, setMonasteryEvents] = useState<MonasteryEvent[]>([]);
 
   // State for Record Editing
   const [editingRecord, setEditingRecord] = useState<{
@@ -175,19 +168,17 @@ export default function Dashboard({
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [seilData, finData, hundredKData, categoriesData, eventsData, benefactorsData] = await Promise.all([
+      const [seilData, finData, hundredKData, categoriesData, benefactorsData] = await Promise.all([
         api.getSeilPeriods().catch(() => []),
         api.getFinancialRecords('').catch(() => []),
         api.get100kDonors().catch(() => []),
         api.getNameListCategories().catch(() => []),
-        api.getEvents().catch(() => []),
         api.getTopBenefactors().catch(() => ({ total_donors: 0, donors: [] }))
       ]);
       setSeils(seilData || []);
       setFinancials(finData || []);
       setHundredKDonors(hundredKData || []);
       setCategories(categoriesData || []);
-      setMonasteryEvents(Array.isArray(eventsData) ? eventsData : []);
       setTopBenefactors(benefactorsData?.donors || []);
     } catch (err: any) {
       setError(err.message || 'Error loading dashboard');
@@ -370,27 +361,6 @@ export default function Dashboard({
 
   const seilCount = seils.length > 0 ? seils.length : 0;
 
-  const todayLunar = calculateKhmerLunar(new Date());
-  const nextSeil = getNextSeilDate(new Date());
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  const upcomingEventsList = monasteryEvents.filter(ev => {
-    if (ev.is_completed) return false;
-    const parts = ev.event_date?.split('-');
-    if (!parts || parts.length !== 3) return false;
-    const evTime = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10)).getTime();
-    return evTime >= todayStart.getTime();
-  }).sort((a, b) => a.event_date.localeCompare(b.event_date));
-
-  const nextEvent = upcomingEventsList[0];
-  let nextEventDaysDiff: number | null = null;
-  if (nextEvent) {
-    const p = nextEvent.event_date.split('-');
-    const evTime = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)).getTime();
-    nextEventDaysDiff = Math.ceil((evTime - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-  }
-
   const filteredBenefactors = topBenefactors.filter(b => {
     if (!benefactorSearch.trim()) return true;
     const q = benefactorSearch.trim().toLowerCase();
@@ -414,8 +384,6 @@ export default function Dashboard({
     return d.name.toLowerCase().includes(q) || d.category_name.toLowerCase().includes(q);
   });
 
-  const upcomingEventsPreview = upcomingEventsList.slice(0, 2);
-
   return (
     <div className="flex flex-col pb-6 md:pb-2 font-battambang transition-colors duration-200">
       <div className="w-full px-0 sm:px-0 pt-1 pb-4 space-y-4 sm:space-y-6">
@@ -426,75 +394,9 @@ export default function Dashboard({
         </div>
       )}
 
-      {/* Desktop Hero Split: Gallery Showcase (8 cols) + Buddhist Calendar & Schedule (4 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
-        <div className="lg:col-span-8 flex">
-          <ImageSlider />
-        </div>
-
-        <div className="lg:col-span-4 flex">
-          <div className="w-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 p-4 sm:p-5 lg:p-6 shadow-2xs flex flex-col justify-between gap-4">
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <CalendarIcon className="w-5 h-5 text-[#028090] dark:text-teal-400 shrink-0" />
-                  <h3 className="text-base sm:text-[17px] font-semibold text-gray-900 dark:text-white font-battambang">
-                    {language === 'en' ? 'Buddhist Calendar & Schedule' : 'ប្រតិទិនពុទ្ធសាសនា & កាលវិភាគបុណ្យ'}
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-700 dark:text-slate-200 font-battambang leading-relaxed">
-                  ថ្ងៃ{todayLunar.dayOfWeekKhmer} {todayLunar.lunarDayStr} ខែ{todayLunar.lunarMonthStr} ឆ្នាំ{todayLunar.lunarYearStr} • ព.ស. <span className="font-rajdhani font-semibold tabular-nums">{todayLunar.buddhistEra}</span>
-                  {todayLunar.isSeil && (
-                    <span className="ml-2 font-semibold text-amber-600 dark:text-amber-400">({todayLunar.seilTitle})</span>
-                  )}
-                </p>
-              </div>
-
-              <div className="pt-3 border-t border-gray-100 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm font-battambang">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-gray-500 dark:text-slate-400 shrink-0">ថ្ងៃសីលបន្ទាប់</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-medium text-right">
-                    {nextSeil.lunar.seilTitle} ({nextSeil.daysRemaining === 0 ? 'ថ្ងៃនេះ' : nextSeil.daysRemaining === 1 ? 'ថ្ងៃស្អែក' : `នៅសល់ ${toKhmerNumber(nextSeil.daysRemaining)} ថ្ងៃ`})
-                  </span>
-                </div>
-
-                {upcomingEventsPreview.length > 0 ? (
-                  <div className="pt-2 border-t border-gray-100 dark:border-slate-800 space-y-2">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-slate-400">
-                      {language === 'en' ? 'Upcoming Ceremonies' : 'កម្មវិធីបុណ្យជិតមកដល់'}
-                    </p>
-                    {upcomingEventsPreview.map((ev) => {
-                      const p = ev.event_date.split('-');
-                      const evTime = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)).getTime();
-                      const diff = Math.ceil((evTime - todayStart.getTime()) / (1000 * 60 * 60 * 24));
-                      return (
-                        <div key={ev.id} className="flex items-start justify-between gap-2 text-xs">
-                          <span className="text-gray-800 dark:text-slate-200 font-medium line-clamp-1">{ev.title}</span>
-                          <span className="text-[#028090] dark:text-teal-400 shrink-0 font-medium tabular-nums">
-                            {diff === 0 ? 'ថ្ងៃនេះ' : diff === 1 ? 'ថ្ងៃស្អែក' : `${toKhmerNumber(diff)} ថ្ងៃ`}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-400 dark:text-slate-500 pt-1">
-                    {language === 'en' ? 'No upcoming ceremonies scheduled' : 'មិនទាន់មានកម្មវិធីបុណ្យកំណត់ថ្មីទេ'}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => onNavigateTab?.('calendar')}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-xs sm:text-sm font-medium text-[#028090] dark:text-teal-400 hover:border-[#028090] hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors cursor-pointer font-battambang"
-            >
-              <span>{language === 'en' ? 'View Schedule' : 'មើលកាលវិភាគ & ប្រតិទិន'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {/* Gallery Showcase */}
+      <div className="w-full">
+        <ImageSlider />
       </div>
 
       <div className="w-full">

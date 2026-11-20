@@ -89,7 +89,7 @@ import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel' | 'calendar';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -109,8 +109,7 @@ export default function App() {
         'manage_name_lists', 
         'certificates', 
         'users',
-        'admin_panel',
-        'calendar'
+        'admin_panel'
       ];
       if (saved && validTabs.includes(saved)) {
         return saved;
@@ -197,6 +196,7 @@ export default function App() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
   const [showGlobalDonorSearch, setShowGlobalDonorSearch] = useState(false);
+  const [showBuddhistCalendar, setShowBuddhistCalendar] = useState(false);
   const [showOutboxModal, setShowOutboxModal] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
@@ -454,47 +454,8 @@ export default function App() {
     );
   }
 
-  const navSections = [
-    {
-      id: 'operations',
-      title: t('nav_section_operations'),
-      items: [
-        { id: 'home' as Tab, label: t('nav_home'), icon: Home },
-        { id: 'records' as Tab, label: t('nav_finance'), icon: CircleDollarSign },
-        { id: 'categories' as Tab, label: t('nav_list'), icon: List },
-        { id: 'reports' as Tab, label: t('nav_reports'), icon: FileText },
-        { id: 'calendar' as Tab, label: language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិន & កាលវិភាគបុណ្យ', icon: CalendarDays },
-      ]
-    },
-    {
-      id: 'administration',
-      title: t('nav_section_admin'),
-      items: [
-        { id: 'certificates' as Tab, label: t('profile_certificates'), icon: Award },
-        ...((actualRole === 'admin' || userRole === 'admin') ? [{ id: 'admin_panel' as Tab, label: language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង', icon: ShieldCheck }] : []),
-        { id: 'account' as Tab, label: t('nav_account'), icon: User },
-      ]
-    }
-  ];
-
-  const getActiveTabTitle = () => {
-    switch (activeTab) {
-      case 'home': return t('nav_home');
-      case 'calendar': return language === 'en' ? 'Buddhist Calendar & Events' : 'ប្រតិទិន & កាលវិភាគបុណ្យ';
-      case 'records': return t('nav_finance');
-      case 'categories': return t('nav_list');
-      case 'reports': return t('nav_reports');
-      case 'certificates': return t('profile_certificates');
-      case 'admin_panel': return language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង';
-      case 'users': return language === 'en' ? 'Management' : 'ផ្ទាំងគ្រប់គ្រង';
-      case 'account': return t('nav_account');
-      default: return t('app_title');
-    }
-  };
-
   const desktopPrimaryLinks: Array<{ id: Tab; label: string }> = [
     { id: 'home', label: t('nav_home') },
-    { id: 'calendar', label: language === 'en' ? 'Calendar' : 'ប្រតិទិន' },
     { id: 'records', label: t('nav_finance') },
     { id: 'categories', label: t('nav_list') },
     { id: 'reports', label: t('nav_reports') },
@@ -559,6 +520,17 @@ export default function App() {
           {/* Zone 3: Global Search, Notifications & Account Menu */}
           <div className="flex items-center gap-2 lg:gap-3 shrink-0">
             <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
+
+            <button
+              type="button"
+              onClick={() => setShowBuddhistCalendar(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang"
+              title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+              aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+            >
+              <CalendarDays className="w-4 h-4 shrink-0 text-[#028090] dark:text-teal-400" />
+              <span className="hidden lg:inline">{language === 'en' ? 'Calendar' : 'ប្រតិទិន'}</span>
+            </button>
 
             <button
               type="button"
@@ -746,6 +718,15 @@ export default function App() {
         </div>
         <div className="relative shrink-0 flex items-center gap-1">
           <button
+            onClick={() => setShowBuddhistCalendar(true)}
+            className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+            title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+            aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+          >
+            <CalendarDays className="w-5 h-5 text-white" />
+          </button>
+
+          <button
             onClick={() => setShowGlobalDonorSearch(true)}
             className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
             title={language === 'en' ? 'Search Donors' : 'ស្វែងរកសប្បុរសជន'}
@@ -930,7 +911,11 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => {
-                      setActiveTab(selectedNotification.target_tab as any);
+                      if (selectedNotification.target_tab === 'calendar') {
+                        setShowBuddhistCalendar(true);
+                      } else if (selectedNotification.target_tab) {
+                        setActiveTab(selectedNotification.target_tab as any);
+                      }
                       setShowNotifications(false);
                       setSelectedNotification(null);
                     }}
@@ -965,12 +950,6 @@ export default function App() {
               <Dashboard 
                 onNavigateTab={(tab) => setActiveTab(tab)} 
                 userRole={userRole}
-              />
-            )}
-            {activeTab === 'calendar' && (
-              <BuddhistCalendar 
-                userRole={userRole} 
-                onBackToHome={() => setActiveTab('home')}
               />
             )}
             {activeTab === 'records' && (
@@ -1134,23 +1113,6 @@ export default function App() {
               {t('nav_home')}
             </span>
           </button>
-
-          <button
-            onClick={() => handleMobileTabClick('calendar')}
-            aria-label={language === 'en' ? 'Calendar' : 'ប្រតិទិន'}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
-              activeTab === 'calendar' 
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
-          >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <CalendarDays className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'calendar' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
-            </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'calendar' ? 'font-medium' : 'font-normal'}`}>
-              {language === 'en' ? 'Calendar' : 'ប្រតិទិន'}
-            </span>
-          </button>
           
           <button
             onClick={() => handleMobileTabClick('records')}
@@ -1244,6 +1206,16 @@ export default function App() {
           <GlobalDonorSearch
             isOpen={showGlobalDonorSearch}
             onClose={() => setShowGlobalDonorSearch(false)}
+          />
+        </Suspense>
+      )}
+
+      {showBuddhistCalendar && (
+        <Suspense fallback={null}>
+          <BuddhistCalendar
+            isOpen={showBuddhistCalendar}
+            onClose={() => setShowBuddhistCalendar(false)}
+            userRole={userRole}
           />
         </Suspense>
       )}
