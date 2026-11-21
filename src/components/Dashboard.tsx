@@ -1,10 +1,9 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../lib/apiClient';
 import { playSuccessSound, playFailSound } from '../lib/sound';
 
 import { 
   Award, 
-  Search, 
   ChevronDown,
   ChevronUp,
   X,
@@ -21,8 +20,6 @@ import ImageSlider from './ImageSlider';
 import { ListSummaryCard } from './ListSummaryCard';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useLanguage } from '../contexts/LanguageContext';
-
-const GlobalDonorSearch = lazy(() => import('./GlobalDonorSearch'));
 
 interface FinancialRecord {
   id: string;
@@ -110,14 +107,11 @@ export default function Dashboard({
   const [hundredKDonors, setHundredKDonors] = useState<HundredKDonor[]>([]);
   const [topBenefactors, setTopBenefactors] = useState<TopBenefactor[]>([]);
   const [donorTab, setDonorTab] = useState<'benefactors' | 'high_tier'>('benefactors');
-  const [benefactorSearch, setBenefactorSearch] = useState('');
   const [benefactorSort, setBenefactorSort] = useState<'amount' | 'count'>('count');
   const [expandedBenefactor, setExpandedBenefactor] = useState<string | null>(null);
   const [benefactorsDisplayLimit, setBenefactorsDisplayLimit] = useState(25);
-  const [highTierSearch, setHighTierSearch] = useState('');
   const [highTierDisplayLimit, setHighTierDisplayLimit] = useState(25);
   const [roofFundTotal, setRoofFundTotal] = useState<number>(0);
-  const [showDonorSearch, setShowDonorSearch] = useState(false);
 
   // State for Record Editing
   const [editingRecord, setEditingRecord] = useState<{
@@ -358,14 +352,7 @@ export default function Dashboard({
 
   const seilCount = seils.length > 0 ? seils.length : 0;
 
-  const filteredBenefactors = topBenefactors.filter(b => {
-    if (!benefactorSearch.trim()) return true;
-    const q = benefactorSearch.trim().toLowerCase();
-    if (b.name.toLowerCase().includes(q)) return true;
-    if (b.locations.some(loc => loc.toLowerCase().includes(q))) return true;
-    if (b.records.some(r => r.source_name.toLowerCase().includes(q) || (r.note && r.note.toLowerCase().includes(q)))) return true;
-    return false;
-  }).sort((a, b) => {
+  const filteredBenefactors = [...topBenefactors].sort((a, b) => {
     if (benefactorSort === 'count') {
       if (b.contributions_count !== a.contributions_count) {
         return b.contributions_count - a.contributions_count;
@@ -375,11 +362,7 @@ export default function Dashboard({
     return b.total_amount - a.total_amount;
   });
 
-  const filteredHighTier = hundredKDonors.filter(d => {
-    if (!highTierSearch.trim()) return true;
-    const q = highTierSearch.trim().toLowerCase();
-    return d.name.toLowerCase().includes(q) || d.category_name.toLowerCase().includes(q);
-  });
+  const filteredHighTier = hundredKDonors;
 
   return (
     <div className="flex flex-col pb-6 md:pb-2 font-battambang transition-colors duration-200">
@@ -441,65 +424,36 @@ export default function Dashboard({
             </button>
           </div>
 
-          {/* Action button */}
-          <div className="flex items-center gap-2 self-end sm:self-auto pb-1.5 sm:pb-0">
-            <button
-              onClick={() => setShowDonorSearch(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[#028090] dark:text-teal-400 border border-[#028090]/30 dark:border-teal-900/50 hover:border-[#028090] rounded-lg transition-colors cursor-pointer font-battambang whitespace-nowrap shrink-0"
-            >
-              <Search className="w-3.5 h-3.5" />
-              <span>{language === 'en' ? 'Search' : 'ស្វែងរក'}</span>
-            </button>
-          </div>
+          {/* Sort toggles for Top Benefactors */}
+          {donorTab === 'benefactors' && (
+            <div className="flex items-center gap-1.5 self-end sm:self-auto pb-1.5 sm:pb-0 text-xs font-battambang shrink-0">
+              <button
+                onClick={() => setBenefactorSort('count')}
+                className={`px-2.5 py-1 rounded border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  benefactorSort === 'count'
+                    ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
+                    : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                {t('dashboard_sort_count')}
+              </button>
+              <button
+                onClick={() => setBenefactorSort('amount')}
+                className={`px-2.5 py-1 rounded border text-xs cursor-pointer transition-colors whitespace-nowrap ${
+                  benefactorSort === 'amount'
+                    ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
+                    : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                {t('dashboard_sort_amount')}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Tab 1: Top Benefactors (សប្បុរសជនឆ្នើម) */}
         {donorTab === 'benefactors' && (
           <div>
-            {/* Search & Sort bar */}
-            <div className="p-3 sm:px-4 border-b border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={benefactorSearch}
-                  onChange={(e) => setBenefactorSearch(e.target.value)}
-                  placeholder={t('dashboard_search_donors_ph')}
-                  className="w-full pl-8 pr-7 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#028090] font-battambang text-gray-900 dark:text-white placeholder:text-gray-400"
-                />
-                {benefactorSearch && (
-                  <button
-                    onClick={() => setBenefactorSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              <div className="flex items-center gap-1.5 self-end sm:self-auto text-xs font-battambang">
-                <button
-                  onClick={() => setBenefactorSort('count')}
-                  className={`px-2.5 py-1 rounded border text-xs cursor-pointer transition-colors ${
-                    benefactorSort === 'count'
-                      ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
-                      : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  {t('dashboard_sort_count')}
-                </button>
-                <button
-                  onClick={() => setBenefactorSort('amount')}
-                  className={`px-2.5 py-1 rounded border text-xs cursor-pointer transition-colors ${
-                    benefactorSort === 'amount'
-                      ? 'border-[#028090] text-[#028090] dark:text-teal-400 font-semibold'
-                      : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  {t('dashboard_sort_amount')}
-                </button>
-              </div>
-            </div>
 
             {/* Benefactors list: Mobile Rows */}
             <div className="md:hidden divide-y divide-gray-100 dark:divide-slate-800">
@@ -802,28 +756,6 @@ export default function Dashboard({
         {/* Tab 2: High Tier Donors (សប្បុរសជនថវិកាកម្រិតខ្ពស់) */}
         {donorTab === 'high_tier' && (
           <div>
-            {/* Search bar */}
-            <div className="p-3 sm:px-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between gap-2.5">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={highTierSearch}
-                  onChange={(e) => setHighTierSearch(e.target.value)}
-                  placeholder={t('dashboard_search_donors_ph')}
-                  className="w-full pl-8 pr-7 py-1.5 text-xs sm:text-sm bg-transparent border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#028090] font-battambang text-gray-900 dark:text-white placeholder:text-gray-400"
-                />
-                {highTierSearch && (
-                  <button
-                    onClick={() => setHighTierSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2">
               {filteredHighTier.length === 0 ? (
                 <div className="col-span-full py-10 text-center text-gray-400 dark:text-slate-500 text-sm sm:text-base font-battambang">
@@ -913,19 +845,6 @@ export default function Dashboard({
           </div>
         )}
       </section>
-
-      {showDonorSearch && (
-        <Suspense fallback={null}>
-          <GlobalDonorSearch
-            isOpen={showDonorSearch}
-            userRole={userRole}
-            onClose={() => {
-              setShowDonorSearch(false);
-              fetchData();
-            }}
-          />
-        </Suspense>
-      )}
 
       {/* Edit Record Modal */}
       {editingRecord && (
