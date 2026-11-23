@@ -1,4 +1,4 @@
-
+import { Capacitor } from '@capacitor/core';
 import { 
   getCache, 
   setCache, 
@@ -12,7 +12,11 @@ import {
   type OutboxMethod
 } from './offlineStore';
 
-export const API_BASE_URL = ((import.meta as any).env?.VITE_API_BASE_URL || '').replace(/\/$/, ''); 
+const PRODUCTION_NATIVE_API_URL = 'https://www.watsnaydouch.site';
+const envApiBaseUrl = ((import.meta as any).env?.VITE_API_BASE_URL || '').trim().replace(/\/$/, '');
+
+export const API_BASE_URL =
+  envApiBaseUrl || (Capacitor.isNativePlatform() ? PRODUCTION_NATIVE_API_URL : '');
 
 export interface ApiFetchOptions extends RequestInit {
   skipOfflineQueue?: boolean;

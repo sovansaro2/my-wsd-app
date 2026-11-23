@@ -516,7 +516,7 @@ export default function App() {
   const accountDisplayName = currentUser?.full_name || currentUser?.username || t('nav_account');
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-hidden w-full max-w-full">
+    <div className="flex flex-col min-h-[100dvh] bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-clip w-full max-w-full">
       
       {/* Desktop Website Top Navigation Bar */}
       <header className="hidden md:block sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-gray-200/80 dark:border-slate-800">
@@ -758,39 +758,41 @@ export default function App() {
         </div>
       </header>
 
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#028090] dark:bg-slate-950 shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 z-50 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 min-w-0 mr-2">
-          <h1 className={`text-white select-none pt-0.5 truncate ${
-            language === 'en'
-              ? 'font-rajdhani font-bold text-lg sm:text-xl tracking-wide uppercase'
-              : 'font-title font-normal text-lg sm:text-xl tracking-normal'
-          }`}>
-            {t('app_title_mobile')}
-          </h1>
-          <NetworkStatusBadge className="text-amber-200 dark:text-amber-300" onClick={() => setShowOutboxModal(true)} />
-        </div>
-        <div className="relative shrink-0 flex items-center gap-1">
-          <button
-            onClick={() => setShowBuddhistCalendar(true)}
-            className="p-2 text-white hover:bg-white/10 rounded-full transition-colors flex items-center justify-center cursor-pointer"
-            title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-            aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-          >
-            <CalendarDays className="w-5 h-5 text-white" />
-          </button>
+      <header className="md:hidden fixed top-0 left-0 right-0 pt-[env(safe-area-inset-top)] bg-[#028090] dark:bg-slate-950 shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 z-50">
+        <div className="h-14 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0 mr-2">
+            <h1 className={`text-white select-none pt-0.5 truncate ${
+              language === 'en'
+                ? 'font-rajdhani font-bold text-lg sm:text-xl tracking-wide uppercase'
+                : 'font-title font-normal text-lg sm:text-xl tracking-normal'
+            }`}>
+              {t('app_title_mobile')}
+            </h1>
+            <NetworkStatusBadge className="text-amber-200 dark:text-amber-300" onClick={() => setShowOutboxModal(true)} />
+          </div>
+          <div className="relative shrink-0 flex items-center">
+            <button
+              onClick={() => setShowBuddhistCalendar(true)}
+              className="w-11 h-11 text-white active:opacity-70 rounded-full transition-opacity flex items-center justify-center cursor-pointer"
+              title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+              aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
+            >
+              <CalendarDays className="w-5 h-5 text-white" />
+            </button>
 
-          <button 
-            onClick={handleOpenNotifications}
-            aria-label="ការជូនដំណឹង"
-            className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors"
-          >
-            <Bell className="w-6 h-6" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white border border-[#028090] dark:border-slate-950 px-1">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
+            <button 
+              onClick={handleOpenNotifications}
+              aria-label="ការជូនដំណឹង"
+              className="relative w-11 h-11 text-white active:opacity-70 rounded-full transition-opacity flex items-center justify-center cursor-pointer"
+            >
+              <Bell className="w-[22px] h-[22px]" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white font-rajdhani font-bold border border-[#028090] dark:border-slate-950 px-1">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -808,7 +810,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: -20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md max-h-[80vh] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] max-w-md max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-2rem)] bg-white dark:bg-slate-950 z-[70] shadow-2xl rounded-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-white/5">
                 <h3 className="font-battambang text-lg text-gray-900 dark:text-white flex items-center gap-2">
@@ -960,8 +962,8 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 flex flex-col min-w-0 pt-16 md:pt-0 pb-24 md:pb-0">
-        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2 md:py-7`}>
+      <div className="flex-1 flex flex-col min-w-0 pt-[calc(3.5rem+env(safe-area-inset-top))] pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pt-0 md:pb-0">
+        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2.5 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2.5 md:py-7`}>
           <div className="h-full">
             <Suspense fallback={
               <div className="py-24 flex flex-col items-center justify-center gap-3">
@@ -1119,21 +1121,21 @@ export default function App() {
         </footer>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200/80 dark:border-slate-800 z-40 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <div className="flex items-center justify-around max-w-lg mx-auto px-1.5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200/80 dark:border-slate-800 z-40 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+        <div className="flex items-center justify-around max-w-lg mx-auto px-1">
           <button
             onClick={() => handleMobileTabClick('home')}
             aria-label={t('nav_home')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-1 transition-transform active:scale-95 relative ${
               activeTab === 'home' 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <Home className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'home' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-10 h-7">
+              <Home className={`h-[21px] w-[21px] ${activeTab === 'home' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-semibold' : 'font-normal'}`}>
               {t('nav_home')}
             </span>
           </button>
@@ -1141,16 +1143,16 @@ export default function App() {
           <button
             onClick={() => handleMobileTabClick('records')}
             aria-label={t('nav_finance')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
               activeTab === 'records' 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <CircleDollarSign className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'records' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-10 h-7">
+              <CircleDollarSign className={`h-[21px] w-[21px] ${activeTab === 'records' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-semibold' : 'font-normal'}`}>
               {t('nav_finance')}
             </span>
           </button>
@@ -1158,16 +1160,16 @@ export default function App() {
           <button
             onClick={() => handleMobileTabClick('categories')}
             aria-label={t('nav_list')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
               activeTab === 'categories' 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <List className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${activeTab === 'categories' ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-10 h-7">
+              <List className={`h-[21px] w-[21px] ${activeTab === 'categories' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-semibold' : 'font-normal'}`}>
               {t('nav_list')}
             </span>
           </button>
@@ -1175,16 +1177,16 @@ export default function App() {
           <button
             onClick={() => setShowGlobalDonorSearch(true)}
             aria-label={language === 'en' ? 'Search' : 'ស្វែងរក'}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative cursor-pointer ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer ${
               showGlobalDonorSearch
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <Search className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${showGlobalDonorSearch ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-10 h-7">
+              <Search className={`h-[21px] w-[21px] ${showGlobalDonorSearch ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${showGlobalDonorSearch ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${showGlobalDonorSearch ? 'font-semibold' : 'font-normal'}`}>
               {language === 'en' ? 'Search' : 'ស្វែងរក'}
             </span>
           </button>
@@ -1192,16 +1194,16 @@ export default function App() {
           <button
             onClick={() => handleMobileTabClick('account')}
             aria-label={t('nav_account')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 transition-all relative ${
+            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
               ['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) 
                 ? 'text-[#028090] dark:text-teal-400' 
                 : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
             }`}
           >
-            <div className="flex items-center justify-center w-11 h-8 transition-all">
-              <User className={`h-5 sm:h-6 w-5 sm:w-6 transition-transform duration-200 ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'stroke-[1.8]' : 'stroke-[1.6]'}`} />
+            <div className="flex items-center justify-center w-10 h-7">
+              <User className={`h-[21px] w-[21px] ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
             </div>
-            <span className={`text-[12px] sm:text-[13px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'font-medium' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'font-semibold' : 'font-normal'}`}>
               {t('nav_account')}
             </span>
           </button>
@@ -1215,7 +1217,7 @@ export default function App() {
       />
 
       {syncToast && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-xl border border-gray-200 dark:border-slate-800 animate-slide-up text-xs font-battambang select-none">
+        <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] md:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 shadow-xl border border-gray-200 dark:border-slate-800 animate-slide-up text-xs font-battambang select-none">
           {syncToast.type === 'success' ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
           ) : (

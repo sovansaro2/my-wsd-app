@@ -58,11 +58,15 @@ async function startServer() {
   // Restrict CORS to explicit allowed origins instead of wildcard '*'
   const allowedOrigins = [
     'https://watsnaydouch.site',
+    'https://www.watsnaydouch.site',
     'http://watsnaydouch.site',
     'https://wsd-app.anajak.cloud',
     'https://sg1.anajak.cloud',
     'http://localhost:3000',
     'http://localhost:5173',
+    'capacitor://localhost',
+    'ionic://localhost',
+    'https://localhost',
   ];
 
   app.use(cors({

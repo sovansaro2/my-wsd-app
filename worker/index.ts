@@ -16,11 +16,15 @@ const app = new Hono<HonoBindings>();
 
 const STATIC_ALLOWED_ORIGINS = new Set([
   'https://watsnaydouch.site',
+  'https://www.watsnaydouch.site',
   'http://watsnaydouch.site',
   'https://wsd-app.anajak.cloud',
   'https://sg1.anajak.cloud',
   'http://localhost:3000',
   'http://localhost:5173',
+  'capacitor://localhost',
+  'ionic://localhost',
+  'https://localhost',
 ]);
 
 app.use('*', async (c, next) => {

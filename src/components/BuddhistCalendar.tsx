@@ -676,14 +676,14 @@ export default function BuddhistCalendar({ isOpen, onClose, userRole }: Buddhist
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60"
+      className="fixed inset-0 z-[70] flex items-center justify-center px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-4 bg-slate-900/60"
       role="dialog"
       aria-modal="true"
       aria-label="ប្រតិទិនខ្មែរ"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-5xl h-[88vh] sm:h-[680px] max-h-[92vh] bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-5xl h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-1rem)] sm:h-[680px] sm:max-h-[90dvh] bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Compact Top Bar: Title + 3-Tab Switcher + Close */}
         <div className="px-4 sm:px-5 py-3 border-b border-gray-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 shrink-0">

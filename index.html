@@ -14,7 +14,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-192.png?v=2" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="វត្តស្នាយដួច" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="/fonts/KhmerOS_muollight.ttf" as="font" type="font/ttf" crossorigin="anonymous">
@@ -38,14 +40,18 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        min-height: 100vh;
+        height: 100dvh;
         width: 100vw;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        box-sizing: border-box;
         font-family: system-ui, -apple-system, sans-serif;
         background-color: #FAFAFA;
       }
       @media (prefers-color-scheme: dark) {
-        body { background-color: #0F172A; }
-        #initial-loader { background-color: #0F172A; }
+        body { background-color: #020617; }
+        #initial-loader { background-color: #020617; }
         .spinner {
           border: 3px solid rgba(45, 212, 191, 0.2) !important;
           border-top-color: #2DD4BF !important;

@@ -6,13 +6,17 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
-    iosScheme: 'https'
+    iosScheme: 'capacitor',
+    allowNavigation: ['watsnaydouch.site', '*.watsnaydouch.site'],
   },
   ios: {
-    contentInset: 'automatic',
+    contentInset: 'never',
     preferredContentMode: 'mobile',
-    backgroundColor: '#028090'
-  }
+    backgroundColor: '#028090',
+    allowsLinkPreview: false,
+    scrollEnabled: true,
+    limitsNavigationsToAppBoundDomains: false,
+  },
 };
 
 export default config;

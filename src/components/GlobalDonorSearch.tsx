@@ -247,9 +247,12 @@ export default function GlobalDonorSearch({ isOpen, onClose, userRole }: GlobalD
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 sm:pt-14 bg-slate-900/55 font-battambang">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-6 sm:pt-14 bg-slate-900/55 font-battambang"
+    >
       <div 
-        className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-1.5rem)] sm:max-h-[86dvh]"
         onClick={e => e.stopPropagation()}
       >
         <div className="p-4 sm:p-5 border-b border-gray-200/80 dark:border-slate-800 flex flex-col gap-3">

@@ -224,10 +224,10 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
   const currentSlideData = ONBOARDING_SLIDES[currentSlide];
 
   return (
-    <main id="main-content" className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center">
+    <main id="main-content" className="min-h-[100dvh] w-full bg-[#F8FAFC] font-battambang text-zinc-900 flex flex-col justify-center pt-safe pb-safe">
       {showMobileOnboarding && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col bg-[#028090] text-white overflow-hidden">
-          <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-[#005F73] via-[#028090] to-[#0A9396] select-none">
+          <div className="relative flex-1 flex flex-col justify-between px-6 pb-6 pt-[max(1.25rem,env(safe-area-inset-top))] bg-gradient-to-b from-[#005F73] via-[#028090] to-[#0A9396] select-none">
             <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
             
             <div className="relative z-10 flex items-center justify-between pt-2">
@@ -262,7 +262,7 @@ export default function AuthComponent({ onLogin }: { onLogin: (role: 'admin' | '
             <div className="h-2" />
           </div>
 
-          <div className="relative z-20 bg-white text-zinc-900 rounded-t-[32px] p-6 sm:p-8 flex flex-col justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.12)]">
+          <div className="relative z-20 bg-white text-zinc-900 rounded-t-[32px] px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8 flex flex-col justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.12)]">
             <div>
               <h2 className="font-title text-[22px] leading-tight text-zinc-900 text-center mb-1 tracking-tight" style={{ fontFamily: 'Koulen, cursive' }}>
                 {currentSlideData.title}

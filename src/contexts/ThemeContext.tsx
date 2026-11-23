@@ -23,12 +23,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('app_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
-      // Set meta theme-color for PWA
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#0f172a');
+      // Match iOS status bar & mobile header in dark mode
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#020617');
     } else {
       document.documentElement.classList.remove('dark');
-      // Set meta theme-color for PWA
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
+      // Match iOS status bar & mobile header in light mode
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#028090');
     }
   }, [theme]);
 
