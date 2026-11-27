@@ -8,7 +8,6 @@ import {
   Bell, 
   X, 
   Award, 
-  Users as UsersIcon, 
   LogOut, 
   Globe, 
   Sun, 
@@ -17,8 +16,7 @@ import {
   Shield,
   ShieldCheck,
   AlertTriangle,
-  Search,
-  CalendarDays,
+  Heart,
   CheckCircle2,
   ChevronDown
 } from 'lucide-react';
@@ -32,6 +30,7 @@ import InstallPrompt from './components/InstallPrompt';
 import { NetworkStatusBadge } from './components/NetworkStatusBadge';
 import { OfflineOutboxModal } from './components/OfflineOutboxModal';
 import { syncEngine } from './lib/syncEngine';
+import { toKhmerNumber } from './lib/khmerCalendar';
 
 function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
@@ -83,12 +82,13 @@ const RecordsComponent = lazyWithRetry(() => import('./components/Records'), 'Re
 const Reports = lazyWithRetry(() => import('./components/Reports'), 'Reports');
 const NameLists = lazyWithRetry(() => import('./components/NameLists'), 'NameLists');
 const AdminPanel = lazyWithRetry(() => import('./components/AdminPanel'), 'AdminPanel');
-const GlobalDonorSearch = lazyWithRetry(() => import('./components/GlobalDonorSearch'), 'GlobalDonorSearch');
+const DonationsPage = lazyWithRetry(() => import('./components/DonationsPage'), 'DonationsPage');
+const MonasteryHistory = lazyWithRetry(() => import('./components/MonasteryHistory'), 'MonasteryHistory');
 import { api } from './lib/apiClient';
 import { useLanguage } from './contexts/LanguageContext';
 import { useTheme } from './contexts/ThemeContext';
 
-type Tab = 'home' | 'records' | 'reports' | 'categories' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel';
+type Tab = 'home' | 'records' | 'reports' | 'categories' | 'donations' | 'calendar' | 'history' | 'account' | 'manage_financials' | 'manage_name_lists' | 'certificates' | 'users' | 'admin_panel';
 type Role = 'admin' | 'user' | null;
 
 export default function App() {
@@ -103,6 +103,9 @@ export default function App() {
         'records', 
         'reports', 
         'categories', 
+        'donations',
+        'calendar',
+        'history',
         'account', 
         'manage_financials', 
         'manage_name_lists', 
@@ -158,6 +161,7 @@ export default function App() {
     } catch {}
     return true;
   });
+  const [calendarYear, setCalendarYear] = useState<number>(() => new Date().getFullYear());
   
   useEffect(() => {
     try {
@@ -194,8 +198,6 @@ export default function App() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [openSystemLogsDirectly, setOpenSystemLogsDirectly] = useState(false);
-  const [showGlobalDonorSearch, setShowGlobalDonorSearch] = useState(false);
-  const [showBuddhistCalendar, setShowBuddhistCalendar] = useState(false);
   const [showOutboxModal, setShowOutboxModal] = useState(false);
   const [showDesktopMenu, setShowDesktopMenu] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
@@ -248,12 +250,12 @@ export default function App() {
     };
   }, [language]);
 
-  // Open Buddhist Calendar directly when user taps a Lock Screen notification
+  // Open Buddhist Calendar page directly when user taps a Lock Screen notification
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get('open') === 'calendar') {
-        setShowBuddhistCalendar(true);
+        setActiveTab('calendar');
         params.delete('open');
         const nextQuery = params.toString();
         const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
@@ -263,7 +265,7 @@ export default function App() {
 
     const handleSwMessage = (event: MessageEvent) => {
       if (event.data?.type === 'OPEN_CALENDAR') {
-        setShowBuddhistCalendar(true);
+        setActiveTab('calendar');
       }
     };
 
@@ -510,16 +512,51 @@ export default function App() {
     { id: 'home', label: t('nav_home') },
     { id: 'records', label: t('nav_finance') },
     { id: 'categories', label: t('nav_list') },
+    { id: 'donations', label: language === 'en' ? 'Donations' : 'បរិច្ចាគ' },
+    { id: 'history', label: language === 'en' ? 'About Wat' : 'អំពីវត្ត' },
   ];
 
   const isAdminUser = actualRole === 'admin' || userRole === 'admin';
   const accountDisplayName = currentUser?.full_name || currentUser?.username || t('nav_account');
 
+  const mobileHeaderTitle = (() => {
+    if (language === 'en') {
+      switch (activeTab) {
+        case 'home': return 'Data Management';
+        case 'records': return 'Finance';
+        case 'categories': return 'Name Lists';
+        case 'donations': return 'Donations';
+        case 'calendar': return `Khmer Calendar ${calendarYear}`;
+        case 'history': return 'About Wat Snay Duoc';
+        case 'reports': return 'Reports';
+        case 'certificates': return 'Certificates';
+        case 'account': return 'Account';
+        case 'admin_panel':
+        case 'users': return 'Management';
+        default: return 'Wat Snay Duoc';
+      }
+    }
+    switch (activeTab) {
+      case 'home': return 'កម្មវិធីគ្រប់គ្រងទិន្នន័យ';
+      case 'records': return 'ហិរញ្ញវត្ថុ';
+      case 'categories': return 'បញ្ជីផ្សេងៗ';
+      case 'donations': return 'ចូលរួមបរិច្ចាគ';
+      case 'calendar': return `ប្រតិទិនខ្មែរ ឆ្នាំ${toKhmerNumber(calendarYear)}`;
+      case 'history': return 'អំពីវត្តស្នាយដួច';
+      case 'reports': return 'របាយការណ៍';
+      case 'certificates': return 'វិញ្ញាបនបត្រ';
+      case 'account': return 'គណនី';
+      case 'admin_panel':
+      case 'users': return 'ផ្ទាំងគ្រប់គ្រង';
+      default: return 'វត្តស្នាយដួច';
+    }
+  })();
+
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-gray-50 dark:bg-slate-950 transition-colors duration-200 overflow-x-clip w-full max-w-full">
+    <div className="flex flex-col min-h-[100dvh] bg-[#F8F6F0] dark:bg-[#0B171B] transition-colors duration-200 overflow-x-clip w-full max-w-full">
       
       {/* Desktop Website Top Navigation Bar */}
-      <header className="hidden md:block sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-gray-200/80 dark:border-slate-800">
+      <header className="hidden md:block sticky top-0 z-40 w-full bg-[#12323A] dark:bg-[#0B171B] border-b border-[#1E4F5A]/50 dark:border-teal-900/40">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
           {/* Zone 1: Brand Wordmark */}
           <button
@@ -535,7 +572,7 @@ export default function App() {
               alt={t('app_title')}
               className="w-9 h-9 object-contain shrink-0"
             />
-            <span className={`text-gray-900 dark:text-white group-hover:text-[#028090] dark:group-hover:text-teal-400 transition-colors whitespace-nowrap shrink-0 ${
+            <span className={`text-white group-hover:text-[#E2BD42] transition-colors whitespace-nowrap shrink-0 ${
               language === 'en'
                 ? 'font-rajdhani font-bold text-xl tracking-wide'
                 : 'font-title text-lg lg:text-xl pt-0.5'
@@ -558,47 +595,24 @@ export default function App() {
                   }}
                   className={`relative h-full inline-flex items-center text-[14px] lg:text-[15px] font-battambang whitespace-nowrap shrink-0 border-b-2 transition-colors cursor-pointer ${
                     isActive
-                      ? 'border-[#028090] dark:border-teal-400 text-[#028090] dark:text-teal-400 font-semibold'
-                      : 'border-transparent text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium'
+                      ? 'border-[#E2BD42] text-[#E2BD42] font-semibold'
+                      : 'border-transparent text-teal-50/80 hover:text-white font-medium'
                   }`}
                 >
                   {item.label}
                 </button>
               );
             })}
-            <button
-              type="button"
-              onClick={() => setShowGlobalDonorSearch(true)}
-              className={`relative h-full inline-flex items-center gap-1.5 text-[14px] lg:text-[15px] font-battambang whitespace-nowrap shrink-0 border-b-2 transition-colors cursor-pointer ${
-                showGlobalDonorSearch
-                  ? 'border-[#028090] dark:border-teal-400 text-[#028090] dark:text-teal-400 font-semibold'
-                  : 'border-transparent text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white font-medium'
-              }`}
-            >
-              <Search className="w-4 h-4 shrink-0" />
-              <span>{language === 'en' ? 'Search' : 'ស្វែងរក'}</span>
-            </button>
           </nav>
 
-          {/* Zone 3: Calendar, Notifications & Account Menu */}
+          {/* Zone 3: Notifications & Account Menu */}
           <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-            <NetworkStatusBadge onClick={() => setShowOutboxModal(true)} />
-
-            <button
-              type="button"
-              onClick={() => setShowBuddhistCalendar(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs lg:text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-slate-700 hover:border-[#028090] rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang"
-              title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-              aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-            >
-              <CalendarDays className="w-4 h-4 shrink-0 text-[#028090] dark:text-teal-400" />
-              <span className="hidden lg:inline">{language === 'en' ? 'Calendar' : 'ប្រតិទិន'}</span>
-            </button>
+            <NetworkStatusBadge className="text-[#E2BD42]" onClick={() => setShowOutboxModal(true)} />
 
             <button
               type="button"
               onClick={handleOpenNotifications}
-              className="relative p-2 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+              className="relative p-2 text-teal-50/85 hover:text-white transition-colors cursor-pointer shrink-0"
               title="ការជូនដំណឹង"
               aria-label="ការជូនដំណឹង"
             >
@@ -616,10 +630,10 @@ export default function App() {
                 onClick={() => setShowDesktopMenu((prev) => !prev)}
                 aria-expanded={showDesktopMenu}
                 aria-haspopup="menu"
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs lg:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs lg:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 font-battambang ${
                   ['account', 'certificates', 'reports', 'admin_panel', 'users'].includes(activeTab)
-                    ? 'border-[#028090] text-[#028090] dark:border-teal-400 dark:text-teal-400'
-                    : 'border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:border-gray-300 dark:hover:border-slate-600'
+                    ? 'border-[#E2BD42] text-[#E2BD42]'
+                    : 'border-teal-200/20 text-teal-50 hover:border-teal-200/45 hover:text-white'
                 }`}
               >
                 <User className="w-4 h-4 shrink-0" />
@@ -758,36 +772,32 @@ export default function App() {
         </div>
       </header>
 
-      <header className="md:hidden fixed top-0 left-0 right-0 pt-[env(safe-area-inset-top)] bg-[#028090] dark:bg-slate-950 shadow-[0_1px_2px_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3)] border-b border-[#005F73]/30 dark:border-white/5 z-50">
-        <div className="h-14 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(0.5rem,env(safe-area-inset-right))] flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0 mr-2">
-            <h1 className={`text-white select-none pt-0.5 truncate ${
-              language === 'en'
-                ? 'font-rajdhani font-bold text-lg sm:text-xl tracking-wide uppercase'
-                : 'font-title font-normal text-lg sm:text-xl tracking-normal'
-            }`}>
-              {t('app_title_mobile')}
-            </h1>
-            <NetworkStatusBadge className="text-amber-200 dark:text-amber-300" onClick={() => setShowOutboxModal(true)} />
+      <header className="md:hidden fixed top-0 left-0 right-0 pt-[env(safe-area-inset-top)] bg-[#12323A] dark:bg-[#0B171B] border-b border-[#1E4F5A]/50 dark:border-teal-900/40 z-50">
+        <div className="min-h-[4.25rem] py-2 pl-[max(1.15rem,env(safe-area-inset-left))] pr-[max(0.65rem,env(safe-area-inset-right))] flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <h1 className={`text-white select-none truncate leading-tight ${
+                language === 'en'
+                  ? 'font-rajdhani font-bold text-xl tracking-wide'
+                  : 'font-title font-normal text-[22px] tracking-normal'
+              }`}>
+                {mobileHeaderTitle}
+              </h1>
+              <NetworkStatusBadge className="text-[#E2BD42]" onClick={() => setShowOutboxModal(true)} />
+            </div>
+            <p className="text-[11px] text-teal-100/75 font-battambang truncate mt-0.5">
+              {language === 'en' ? 'Wat Veary Bakaram · Wat Snay Duoc' : 'វត្តវារីបាការាម · វត្តស្នាយដួច'}
+            </p>
           </div>
-          <div className="relative shrink-0 flex items-center">
-            <button
-              onClick={() => setShowBuddhistCalendar(true)}
-              className="w-11 h-11 text-white active:opacity-70 rounded-full transition-opacity flex items-center justify-center cursor-pointer"
-              title={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-              aria-label={language === 'en' ? 'Buddhist Calendar' : 'ប្រតិទិនពុទ្ធសាសនា'}
-            >
-              <CalendarDays className="w-5 h-5 text-white" />
-            </button>
-
+          <div className="relative shrink-0 flex items-center gap-0.5">
             <button 
               onClick={handleOpenNotifications}
               aria-label="ការជូនដំណឹង"
-              className="relative w-11 h-11 text-white active:opacity-70 rounded-full transition-opacity flex items-center justify-center cursor-pointer"
+              className="relative w-10 h-10 text-white active:opacity-70 rounded-full transition-opacity flex items-center justify-center cursor-pointer"
             >
-              <Bell className="w-[22px] h-[22px]" />
+              <Bell className="w-[21px] h-[21px]" />
               {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white font-rajdhani font-bold border border-[#028090] dark:border-slate-950 px-1">
+                <span className="absolute top-1.5 right-1.5 min-w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] text-white font-rajdhani font-bold border border-[#12323A] dark:border-[#0B171B] px-1">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -944,7 +954,8 @@ export default function App() {
                   <button
                     onClick={() => {
                       if (selectedNotification.target_tab === 'calendar') {
-                        setShowBuddhistCalendar(true);
+                        setActiveTab('calendar');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       } else if (selectedNotification.target_tab) {
                         setActiveTab(selectedNotification.target_tab as any);
                       }
@@ -962,18 +973,25 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 flex flex-col min-w-0 pt-[calc(3.5rem+env(safe-area-inset-top))] pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pt-0 md:pb-0">
-        <main className={`flex-1 w-full max-w-7xl mx-auto ${activeTab === 'home' ? 'px-2.5 sm:px-6 lg:px-8' : 'px-3.5 sm:px-6 lg:px-8'} py-2.5 md:py-7`}>
+      <div className="flex-1 flex flex-col min-w-0 pt-[calc(4.35rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pt-0 md:pb-0">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 md:py-7">
           <div className="h-full">
             <Suspense fallback={
               <div className="py-24 flex flex-col items-center justify-center gap-3">
-                <div className="w-8 h-8 border-3 border-[#028090] border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-gray-400 font-battambang">កំពុងដំណើរការ...</span>
+                <div className="w-8 h-8 border-3 border-[#12323A] dark:border-[#E2BD42] border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-[#6B7477] dark:text-slate-400 font-battambang">កំពុងដំណើរការ...</span>
               </div>
             }>
               {activeTab === 'home' && (
               <Dashboard 
-                onNavigateTab={(tab) => setActiveTab(tab)} 
+                onNavigateTab={(tab) => {
+                  setActiveTab(tab);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onOpenCalendar={() => {
+                  setActiveTab('calendar');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 userRole={userRole}
               />
             )}
@@ -986,6 +1004,41 @@ export default function App() {
             {activeTab === 'categories' && (
               <NameLists 
                 userRole={userRole}
+              />
+            )}
+            {activeTab === 'donations' && (
+              <DonationsPage
+                userRole={userRole}
+                onNavigateTab={(tab) => {
+                  setActiveTab(tab);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
+            {activeTab === 'calendar' && (
+              <BuddhistCalendar
+                userRole={userRole}
+                onYearChange={setCalendarYear}
+                onBack={() => {
+                  setActiveTab('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
+            {activeTab === 'history' && (
+              <MonasteryHistory
+                onBack={() => {
+                  setActiveTab('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onNavigateTab={(tab) => {
+                  setActiveTab(tab);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onOpenCalendar={() => {
+                  setActiveTab('calendar');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             )}
             {activeTab === 'account' && (
@@ -1001,6 +1054,10 @@ export default function App() {
                 onManageUsers={() => setActiveTab('admin_panel')}
                 onCertificates={() => setActiveTab('certificates')}
                 onReports={() => setActiveTab('reports')}
+                onHistory={() => {
+                  setActiveTab('history');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             )}
             
@@ -1048,16 +1105,16 @@ export default function App() {
         </main>
 
         {/* Desktop Website Footer */}
-        <footer className="hidden md:block border-t border-gray-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 mt-auto transition-colors duration-200">
+        <footer className="hidden md:block border-t border-[#EAE6DC] dark:border-teal-900/40 bg-white dark:bg-[#10252C] mt-auto transition-colors duration-200">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-7">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex items-center gap-3">
                 <img src="/logo.png" alt={t('app_title')} className="w-9 h-9 object-contain shrink-0" />
                 <div>
-                  <p className="font-title text-base text-gray-900 dark:text-white leading-tight">
-                    {language === 'en' ? 'Wat Snay Duoc' : 'វត្តស្នាយដួច'}
+                  <p className="font-title text-base text-[#12323A] dark:text-white leading-tight">
+                    {language === 'en' ? 'Wat Snay Duoc' : 'វត្តវារីបាការាម · វត្តស្នាយដួច'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 font-battambang mt-0.5">
+                  <p className="text-xs text-[#6B7477] dark:text-slate-400 font-battambang mt-0.5">
                     {language === 'en'
                       ? 'Temple financial records, donor directory & Buddhist calendar'
                       : 'ប្រព័ន្ធគ្រប់គ្រងបច្ច័យ បញ្ជីសប្បុរសជន និងកាលវិភាគកម្មវិធីបុណ្យ'}
@@ -1065,7 +1122,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs lg:text-sm font-battambang text-gray-600 dark:text-slate-300">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs lg:text-sm font-battambang text-[#5C6669] dark:text-slate-300">
                 {desktopPrimaryLinks.map((item) => (
                   <button
                     key={item.id}
@@ -1074,8 +1131,8 @@ export default function App() {
                       setActiveTab(item.id);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className={`hover:text-[#028090] dark:hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap ${
-                      activeTab === item.id ? 'text-[#028090] dark:text-teal-400 font-semibold' : ''
+                    className={`hover:text-[#12323A] dark:hover:text-[#E2BD42] transition-colors cursor-pointer whitespace-nowrap ${
+                      activeTab === item.id ? 'text-[#12323A] dark:text-[#E2BD42] font-semibold' : ''
                     }`}
                   >
                     {item.label}
@@ -1087,8 +1144,8 @@ export default function App() {
                     setActiveTab('certificates');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`hover:text-[#028090] dark:hover:text-teal-400 transition-colors cursor-pointer whitespace-nowrap ${
-                    activeTab === 'certificates' ? 'text-[#028090] dark:text-teal-400 font-semibold' : ''
+                  className={`hover:text-[#12323A] dark:hover:text-[#E2BD42] transition-colors cursor-pointer whitespace-nowrap ${
+                    activeTab === 'certificates' ? 'text-[#12323A] dark:text-[#E2BD42] font-semibold' : ''
                   }`}
                 >
                   {t('profile_certificates')}
@@ -1096,7 +1153,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-gray-400 dark:text-slate-500 font-battambang">
+            <div className="mt-5 pt-4 border-t border-[#F0ECE2] dark:border-teal-900/40 flex items-center justify-between text-xs text-[#7D878A] dark:text-slate-500 font-battambang">
               <span>
                 © <span className="font-rajdhani">{new Date().getFullYear()}</span> {language === 'en' ? 'Wat Snay Duoc' : 'វត្តស្នាយដួច'}
               </span>
@@ -1104,14 +1161,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={toggleLanguage}
-                  className="hover:text-gray-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                  className="hover:text-[#12323A] dark:hover:text-slate-300 transition-colors cursor-pointer"
                 >
                   {language === 'km' ? 'ភាសាខ្មែរ · English' : 'English · ភាសាខ្មែរ'}
                 </button>
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="hover:text-gray-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                  className="hover:text-[#12323A] dark:hover:text-slate-300 transition-colors cursor-pointer"
                 >
                   {theme === 'dark' ? t('profile_theme_light_label') : t('profile_theme_dark_label')}
                 </button>
@@ -1121,21 +1178,26 @@ export default function App() {
         </footer>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200/80 dark:border-slate-800 z-40 shadow-[0_-1px_2px_0_rgba(0,0,0,0.04)] dark:shadow-[0_-1px_2px_0_rgba(0,0,0,0.3)] pt-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+      {/* Mobile Sacred Deep Teal Bottom Navigation Bar (Matching Mockups 01-05) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#12323A] dark:bg-[#0B171B] border-t border-[#1E4F5A]/50 dark:border-teal-900/40 z-40 pt-2 pb-[max(0.55rem,env(safe-area-inset-bottom))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         <div className="flex items-center justify-around max-w-lg mx-auto px-1">
           <button
             onClick={() => handleMobileTabClick('home')}
             aria-label={t('nav_home')}
-            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-1 transition-transform active:scale-95 relative ${
-              activeTab === 'home' 
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
+            className="flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-1 transition-transform active:scale-95 relative cursor-pointer"
           >
             <div className="flex items-center justify-center w-10 h-7">
-              <Home className={`h-[21px] w-[21px] ${activeTab === 'home' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
+              <Home className={`h-[21px] w-[21px] transition-colors ${
+                activeTab === 'home' || activeTab === 'history' || activeTab === 'calendar'
+                  ? 'text-[#E2BD42] stroke-[2.1]'
+                  : 'text-[#E2BD42]/55 stroke-[1.6]'
+              }`} />
             </div>
-            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'home' ? 'font-semibold' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight transition-colors ${
+              activeTab === 'home' || activeTab === 'history' || activeTab === 'calendar'
+                ? 'text-white font-semibold'
+                : 'text-teal-100/65 font-normal'
+            }`}>
               {t('nav_home')}
             </span>
           </button>
@@ -1143,16 +1205,20 @@ export default function App() {
           <button
             onClick={() => handleMobileTabClick('records')}
             aria-label={t('nav_finance')}
-            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
-              activeTab === 'records' 
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
+            className="flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer"
           >
             <div className="flex items-center justify-center w-10 h-7">
-              <CircleDollarSign className={`h-[21px] w-[21px] ${activeTab === 'records' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
+              <CircleDollarSign className={`h-[21px] w-[21px] transition-colors ${
+                activeTab === 'records'
+                  ? 'text-[#E2BD42] stroke-[2.1]'
+                  : 'text-[#E2BD42]/55 stroke-[1.6]'
+              }`} />
             </div>
-            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'records' ? 'font-semibold' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight transition-colors ${
+              activeTab === 'records'
+                ? 'text-white font-semibold'
+                : 'text-teal-100/65 font-normal'
+            }`}>
               {t('nav_finance')}
             </span>
           </button>
@@ -1160,50 +1226,62 @@ export default function App() {
           <button
             onClick={() => handleMobileTabClick('categories')}
             aria-label={t('nav_list')}
-            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
-              activeTab === 'categories' 
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
+            className="flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer"
           >
             <div className="flex items-center justify-center w-10 h-7">
-              <List className={`h-[21px] w-[21px] ${activeTab === 'categories' ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
+              <List className={`h-[21px] w-[21px] transition-colors ${
+                activeTab === 'categories'
+                  ? 'text-[#E2BD42] stroke-[2.1]'
+                  : 'text-[#E2BD42]/55 stroke-[1.6]'
+              }`} />
             </div>
-            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${activeTab === 'categories' ? 'font-semibold' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight transition-colors ${
+              activeTab === 'categories'
+                ? 'text-white font-semibold'
+                : 'text-teal-100/65 font-normal'
+            }`}>
               {t('nav_list')}
             </span>
           </button>
 
           <button
-            onClick={() => setShowGlobalDonorSearch(true)}
-            aria-label={language === 'en' ? 'Search' : 'ស្វែងរក'}
-            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer ${
-              showGlobalDonorSearch
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
+            onClick={() => handleMobileTabClick('donations')}
+            aria-label={language === 'en' ? 'Donations' : 'បរិច្ចាគ'}
+            className="flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer"
           >
             <div className="flex items-center justify-center w-10 h-7">
-              <Search className={`h-[21px] w-[21px] ${showGlobalDonorSearch ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
+              <Heart className={`h-[21px] w-[21px] transition-colors ${
+                activeTab === 'donations'
+                  ? 'text-[#E2BD42] stroke-[2.1]'
+                  : 'text-[#E2BD42]/55 stroke-[1.6]'
+              }`} />
             </div>
-            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${showGlobalDonorSearch ? 'font-semibold' : 'font-normal'}`}>
-              {language === 'en' ? 'Search' : 'ស្វែងរក'}
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight transition-colors ${
+              activeTab === 'donations'
+                ? 'text-white font-semibold'
+                : 'text-teal-100/65 font-normal'
+            }`}>
+              {language === 'en' ? 'Donate' : 'បរិច្ចាគ'}
             </span>
           </button>
           
           <button
             onClick={() => handleMobileTabClick('account')}
             aria-label={t('nav_account')}
-            className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative ${
-              ['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) 
-                ? 'text-[#028090] dark:text-teal-400' 
-                : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
-            }`}
+            className="flex flex-col items-center justify-center flex-1 min-h-[46px] py-0.5 px-0.5 transition-transform active:scale-95 relative cursor-pointer"
           >
             <div className="flex items-center justify-center w-10 h-7">
-              <User className={`h-[21px] w-[21px] ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'stroke-[2]' : 'stroke-[1.6]'}`} />
+              <User className={`h-[21px] w-[21px] transition-colors ${
+                ['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab)
+                  ? 'text-[#E2BD42] stroke-[2.1]'
+                  : 'text-[#E2BD42]/55 stroke-[1.6]'
+              }`} />
             </div>
-            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight ${['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab) ? 'font-semibold' : 'font-normal'}`}>
+            <span className={`text-[11px] font-battambang mt-0.5 whitespace-nowrap leading-tight transition-colors ${
+              ['account', 'users', 'certificates', 'reports', 'admin_panel'].includes(activeTab)
+                ? 'text-white font-semibold'
+                : 'text-teal-100/65 font-normal'
+            }`}>
               {t('nav_account')}
             </span>
           </button>
@@ -1225,26 +1303,6 @@ export default function App() {
           )}
           <span className="text-gray-900 dark:text-white font-medium">{syncToast.message}</span>
         </div>
-      )}
-
-      {showGlobalDonorSearch && (
-        <Suspense fallback={null}>
-          <GlobalDonorSearch
-            isOpen={showGlobalDonorSearch}
-            userRole={userRole}
-            onClose={() => setShowGlobalDonorSearch(false)}
-          />
-        </Suspense>
-      )}
-
-      {showBuddhistCalendar && (
-        <Suspense fallback={null}>
-          <BuddhistCalendar
-            isOpen={showBuddhistCalendar}
-            onClose={() => setShowBuddhistCalendar(false)}
-            userRole={userRole}
-          />
-        </Suspense>
       )}
     </div>
   );

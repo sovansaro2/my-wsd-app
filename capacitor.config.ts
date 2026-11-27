@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'never',
     preferredContentMode: 'mobile',
-    backgroundColor: '#028090',
+    backgroundColor: '#12323A',
     allowsLinkPreview: false,
     scrollEnabled: true,
     limitsNavigationsToAppBoundDomains: false,

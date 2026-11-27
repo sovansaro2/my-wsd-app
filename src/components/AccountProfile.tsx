@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, BarChart3, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database, Volume2, VolumeX, Terminal } from 'lucide-react';
+import { LogOut, Camera, UserCircle2, KeyRound, Loader2, Save, ChevronRight, ArrowLeft, FileText, BarChart3, Globe, Palette, Info, X, Copy, ShieldCheck, Check, User, Sun, Moon, Mail, Phone, ExternalLink, Send, Shield, Settings, HardDrive, Smartphone, Download, Share, CheckCircle2, AlertCircle, Database, Volume2, VolumeX, Terminal, Landmark } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import SystemLogs from './SystemLogs';
 import PinPad from './PinPad';
@@ -32,6 +32,7 @@ interface AccountProfileProps {
   onManageUsers?: () => void;
   onCertificates?: () => void;
   onReports?: () => void;
+  onHistory?: () => void;
 }
 
 export default function AccountProfile({ 
@@ -47,7 +48,8 @@ export default function AccountProfile({
   onManageNameLists, 
   onManageUsers, 
   onCertificates,
-  onReports
+  onReports,
+  onHistory
 }: AccountProfileProps) {
   const { language, setLanguage, t } = useLanguage();
   const { fontSize, setFontSize } = useFontSize();
@@ -1834,6 +1836,21 @@ export default function AccountProfile({
               {t('profile_mgmt_heading')}
             </span>
           </div>
+
+          {onHistory && (
+            <button
+              onClick={onHistory}
+              className="w-full flex items-center justify-between px-6 py-3 border-l-4 border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors text-left group cursor-pointer"
+            >
+              <div className="flex items-center gap-3.5">
+                <Landmark className="w-5 h-5 text-gray-700 dark:text-slate-200" />
+                <span className="text-[15px] font-medium text-gray-800 dark:text-slate-200 font-battambang">
+                  {language === 'en' ? 'About the Monastery' : 'ប្រវត្តិ និងអំពីវត្ត'}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </button>
+          )}
 
           {onReports && (
             <button

@@ -1,34 +1,57 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
-const SLIDE_IMAGES = [
-  { id: 3, src: '/slide/slide3.webp', alt: 'វត្តស្នាយដួច ១' },
-  { id: 4, src: '/slide/slide4.webp', alt: 'វត្តស្នាយដួច ២' },
-  { id: 5, src: '/slide/slide5.webp', alt: 'វត្តស្នាយដួច ៣' },
-  { id: 6, src: '/slide/slide6.webp', alt: 'វត្តស្នាយដួច ៤' },
-];
+interface SlideImage {
+  id: string;
+  src: string;
+  alt: string;
+}
+
+const SLIDE_INTERVAL_MS = 7500;
+
+const slideModules = import.meta.glob<string>(
+  '../assets/slides/*.{webp,jpg,jpeg,png,avif,WEBP,JPG,JPEG,PNG,AVIF}',
+  { eager: true, import: 'default' }
+);
+
+const SLIDE_IMAGES: SlideImage[] = Object.entries(slideModules)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+  .map(([path, src], idx) => ({
+    id: path,
+    src,
+    alt: `វត្តស្នាយដួច ${idx + 1}`,
+  }));
 
 export default function ImageSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % SLIDE_IMAGES.length);
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + SLIDE_IMAGES.length) % SLIDE_IMAGES.length);
-  }, []);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    if (isPaused) return;
+    const raf = requestAnimationFrame(() => setHasMounted(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const total = SLIDE_IMAGES.length;
+
+  const nextSlide = useCallback(() => {
+    if (total <= 1) return;
+    setCurrentIndex((prev) => (prev + 1) % total);
+  }, [total]);
+
+  const prevSlide = useCallback(() => {
+    if (total <= 1) return;
+    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  }, [total]);
+
+  useEffect(() => {
+    if (isPaused || total <= 1) return;
     const interval = setInterval(() => {
       nextSlide();
-    }, 5000);
+    }, SLIDE_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [isPaused, nextSlide, total]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.touches[0].clientX);
@@ -51,20 +74,85 @@ export default function ImageSlider() {
     setIsPaused(false);
   };
 
+  // Mount previous, current, and next slides so smooth crossfades never flash blank while keeping memory low
+  const activeIndices = useMemo(() => {
+    if (total === 0) return new Set<number>();
+    if (total <= 3) return new Set(SLIDE_IMAGES.map((_, idx) => idx));
+    return new Set([
+      (currentIndex - 1 + total) % total,
+      currentIndex,
+      (currentIndex + 1) % total,
+    ]);
+  }, [currentIndex, total]);
+
+  // Compact sliding window of dots when there are many slides
+  const visibleDotIndices = useMemo(() => {
+    if (total <= 9) {
+      return SLIDE_IMAGES.map((_, idx) => idx);
+    }
+    const maxDots = 7;
+    const half = Math.floor(maxDots / 2);
+    let start = currentIndex - half;
+    let end = currentIndex + half;
+
+    if (start < 0) {
+      start = 0;
+      end = maxDots - 1;
+    } else if (end >= total) {
+      end = total - 1;
+      start = total - maxDots;
+    }
+
+    const indices: number[] = [];
+    for (let i = start; i <= end; i++) {
+      indices.push(i);
+    }
+    return indices;
+  }, [currentIndex, total]);
+
+  if (total === 0) {
+    return (
+      <div className="relative w-full overflow-hidden rounded-[24px] border border-[#EAE6DC] dark:border-teal-900/40 bg-[#163F48] dark:bg-[#0F2A31] select-none aspect-[16/10] sm:aspect-[16/9] max-h-[250px] sm:max-h-[300px] md:max-h-[340px] flex flex-col items-center justify-center text-center px-6">
+        <img
+          src="/logo.png"
+          alt="វត្តស្នាយដួច"
+          className="w-14 h-14 sm:w-16 sm:h-16 object-contain opacity-95 mb-2.5"
+        />
+        <p className="font-title text-lg sm:text-xl text-white leading-snug">
+          វត្តវារីបាការាម · វត្តស្នាយដួច
+        </p>
+        <p className="text-xs text-teal-100/70 font-battambang mt-1">
+          រង់ចាំបញ្ចូលរូបភាពស្លាយថ្មី
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
-      className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200/80 dark:border-slate-800 bg-gray-900 group select-none aspect-[16/9] max-h-[230px] sm:max-h-[280px] md:max-h-[320px] lg:max-h-[340px]"
+      className="relative w-full overflow-hidden rounded-[24px] border border-[#EAE6DC] dark:border-teal-900/40 bg-[#12323A] select-none aspect-[16/10] sm:aspect-[16/9] max-h-[250px] sm:max-h-[300px] md:max-h-[340px]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {SLIDE_IMAGES.map((image, idx) => {
+        if (!activeIndices.has(idx)) return null;
         const isActive = currentIndex === idx;
+        const isZooming = isActive && hasMounted;
+        const driftClass =
+          idx % 2 === 0
+            ? isZooming
+              ? 'scale-[1.07] translate-x-1'
+              : 'scale-100 translate-x-0'
+            : isZooming
+              ? 'scale-[1.07] -translate-x-1'
+              : 'scale-100 translate-x-0';
+
         return (
           <div
             key={image.id}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-out ${
+            className={`absolute inset-0 w-full h-full transition-opacity duration-[1300ms] ease-in-out ${
               isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
             }`}
           >
@@ -74,67 +162,40 @@ export default function ImageSlider() {
               referrerPolicy="no-referrer"
               loading={idx === 0 ? 'eager' : 'lazy'}
               decoding="async"
-              onError={(e) => {
-                const target = e.currentTarget;
-                const currentSrc = target.src;
-                if (currentSrc.endsWith('.jpg')) {
-                  target.src = currentSrc.replace(/\.jpg$/, '.JPG');
-                } else if (currentSrc.endsWith('.JPG')) {
-                  target.src = currentSrc.replace(/\.JPG$/, '.jpg');
-                }
-              }}
-              className="w-full h-full object-cover object-center"
+              className={`w-full h-full object-cover object-center transform-gpu will-change-transform transition-transform duration-[7500ms] ease-out ${driftClass}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/5 pointer-events-none" />
           </div>
         );
       })}
 
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          prevSlide();
-        }}
-        aria-label="Previous Slide"
-        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/65 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 cursor-pointer"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          nextSlide();
-        }}
-        aria-label="Next Slide"
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/65 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 cursor-pointer"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-
-      <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-between px-3 z-20 pointer-events-none">
-        <div className="flex items-center gap-1.5 pointer-events-auto bg-black/45 px-2.5 py-1 rounded-full">
-          {SLIDE_IMAGES.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setCurrentIndex(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-200 cursor-pointer ${
-                currentIndex === idx
-                  ? 'w-5 bg-[#028090]'
-                  : 'w-1.5 bg-white/65 hover:bg-white'
-              }`}
-            />
-          ))}
+      {/* Minimal tiny centered dots */}
+      {total > 1 && (
+        <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1 z-20 pointer-events-none">
+          {visibleDotIndices.map((idx, pos) => {
+            const isActive = currentIndex === idx;
+            const isEdge =
+              total > 9 &&
+              ((pos === 0 && idx > 0) ||
+                (pos === visibleDotIndices.length - 1 && idx < total - 1));
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`rounded-full transition-all duration-500 ease-out cursor-pointer pointer-events-auto ${
+                  isActive
+                    ? 'w-3.5 h-1 bg-[#E2BD42]'
+                    : isEdge
+                      ? 'w-[3px] h-[3px] bg-white/45'
+                      : 'w-1 h-1 bg-white/70 hover:bg-white'
+                }`}
+              />
+            );
+          })}
         </div>
-
-        <div className="text-[11px] font-rajdhani font-semibold tabular-nums text-white bg-black/45 px-2 py-0.5 rounded-full tracking-wider">
-          {currentIndex + 1} / {SLIDE_IMAGES.length}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

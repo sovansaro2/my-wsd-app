@@ -24,11 +24,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
       // Match iOS status bar & mobile header in dark mode
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#020617');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#0B171B');
     } else {
       document.documentElement.classList.remove('dark');
       // Match iOS status bar & mobile header in light mode
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#028090');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#12323A');
     }
   }, [theme]);
 
